@@ -1,0 +1,270 @@
+{
+  "engine": "eSpeak NG 1.51",
+  "sampleRate": 22050,
+  "peakIntervalMs": 50,
+  "locales": [
+    {
+      "code": "zh-CN",
+      "voice": "cmn-latn-pinyin",
+      "name": "中文（普通话）",
+      "nativeName": "中文",
+      "dir": "ltr"
+    },
+    {
+      "code": "en-US",
+      "voice": "en-us",
+      "name": "英语（美国）",
+      "nativeName": "English",
+      "dir": "ltr"
+    },
+    {
+      "code": "de-DE",
+      "voice": "de",
+      "name": "德语",
+      "nativeName": "Deutsch",
+      "dir": "ltr"
+    },
+    {
+      "code": "fr-FR",
+      "voice": "fr-fr",
+      "name": "法语",
+      "nativeName": "Français",
+      "dir": "ltr"
+    },
+    {
+      "code": "es-ES",
+      "voice": "es",
+      "name": "西班牙语",
+      "nativeName": "Español",
+      "dir": "ltr"
+    },
+    {
+      "code": "pt-BR",
+      "voice": "pt-br",
+      "name": "葡萄牙语（巴西）",
+      "nativeName": "Português",
+      "dir": "ltr"
+    },
+    {
+      "code": "it-IT",
+      "voice": "it",
+      "name": "意大利语",
+      "nativeName": "Italiano",
+      "dir": "ltr"
+    },
+    {
+      "code": "ru-RU",
+      "voice": "ru",
+      "name": "俄语",
+      "nativeName": "Русский",
+      "dir": "ltr"
+    },
+    {
+      "code": "tr-TR",
+      "voice": "tr",
+      "name": "土耳其语",
+      "nativeName": "Türkçe",
+      "dir": "ltr"
+    },
+    {
+      "code": "ar-SA",
+      "voice": "ar",
+      "name": "阿拉伯语",
+      "nativeName": "العربية",
+      "dir": "rtl"
+    },
+    {
+      "code": "he-IL",
+      "voice": "he",
+      "name": "希伯来语",
+      "nativeName": "עברית",
+      "dir": "rtl"
+    },
+    {
+      "code": "hi-IN",
+      "voice": "hi",
+      "name": "印地语",
+      "nativeName": "हिन्दी",
+      "dir": "ltr"
+    },
+    {
+      "code": "th-TH",
+      "voice": "th",
+      "name": "泰语",
+      "nativeName": "ไทย",
+      "dir": "ltr"
+    },
+    {
+      "code": "vi-VN",
+      "voice": "vi",
+      "name": "越南语",
+      "nativeName": "Tiếng Việt",
+      "dir": "ltr"
+    },
+    {
+      "code": "id-ID",
+      "voice": "id",
+      "name": "印尼语",
+      "nativeName": "Bahasa Indonesia",
+      "dir": "ltr"
+    },
+    {
+      "code": "ko-KR",
+      "voice": "ko",
+      "name": "韩语",
+      "nativeName": "한국어",
+      "dir": "ltr"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "nav",
+      "label": "单点导航",
+      "tag": "NAV / ROUTE",
+      "hmi": "route",
+      "actions": [
+        "hmi:ack",
+        "route:draw",
+        "route:info",
+        "route:eta"
+      ],
+      "user": {
+        "zh-CN": "帮我导航到五道口",
+        "en-US": "Navigate me to Wudaokou",
+        "de-DE": "Navigiere mich nach Wudaokou",
+        "fr-FR": "Emmène-moi à Wudaokou",
+        "es-ES": "Llévame a Wudaokou",
+        "pt-BR": "Me leve até Wudaokou",
+        "it-IT": "Portami a Wudaokou",
+        "ru-RU": "Проложи маршрут до Удаокоу",
+        "tr-TR": "Beni Wudaokou'ya götür",
+        "ar-SA": "خذني إلى ووداوكو",
+        "he-IL": "נווט אותי לוודאוקואו",
+        "hi-IN": "मुझे वुदाओकोऊ ले चलो",
+        "th-TH": "นำทางไปอู่เต้าโข่วหน่อย",
+        "vi-VN": "Dẫn đường đến Ngũ Đạo Khẩu",
+        "id-ID": "Arahkan saya ke Wudaokou",
+        "ko-KR": "우다오커우까지 안내해 줘"
+      }
+    },
+    {
+      "id": "tour",
+      "label": "多途经点",
+      "tag": "NAV / WAYPOINTS",
+      "hmi": "tour",
+      "actions": [
+        "route:draw",
+        "wp:1",
+        "wp:2",
+        "wp:3",
+        "route:info"
+      ],
+      "user": {
+        "zh-CN": "先经过国家大剧院，再去故宫，最后到颐和园",
+        "en-US": "Pass the National Theatre first, then the Forbidden City, and end at the Summer Palace",
+        "de-DE": "Fahre zuerst am Nationaltheater vorbei, dann zur Verbotenen Stadt und zuletzt zum Sommerpalast",
+        "fr-FR": "Passe d'abord par le Grand Théâtre national, puis la Cité interdite, et enfin le Palais d'été",
+        "es-ES": "Pasa primero por el Gran Teatro Nacional, luego la Ciudad Prohibida y al final el Palacio de Verano",
+        "pt-BR": "Passe primeiro pelo Grande Teatro Nacional, depois pela Cidade Proibida e por fim o Palácio de Verão",
+        "it-IT": "Passa prima dal Gran Teatro Nazionale, poi dalla Città Proibita e infine dal Palazzo d'Estate",
+        "ru-RU": "Сначала мимо Большого национального театра, потом в Запретный город, а в конце — в Летний дворец",
+        "tr-TR": "Önce Ulusal Tiyatro'dan geç, sonra Yasak Şehir'e, en son Yaz Sarayı'na git",
+        "ar-SA": "مر أولا بالمسرح الوطني، ثم المدينة المحرمة، وأخيرا القصر الصيفي",
+        "he-IL": "עבור קודם ליד התיאטרון הלאומי, אחר כך העיר האסורה, ולבסוף ארמון הקיץ",
+        "hi-IN": "पहले राष्ट्रीय रंगमंच से होकर, फिर निषिद्ध नगर, और अंत में समर पैलेस चलो",
+        "th-TH": "ผ่านโรงละครแห่งชาติก่อน แล้วไปพระราชวังต้องห้าม สุดท้ายไปพระราชวังฤดูร้อน",
+        "vi-VN": "Đi qua Nhà hát Quốc gia trước, rồi đến Tử Cấm Thành, cuối cùng là Di Hòa Viên",
+        "id-ID": "Lewati Teater Nasional dulu, lalu Kota Terlarang, dan terakhir Istana Musim Panas",
+        "ko-KR": "먼저 국가대극원을 지나서, 다음에 자금성, 마지막으로 이화원으로 가 줘"
+      }
+    },
+    {
+      "id": "lane",
+      "label": "车道偏好",
+      "tag": "ADAS / LANE PREF",
+      "hmi": "lane",
+      "actions": [
+        "hmi:ack",
+        "lane:scan",
+        "lane:left"
+      ],
+      "user": {
+        "zh-CN": "这条路以后走最左侧车道",
+        "en-US": "Always take the leftmost lane on this road",
+        "de-DE": "Nimm auf dieser Straße künftig die linke Spur",
+        "fr-FR": "Sur cette route, prends toujours la voie de gauche",
+        "es-ES": "En esta carretera, usa siempre el carril izquierdo",
+        "pt-BR": "Nesta estrada, use sempre a faixa da esquerda",
+        "it-IT": "Su questa strada prendi sempre la corsia di sinistra",
+        "ru-RU": "На этой дороге всегда держись левой полосы",
+        "tr-TR": "Bu yolda bundan sonra hep en sol şeridi kullan",
+        "ar-SA": "على هذا الطريق التزم دائما بالمسار الأيسر",
+        "he-IL": "בכביש הזה סע תמיד בנתיב השמאלי",
+        "hi-IN": "इस सड़क पर हमेशा सबसे बाईं लेन में चलो",
+        "th-TH": "ถนนเส้นนี้ต่อไปให้ใช้เลนซ้ายสุด",
+        "vi-VN": "Trên đường này, sau này hãy đi làn ngoài cùng bên trái",
+        "id-ID": "Di jalan ini, selalu pakai lajur paling kiri",
+        "ko-KR": "이 길에서는 앞으로 맨 왼쪽 차로로 가 줘"
+      }
+    },
+    {
+      "id": "park",
+      "label": "地库泊车",
+      "tag": "PARKING / AVP",
+      "hmi": "park",
+      "actions": [
+        "park:enter",
+        "park:found",
+        "park:go"
+      ],
+      "user": {
+        "zh-CN": "驶入地库，去 B2 层泊车",
+        "en-US": "Enter the garage and park on level B2",
+        "de-DE": "Fahr in die Tiefgarage und park auf Ebene B2",
+        "fr-FR": "Entre dans le parking et gare-toi au niveau B2",
+        "es-ES": "Entra al aparcamiento y aparca en el nivel B2",
+        "pt-BR": "Entre na garagem e estacione no nível B2",
+        "it-IT": "Entra nel parcheggio e parcheggia al livello B2",
+        "ru-RU": "Заезжай на паркинг и припаркуйся на уровне B2",
+        "tr-TR": "Otoparka gir ve B2 katına park et",
+        "ar-SA": "ادخل المرآب واركن في الطابق B2",
+        "he-IL": "היכנס לחניון וחנה בקומה מינוס שתיים",
+        "hi-IN": "पार्किंग में जाओ और B2 लेवल पर गाड़ी खड़ी करो",
+        "th-TH": "เข้าลานจอดรถ แล้วจอดที่ชั้น B2",
+        "vi-VN": "Vào hầm xe và đỗ ở tầng B2",
+        "id-ID": "Masuk ke basement dan parkir di lantai B2",
+        "ko-KR": "지하 주차장으로 들어가서 B2층에 주차해 줘"
+      }
+    },
+    {
+      "id": "travel",
+      "label": "出行参谋",
+      "tag": "CONCIERGE / WEATHER",
+      "hmi": "weather",
+      "actions": [
+        "wx:temp",
+        "wx:snow",
+        "wx:cloth",
+        "wx:acc"
+      ],
+      "user": {
+        "zh-CN": "明天去哈尔滨穿什么？",
+        "en-US": "What should I wear in Harbin tomorrow?",
+        "de-DE": "Was soll ich morgen in Harbin anziehen?",
+        "fr-FR": "Qu'est-ce que je mets demain à Harbin ?",
+        "es-ES": "¿Qué me pongo mañana en Harbin?",
+        "pt-BR": "O que eu visto amanhã em Harbin?",
+        "it-IT": "Cosa mi metto domani a Harbin?",
+        "ru-RU": "Что надеть завтра в Харбине?",
+        "tr-TR": "Yarın Harbin'de ne giymeliyim?",
+        "ar-SA": "ماذا ألبس غدا في هاربين؟",
+        "he-IL": "מה ללבוש מחר בחרבין?",
+        "hi-IN": "कल हार्बिन में क्या पहनूं?",
+        "th-TH": "พรุ่งนี้ไปฮาร์บิน ใส่อะไรดี",
+        "vi-VN": "Mai đi Cáp Nhĩ Tân thì mặc gì?",
+        "id-ID": "Besok di Harbin pakai baju apa?",
+        "ko-KR": "내일 하얼빈 가는데 뭘 입을까?"
+      }
+    }
+  ]
+}
