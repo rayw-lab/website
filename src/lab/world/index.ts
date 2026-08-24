@@ -32,6 +32,11 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
     game.objects.resetAll();
   });
 
+  // #debug：暴露 game 句柄供控制台/后续 Tweakpane 面板检查（roadmap §7.3 Step 9 模式）
+  if (location.hash.includes('debug')) {
+    (window as unknown as { __worldSpikeGame?: Game }).__worldSpikeGame = game;
+  }
+
   return {
     pause() {
       game.pause();

@@ -11,6 +11,16 @@ import { Fn, fwidth, mix, positionGeometry, positionWorld, smoothstep, vec3 } fr
 import type { Game } from '../core/Game';
 import type { WorldObject } from '../core/Objects';
 
+/** 环形试车道布局常量（Game 摆 respawn、World 摆锥桶都参照它） */
+export const RING = { radius: 10, halfWidth: 2.5 };
+
+/** 出生点：环形道上角度 0 处（静态相机取景以此为焦点） */
+export const SPAWN = {
+  position: { x: RING.radius, y: 0, z: 0 },
+  // 朝向道路切线方向（+θ 侧），车辆接入后即沿道出发
+  rotation: -Math.PI / 2,
+};
+
 export class World {
   private readonly game: Game;
 
@@ -18,7 +28,7 @@ export class World {
   readonly killElevation = -8;
 
   /** 环形试车道（respawn/锥桶摆位都参照它） */
-  readonly ring = { radius: 10, halfWidth: 2.5 };
+  readonly ring = RING;
 
   ground!: THREE.Mesh;
   cones: WorldObject[] = [];
@@ -124,11 +134,14 @@ export class World {
       return mix(orange, white, band);
     })();
 
-    const angles = [-0.28, 0, 0.28];
-    for (const angle of angles) {
-      const theta = angle;
-      const x = Math.cos(theta) * this.ring.radius;
-      const z = Math.sin(theta) * this.ring.radius;
+    // 出生点正前方沿道排开（间距约 2.2m，左右交错成小 slalom），静态相机内可见
+    const angles = [0.22, 0.33, 0.44];
+    const offsets = [-0.9, 0.9, -0.9];
+    for (let i = 0; i < angles.length; i++) {
+      const theta = angles[i];
+      const radius = this.ring.radius + offsets[i];
+      const x = Math.cos(theta) * radius;
+      const z = Math.sin(theta) * radius;
 
       const mesh = new THREE.Mesh(geometry, material);
 

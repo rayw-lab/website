@@ -21,7 +21,7 @@ import { Respawns } from '../world/Respawns';
 import { Zones } from '../world/Zones';
 import { View } from '../view/View';
 import { Player, type PlayerVehicle } from '../player/Player';
-import { World } from '../world/World';
+import { World, SPAWN } from '../world/World';
 
 export interface GameOptions {
   /** 舞台容器（Viewport 量它） */
@@ -99,7 +99,7 @@ export class Game {
     this.resources = await this.resourcesLoader.load([]);
 
     this.respawns = new Respawns(
-      [{ name: 'landing', position: { x: 0, y: 0, z: 0 }, rotation: Math.PI }],
+      [{ name: 'landing', position: SPAWN.position, rotation: SPAWN.rotation }],
       'landing',
     );
     this.view = new View(this);

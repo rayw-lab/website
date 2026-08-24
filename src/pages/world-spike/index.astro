@@ -19,6 +19,7 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
       content="内部隐藏路由：/world/ 试验场 Phase A Spike——引擎层灰盒验证（WebGPU/WebGL 2 双后端 + Rapier 物理）。"
     />
     <meta name="theme-color" content="#0d0c11" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
   </head>
   <body>
     <main class="shell" data-world-host data-state="idle">
@@ -153,6 +154,7 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
         height: 100%;
       }
       body {
+        overflow: hidden;
         background: #0d0c11;
         color: #e8e6ef;
         font-family:
