@@ -66,6 +66,16 @@ async function pollState(
 
 const wrapAngle = (a: number): number => Math.atan2(Math.sin(a), Math.cos(a));
 
+/**
+ * 已知 UA 级异常白名单（整合批次实测归因，报告 §BUG 列表登记）：
+ * 站点启用声明式跨文档 View Transitions（global.css `@view-transition`，零 JS）。
+ * SwiftShader ~1fps 下离开 3D 页时 UA 无法按时产出转场帧 → 转场被跳过，
+ * Chromium 将 UA 内部 ViewTransition promise 的拒绝上抛为页面级
+ * 「Transition was skipped」。纯声明式用法下站点侧不存在可附着的 catch 点，
+ * 真机语义 = 自动退化为普通整页跳转（无功能影响）。仅此一条精确放行。
+ */
+const isKnownUaError = (msg: string): boolean => /Transition was skipped/.test(msg);
+
 /** 进入试验场：显式点击启动 → ready（world 规格的唯一入场路径） */
 async function enterWorld(page: Page, query = ''): Promise<void> {
   await page.goto(`${PAGE_URL}${query}`);
@@ -185,12 +195,16 @@ test.describe('world Spike 灰盒试验场', () => {
     const spawn = await readState(page);
 
     try {
-      // ① W 前进：速度爬升 + 位移（真实 CDP keydown，非合成事件）
+      // ① W 前进：速度爬升 + 持续位移（真实 CDP keydown，非合成事件）
       await page.keyboard.down('w');
       const accel = await pollState(page, (s) => s.speedKmh > 25, 90_000);
       expect(accel.ok, `W 持续按住后应超过 25km/h（实测 ${accel.state.speedKmh.toFixed(1)}km/h）`).toBe(true);
-      const moved = Math.hypot(accel.state.x - spawn.x, accel.state.z - spawn.z);
-      expect(moved, '车辆应产生真实位移').toBeGreaterThan(2);
+      const moved = await pollState(
+        page,
+        (s) => Math.hypot(s.x - spawn.x, s.z - spawn.z) > 5,
+        60_000,
+      );
+      expect(moved.ok, '持续按 W 应产生 >5m 真实位移').toBe(true);
 
       // ② 空格刹车：刹停（decel 30m/s²）
       await page.keyboard.up('w');
@@ -245,15 +259,15 @@ test.describe('world Spike 灰盒试验场', () => {
   });
 
   test('WS-E2E-04 锥桶碰撞 + R 复位闭环：受控驾驶撞桩 → 计数/HUD 联动 → 复位清零', async ({ page }) => {
-    test.setTimeout(600_000);
+    test.setTimeout(780_000);
     await enterWorld(page);
 
-    // 慢弯桩 i=0（scene.ts 阵位公式：a=14/55，内侧半径 55-2.6）——离出生点最近的锥桶
-    const TARGET = { x: Math.sin(14 / 55) * 52.4, z: Math.cos(14 / 55) * 52.4 };
-
-    // 闭环驾驶控制器：真实按键（W 恒按 + A/D 开关式打舵）+ 遥测轮询导航。
-    // 期望航向 = atan2(Δx, Δz)（yaw=0 朝 +Z）；撞到（cones>0）即成功；
-    // 冲过目标（x 超出 6m）则 R 复位重试，最多 4 轮——决不 skip。
+    // 循迹控制器（决策记录 §6 同款打法）：沿「内侧慢弯桩线」行驶——期望航向 =
+    // 环形道切线（φ+π/2）+ 半径误差比例修正，目标半径 = 52.4m（scene.ts 阵位公式
+    // 55-2.6，i 偶数桩正落在该线上，φ∈{0.25,0.51,0.76,1.02}——单趟扫过 4 桩）。
+    // W 恒按 + A/D 开关式打舵（真实 CDP 按键）；cones>0 即成功；扫完桩区（φ>1.15）
+    // 未命中则 R 复位重试，最多 3 轮——决不 skip。
+    const CONE_LINE_R = 52.4;
     let steerKey: 'a' | 'd' | null = null;
     const setSteer = async (want: 'a' | 'd' | null) => {
       if (want === steerKey) return;
@@ -264,22 +278,28 @@ test.describe('world Spike 灰盒试验场', () => {
 
     let knocked = 0;
     try {
-      for (let attempt = 1; attempt <= 4 && knocked === 0; attempt++) {
+      for (let attempt = 1; attempt <= 3 && knocked === 0; attempt++) {
         await page.keyboard.down('w');
-        const deadline = Date.now() + 100_000;
+        const deadline = Date.now() + 150_000;
+        let lastState: WorldState | null = null;
         while (Date.now() < deadline) {
           const s = await readState(page);
+          lastState = s;
           if (s.cones > 0) {
             knocked = s.cones;
             break;
           }
-          if (s.x > TARGET.x + 6) break; // 冲过目标：本轮失败
-          const err = wrapAngle(Math.atan2(TARGET.x - s.x, TARGET.z - s.z) - s.yaw);
-          await setSteer(err > 0.05 ? 'a' : err < -0.05 ? 'd' : null);
-          await page.waitForTimeout(250);
+          const phi = Math.atan2(s.x, s.z); // 环形道方位角（出生点 φ=0，前进方向 φ 增大）
+          if (phi > 1.15 || phi < -0.15) break; // 扫过全部内线桩仍未命中：本轮失败
+          const r = Math.hypot(s.x, s.z);
+          const corr = Math.max(-0.5, Math.min(0.5, (r - CONE_LINE_R) * 0.08));
+          const err = wrapAngle(phi + Math.PI / 2 + corr - s.yaw);
+          await setSteer(err > 0.06 ? 'a' : err < -0.06 ? 'd' : null);
+          await page.waitForTimeout(200);
         }
         await page.keyboard.up('w');
         await setSteer(null);
+        logMetrics('WS-E2E-04 attempt', { attempt, knocked, lastState });
         if (knocked === 0) {
           await page.keyboard.press('r');
           await pollState(page, (s) => Math.abs(s.x) < 1.5 && s.cones === 0, 45_000);
@@ -327,6 +347,27 @@ test.describe('world Spike 灰盒试验场', () => {
     await shotIntegration(page, 'world_gl1_backend');
   });
 
+  test('WS-E2E-11 ?impl=engine 引擎层灰盒腿：Rapier 引擎挂载 ready、车辆 HUD 读数隐藏、零异常', async ({ page }) => {
+    // integration 合流后的第二入口（folio 架构 Game loop + Rapier 物理，无车）：
+    // 只做烟测级断言——挂载可达、壳文案切换、车辆读数整组隐藏、零未捕获异常。
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+
+    await page.goto(`${PAGE_URL}?impl=engine`);
+    const host = page.locator('[data-ws-host]');
+    await expect(host).toHaveAttribute('data-impl', 'engine');
+    await expect(page.locator('[data-ws-cover-note]')).toContainText('引擎层灰盒');
+
+    await page.locator('[data-ws-start]').click();
+    await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+
+    // 车辆读数（速度/FPS/锥桶）无源 → 整组隐藏；后端徽标仍上报
+    await expect(page.locator('.ws-hud-cell').first()).toBeHidden();
+    await expect(page.locator('[data-ws-backend]')).toHaveText(/^(WebGPU|WebGL 2)$/);
+    expect(errors, '引擎层灰盒挂载零未捕获异常').toEqual([]);
+    await shotIntegration(page, 'world_engine_impl_ready');
+  });
+
   test('WS-E2E-06 reduced-motion：静态壳保持零加载，显式「进入」逃生门照常工作', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
 
@@ -367,7 +408,7 @@ test.describe('world Spike 灰盒试验场', () => {
     await expect(homeLink).toBeVisible();
     await homeLink.dispatchEvent('click');
     await page.waitForURL(new RegExp(`${u('/')}$`), { timeout: 30_000 });
-    expect(errors, 'dispose 路径不得抛未捕获异常').toEqual([]);
+    expect(errors.filter((m) => !isKnownUaError(m)), 'dispose 路径不得抛未捕获异常').toEqual([]);
 
     // 返回 → 再挂载（bfcache 命中则场景仍在；未命中则回 idle 壳，重新显式进入）
     await page.goBack({ waitUntil: 'domcontentloaded' });
@@ -387,7 +428,10 @@ test.describe('world Spike 灰盒试验场', () => {
     } finally {
       await page.keyboard.up('w').catch(() => {});
     }
-    expect(errors, '完整 dispose→再挂载链路零未捕获异常').toEqual([]);
+    expect(
+      errors.filter((m) => !isKnownUaError(m)),
+      '完整 dispose→再挂载链路零未捕获异常（UA 级 View Transition 跳过除外，见白名单注释）',
+    ).toEqual([]);
     await shotIntegration(page, 'world_remount_ready');
   });
 
@@ -416,15 +460,22 @@ test.describe('world Spike 灰盒试验场', () => {
     } finally {
       await page.keyboard.up('w').catch(() => {});
     }
-    expect(errors, '快速切页全程零未捕获异常').toEqual([]);
+    expect(
+      errors.filter((m) => !isKnownUaError(m)),
+      '快速切页全程零未捕获异常（UA 级 View Transition 跳过除外，见白名单注释）',
+    ).toEqual([]);
   });
 });
 
 test.describe('world Spike（移动端 375px 触屏）', () => {
+  // 与 mobile-375 project 同参（Pixel 5 描述符的字段展开——describe 级 use 不允许
+  // 携带 defaultBrowserType，故不直接 spread devices）
   test.use({
-    ...devices['Pixel 5'],
+    userAgent: devices['Pixel 5'].userAgent,
     viewport: { width: 375, height: 667 },
     deviceScaleFactor: 2,
+    isMobile: true,
+    hasTouch: true,
   });
 
   test('WS-E2E-09 触屏摇杆驾驶：动态原点摇杆、真触摸驱动、复位按钮、无水平溢出', async ({ page }) => {
