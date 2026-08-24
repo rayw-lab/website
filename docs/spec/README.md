@@ -1,9 +1,10 @@
 # 规格文档索引（SRD + PRD）
 
-> **版本**：v1.1（2026-08-24）  
+> **版本**：v1.1.1（2026-08-24）  
 > **状态**：评审稿  
-> **上游**：`docs/website-plan/master-plan.md`（业务总纲）  
-> **v1.1 变更**：正式采纳 Hybrid 路线（见下方决策摘要）
+> **上游**：`docs/website-plan/master-plan.md`（业务总纲，v1.1）  
+> **v1.1 变更**：正式采纳 Hybrid 路线（见下方决策摘要）  
+> **v1.1.1 变更**：完成交叉审计报告 §9 的 **P0-1~P0-5 修订**（12 模块单源、Spike 门禁算法、thesis 必填、RSS 口径、master-plan 一揽子对齐），详见 [audit-report-v1.1.md](./audit-report-v1.1.md) 末尾「P0 修订记录」
 
 ---
 
@@ -74,11 +75,11 @@ master-plan.md          ← 业务总纲（定位、内容规范、视觉定调�
 
 | 优先级 | 动作 | 依据 |
 |--------|------|------|
-| P0 | 处理交叉审计报告的 P0 修订项（12 模块裁决、Spike 门禁算法、thesis/RSS 口径、B0 扩容提级），随后评审并冻结 PRD/SRD v1.1 与实施路径鸟瞰图 | [audit-report-v1.1.md](./audit-report-v1.1.md) §9 |
+| P0（已完成） | ✅ 交叉审计报告 P0 修订项已全部落实（12 模块单源、Spike 门禁算法、thesis/RSS 口径、master-plan 一揽子 + B0 提级）——PRD/SRD 升 v1.1.1、master-plan 升 v1.1；随后评审并冻结 v1.1.1 与实施路径鸟瞰图 | [audit-report-v1.1.md](./audit-report-v1.1.md) §9/§11「P0 修订记录」 |
 | P0 | Phase 1：首页五区块 + Content Collections + CI 门禁（Track A + D） | SRD §13 Phase 1 / 鸟瞰图 §5 |
+| **P1**（v1.1.1 由 P2 提级，审计 M-9） | master-plan 一揽子修订（鸟瞰图 B0，已扩容：第 6 章动效豁免 + §2.3 URL + §4.1 12 模块 + §8.1 英文范围 + §2.2 更新频率 + 第 12 章 KPI 映射）——修订稿已随 P0 批次写入 master-plan v1.1，**Phase 1 期间完成王磊终审批准**（B0 未批准则 A5 Hero 实时化与 B1 Spike 一并锁死，鸟瞰图 B0 / RR-07） | 审计 P0-5、M-9 / SRD §14.4 / adaptation §10.3 M1 |
 | P1 | Lab 子系统化（manifest 收编两个引子 Demo，Track C）——world 启动的前置条件 | SRD §12 / 鸟瞰图 §4.3 |
 | P1 | V1 三个新 Lab（端云可视化 / Prompt 对比台 / 多语种 QA） | PRD §7.2 |
 | P2 | World Phase A Spike（`/world-spike/` 隐藏路由，可丢弃，Track B） | PRD §7.4 / SRD §12.7 / 鸟瞰图 §7 |
-| P2 | master-plan 第 6 章豁免修订（Hero + 循环动画 + world 三条一次做完）——鸟瞰图关键路径阻塞项 B0 | SRD §14.4 / adaptation §10.3 M1 |
 
 排期总视图、四轨里程碑、Phase 0→4 Gate 交叉矩阵与风险登记簿见 [implementation-roadmap-birdseye.md](./implementation-roadmap-birdseye.md)。

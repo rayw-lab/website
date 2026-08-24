@@ -9,7 +9,7 @@
 | 项 | 内容 |
 |----|------|
 | 文档名称 | 个人网站系统需求规格说明书（SRD） |
-| 版本 | v1.1 |
+| 版本 | v1.1.1 |
 | 状态 | 评审稿（Draft for Review） |
 | 日期 | 2026-08-24 |
 | 读者 | 实施工程师（前端/全栈）、内容作者（站长本人）、外部协作代理（Cloud Agent） |
@@ -23,6 +23,7 @@
 |------|------|---------|--------|
 | v1.0 | 2026-08-24 | 初版：六子系统架构、数据模型、接口契约、NFR、部署与演进路线 | 云端子代理 |
 | v1.1 | 2026-08-24 | **正式采纳 Hybrid 路线**（PRD §2.6，决策依据 `bruno-simon-teardown-adaptation.md`），落实其 §10.2 修订项 S1–S6：新增 AP-9（HTML 宪法 / world opt-in）；§2.5 C-2/C-3 增补按路由分层的适用范围说明（S1）；§8.2 `budgetClassEnum`/`kind` 增加 `'world'`、放宽 `viewTransitionName` 前缀（S2）；§9.2/§12.5 模式枚举扩展 `'world'`（S3）；§9.3 注册 `world-entry` 并扩展 `demo-car`/`demo-cockpit` 起点（S4）；§12.6 `public/` 配额 25MB→40MB、新增世界循环动画配额行（S5）；§13 Phase 2/4 加入 world spike 与收编、§14.1 新增 R8 工期黑洞风险（S6）。另新增 §12.7 world 模块专章（`/world/` 路由与 Astro 集成决策、独立运行时预算、降级链）、§7 目录树 `src/lab/world/` 目标态、§9.5 世界埋点事件、§10.1 NFR-P6 世界独立预算、术语表与参考索引更新 | 云端子代理 |
+| v1.1.1 | 2026-08-24 | **P0 审计修订**（依据 `docs/spec/audit-report-v1.1.md` §9）：**P0-3** §8.1 insights `thesis` 改为必填（去 `.optional()`、删除 featured superRefine），对齐 PRD INS-03（P0 验收项）与 INS-01；**P0-2** §13 Phase 2 Spike 门禁行资产口径更正为「`public/world/` 新增 ≤ 1MB + CarConcept 3.5MB 复用显式豁免」；**P0-1** §8.1 work `modules` 注释经审计确认锚定 master-plan §4.1（无需改动，随裁决确认）；§14.4 追加 B0 一揽子修订执行状态注记 | 云端子代理 |
 
 **关键认知（先读）**：当前仓库已实现的 `/lab/tts-cockpit`（16 语种 TTS 座舱可视化）与 `/lab/car-configurator`（WebGPU 3D 车辆配置器）两个 Demo，是**能力证明的引子样本（proof-of-capability seed）**，不是系统终态。本文描述的是**完整目标系统**的架构：Demo 是其中 Lab 子系统的前两个注册模块，Lab 子系统本身是六个子系统之一。任何实施都不应把"维护好这两个 Demo"误解为系统边界。
 
@@ -514,16 +515,13 @@ const insights = defineCollection({
   schema: publishable.merge(securityGate).extend({
     category: z.enum(['industry-judgment', 'methodology', 'retrospective']),
     /**
-     * 一句话论点（首页区块 4 展示的是"结论"而非摘要）；
-     * featured=true 时必填——由 superRefine 强制
+     * 一句话论点（首页区块 4 与索引页展示的是"结论"而非摘要）。
+     * v1.1.1（审计 P0-3 裁决）：每篇必填——PRD INS-03 为 P0 验收项
+     * （schema 校验缺失即构建失败），INS-01 要求索引页每篇显示一句话结论。
      */
-    thesis: z.string().max(60).optional(),
+    thesis: z.string().max(60),
     pillar: pillarEnum.optional(),
     related: z.array(z.union([reference('work'), reference('ai-lab')])).default([]),
-  }).superRefine((val, ctx) => {
-    if (val.featured && !val.thesis) {
-      ctx.addIssue({ code: 'custom', message: 'featured 洞见必须提供一句话论点 thesis' });
-    }
   }),
 });
 
@@ -1082,7 +1080,7 @@ WebGL 2 世界（同一世界，粒子/阴影降档；morph 同样可播——TS
 |------|------|--------|-----------|---------|
 | **Phase 0（现状）** | 骨架与引子 | 占位首页；`/lab/` 两个 Demo；部署链路；调研与规划文档 | —（基线：Astro 7 + three/webgpu 管线已验证） | 已达成 |
 | **Phase 1（MVP）** | 视觉系统 + 内容基建 + 首批内容 | tokens/global.css、BaseLayout 族、全站组件库、五区块首页（Hero 为 poster 静态舞台）、`content.config.ts` 四集合、旗舰案例 A（12 模块）+ B/C 精简版、Insights×2、AI Lab×2、About/Now/Contact、RSS/sitemap/JSON-LD/robots、GoatCounter 接入、`ci.yml` 门禁上线、删除 jekyll 遗留工作流、一页纸 PDF | 新增 Presentation Layer 与 Content Layer 全量；SEO 层就位；管线从"只部署"升级为"门禁+部署" | C-2/C-3 达标；10 秒定位测试通过（homepage-redesign-spec 8.3）；脱敏检查表逐篇通过；首页无占位文案/断链 |
-| **Phase 2（炫技层）** | Lab 子系统化 + 活的首页 | Lab manifest/contracts/facade 落地，两引子收编（URL 不变）；`viewer.ts` 抽取，Hero 升级实时车模（facade+徽章+车漆深链）；LabCard 微动画（语种轮播/假波形）；`/lab/` 索引页；View Transitions morph 全线打通；poster 变体构建管线；**（v1.1 可选尾项）World Phase A Spike**：隐藏路由 `/world-spike/`（noindex）灰盒验证操控/物理选型/双后端帧率/移动端摇杆——前置条件为本阶段 Lab 子系统化完成（world 复用 facade/manifest/mount() 全套基建），Spike 可丢弃，止损点见 PRD §7.4 | Lab 子系统从"两个页面"变为"注册模块体系"（第 12 章全量生效）；Hero 复用契约生效；world 模块启动条件达成 | Phase 1 全指标回归 + 4x throttle Performance ≥ 95 + 降级链逐条人工走查 + 循环动画配额核验；Spike（若启动）：JS ≤ 400KB gzip、资产 ≤ 3MB、帧率基线达标或触发止损 |
+| **Phase 2（炫技层）** | Lab 子系统化 + 活的首页 | Lab manifest/contracts/facade 落地，两引子收编（URL 不变）；`viewer.ts` 抽取，Hero 升级实时车模（facade+徽章+车漆深链）；LabCard 微动画（语种轮播/假波形）；`/lab/` 索引页；View Transitions morph 全线打通；poster 变体构建管线；**（v1.1 可选尾项）World Phase A Spike**：隐藏路由 `/world-spike/`（noindex）灰盒验证操控/物理选型/双后端帧率/移动端摇杆——前置条件为本阶段 Lab 子系统化完成（world 复用 facade/manifest/mount() 全套基建），Spike 可丢弃，止损点见 PRD §7.4 | Lab 子系统从"两个页面"变为"注册模块体系"（第 12 章全量生效）；Hero 复用契约生效；world 模块启动条件达成 | Phase 1 全指标回归 + 4x throttle Performance ≥ 95 + 降级链逐条人工走查 + 循环动画配额核验；Spike（若启动）：JS ≤ 400KB gzip、**新增资产（`public/world/`）≤ 1MB + CarConcept 3.5MB 复用显式豁免**（记录在案，不计入；v1.1.1 审计 P0-2 裁决）、帧率基线达标或触发止损 |
 | **Phase 3（内容饱和）** | 内容密度 + 分发闭环 | 稳态节奏（每 2 周 1 篇 insights/ai-lab 交替；每季度 1 案例）；featured 精选区上线；OG 图构建期生成；`/en/` 三页 + hreflang；Search Console 基线与月度复盘机制运转；案例↔Demo 证据链全部挂钩 | SEO 层补全（OG 端点）；i18n 局部生效；无新子系统 | 内容量达 mvp-checklist 第 1 节数量表；月度指标表开始记录；自然外链 ≥ 3 |
 | **Phase 4（可选增强）** | 按数据决策的增强池 | 候选（逐项独立评审，非承诺）：**（v1.1）World Phase B/C 收编**——B：`/world/` 正式路由转正（Start here + 3 POI + 两 Demo 空间化接入 + 八跳过出口 + 2D 等距地图 + overlay 机制），C：morph/音效/全内容映射（前置：Phase A Spike 通过；门禁与数据阀门见 PRD §7.4 与本文 §12.7）；新 Lab 模块（端云架构可视化 / 多模态原型）；配置器工程模式彩蛋；滚动叙事段（需先修订 master-plan 第 6 章豁免）；TSL 自定义车漆 shader（可与 world Phase C 合并评审）；Pagefind 搜索（内容 ≥ 20 篇后）；自定义域名迁移（11.3 清单）；文章离线阅读 | world 作为单例模块收编进 Lab manifest（`kind/budgetClass: 'world'`），无平行子系统；其余每项增强按第 12.2 六步或第 6 章决策表流程走；无整体性架构变更 | 逐项预算行 + 既有全部 NFR 回归；world 各阶段按 §12.7.2 运行时预算 + PRD §7.4 数据阀门（世界→内容转化率 < 25% 冻结 Phase C） |
 
@@ -1133,6 +1131,8 @@ WebGL 2 世界（同一世界，粒子/阴影降档；morph 同样可播——TS
 | content collections 时序 | homepage-redesign-spec P3 vs master-plan 30 天 MVP | 提前到 Phase 1（13 章已明确，属实施排序非原则冲突） |
 | content config 路径 | master-plan 7.2 vs Astro 5+ 规范 | 以本文 `src/content.config.ts` 为准（D8） |
 | MVP 内容数量口径 | mvp-checklist（案例 3/文章 6/实验 2）vs master-plan 11.1（案例 A 全 + B/C 简 + Insights 2 + AI Lab 2） | Phase 1 按 master-plan 11.1 执行（后者为总纲且更克制）；mvp-checklist 数量表作为 Phase 3 内容饱和目标 |
+
+> **v1.1.1 注（审计 P0-5 执行状态）**：上表前三行所需的 master-plan 修订已随 P0 审计一揽子修订（鸟瞰图 B0，扩容版）写入 **master-plan v1.1** 第 6 章——动效豁免两条（首页 Hero 实时渲染层 + 循环动画 ≤2 处配额；`/world/` 沉浸展项按 §12.7.2 运行时预算考核），连同 §2.3 URL 结构、§4.1 12 模块 canonical 注记、§8.1 英文范围、§2.2 更新频率、第 12 章 KPI 映射一并落笔；待王磊终审批准后，R4 行动项与 B0 即告关闭（批准前 Hero 实时化与 world 代码合并锁死规则不变）。
 
 ---
 

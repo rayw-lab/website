@@ -285,4 +285,18 @@
 
 ---
 
+## 11. P0 修订记录（2026-08-24，v1.1.1 批次）
+
+> 本节由修订执行方追加。§9 P0 五项已按本报告建议裁决**全部落实并关闭**；版本落点：**PRD v1.1.1、SRD v1.1.1、master-plan v1.1、implementation-roadmap-birdseye v1.0.1、bruno-simon-teardown-adaptation v1.0.1**。P1/P2 余项状态不变，按 §10 Sign-off 建议继续清偿。
+
+| # | 裁决（已执行） | 修订落点 | 状态 |
+|---|--------------|---------|------|
+| P0-1 | 12 模块以 **master-plan §4.1 为 canonical**；吸收 PRD 增量——「一句话摘要」由 WORK-04 30 秒结论区承载、「信息边界」由 GOV-05 发布件承载，均不占模块编号；精简集 = **1/2/6/9/10** | master-plan §4.1（canonical 声明 + 增量吸收注记）；PRD WORK-02（改引用编号、不复制清单）、WORK-07（1/2/6/9/10）、GOV-05（发布件化）、§2.3/§4 旅程 2 措辞与编号对齐；SRD §8.1 `modules` 注释经核对原已锚定 master-plan，随裁决确认无需改动 | ✅ 已关闭（C-1 消解） |
+| P0-2 | Spike 资产门禁统一为「**`public/world/` 新增 ≤ 1MB + CarConcept 3.5MB 复用显式豁免**（记录在案，不计入；Draco 重压缩/减面 LOD 推迟 Phase B）」 | PRD §7.4 Phase A 行；SRD §13 Phase 2 门禁行；鸟瞰图 §5 Phase 2 行、§6 Spike Gate、§7.2 Step 6、§7.3 Step 9 命令注释；adaptation §5 预算门禁行 | ✅ 已关闭（M-3 / U-1 消解） |
+| P0-3 | insights `thesis` 改为 **schema 必填**（去 `.optional()`、删除 featured superRefine），与 PRD INS-03（P0 验收项）/INS-01 一致 | SRD §8.1 insights schema | ✅ 已关闭（M-2 消解） |
+| P0-4 | RSS 以 **SRD 口径为准**：work 不进 RSS；`<description>` 用 frontmatter description，全文不入 feed（引流回站） | PRD GLB-03（范围与验收措辞）；SRD §5.6/§9.4 核对保持现状 | ✅ 已关闭（M-1 消解） |
+| P0-5 | B0 扩容为 **master-plan 一揽子修订**并提级 P1 | master-plan v1.1：第 6 章动效豁免两条（首页 Hero 实时渲染层 + 循环动画 ≤2 处配额；`/world/` 沉浸展项按 SRD §12.7.2 运行时预算考核）、§2.3 补 `/lab/{slug}` `/world/` `/en/` 三页与 `/404`、§4.1（随 P0-1）、§8.1 英文范围对齐 PRD ABT-06/WORK-10、§2.2 Work 更新频率改「每季度」、第 12 章增加与 PRD §10 指标映射；`docs/spec/README.md` 下一步表 B0 由 P2 → **P1**（标注 Phase 1 内完成）；adaptation §10.3 M1 范围扩容更新；SRD §14.4、鸟瞰图 §4.2/§5/§6/§9 同步执行状态 | ✅ 已关闭（M-9 / M-10 / m-8 / m-9 及 §8 张力表四项消解；文本已落笔，B0 最终关闭以王磊终审批准为准） |
+
+---
+
 *审计报告完。修订裁决权归文档所有者（王磊）；本报告只提供证据与建议，不替代决策。*

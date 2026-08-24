@@ -9,11 +9,11 @@
 | 项 | 内容 |
 |----|------|
 | 文档名称 | 实施路径鸟瞰图（Implementation Roadmap · Bird's-Eye View） |
-| 版本 | v1.0 |
+| 版本 | v1.0.1（随审计 P0 修订同步，见 §11.3 修订记录） |
 | 状态 | 评审稿（Draft for Review） |
 | 日期 | 2026-08-24 |
 | 读者 | 决策者（王磊）、实施工程师 / Cloud Agent、后续任何接手者 |
-| 上游权威 | `docs/spec/PRD.md` v1.1（需求唯一权威）、`docs/spec/SRD.md` v1.1（架构唯一权威）、`docs/website-plan/master-plan.md`（定位与红线） |
+| 上游权威 | `docs/spec/PRD.md` v1.1.1（需求唯一权威）、`docs/spec/SRD.md` v1.1.1（架构唯一权威）、`docs/website-plan/master-plan.md` v1.1（定位与红线） |
 | 效力约定 | 本文**不新增任何需求或架构决策**——只回答「按什么顺序做、谁来做、每一步怎么算过门」。凡本文数字/条款与 PRD/SRD 冲突，一律以 PRD/SRD 为准并回修本文（见 §11 维护规则） |
 
 **两条阅读路径：**
@@ -29,8 +29,8 @@
 
 | 文档 | 回答的问题 | 权威范围 |
 |------|-----------|---------|
-| `PRD.md` v1.1 | 做什么？为谁做？做到什么算成功？ | 功能清单（69 条）、优先级、KPI、Out of Scope |
-| `SRD.md` v1.1 | 系统怎么拆？用什么技术？怎么验收？ | 架构原则 AP-1~9、数据模型、接口契约、NFR、Phase 0~4 门禁 |
+| `PRD.md` v1.1.1 | 做什么？为谁做？做到什么算成功？ | 功能清单（69 条）、优先级、KPI、Out of Scope |
+| `SRD.md` v1.1.1 | 系统怎么拆？用什么技术？怎么验收？ | 架构原则 AP-1~9、数据模型、接口契约、NFR、Phase 0~4 门禁 |
 | **本文** | 按什么顺序？谁来做？每步的过门命令和阻断条件是什么？ | 四轨排布、Gate 交叉矩阵、关键路径、Spike 执行清单、风险登记簿 |
 
 ### 1.1 文档依赖图
@@ -44,8 +44,8 @@ flowchart TD
     SRC["bruno-simon-folio-source-teardown.md<br/>源码级施工手册：126 文件清单 / 最小移植集"]
     IDX["bruno-simon-teardown-index.md<br/>调研索引"]
     HRS["homepage-redesign-spec.md<br/>Phase 1 首页设计规格"]
-    PRD["PRD.md v1.1<br/>产品需求（69 条功能）"]
-    SRD["SRD.md v1.1<br/>系统规格（六子系统 + world 专章）"]
+    PRD["PRD.md v1.1.1<br/>产品需求（69 条功能）"]
+    SRD["SRD.md v1.1.1<br/>系统规格（六子系统 + world 专章）"]
     ROADMAP["本文<br/>implementation-roadmap-birdseye.md<br/>四轨排布 · Gate 矩阵 · 关键路径"]
 
     MP --> PRD
@@ -207,7 +207,7 @@ C4Container
 
 | 里程碑 | 内容 | 依赖 | 可并行窗口 | 负责人 |
 |--------|------|------|-----------|--------|
-| B0 文档前置 | master-plan 第 6 章三豁免一次修订（Hero 实时渲染 + 循环动画配额 + world 沉浸展项，SRD R4 行动项 + adaptation M1 搭车） | 无（可即刻起草） | 与 Phase 1 任何工作并行；**是 A5/B1 的合并前置** | Agent 起草 + 王磊批准 |
+| B0 文档前置 | master-plan **一揽子修订**（审计 P0-5 扩容：第 6 章动效豁免两条〔Hero 实时渲染层 + 循环动画配额；world 沉浸展项〕+ §2.3 URL + §4.1 12 模块 canonical + §8.1 英文范围 + §2.2 更新频率 + 第 12 章 KPI 映射；SRD R4 行动项 + adaptation M1 扩容版）——**修订稿已随 v1.1.1 批次写入 master-plan v1.1，余项为王磊终审批准** | 无（已起草落笔） | 与 Phase 1 任何工作并行；**是 A5/B1 的合并前置** | Agent 起草（已完成）+ 王磊批准 |
 | B1 Phase A Spike | 隐藏路由 `/world-spike/`（noindex）：灰盒地面 + 环形道 + CarConcept 可驾驶 + 锥桶碰撞；验证操控手感/物理选型/双后端帧率/移动端摇杆（详见 §7 执行清单） | **C2 收编完成**（复用 facade/manifest/mount() 基建）+ B0 合并 | 与 A6 内容饱和并行（不争抢内容评审池） | Agent |
 | B2 Phase B 最小可玩 | `/world/` 正式路由：出发广场 + 主直道 + 案例岛（旗舰 A 展馆 + B/C 标牌）+ 实验区（电台塔 + 涂装车间）+ Start here 全流程 + 八出口全套（LAB-18）+ 2D 等距地图 + iframe overlay + 四事件埋点 | B1 门禁通过（未过 → 止损归档）；与 C5 联合交付 | 世界美术资产（王磊/外采）与代码施工并行 | Agent（代码）+ 王磊（Blender 资产决策） |
 | B3 Phase C 完整版 | 车↔机器人 morph（V1 遮蔽式，LAB-17）+ 音效体系 + 档案馆/控制塔/联络站全内容映射 + 昼夜联动 + 彩蛋 ≤3 + **世界工程复盘长文（旗舰级 ai-lab 文章）** | B2 上线 30 天数据阀门通过（世界→内容转化率 ≥ 25%，否则冻结） | 复盘长文写作与 Phase C 施工并行 | Agent（代码）+ 王磊（复盘长文终审） |
@@ -257,7 +257,7 @@ C4Container
 | 轨 | 交付物 | 验收命令 | 阻断条件 |
 |----|--------|---------|---------|
 | A | A1+A2+A3+A4 全量：tokens/布局/组件、五区块首页（Hero=poster）、四集合 schema、案例 A 全文 + B/C 精简、Insights×2、ai-lab×2、About/Now/Contact、RSS/sitemap/JSON-LD/robots | `pnpm astro check && pnpm build`；`node scripts/check-links.mjs dist/`；`node scripts/audit-budget.mjs dist/`（<200KB）；`npx lighthouse http://localhost:4321/website/ --chrome-flags='--headless --no-sandbox'`（四项 ≥95）；10 秒定位测试 ≥80%【人工，3–5 人手机端】 | 案例 A 存在【待填】残留（WORK-02 构建阻断）；首页残留占位文案/断链；脱敏检查表任一未过（G3） |
-| B | 仅 B0 文档前置：master-plan 第 6 章三豁免修订草案提交评审 | 修订 PR 经王磊批准合并【人工】 | **禁止任何 world 代码进入本阶段**；B0 未合并则 A5 Hero 实时化与 B1 一并锁死 |
+| B | 仅 B0 文档前置：master-plan 一揽子修订草案（已随审计 P0-5 落笔为 master-plan v1.1）提交评审 | 修订 PR 经王磊批准合并【人工】 | **禁止任何 world 代码进入本阶段**；B0 未合并则 A5 Hero 实时化与 B1 一并锁死 |
 | C | C1：两 Demo 接入全站布局 + 30 秒结论区 + 跳过出口；URL 不变 | 两 Demo 页 Lighthouse 四项 ≥95；结论区无交互可读 + 4x throttle 下进度指示可见【人工】 | Demo 任何功能回归；URL 变更（G4 违约） |
 | D | D1（删 jekyll）+ D2（ci.yml 一期）+ D3（Lighthouse CI）+ GoatCounter 接入 | PR 上 CI 全绿；`gh run view <id> --log` 抽查门禁真实执行 | D1 未删不得发任何后续部署 PR；门禁未上线不得合并 Phase 2 任何成果 |
 
@@ -266,7 +266,7 @@ C4Container
 | 轨 | 交付物 | 验收命令 | 阻断条件 |
 |----|--------|---------|---------|
 | A | A5 中的 HOME-07 Hero 实车舞台 + GLB-09 View Transitions + LabCard 微动画 + HOME-09 性能自证行 | Phase 1 全指标回归 + 4x CPU throttle 下 Performance ≥95；reduced-motion/窄屏/无 WebGL 永停 poster 逐条走查【人工】 | master-plan 豁免（B0）未合并；4x throttle 不达标 → 触发 HOME-08 降级路线，实时 Hero 不合并 |
-| B | B1 Phase A Spike（可选尾项）：`/world-spike/` 灰盒可驾驶（§7 清单） | 懒加载 JS ≤400KB gzip（`gzip -kc dist/_astro/<chunk>.js \| wc -c`）；资产 ≤3MB；桌面 60fps / 中端安卓 30fps【人工录测】；壳页 noindex 验证 | 前置未满足（C2 未完成）不得开工；帧率止损：中端安卓持续 <24fps 且无优化空间 → **Spike 整体丢弃**，归档 ai-lab 实验记录，世界降级为保守方案（HOME-07/08 路线） |
+| B | B1 Phase A Spike（可选尾项）：`/world-spike/` 灰盒可驾驶（§7 清单） | 懒加载 JS ≤400KB gzip（`gzip -kc dist/_astro/<chunk>.js \| wc -c`）；**Spike 新增资产（`du -sh public/world/`）≤1MB，CarConcept 3.5MB 复用显式豁免（位于 `public/models/car-concept/`，不计入——审计 P0-2 裁决）**；桌面 60fps / 中端安卓 30fps【人工录测】；壳页 noindex 验证 | 前置未满足（C2 未完成）不得开工；帧率止损：中端安卓持续 <24fps 且无优化空间 → **Spike 整体丢弃**，归档 ai-lab 实验记录，世界降级为保守方案（HOME-07/08 路线） |
 | C | C2 收编（manifest/contracts/facade + 两 Demo 迁入 + `/lab/` 索引）+ C3 viewer 抽取 | `pnpm astro check`（manifest schema）；两 Demo URL 不变回归；`?gl=1` WebGL2 回退实测【人工】；预算实测值写回 manifest `budget` 字段 | 收编导致任何 Demo 行为差异；模块间出现 import（分层守则违约） |
 | D | D4（world 断言 + 资产黑名单 + 40MB 配额）+ D6 poster 管线 | `node scripts/audit-budget.mjs dist/` 输出含首页零 world 字节断言行 | D4 未合并则 B1 不得合并（Spike 预算无从审计） |
 
@@ -309,7 +309,7 @@ flowchart TD
     end
 
     subgraph PH2["Phase 2（炫技层）"]
-        B0["🔴 B0：master-plan 三豁免修订<br/>【文档阻塞点：未合并则 Hero 实时化与 world 全锁死】"]
+        B0["🔴 B0：master-plan 一揽子修订<br/>【文档阻塞点：未合并则 Hero 实时化与 world 全锁死】"]
         C2["🔴 C2：Lab 子系统收编<br/>（manifest/facade/mount()）"]
         C3["C3：viewer.ts 抽取"]
         A5["A5：Hero 实车舞台 + VT morph"]
@@ -324,7 +324,7 @@ flowchart TD
 
     subgraph TRACKB["Track B（Phase 2 尾项 → Phase 4）"]
         B1["🔴 B1：Phase A Spike（72h 时间盒，§7）"]
-        SPIKEGATE{"Spike Gate：≤400KB JS + ≤3MB 资产<br/>+ 桌面 60fps / 中端安卓 30fps"}
+        SPIKEGATE{"Spike Gate：≤400KB JS + 新增资产 ≤1MB（车模豁免）<br/>+ 桌面 60fps / 中端安卓 30fps"}
         B2["🔴 B2：Phase B 最小可玩世界<br/>（+C5 POI 联合交付）"]
         VALVE{"数据阀门（上线 30 天）：<br/>世界→内容转化 ≥25%？30 秒退出 &lt;50%？"}
         B3["B3：Phase C 完整版（morph/音效/全映射）"]
@@ -368,7 +368,7 @@ flowchart TD
 | # | 阻塞项 | 阻塞什么 | 谁能解 | 解法 |
 |---|--------|---------|--------|------|
 | 1 | **案例 A 全文的内容生产**（八问题自访谈 + 12 模块 + 脱敏三重检查） | MVP Gate → 后续一切 | 只有王磊 | PRD 风险 1 对策：W2 整周只做案例 A；工程骨架先行用占位 schema 数据开发，内容到位即换 |
-| 2 | **B0 master-plan 三豁免修订** | A5 Hero 实时化 + 全部 Track B | 王磊批准 | 修订量小（第 6 章加三条豁免注记），Phase 1 期间即可完成，不要拖到 Phase 2 动工时 |
+| 2 | **B0 master-plan 一揽子修订** | A5 Hero 实时化 + 全部 Track B | 王磊批准 | 修订稿已随审计 P0-5 落笔（master-plan v1.1：第 6 章豁免两条 + §2.3/§4.1/§8.1/§2.2/第 12 章），Phase 1 期间批准即可，不要拖到 Phase 2 动工时 |
 | 3 | **C2 Lab 子系统收编** | B1 Spike（world 复用 facade/manifest/mount() 全套基建） | Agent | Phase 2 主体工作；收编质量直接决定 world 的地基 |
 | 4 | **Phase B 数据阀门** | B3 Phase C | 数据说话 | 唯一不可人为加速的节点：上线满 30 天才读数；期间 Track A/C 照常推进 |
 
@@ -462,6 +462,8 @@ src/lab/world/
 ```bash
 du -sh public/models/car-concept/     # 现状 3.5MB（Draco+KTX2）
 # Spike 直接复用现有产物；Draco 重压缩减面 LOD（目标 ≤2MB）允许放到 Phase B 再做
+# 门禁口径（审计 P0-2 裁决）：车模复用显式豁免、不计入 Spike 门禁——
+#   门禁只考核新增资产（public/world/）≤ 1MB，与「重压缩推迟 Phase B」自洽
 ```
 
 - 车模视觉挂载到底盘刚体（物理→视觉位姿同步走 `Objects.ts` 既有模式）；
@@ -483,7 +485,8 @@ pnpm build && pnpm preview --host 0.0.0.0 &
 ls -lS dist/_astro/ | head -20                       # 找 world chunk
 gzip -kc dist/_astro/<world-chunk>.js | wc -c        # 门禁：≤ 400KB gzip（Spike 比正式 500KB 更严）
 node scripts/audit-budget.mjs dist/                  # 首页零 world 字节断言必须仍然全绿
-du -sh public/world/ 2>/dev/null                     # 门禁：Spike 资产 ≤ 3MB
+du -sh public/world/ 2>/dev/null                     # 门禁：Spike 新增资产 ≤ 1MB
+#   （CarConcept 3.5MB 位于 public/models/car-concept/，复用显式豁免、不计入——审计 P0-2 裁决）
 
 # —— 帧率（桌面）——
 # Chrome 打开 http://localhost:4321/website/world-spike/
@@ -551,7 +554,7 @@ CarConcept 是写实 PBR，世界建筑是低模风格化——张力**已知且
 | RR-04 | **移动端帧率不达标**：Bruno 站移动端实测 stutter、iOS 冻结 30s 的前车之鉴 | adaptation §5、UX §11 | 中 × 高 | 帧预算自适应降档（DPR/阴影/实例减半 + toast）；触屏窄屏默认 2D 地图；DPR 封顶移动 1.5；shader 加载屏末拍预热 | Spike 阶段即读数：中端安卓持续 < 24fps 且三板斧无效 → RR-01 止损路径 |
 | RR-05 | **保密泄露**：案例细节/元数据/组合特征被反推出雇主 | PRD 风险 3、SRD R3 | 低 × 极高 | 三重防线：schema 门禁（G3）→ 发布检查表 → 无痕复核；第三方组合定位测试后才允许 `sanitizationChecked: true`；灰区一律升级 | 存疑不发布；已发布内容立即下架 + 复盘入档；该风险无「接受」选项 |
 | RR-06 | **WebGPU 兼容碎片化**：three WebGPU 路线快速演进，升级可能破坏 TSL/KTX2 管线 | SRD R1 | 中 × 中 | WebGL2 回退内建 + `?gl=1` 人工验证入口；`lab-backend` 事件实测真实覆盖率；three 升级绑定双后端回归清单 | WebGPU 挂载占比 < 30% → 下调宣传口径；升级破坏成本连续两次超收益 → 触发第 6 章淘汰条件重评选型 |
-| RR-07 | **master-plan 张力未消解**：总纲第 6 章「动效仅 hover 与渐入」与 Hero 实时化/world 冲突 | SRD R4、§14.4 | 高（若不处理）× 中 | B0 一次修订三豁免（Hero + 循环动画配额 + world 沉浸展项），Phase 1 期间完成，不拖到 Phase 2 动工时 | 修订未合并前：Hero 实时化与全部 world 代码**不得合并**（poster 舞台不受影响，MVP 不被阻塞） |
+| RR-07 | **master-plan 张力未消解**：总纲第 6 章「动效仅 hover 与渐入」与 Hero 实时化/world 冲突 | SRD R4、§14.4 | 高（若不处理）× 中 | B0 一揽子修订（第 6 章豁免两条 + §2.3/§4.1/§8.1/§2.2/第 12 章，审计 P0-5 扩容）——**修订稿已落笔 master-plan v1.1**，Phase 1 期间完成王磊终审，不拖到 Phase 2 动工时 | 修订未合并前：Hero 实时化与全部 world 代码**不得合并**（poster 舞台不受影响，MVP 不被阻塞） |
 | RR-08 | **资产体积失控**：129MB wav 教训的本站重演（母带/源文件/未压缩产物混入库） | source-teardown §8 | 中 × 中 | §8.2 三条 CI 纪律（格式黑名单/40MB 配额/成对产物检查）；KTX2+Draco 管线强制 | 超配额 CI 阻断；资产回炉压缩；创作源文件迁出 `public/` |
 | RR-09 | **美术风格张力**：写实 CarConcept vs 低模世界 | adaptation §8.2 | 中 × 低 | Phase A/B 显式接受（hero asset 惯例）；§8.3 裁决已冻结 | Phase C 按数据评审 Blender 自建风格化套装；**不允许**提前重做车模 |
 | RR-10 | **世界信息动线失效**：进得来玩得爽但不看内容（转化率 < 25%）或进来就走（30 秒退出 > 50%） | PRD §10.3 阀门 | 中 × 中 | 加载屏 = 30 秒结论区（定位保底曝光）；出生点 15 秒车程达旗舰 A 馆；发光引导线 + M 键传送；四事件埋点全量 | **Phase C 冻结**，先修信息动线；退出率越线 → 加载屏与教学流程专项复盘后才允许恢复推进 |
@@ -625,6 +628,7 @@ CarConcept 是写实 PBR，世界建筑是低模风格化——张力**已知且
 | 版本 | 日期 | 修订内容 | 修订人 |
 |------|------|---------|--------|
 | v1.0 | 2026-08-24 | 初版：四轨并行模型、Phase 0–4 Gate 矩阵、关键路径、Spike 72h 清单、资产计划、风险 Top 10、度量仪表盘 | 云端子代理 |
+| v1.0.1 | 2026-08-24 | 随 PRD/SRD v1.1.1 审计 P0 修订同步（`docs/spec/audit-report-v1.1.md` §9）：**P0-2** Spike 资产门禁口径统一为「`public/world/` 新增 ≤1MB + CarConcept 3.5MB 复用显式豁免」（§5 Phase 2 行、§6 Spike Gate、§7.2 Step 6、§7.3 Step 9 命令注释）；**P0-5** B0 由「第 6 章三豁免」扩容为 master-plan 一揽子修订并标注已落笔（§4.2/§5/§6/§9 RR-07）；上游权威版本号更新为 PRD/SRD v1.1.1、master-plan v1.1 | 云端子代理 |
 
 ---
 
@@ -682,4 +686,4 @@ gh run view <run-id> --log          # 门禁执行日志抽查
 
 ---
 
-*本文是实施顺序与门禁排布的单一事实来源（v1.0）。需求以 PRD v1.1 为准、架构以 SRD v1.1 为准；任何 Phase Gate 裁决、Spike 结论与数据阀门读数按 §11 规则回写本文。开工者从 §1.2「开工前必读」进入自己的轨道。*
+*本文是实施顺序与门禁排布的单一事实来源（v1.0.1）。需求以 PRD v1.1.1 为准、架构以 SRD v1.1.1 为准；任何 Phase Gate 裁决、Spike 结论与数据阀门读数按 §11 规则回写本文。开工者从 §1.2「开工前必读」进入自己的轨道。*
