@@ -1,7 +1,8 @@
-// 3D 车辆配置器引擎（vanilla TS，无框架依赖）。
+// 3D 车辆配置器引擎（LAB RB-01，vanilla TS，无框架依赖）。
 // 渲染：three/webgpu 的 WebGPURenderer（不支持 WebGPU 时自动回退 WebGL 2）。
 // 资产：Khronos CarConcept（CC BY 4.0，Draco + KTX2 官方压缩变体）+ Poly Haven 影棚 HDRI（CC0）。
-// 本模块由页面脚本按「client:visible 语义」动态 import，three.js 不进入首屏 bundle。
+// 本文件是重资产分包：只允许经 index.ts 的 mount() 动态 import（SRD §12.2 第 3 步），
+// 生命周期（挂载条件/暂停/卸载/进度/后端徽章）全部交给统一 facade（§9.2）。
 import * as THREE from 'three/webgpu';
 // 仅类型导入：KTX2Loader.detectSupport 的类型签名要求核心包的 WebGLRenderer，
 // 而 three/webgpu 的类型不再导出它（运行时传 WebGPURenderer 是受支持的）。
@@ -11,6 +12,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
+import type { LabInstance, LabMountOptions } from '../../contracts';
 import {
   PAINTS,
   WHEELS,
@@ -50,41 +52,43 @@ function makeContactShadowTexture(): THREE.CanvasTexture {
   return new THREE.CanvasTexture(c);
 }
 
-export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
-  const $ = <T extends HTMLElement>(sel: string): T | null => root.querySelector<T>(sel);
-  const stage = $('[data-cfg-stage]')!;
+export async function createCarConfigurator(opts: LabMountOptions): Promise<LabInstance> {
+  const { host, params } = opts;
+  const $ = <T extends HTMLElement>(sel: string): T | null => host.querySelector<T>(sel);
+  const stage = $('[data-lab-stage]')!;
   const canvas = $<HTMLElement>('[data-cfg-canvas]') as unknown as HTMLCanvasElement;
-  const progressBar = $('[data-cfg-progress-bar]');
   const statusName = $('[data-cfg-config-name]');
-  const backendEl = $('[data-cfg-backend]');
 
-  const query = new URLSearchParams(location.search);
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const coarsePointer = matchMedia('(pointer: coarse)').matches;
 
-  const setProgress = (f: number) => {
-    if (progressBar) progressBar.style.width = `${Math.round(f * 100)}%`;
+  /** 事件登记表：dispose 时统一解绑（模块必须释放全部监听，§9.2） */
+  const listeners: Array<{ el: EventTarget; type: string; fn: EventListener }> = [];
+  const on = (el: EventTarget, type: string, fn: EventListener) => {
+    el.addEventListener(type, fn);
+    listeners.push({ el, type, fn });
   };
 
-  // ---- 渲染器：WebGPU 优先，WebGL 2 自动回退（?gl=1 可强制回退用于验证） ----
+  // ---- 渲染器：WebGPU 优先，WebGL 2 自动回退（?gl=1 可强制回退用于验证，§9.2 保留参数） ----
   const renderer = new THREE.WebGPURenderer({
     canvas,
     antialias: true,
-    forceWebGL: query.get('gl') === '1',
+    forceWebGL: params.get('gl') === '1',
   });
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
-  // 移动端 DPR 封顶 1.5，桌面 2 —— 控制像素负载（性能预算见调研 7.2）
+  // 移动端 DPR 封顶 1.5，桌面 2 —— 控制像素负载（SRD §12.4 配套纪律）
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarsePointer ? 1.5 : 2));
   await renderer.init();
-  const backendName = (renderer.backend as { isWebGPUBackend?: boolean }).isWebGPUBackend
-    ? 'WebGPU'
-    : 'WebGL 2';
+  const isWebGPU = Boolean(
+    (renderer.backend as { isWebGPUBackend?: boolean }).isWebGPUBackend,
+  );
+  opts.onBackend?.(isWebGPU ? 'webgpu' : 'webgl2');
 
-  // ---- 资产加载（LoadingManager 汇总 17 个文件的进度） ----
+  // ---- 资产加载（LoadingManager 汇总进度 → facade 进度条） ----
   const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
   const manager = new THREE.LoadingManager();
-  manager.onProgress = (_url, loaded, total) => setProgress(loaded / Math.max(total, 1));
+  manager.onProgress = (_url, loaded, total) => opts.onProgress?.(loaded, Math.max(total, 1));
 
   // Draco / Basis 解码器不设路径：r185 起 loader 内置 import.meta.url 解析，
   // 由 bundler 自动携带 wasm 产物（带内容 hash，走同源 CDN 缓存）。
@@ -100,7 +104,7 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
     gltfLoader.loadAsync(`${base}/models/car-concept/CarConcept.gltf`),
     new HDRLoader(manager).loadAsync(`${base}/hdri/studio_small_08_1k.hdr`),
   ]);
-  setProgress(1);
+  opts.onProgress?.(1, 1);
 
   // ---- 场景：影棚 HDRI 环境光 + 深色地面 + 接触阴影 ----
   const scene = new THREE.Scene();
@@ -126,9 +130,10 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
   floor.rotation.x = -Math.PI / 2;
   scene.add(floor);
 
+  const shadowTexture = makeContactShadowTexture();
   const shadow = new THREE.Mesh(
     new THREE.PlaneGeometry(1, 1),
-    new THREE.MeshBasicMaterial({ map: makeContactShadowTexture(), transparent: true, depthWrite: false }),
+    new THREE.MeshBasicMaterial({ map: shadowTexture, transparent: true, depthWrite: false }),
   );
   shadow.rotation.x = -Math.PI / 2;
   shadow.scale.set(size.x * 1.08, size.z * 1.3, 1);
@@ -195,6 +200,7 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
 
   let rafId = 0;
   let running = false;
+  let disposed = false;
   const frame = (now: number) => {
     rafId = requestAnimationFrame(frame);
     for (let i = tweens.length - 1; i >= 0; i--) {
@@ -210,8 +216,9 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
       renderer.render(scene, camera);
     }
   };
+  /** RAF 开关：facade 经 pause()/resume() 驱动（离屏/隐藏标签页 RAF 必须停，§9.2） */
   const setRunning = (v: boolean) => {
-    if (v === running) return;
+    if (disposed || v === running) return;
     running = v;
     if (v) {
       needsRender = true;
@@ -244,7 +251,7 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
     );
   };
 
-  // ---- 材质槽收集（加载时一次性遍历，运行时零 traverse —— 调研 4.1 反模式规避） ----
+  // ---- 材质槽收集（加载时一次性遍历，运行时零 traverse） ----
   const variantMeshes: { mesh: THREE.Mesh; mappings: VariantMapping[] }[] = [];
   const paint1Meshes: THREE.Mesh[] = [];
   let paint1Source: THREE.MeshPhysicalMaterial | null = null;
@@ -285,12 +292,12 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
     r2: { color: rim2!.color.clone(), roughness: rim2!.roughness, metalness: rim2!.metalness },
   };
 
-  // ---- 配置状态（支持 URL query 分享：?livery=&paint=&wheels=） ----
+  // ---- 配置状态（深链参数已由 facade 按 manifest 白名单过滤：paint / wheels / livery / gl） ----
   const state: ConfiguratorState = { ...DEFAULT_STATE };
   {
-    const l = query.get('livery');
-    const p = query.get('paint');
-    const w = query.get('wheels');
+    const l = params.get('livery');
+    const p = params.get('paint');
+    const w = params.get('wheels');
     if (l && LIVERIES.some((x) => x.id === l)) state.livery = l;
     if (p && (p === 'livery' || PAINTS.some((x) => x.id === p))) state.paint = p;
     if (w && WHEELS.some((x) => x.id === w)) state.wheels = w;
@@ -386,7 +393,7 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
 
   // ---- UI 绑定 ----
   const markSelected = (attr: string, id: string) => {
-    root.querySelectorAll<HTMLButtonElement>(`[${attr}]`).forEach((btn) => {
+    host.querySelectorAll<HTMLButtonElement>(`[${attr}]`).forEach((btn) => {
       btn.setAttribute('aria-pressed', String(btn.getAttribute(attr) === id));
     });
   };
@@ -400,39 +407,46 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
     statusName.textContent = `${livery.name} · ${paintLabel} · ${wheelLabel}`;
   };
 
+  // 状态变更以 history.replaceState 同步回 URL（不产生历史条目，§9.2 深链契约）
   const writeURL = () => {
-    const params = new URLSearchParams();
-    if (state.livery !== DEFAULT_STATE.livery) params.set('livery', state.livery);
-    if (state.paint !== DEFAULT_STATE.paint) params.set('paint', state.paint);
-    if (state.wheels !== DEFAULT_STATE.wheels) params.set('wheels', state.wheels);
-    if (query.get('gl') === '1') params.set('gl', '1');
-    const qs = params.toString();
+    const next = new URLSearchParams();
+    if (state.livery !== DEFAULT_STATE.livery) next.set('livery', state.livery);
+    if (state.paint !== DEFAULT_STATE.paint) next.set('paint', state.paint);
+    if (state.wheels !== DEFAULT_STATE.wheels) next.set('wheels', state.wheels);
+    if (params.get('gl') === '1') next.set('gl', '1');
+    const qs = next.toString();
     history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
   };
 
-  const bindButtons = (attr: string, apply: (id: string) => void) => {
-    root.querySelectorAll<HTMLButtonElement>(`[${attr}]`).forEach((btn) => {
-      btn.addEventListener('click', () => {
+  const applyById: Record<string, (id: string) => void> = {
+    paint: (id) => applyPaint(id, true),
+    wheels: (id) => applyWheels(id, true),
+    livery: (id) => void applyLivery(id),
+  };
+
+  const bindButtons = (attr: string, key: 'paint' | 'wheels' | 'livery') => {
+    host.querySelectorAll<HTMLButtonElement>(`[${attr}]`).forEach((btn) => {
+      on(btn, 'click', () => {
         const id = btn.getAttribute(attr)!;
-        apply(id);
+        applyById[key]!(id);
         markSelected(attr, id);
         updateStatus();
         writeURL();
       });
     });
   };
-  bindButtons('data-cfg-paint', (id) => applyPaint(id, true));
-  bindButtons('data-cfg-wheel', (id) => applyWheels(id, true));
-  bindButtons('data-cfg-livery', (id) => void applyLivery(id));
+  bindButtons('data-cfg-paint', 'paint');
+  bindButtons('data-cfg-wheel', 'wheels');
+  bindButtons('data-cfg-livery', 'livery');
 
   // 分区导航：切换面板 + 相机运镜到对应部位
-  root.querySelectorAll<HTMLButtonElement>('[data-cfg-tab]').forEach((tab) => {
-    tab.addEventListener('click', () => {
+  host.querySelectorAll<HTMLButtonElement>('[data-cfg-tab]').forEach((tab) => {
+    on(tab, 'click', () => {
       const section = tab.getAttribute('data-cfg-tab') as SectionId;
-      root.querySelectorAll<HTMLButtonElement>('[data-cfg-tab]').forEach((t) => {
+      host.querySelectorAll<HTMLButtonElement>('[data-cfg-tab]').forEach((t) => {
         t.setAttribute('aria-selected', String(t === tab));
       });
-      root.querySelectorAll<HTMLElement>('[data-cfg-panel]').forEach((panel) => {
+      host.querySelectorAll<HTMLElement>('[data-cfg-panel]').forEach((panel) => {
         panel.hidden = panel.getAttribute('data-cfg-panel') !== section;
       });
       controls.autoRotate = false;
@@ -447,7 +461,6 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
   markSelected('data-cfg-wheel', state.wheels);
   markSelected('data-cfg-livery', state.livery);
   updateStatus();
-  if (backendEl) backendEl.textContent = backendName;
 
   const resize = () => {
     const w = stage.clientWidth;
@@ -459,7 +472,8 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
     invalidate();
   };
   resize();
-  new ResizeObserver(resize).observe(stage);
+  const resizeObserver = new ResizeObserver(resize);
+  resizeObserver.observe(stage);
 
   // 入场：从稍远处缓推到主视角
   const home = VIEWS.paint;
@@ -467,16 +481,57 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
   controls.target.copy(home.target);
   renderer.render(scene, camera);
   flyTo(home, 1300);
-
-  // 画布滚出视口即暂停渲染循环（离屏零 GPU 消耗）
-  new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) setRunning(e.isIntersecting);
-    },
-    { threshold: 0.02 },
-  ).observe(stage);
   setRunning(true);
 
-  root.dataset.state = 'ready';
-  root.querySelectorAll<HTMLElement>('[data-cfg-gated]').forEach((el) => el.removeAttribute('inert'));
+  // ---- LabInstance 契约（§9.2） ----
+  const disposeMaterial = (mat: THREE.Material) => {
+    for (const value of Object.values(mat)) {
+      if (value && typeof value === 'object' && 'isTexture' in value) {
+        (value as THREE.Texture).dispose();
+      }
+    }
+    mat.dispose();
+  };
+
+  return {
+    pause: () => setRunning(false),
+    resume: () => setRunning(true),
+    dispose: () => {
+      if (disposed) return;
+      setRunning(false);
+      disposed = true;
+      resizeObserver.disconnect();
+      for (const { el, type, fn } of listeners) el.removeEventListener(type, fn);
+      listeners.length = 0;
+      controls.dispose();
+      scene.traverse((obj) => {
+        const mesh = obj as THREE.Mesh;
+        if (!mesh.isMesh) return;
+        mesh.geometry.dispose();
+        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        mats.forEach(disposeMaterial);
+      });
+      disposeMaterial(customPaint);
+      envTex.dispose();
+      shadowTexture.dispose();
+      dracoLoader.dispose();
+      void ktx2Loader.dispose();
+      void renderer.dispose();
+      // dispose 后原 canvas 的 GL 上下文已不可复用：原位换成全新克隆，保证舞台可重复挂载
+      canvas.replaceWith(canvas.cloneNode(false));
+    },
+    setParam: (key, value) => {
+      const apply = applyById[key];
+      if (!apply) return; // 白名单外与 gl（仅初始化生效）一律忽略
+      const valid =
+        (key === 'paint' && (value === 'livery' || PAINTS.some((x) => x.id === value))) ||
+        (key === 'wheels' && WHEELS.some((x) => x.id === value)) ||
+        (key === 'livery' && LIVERIES.some((x) => x.id === value));
+      if (!valid) return;
+      apply(value);
+      markSelected(key === 'paint' ? 'data-cfg-paint' : key === 'wheels' ? 'data-cfg-wheel' : 'data-cfg-livery', value);
+      updateStatus();
+      writeURL();
+    },
+  };
 }
