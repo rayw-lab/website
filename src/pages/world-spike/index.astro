@@ -4,6 +4,15 @@
 // 说明（roadmap §7.1 Step 2），不引入全站页眉页脚（避免对未建成路由的链接依赖）。
 // 静态壳纪律：点击「进入试验场」前零 world 字节（three/模型/HDRI 全部在点击后才拉取）；
 // 壳本身只有本页 HTML/CSS + ~21KB poster 复用图 + <1KB 引导脚本。
+//
+// ★ 集成说明（engine + vehicle 两分支合流，本页为唯一壳）：
+//   · 默认挂载 = 可驾驶 Spike（src/lab/modules/world/，CarConcept + 运动学控制器，
+//     Phase A 决策记录 docs/research/world-spike-log.md 的验证对象）；
+//   · ?impl=engine = 引擎层灰盒（src/lab/world/，folio 架构 Game loop + Rapier 物理，
+//     Player 意图层已备 physicalVehicle 挂点）——两交付物同页可达、互不侵改；
+//   · Phase B 转正 /world/ 时按决策记录 §8：vehicle/carRig/inputs/camera 四模块
+//     插进正式 Game 循环合二为一，本页归档。
+// 深链参数白名单：gl（?gl=1 强制 WebGL 2 复测）透传给 mount；impl 由本页消费选择入口。
 // 性质声明：Spike 产出默认可丢弃，全部价值在验证结论 + 参数记录
 // （docs/research/world-spike-log.md）。
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
@@ -36,9 +45,12 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
     </header>
 
     <div class="ws-host" data-ws-host data-state="idle">
-      <div class="ws-stage" data-ws-stage>
-        <canvas class="ws-canvas" data-ws-canvas aria-label="灰盒试验场：WASD/方向键驾驶概念车"
-        ></canvas>
+      <div class="ws-stage" data-ws-stage data-lab-stage>
+        <canvas
+          class="ws-canvas"
+          data-ws-canvas
+          data-world-canvas
+          aria-label="灰盒试验场：WASD/方向键驾驶概念车"></canvas>
 
         <!-- HUD（挂载后可见） -->
         <div class="ws-hud" aria-hidden="true">
@@ -74,7 +86,7 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
           <div class="ws-cover-scrim" aria-hidden="true"></div>
           <div class="ws-cover-inner">
             <h2>进入灰盒试验场</h2>
-            <p>加载约 4 MB（CarConcept 3.5 MB 复用配置器资产 + HDRI）· WebGPU 优先，WebGL 2 自动回退</p>
+            <p data-ws-cover-note>加载约 4 MB（CarConcept 3.5 MB 复用配置器资产 + HDRI）· WebGPU 优先，WebGL 2 自动回退</p>
             <button class="ws-start" type="button" data-ws-start>进入试验场（实验性）</button>
             <div class="ws-progress" role="progressbar" aria-label="资产加载进度">
               <i data-ws-progress-bar></i>
@@ -95,6 +107,7 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
         <li><strong>触屏</strong>：画面内按住拖动生成虚拟摇杆（y 轴油门 / x 轴转向）；窄屏触屏不自动加载，需显式点击进入。</li>
         <li><strong>场地</strong>：环形试车道（半径 55 m）+ 慢弯桩 8 桶 + 出弯门 6 桶 + 内场坡道（贴地/腾空验证）+ 轮胎墙边界。</li>
         <li><strong>帧率读数</strong>：HUD 实时显示均值与 1% low；控制台 <code>__worldSpike.fps()</code> 可取数。双后端验证加 <code>?gl=1</code> 强制 WebGL 2。</li>
+        <li><strong>引擎层灰盒</strong>：加 <code>?impl=engine</code> 挂载 folio 架构引擎层（完整 Game loop · Ticker.scale=2 · Rapier 物理锥桶 · 零资产），R 重置试验场；<code>#debug</code> 暴露 <code>__worldSpikeGame</code> 句柄。Phase B 按决策记录 §8 与引擎层合体转正。</li>
         <li><strong>门禁</strong>：Spike 新增资产（public/world/）= 0（全程序化灰盒）≤ 1 MB；CarConcept 3.5 MB 复用显式豁免（审计 P0-2）。</li>
       </ul>
       <p class="ws-credit">
@@ -109,6 +122,7 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 <script>
   // 显式启动引导（≤1KB）：点击后才动态 import 世界分包（mount() 契约，SRD §9.2）。
   // 不走 lab facade 的自动挂载（视口+idle 即加载）——world 规格要求「确认进入后才加载」。
+  // 入口二选一（集成说明见页首注释）：默认 = 可驾驶 Spike；?impl=engine = 引擎层灰盒。
   import type { LabInstance } from '../../lab/contracts';
 
   const host = document.querySelector<HTMLElement>('[data-ws-host]');
@@ -118,8 +132,25 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
     const errorEl = host.querySelector<HTMLElement>('[data-ws-error]');
     const backendEl = host.querySelector<HTMLElement>('[data-ws-backend]');
     const respawnBtn = host.querySelector<HTMLButtonElement>('[data-ws-respawn]');
+    const coverNote = host.querySelector<HTMLElement>('[data-ws-cover-note]');
+    const hintEl = host.querySelector<HTMLElement>('[data-ws-hint]');
     let instance: LabInstance | null = null;
     let starting = false;
+
+    const incoming = new URLSearchParams(location.search);
+    const useEngineImpl = incoming.get('impl') === 'engine';
+    if (useEngineImpl) {
+      // 引擎层灰盒腿：HUD 车辆读数无源（无车），壳文案同步切换
+      host.dataset.impl = 'engine';
+      if (coverNote) {
+        coverNote.textContent =
+          '引擎层灰盒（?impl=engine）：约 0.5 MB 引擎分包 + 1.5 MB Rapier 物理 wasm · 零美术资产 · WebGPU 优先，WebGL 2 自动回退';
+      }
+      if (hintEl) {
+        hintEl.textContent =
+          'R 重置试验场 · 引擎层灰盒：完整 Game loop + Rapier 锥桶（physicalVehicle 挂点待 Phase B 上车）';
+      }
+    }
 
     const setState = (s: string) => {
       host.dataset.state = s;
@@ -131,8 +162,10 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
       setState('loading');
       if (progressBar) progressBar.style.width = '4%';
       try {
-        const { default: mount } = await import('../../lab/modules/world/index');
-        const incoming = new URLSearchParams(location.search);
+        // 两入口都是懒分包：点击前零 world 字节（G2）
+        const { default: mount } = useEngineImpl
+          ? await import('../../lab/world/index')
+          : await import('../../lab/modules/world/index');
         const params = new URLSearchParams();
         const gl = incoming.get('gl');
         if (gl !== null) params.set('gl', gl);
@@ -157,9 +190,10 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
       }
     });
 
-    // 复位按钮（触屏）：直接复用键盘 R 的动作语义
+    // 复位按钮（触屏）：直接复用键盘 R 的动作语义（两入口的 R 语义一致：
+    // spike = respawn + 锥桶复位；engine = Player respawn + Objects.resetAll）
     respawnBtn?.addEventListener('click', () => {
-      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyR' }));
+      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyR', key: 'r' }));
     });
 
     // 生命周期：离页释放 GPU；标签页隐藏暂停 RAF（§9.2 契约）
@@ -269,6 +303,10 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
   }
   .ws-host[data-state='ready'] .ws-hud {
     opacity: 1;
+  }
+  /* 引擎层灰盒腿（?impl=engine）：车辆读数（速度/FPS/锥桶）无源，整组隐藏 */
+  .ws-host[data-impl='engine'] .ws-hud-cell {
+    display: none;
   }
   .ws-hud-cell {
     display: flex;

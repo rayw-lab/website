@@ -184,7 +184,10 @@ const PENDING_ROUTES = new Map([
   ['/ai-lab/', 'Track B AI Lab 主张页'],
   ['/about/', 'Track B About 页'],
   ['/contact/', 'Track B Contact 页'],
+<<<<<<< HEAD
   // '/world-spike/'：Track C world Spike 已交付（integration 合流），条目按「只收缩」纪律清退
+=======
+>>>>>>> cursor/bruno-implementation-plan-1d6f
   ['/rss.xml', 'Track B thesis RSS 输出'],
 ]);
 
