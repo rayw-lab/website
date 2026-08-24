@@ -17,6 +17,7 @@
   "devDependencies": {
     "@astrojs/mdx": "^7.0.7",
     "@astrojs/sitemap": "^3.7.3",
+    "@types/three": "^0.185.4",
     "astro": "^7.2.4",
     "typescript": "^5.9.3"
   },
@@ -24,5 +25,8 @@
     "onlyBuiltDependencies": [
       "esbuild"
     ]
+  },
+  "dependencies": {
+    "three": "^0.185.1"
   }
 }
