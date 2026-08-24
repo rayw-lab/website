@@ -38,7 +38,7 @@ export default defineConfig({
     {
       // 桌面基线：1440×900（homepage-redesign-spec 桌面栅格）
       name: 'desktop-chromium',
-      testIgnore: /mobile\.spec\.ts/,
+      testIgnore: /mobile\.spec\.ts|world-spike\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
     {
@@ -50,6 +50,15 @@ export default defineConfig({
         viewport: { width: 375, height: 667 },
         deviceScaleFactor: 2,
       },
+    },
+    {
+      // world-spike 驾驶用例：每例完整挂载 3D + 长时驾驶积分（SwiftShader 下 ~1fps），
+      // 依赖前两个 project 跑完后独占机器执行——4 核 CPU 上任何并发 3D 上下文
+      // 都会把驾驶腿饿死（batch 1 已实测并发挤兑结论，此处更甚）。
+      name: 'world-chromium',
+      testMatch: /world-spike\.spec\.ts/,
+      dependencies: ['desktop-chromium', 'mobile-375'],
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
   ],
 
