@@ -46,7 +46,7 @@ console.log('══════════════════════�
 
 const child = spawn(
   'pnpm',
-  ['exec', 'astro', 'preview', '--host', '0.0.0.0', '--port', String(PORT)],
+  ['exec', 'astro', 'preview', '--host', '0.0.0.0', '--port', String(PORT), '--force'],
   { stdio: 'inherit', shell: true },
 );
 
