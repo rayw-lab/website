@@ -1,20 +1,29 @@
 ---
 // NowCta —— 区块 5：Now 摘要 + 等宽「最后更新」时间戳 + 收尾 CTA 带
-// （PRD HOME-06；spec §5.3）。P1 壳：文案手写；P3 接 /now/ frontmatter 自动化。
+// （PRD HOME-06；spec §5.3）。数据单源：src/content/now/entries.json 最新一条
+// （SRD §8.1「最新一条驱动 /now/ 与首页区块 5」，ABT-03 首页自动同步摘要）。
+import { getCollection } from 'astro:content';
 import CtaButton from '../ui/CtaButton.astro';
+import { OPEN_TO_LABELS } from '../../data/site';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
+const entries = (await getCollection('now')).map((e) => e.data);
+const latest = entries.sort((a, b) => b.updated.getTime() - a.updated.getTime())[0];
+if (!latest) throw new Error('[NowCta] src/content/now/entries.json 至少需要一条近况条目');
+
 const lines = [
-  { key: 'RESEARCH', text: '正在研究：WebGPU 在智能座舱 HMI 渲染中的工程化边界' },
-  { key: 'WRITING', text: '正在写：多语种座舱交付的验收清单方法论' },
+  { key: 'RESEARCH', text: `正在研究：${latest.researching.join(' · ')}` },
+  ...(latest.writing.length > 0
+    ? [{ key: 'WRITING', text: `正在写：${latest.writing.join(' · ')}` }]
+    : []),
   {
     key: 'OPEN TO',
-    text: '开放合作：多语种座舱落地咨询 · AI 工作流内训 · 技术分享邀约',
+    text: `开放合作：${latest.openTo.map((k) => OPEN_TO_LABELS[k]).join(' · ')}`,
   },
 ];
 
-const lastUpdate = '2026-08';
+const lastUpdate = latest.id;
 ---
 
 <div class="now reveal">
@@ -28,7 +37,9 @@ const lastUpdate = '2026-08';
       ))
     }
   </dl>
-  <p class="stamp data">LAST UPDATE · {lastUpdate}</p>
+  <p class="stamp data">
+    LAST UPDATE · {lastUpdate} · <a class="stamp-link" href={`${base}/now/`}>完整近况 →</a>
+  </p>
 </div>
 
 <div class="card band reveal" style="--reveal-delay: 6%">
@@ -78,6 +89,14 @@ const lastUpdate = '2026-08';
   .stamp {
     color: var(--ink-3);
     letter-spacing: 0.04em;
+  }
+
+  .stamp-link {
+    color: var(--accent);
+  }
+
+  .stamp-link:hover {
+    text-decoration: underline;
   }
 
   .band {

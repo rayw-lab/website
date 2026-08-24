@@ -1,0 +1,383 @@
+---
+// About —— 专业叙事页（PRD ABT-01 / master-plan §3「About」）。
+// 三要件：①以「解决什么问题」组织的专业叙事（非职责罗列）；
+// ②职业演进主线图（物联网→整车前瞻→AR-HUD→多语种座舱→端云大模型→AI 工作流）；
+// ③可复制的第三人称讲者简介（一键复制，US-16）。
+// JSON-LD：ProfilePage（mainEntity → Person）+ BreadcrumbList（SRD §9.4）。
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import CtaButton from '../../components/ui/CtaButton.astro';
+import { PERSON, TITLE_SUFFIX } from '../../data/site';
+import { breadcrumbJsonLd, profilePageJsonLd } from '../../data/jsonld';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const title = `关于${TITLE_SUFFIX}`;
+const description =
+  '王磊的专业叙事：从物联网到 AI 工作流的职业演进主线，聚焦智能座舱多语种、端云大模型与 AI 原生工作流三个交叉领域的解决方案能力。';
+
+const homeUrl = new URL(`${base}/`, Astro.site).href;
+const aboutUrl = new URL(`${base}/about/`, Astro.site).href;
+const jsonLd = [
+  profilePageJsonLd(homeUrl, aboutUrl),
+  breadcrumbJsonLd([
+    { name: '首页', url: homeUrl },
+    { name: '关于', url: aboutUrl },
+  ]),
+];
+
+// ①专业叙事：按「解决什么问题」组织（与首页三支柱同一口径，锚点均可被站内资产佐证）
+const problems = [
+  {
+    q: '多语种座舱，怎么把「翻译一遍」变成可验收的交付？',
+    how: '多语种不是文案问题，是时间轴、排版与验收口径问题。我的做法是建立「语种 × 功能」能力地图与分级验收标准，把 RTL 镜像、字宽膨胀、语音节奏差异全部纳入可回归的单一口径——需求定义到量产交付全链路把控。',
+    proofHref: `${base}/lab/tts-cockpit/`,
+    proofLabel: '可交互佐证 · 16 语种 TTS 座舱可视化',
+  },
+  {
+    q: '端侧算力有限、云端能力强，大模型能力应该放在哪一侧？',
+    how: '「端云怎么分」不该靠评审会上反复摇摆。我用能力分层框架回答：把每类场景（车控/闲聊/生成/多轮任务）按算力档位、网络状态与时延要求归入端/云/降级三路径，让选型变成有据可依的决策表。',
+    proofHref: `${base}/work/llm-capability-layering/`,
+    proofLabel: '案例 · 端云大模型分层',
+  },
+  {
+    q: 'AI 提效停留在个人技巧，怎么升格为组织流程？',
+    how: '把 AI 当工位而不是外挂：在需求、开发、测试、复盘四个阶段定义节点输入输出契约与风险分级人审点，提效可量化、产出可审计——个人经验变成可复制的工作流资产。',
+    proofHref: `${base}/work/ai-native-workflow/`,
+    proofLabel: '案例 · AI 原生工作流',
+  },
+];
+
+// ②职业演进主线（PRD ABT-01 钦定六站；每站一句「解决了什么」）
+const timeline = [
+  { stage: '物联网', note: '设备连接与数据链路的工程地基' },
+  { stage: '整车前瞻', note: '从单点技术转向整车级系统视角' },
+  { stage: 'AR-HUD', note: '人机界面：显示链路、安全边界与工程落地' },
+  { stage: '多语种座舱', note: '16 语种从需求定义到量产交付的全链路' },
+  { stage: '端云大模型', note: '车端/云端能力分层架构与场景化选型' },
+  { stage: 'AI 工作流', note: '用 AI 重构需求到复盘的交付流程本身' },
+];
+
+// ③第三人称讲者简介（活动物料直接可用；演讲署名统一外链 /now/，PRD ABT-03）
+const speakerBio =
+  `${PERSON.name}，${PERSON.jobTitle}，专注智能座舱多语种本地化、端云大模型架构与 AI 原生工作流三个交叉领域，` +
+  '主张「把复杂技术转化为可决策、可交付、可复用的解决方案」。' +
+  '他的个人网站以可交互 Demo 与脱敏案例公开工程方法（rayw-lab.github.io/website），' +
+  '当前研究方向与开放的合作类型见站内 Now 页。';
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <!-- 页头：定位语（叙事入口，非履历入口） -->
+  <header class="page-hero">
+    <div class="container">
+      <nav class="crumb data" aria-label="面包屑">
+        <a href={`${base}/`}>首页</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">关于</span>
+      </nav>
+      <h1>我解决的是「复杂技术 → 可决策方案」这段路</h1>
+      <p class="lede">
+        {PERSON.jobTitle}。十余年从物联网到 AI 工作流的演进里，我反复做的是同一件事：
+        把不确定的新技术，变成团队敢拍板、能交付、可复用的方案。这一页不罗列职责，只讲我解决什么问题。
+      </p>
+    </div>
+  </header>
+
+  <!-- ① 以问题组织的专业叙事 -->
+  <section class="section" aria-labelledby="problems-title">
+    <div class="container">
+      <SectionHeading
+        index="01"
+        label="Problems I Solve"
+        title="解决什么问题"
+        id="problems-title"
+      />
+      <div class="problem-list">
+        {
+          problems.map((p, i) => (
+            <article class="card problem reveal" style={`--reveal-delay: ${i * 6}%`}>
+              <h3>{p.q}</h3>
+              <p>{p.how}</p>
+              <a class="proof data" href={p.proofHref}>{p.proofLabel} →</a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ② 职业演进主线图 -->
+  <section class="section" aria-labelledby="timeline-title">
+    <div class="container">
+      <SectionHeading
+        index="02"
+        label="Trajectory"
+        title="职业演进主线"
+        id="timeline-title"
+        lede="每一站都在把「更复杂的技术」推向「更接近决策与交付的位置」——结构化履历时间线与一页纸 PDF 随 V1 增补（ABT-02/05）。"
+      />
+      <ol class="timeline">
+        {
+          timeline.map((t, i) => (
+            <li class="reveal" style={`--reveal-delay: ${i * 4}%`}>
+              <span class="tl-index data">{String(i + 1).padStart(2, '0')}</span>
+              <span class="tl-stage">{t.stage}</span>
+              <span class="tl-note">{t.note}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- ③ 可复制讲者简介 -->
+  <section class="section" aria-labelledby="bio-title">
+    <div class="container">
+      <SectionHeading
+        index="03"
+        label="Speaker Bio"
+        title="讲者简介（第三人称，可直接复制）"
+        id="bio-title"
+      />
+      <figure class="card bio">
+        <blockquote id="speaker-bio">{speakerBio}</blockquote>
+        <figcaption class="bio-actions">
+          <button type="button" class="copy-btn" data-copy-target="#speaker-bio">
+            一键复制讲者简介
+          </button>
+          <span class="copy-done data" data-copy-done hidden>已复制 ✓</span>
+          <noscript><span class="data">无 JS 环境请直接选中文本复制。</span></noscript>
+        </figcaption>
+      </figure>
+      <p class="bio-note">
+        演讲与播客署名请统一外链 <a href={`${base}/now/`}>/now/</a>（实时近况）；
+        合作与邀约方式见 <a href={`${base}/contact/`}>Contact</a>。
+      </p>
+    </div>
+  </section>
+
+  <!-- 收尾 CTA -->
+  <section class="section" aria-labelledby="about-cta-title">
+    <div class="container">
+      <div class="card band">
+        <p class="ask" id="about-cta-title">想验证这些说法？</p>
+        <div class="actions">
+          <CtaButton href={`${base}/lab/`}>看可交互 Demo →</CtaButton>
+          <CtaButton href={`${base}/now/`} variant="secondary">正在进行</CtaButton>
+          <CtaButton href={`${base}/contact/`} variant="secondary">联系我</CtaButton>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<!-- 一键复制（US-16）：Clipboard API + 选区回退；≤30 行（SRD §7 分层守则 3） -->
+<script is:inline>
+  document.querySelectorAll('[data-copy-target]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = document.querySelector(btn.getAttribute('data-copy-target'));
+      if (!target) return;
+      var text = target.textContent.trim();
+      var done = function () {
+        var tip = btn.parentElement.querySelector('[data-copy-done]');
+        if (tip) {
+          tip.hidden = false;
+          setTimeout(function () {
+            tip.hidden = true;
+          }, 2000);
+        }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done);
+      } else {
+        var range = document.createRange();
+        range.selectNodeContents(target);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand('copy');
+        sel.removeAllRanges();
+        done();
+      }
+    });
+  });
+</script>
+
+<style>
+  .page-hero {
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .crumb {
+    display: flex;
+    gap: var(--space-2);
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .crumb a:hover {
+    color: var(--accent);
+  }
+
+  .page-hero h1 {
+    margin-block-start: var(--space-5);
+    font-size: var(--text-display);
+    font-weight: 650;
+    line-height: var(--leading-display);
+    letter-spacing: -0.01em;
+    max-inline-size: 24ch;
+  }
+
+  .lede {
+    margin-block-start: var(--space-5);
+    max-inline-size: var(--measure);
+    color: var(--ink-2);
+  }
+
+  .section {
+    padding-block: var(--section-pad);
+    border-block-start: 1px solid var(--line);
+  }
+
+  /* ① 问题叙事 */
+  .problem-list {
+    display: grid;
+    gap: var(--grid-gutter);
+  }
+
+  .problem {
+    padding: var(--space-6);
+  }
+
+  .problem h3 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  .problem p {
+    margin-block-start: var(--space-3);
+    max-inline-size: var(--measure);
+    color: var(--ink-2);
+  }
+
+  .proof {
+    display: inline-block;
+    margin-block-start: var(--space-4);
+    color: var(--accent);
+  }
+
+  /* ② 演进主线 */
+  .timeline {
+    display: grid;
+    gap: 0;
+  }
+
+  .timeline li {
+    display: grid;
+    grid-template-columns: 3rem 11rem 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding-block: var(--space-4);
+    border-block-start: 1px solid var(--line);
+  }
+
+  .timeline li:last-child {
+    border-block-end: 1px solid var(--line);
+  }
+
+  .tl-index {
+    color: var(--accent);
+  }
+
+  .tl-stage {
+    font-weight: 600;
+  }
+
+  .tl-note {
+    color: var(--ink-2);
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+  }
+
+  @media (max-width: 639.98px) {
+    .timeline li {
+      grid-template-columns: 3rem 1fr;
+    }
+
+    .tl-note {
+      grid-column: 2;
+    }
+  }
+
+  /* ③ 讲者简介 */
+  .bio {
+    padding: var(--space-6);
+    max-inline-size: 48rem;
+  }
+
+  .bio blockquote {
+    color: var(--ink);
+    max-inline-size: var(--measure);
+  }
+
+  .bio-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-block-start: var(--space-5);
+  }
+
+  .copy-btn {
+    min-height: 2.75rem;
+    padding: var(--space-2) var(--space-5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    font-size: var(--text-small);
+    font-weight: 500;
+    transition:
+      border-color var(--duration-hover) var(--ease-out),
+      background-color var(--duration-hover) var(--ease-out);
+  }
+
+  .copy-btn:hover {
+    border-color: var(--accent-strong);
+    background: var(--accent-soft);
+  }
+
+  .copy-done {
+    color: var(--accent);
+  }
+
+  .bio-note {
+    margin-block-start: var(--space-5);
+    color: var(--ink-2);
+    font-size: var(--text-small);
+  }
+
+  .bio-note a {
+    color: var(--accent);
+  }
+
+  /* 收尾 CTA（与首页 NowCta band 同构） */
+  .band {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4) var(--space-6);
+    padding: var(--space-6);
+  }
+
+  .ask {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

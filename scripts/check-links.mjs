@@ -176,11 +176,9 @@ function idsOf(htmlPath) {
 // 仅允许精确路由（base 剥离后的站内路径）；路由交付后条目自动过期并阻断 CI，
 // 由交付该页面的 PR 负责删除对应条目——白名单只能收缩，门禁不降级。
 // Phase 1 A3 批次已交付并清退：/work/ 及三案例详情、/insights/、/ai-lab/。
-const PENDING_ROUTES = new Map([
-  ['/about/', 'Track B About 页'],
-  ['/contact/', 'Track B Contact 页'],
-  ['/rss.xml', 'Track B thesis RSS 输出'],
-]);
+// Phase 1 A4 批次已交付并清退：/about/、/contact/、/rss.xml（About/Now/Contact + RSS 上线）。
+// 白名单现为空——新增待交付路由时按「路径 → 说明」精确登记。
+const PENDING_ROUTES = new Map([]);
 
 /* ---------- 主检查循环 ---------- */
 

@@ -13,8 +13,9 @@ export const u = (path: string): string => `${BASE}${path}`;
  * 本白名单条目过期，site-health 测试会失败，强制删除条目（只收缩不增长）。
  * integration 批次：`/world-spike/` 已交付（world-spike-vehicle 合流），条目清退。
  * Phase 1 A3 批次：`/work/`（含三案例详情）、`/insights/`、`/ai-lab/` 已交付，条目清退。
+ * Phase 1 A4 批次：`/about/`、`/contact/`、`/rss.xml` 已交付，条目清退——白名单现为空。
  */
-export const PENDING_ROUTES = new Set(['/about/', '/contact/', '/rss.xml']);
+export const PENDING_ROUTES = new Set<string>([]);
 
 /** 报告截图输出目录（batch 1 报告引用，随 docs 入库） */
 export const SHOT_DIR = 'docs/spec/assets/e2e-batch1';

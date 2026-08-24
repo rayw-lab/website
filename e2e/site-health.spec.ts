@@ -3,8 +3,16 @@
 import { test, expect } from '@playwright/test';
 import { BASE, u, PENDING_ROUTES } from './helpers';
 
-/** 爬取起点：当前已交付的全部路由 */
-const CRAWL_PAGES = ['/', '/lab/', '/lab/tts-cockpit/', '/lab/car-configurator/'];
+/** 爬取起点：当前已交付的全部路由（A4 批次追加 About / Now / Contact） */
+const CRAWL_PAGES = [
+  '/',
+  '/lab/',
+  '/lab/tts-cockpit/',
+  '/lab/car-configurator/',
+  '/about/',
+  '/now/',
+  '/contact/',
+];
 
 /** href/src → base 剥离后的站内路径；站外/协议链接返回 null */
 function toInternalPath(ref: string, fromPath: string): string | null {

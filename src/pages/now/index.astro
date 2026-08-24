@@ -1,0 +1,228 @@
+---
+// Now —— 近况页（PRD ABT-03 / master-plan §2.2）：独立 URL 便于演讲/播客署名外链。
+// 数据单源：src/content/now/entries.json（SRD §8.1 now 集合），最新一条驱动本页与首页区块 5。
+// 更新纪律：每月更新（master-plan §10「每月更新 Now 页面」）。
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CtaButton from '../../components/ui/CtaButton.astro';
+import { OPEN_TO_LABELS, TITLE_SUFFIX } from '../../data/site';
+import { breadcrumbJsonLd } from '../../data/jsonld';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const title = `Now · 正在进行${TITLE_SUFFIX}`;
+const description =
+  '王磊的实时近况：当前在研究什么、在写什么、开放什么类型的合作——演讲与播客署名统一外链本页，每月更新。';
+
+const entries = (await getCollection('now')).map((e) => e.data);
+const latest = entries.sort((a, b) => b.updated.getTime() - a.updated.getTime())[0];
+if (!latest) throw new Error('[now] src/content/now/entries.json 至少需要一条近况条目');
+
+const updatedLabel = latest.updated.toISOString().slice(0, 10);
+const openToLabels = latest.openTo.map((key) => OPEN_TO_LABELS[key]);
+
+const homeUrl = new URL(`${base}/`, Astro.site).href;
+const nowUrl = new URL(`${base}/now/`, Astro.site).href;
+const jsonLd = breadcrumbJsonLd([
+  { name: '首页', url: homeUrl },
+  { name: 'Now · 正在进行', url: nowUrl },
+]);
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <header class="page-hero">
+    <div class="container">
+      <nav class="crumb data" aria-label="面包屑">
+        <a href={`${base}/`}>首页</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Now</span>
+      </nav>
+      <h1>正在进行</h1>
+      <p class="stamp data">
+        LAST UPDATE · {latest.id} <span class="stamp-sep" aria-hidden="true">|</span> {updatedLabel} · 每月更新
+      </p>
+      <p class="lede">
+        这一页回答三个问题：我现在在研究什么、在写什么、对什么类型的合作开放。
+        演讲、播客与外部署名统一外链本页——这里永远是最新口径。
+      </p>
+    </div>
+  </header>
+
+  <section class="section" aria-labelledby="now-detail-title">
+    <div class="container">
+      <h2 class="visually-hidden" id="now-detail-title">当前近况明细</h2>
+      <dl class="now-grid">
+        <div class="card now-block">
+          <dt class="data">RESEARCHING · 在研究</dt>
+          <dd>
+            <ul>
+              {latest.researching.map((item) => <li>{item}</li>)}
+            </ul>
+          </dd>
+        </div>
+        {
+          latest.writing.length > 0 && (
+            <div class="card now-block">
+              <dt class="data">WRITING · 在写</dt>
+              <dd>
+                <ul>
+                  {latest.writing.map((item) => <li>{item}</li>)}
+                </ul>
+              </dd>
+            </div>
+          )
+        }
+        <div class="card now-block">
+          <dt class="data">OPEN TO · 开放的合作</dt>
+          <dd>
+            <ul>
+              {openToLabels.map((label) => <li>{label}</li>)}
+            </ul>
+            <p class="open-note">
+              四类交流方向的意愿说明与来信模板见 <a href={`${base}/contact/`}>Contact</a>。
+            </p>
+          </dd>
+        </div>
+        {
+          latest.note && (
+            <div class="card now-block now-note">
+              <dt class="data">NOTE · 备注</dt>
+              <dd>
+                <p>{latest.note}</p>
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="now-cta-title">
+    <div class="container">
+      <div class="card band">
+        <p class="ask" id="now-cta-title">对以上方向有话想聊？</p>
+        <div class="actions">
+          <CtaButton href={`${base}/contact/`}>联系我 →</CtaButton>
+          <CtaButton href={`${base}/about/`} variant="secondary">关于我</CtaButton>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-hero {
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .crumb {
+    display: flex;
+    gap: var(--space-2);
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .crumb a:hover {
+    color: var(--accent);
+  }
+
+  .page-hero h1 {
+    margin-block-start: var(--space-5);
+    font-size: var(--text-display);
+    font-weight: 650;
+    line-height: var(--leading-display);
+    letter-spacing: -0.01em;
+  }
+
+  .stamp {
+    margin-block-start: var(--space-4);
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+
+  .stamp-sep {
+    margin-inline: var(--space-2);
+    color: var(--line);
+  }
+
+  .lede {
+    margin-block-start: var(--space-5);
+    max-inline-size: var(--measure);
+    color: var(--ink-2);
+  }
+
+  .section {
+    padding-block: var(--section-pad);
+    border-block-start: 1px solid var(--line);
+  }
+
+  .now-grid {
+    display: grid;
+    gap: var(--grid-gutter);
+  }
+
+  @media (min-width: 640px) {
+    .now-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .now-note {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .now-block {
+    padding: var(--space-6);
+  }
+
+  .now-block dt {
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+
+  .now-block dd {
+    margin-block-start: var(--space-4);
+  }
+
+  .now-block ul {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .now-block li {
+    padding-inline-start: var(--space-4);
+    border-inline-start: 2px solid var(--accent-strong);
+    line-height: var(--leading-small);
+  }
+
+  .open-note {
+    margin-block-start: var(--space-4);
+    font-size: var(--text-small);
+    color: var(--ink-2);
+  }
+
+  .open-note a {
+    color: var(--accent);
+  }
+
+  .band {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4) var(--space-6);
+    padding: var(--space-6);
+  }
+
+  .ask {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>
