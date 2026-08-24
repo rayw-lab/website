@@ -1,0 +1,356 @@
+---
+// /world-spike/ —— Phase A Spike 静态壳页（roadmap §7.1 Step 2）。
+// noindex 隐藏路由：不进 sitemap（astro.config 已过滤）、不被任何导航链接；
+// 壳页自包含（不挂 BaseLayout/站点 CSS）：首屏零 JS 执行成本，点「进入」才
+// 动态 import 引擎 chunk（three/webgpu + 引擎层）与 Rapier wasm。
+// Phase B 转正 /world/ 时：登记 manifest 单例（kind:'world'）走统一 facade，本页归档。
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>World Spike · 试验场引擎灰盒（Phase A）</title>
+    <meta
+      name="description"
+      content="内部隐藏路由：/world/ 试验场 Phase A Spike——引擎层灰盒验证（WebGPU/WebGL 2 双后端 + Rapier 物理）。"
+    />
+    <meta name="theme-color" content="#0d0c11" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+  </head>
+  <body>
+    <main class="shell" data-world-host data-state="idle">
+      <!-- 页眉：身份 + 后端徽章 -->
+      <header class="bar">
+        <a class="home" href={`${base}/`}>← rayw.dev</a>
+        <span class="tag">WORLD SPIKE · PHASE A</span>
+        <span class="badge" data-lab-backend title="实际使用的渲染后端">—</span>
+      </header>
+
+      <!-- 舞台：poster（纯 CSS 灰盒预览）与画布交叉淡换 -->
+      <div class="stage" data-lab-stage>
+        <canvas data-world-canvas aria-label="试验场灰盒 3D 视图"></canvas>
+
+        <!-- poster / 启动层 -->
+        <div class="poster" data-world-poster>
+          <div class="poster-grid" aria-hidden="true"></div>
+          <div class="poster-inner">
+            <h1>试验场引擎灰盒</h1>
+            <p class="lede">
+              folio 架构引擎层移植验证：完整 Game loop（Ticker.scale=2）·
+              WebGPU 优先 / WebGL&nbsp;2 自动回退 · Rapier 物理（wasm 并行加载）·
+              程序化网格地面 + 环形试车道 + 3 个动态锥桶。
+            </p>
+            <button class="enter" type="button" data-world-start>
+              进入试验场
+              <span class="enter-note">约 0.5&nbsp;MB 引擎分包 + 1.5&nbsp;MB 物理 wasm · 零美术资产</span>
+            </button>
+            <p class="loading" data-world-loading hidden>正在初始化引擎…</p>
+            <p class="error" data-world-error hidden>
+              3D 引擎初始化失败：当前浏览器可能不支持 WebGPU / WebGL&nbsp;2。可更换浏览器后重试。
+            </p>
+            <noscript>
+              <p class="error">本页面是 3D 引擎技术验证，需要启用 JavaScript 才能运行。</p>
+            </noscript>
+          </div>
+        </div>
+
+        <!-- 运行态 HUD -->
+        <div class="hud" aria-hidden="true">
+          <span class="hint">R 重置试验场 · Space 跳（Phase A：静态相机，车辆待 Spike 第 2 步）</span>
+          <button class="reset" type="button" data-world-reset>重置试验场</button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      import type { LabBackend } from '../../lab/contracts';
+      import type { WorldSpikeInstance } from '../../lab/world';
+
+      const host = document.querySelector<HTMLElement>('[data-world-host]');
+
+      if (host) {
+        const startBtn = host.querySelector<HTMLButtonElement>('[data-world-start]');
+        const resetBtn = host.querySelector<HTMLButtonElement>('[data-world-reset]');
+        const loadingEl = host.querySelector<HTMLElement>('[data-world-loading]');
+        const errorEl = host.querySelector<HTMLElement>('[data-world-error]');
+        const backendEl = host.querySelector<HTMLElement>('[data-lab-backend]');
+
+        const BACKEND_LABELS: Partial<Record<LabBackend, string>> = {
+          webgpu: 'WebGPU',
+          webgl2: 'WebGL 2',
+        };
+
+        let instance: WorldSpikeInstance | null = null;
+        let starting = false;
+
+        // 深链白名单：gl（?gl=1 强制 WebGL 2 复测路径）
+        const params = new URLSearchParams();
+        const gl = new URLSearchParams(location.search).get('gl');
+        if (gl !== null) params.set('gl', gl);
+
+        const start = async () => {
+          if (starting) return;
+          starting = true;
+
+          host.dataset.state = 'loading';
+          if (startBtn) startBtn.hidden = true;
+          if (loadingEl) loadingEl.hidden = false;
+
+          try {
+            // 引擎 chunk 到点击才拉取（首页/内容页对 world 零字节增量，G2）
+            const { default: mount } = await import('../../lab/world/index');
+
+            instance = await mount({
+              host,
+              mode: 'full',
+              params,
+              onBackend: (backend) => {
+                if (backendEl) backendEl.textContent = BACKEND_LABELS[backend] ?? backend;
+              },
+            });
+
+            host.dataset.state = 'ready';
+          } catch (err) {
+            console.error('[world-spike] mount 失败：', err);
+            host.dataset.state = 'error';
+            if (loadingEl) loadingEl.hidden = true;
+            if (errorEl) errorEl.hidden = false;
+            starting = false;
+          }
+        };
+
+        startBtn?.addEventListener('click', () => void start());
+        resetBtn?.addEventListener('click', () => instance?.reset());
+
+        // 离屏/隐藏停帧；真实离页释放 GPU 与 wasm（mount 契约）
+        document.addEventListener('visibilitychange', () => {
+          if (!instance) return;
+          if (document.visibilityState === 'hidden') instance.pause();
+          else instance.resume();
+        });
+        window.addEventListener('pagehide', (event) => {
+          if (!event.persisted && instance) {
+            instance.dispose();
+            instance = null;
+          }
+        });
+      }
+    </script>
+
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+      body {
+        overflow: hidden;
+        background: #0d0c11;
+        color: #e8e6ef;
+        font-family:
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          'PingFang SC',
+          'Microsoft YaHei',
+          sans-serif;
+      }
+      .shell {
+        display: flex;
+        flex-direction: column;
+        height: 100dvh;
+      }
+
+      /* ---------- 页眉 ---------- */
+      .bar {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.7rem 1.1rem;
+        border-bottom: 1px solid #26232f;
+        font-size: 0.78rem;
+      }
+      .home {
+        color: #a49fb5;
+        text-decoration: none;
+      }
+      .home:hover {
+        color: #e8e6ef;
+      }
+      .tag {
+        letter-spacing: 0.16em;
+        color: #8d55ff;
+        font-size: 0.66rem;
+        font-weight: 600;
+      }
+      .badge {
+        margin-left: auto;
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        color: #9ef0c2;
+        border: 1px solid #2d3a33;
+        border-radius: 999px;
+        padding: 0.2em 0.85em;
+        background: rgba(14, 20, 17, 0.6);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ---------- 舞台 ---------- */
+      .stage {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+      }
+      canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        touch-action: none;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+      [data-state='ready'] canvas {
+        opacity: 1;
+      }
+
+      /* ---------- poster / 启动层 ---------- */
+      .poster {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(120% 90% at 50% 12%, #17141f 0%, #0d0c11 70%);
+        transition: opacity 0.4s ease;
+      }
+      .poster-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(141, 85, 255, 0.14) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(141, 85, 255, 0.14) 1px, transparent 1px);
+        background-size: 42px 42px;
+        mask-image: radial-gradient(70% 60% at 50% 55%, #000 0%, transparent 78%);
+        transform: perspective(600px) rotateX(55deg) translateY(12%);
+        transform-origin: 50% 100%;
+      }
+      [data-state='ready'] .poster {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .poster-inner {
+        position: relative;
+        max-width: 34rem;
+        padding: 0 1.4rem;
+        text-align: center;
+      }
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 650;
+        letter-spacing: 0.02em;
+        margin: 0 0 0.6rem;
+      }
+      .lede {
+        font-size: 0.85rem;
+        line-height: 1.75;
+        color: #a49fb5;
+        margin: 0 0 1.6rem;
+      }
+      .enter {
+        display: inline-flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        align-items: center;
+        font: inherit;
+        font-size: 0.98rem;
+        font-weight: 600;
+        color: #0d0c11;
+        background: #8d55ff;
+        border: 0;
+        border-radius: 12px;
+        padding: 0.85em 2.1em 0.75em;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .enter:hover {
+        background: #a678ff;
+      }
+      .enter:focus-visible {
+        outline: 2px solid #e8e6ef;
+        outline-offset: 3px;
+      }
+      .enter-note {
+        font-size: 0.64rem;
+        font-weight: 400;
+        color: rgba(13, 12, 17, 0.72);
+        letter-spacing: 0.02em;
+      }
+      .loading {
+        color: #a49fb5;
+        font-size: 0.82rem;
+        animation: pulse 1.2s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.45;
+        }
+      }
+      .error {
+        color: #ff8f8f;
+        font-size: 0.82rem;
+        max-width: 30rem;
+        margin-inline: auto;
+      }
+
+      /* ---------- 运行态 HUD ---------- */
+      .hud {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.75rem 1.1rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease 0.3s;
+      }
+      [data-state='ready'] .hud {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .hint {
+        font-size: 0.7rem;
+        color: #a49fb5;
+      }
+      .reset {
+        font: inherit;
+        font-size: 0.74rem;
+        color: #e8e6ef;
+        background: rgba(23, 20, 31, 0.75);
+        border: 1px solid #34303f;
+        border-radius: 999px;
+        padding: 0.4em 1.2em;
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+      .reset:hover {
+        border-color: #8d55ff;
+      }
+    </style>
+  </body>
+</html>
