@@ -75,7 +75,7 @@
 
 **已知待交付路由**（与 `scripts/check-links.mjs` PENDING_ROUTES 同步维护于 `e2e/helpers.ts`，只收缩不增长）：`/work/`×4、`/insights/`、`/ai-lab/`、`/about/`、`/contact/`、`/rss.xml`。`/world-spike/` 已于 integration 合并交付，条目按白名单过期纪律清退（Batch 1 的反向阻断设计首次实战生效）。头部导航五链接现阶段命中该白名单属预期；页面交付后 SITE-01 反向阻断，强制同步删除条目。
 
-## 5. 用例清单（Batch 1：30 例 · 6 spec；integration 扩展：+11 例 · 1 spec，§5.7）
+## 5. 用例清单（Batch 1：30 例 · 6 spec；integration 扩展：+11 例 · 1 spec，§5.7；perf 追加：+1 例 · 1 spec，§5.8）
 
 ### 5.1 `e2e/home.spec.ts` — 首页
 - HOME-E2E-01 骨架与 SEO 基础：200 / title / 唯一 h1 / skip-link 首焦点 / canonical 带 base / 五区块锚点
@@ -136,6 +136,12 @@
 - WS-E2E-11 `?impl=engine` 引擎层灰盒腿（integration 合流新增入口）：Rapier 引擎挂载 ready、壳文案切换、车辆 HUD 读数整组隐藏、后端徽标上报、零异常（烟测级；Phase B 合体转正后按 §5.7 全量口径展开）
 
 **已知 UA 级异常白名单（仅一条，精确放行）**：站点启用声明式跨文档 View Transitions（`global.css` `@view-transition`，零 JS）。SwiftShader 慢渲染下离开 3D 页时 UA 产不出转场帧 → 转场跳过，Chromium 把 UA 内部 ViewTransition promise 拒绝上抛为页面级「Transition was skipped」。纯声明式用法下站点侧无 catch 点、真机语义 = 自动退化为普通整页跳转；WS-07/08 过滤该条并在 integration 报告 BUG 列表登记归因。
+
+### 5.8 `e2e/world-spike-perf.spec.ts` — world Spike 帧率证据包（perf 追加 · 仅 world-perf-chromium project）
+
+Spike 的 60fps/30fps 门禁只能真机判定（人工录测脚本：`docs/spec/human-gate-checklist.md` §2）；CI 仅 SwiftShader 软渲染，故本 spec 不做 60/30 数值门禁，定位是**可审计的辅助证据包**——每次全量 e2e 留档帧率读数、帧间隔分布与环境指纹（软件光栅化硬下界），真机录测前后均可对照。独占 project 殿后串行（依赖 world-chromium，帧间隔采样对并发 3D 负载最敏感）、录像显式关闭（录屏 CPU 开销污染读数）。设计细节与证据落点：`docs/research/world-spike-log.md` §3.1。
+
+- WS-PERF-01 帧率证据包：显式进入 → W 持续驾驶 30s（**硬断言**：速度 >2km/h、HUD `data-ws-fps` 出「均值 / 1% low」读数、`__worldSpike.fps().avg>0`、rAF 持续出帧、零未捕获异常）→ 驾驶不间断中 rAF 帧间隔采样 ≥5s/≥6 帧（封顶 45s）→ p50/p95/max/stall(>50ms) 统计；**软门禁 p95<50ms 失败仅登记 OBS annotation + 证据 JSON 标记，不阻断 CI**；证据三路落盘（`world-spike-metrics.jsonl` / 报告附件 `world-spike-perf-evidence.json` / HUD 截图 `world_perf_hud_after_drive.png` 入库）
 
 ## 6. CI 集成（可选 job，未默认开启）
 

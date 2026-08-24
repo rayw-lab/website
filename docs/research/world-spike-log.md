@@ -69,6 +69,15 @@ dt 纪律照抄 folio §5.3：车辆积分用 **30 帧滑动平均 dt**（与渲
 - **硬件无关的帧率论证**（真机读数缺位期的依据）：场景复杂度实测 **121 draw calls / 225,236 triangles**、无实时阴影（车底接触阴影贴片）、锥桶/轮胎墙全 InstancedMesh、DPR 封顶移动 1.5 / 桌面 2。该复杂度低于同站 car-configurator（同一车模 + 影棚光）一个量级的场景开销预算，对 2019+ 中端安卓（Adreno 61x 级）30fps 是宽余量负载；不达标时 RR-04 三板斧（DPR→1、关装饰实例减半）仍备用。
 - **SwiftShader WebGPU 环境缺陷记录**：`createBuffer(size=288, mappedAtCreation=true)` 反复 RangeError 导致白屏；隔离探针里同参数创建成功 → 判定为 SwiftShader Vulkan 资源上限问题而非应用 bug（真机 WebGPU 无此路径）。功能层（物理/输入/遥测/HUD）在 WebGPU 腿全绿。
 
+### 3.1 自动化帧率采样（WS-PERF-01，CI 常驻证据）
+
+上表是 Spike 验证期的一次性人工读数；此后追加**常驻自动化采样**（`e2e/world-spike-perf.spec.ts`，测试计划 §5.8），每次 `pnpm test:e2e` 全量跑都重新产出可审计证据包，60fps/30fps 真机门禁执行前后均有 CI 侧下界读数可对照。
+
+- **采样流程**：显式进入试验场 → W 持续驾驶 30s（硬断言链路活着：速度爬升 >2km/h、HUD `data-ws-fps` 出「均值 / 1% low」读数、`__worldSpike.fps().avg > 0`、全程零未捕获异常）→ 驾驶不间断的前提下 `page.evaluate` 内 rAF 采样帧间隔 ≥5s（软渲染下帧数不足 6 自动延长，封顶 45s）→ 统计 p50 / p95 / max / stall（>50ms）帧计数。
+- **软门禁（不阻断 CI）**：采样期 95% 帧间隔 < 50ms（p95 < 50ms，≈95% 帧保持 ≥20fps 节奏、无长时间 stall）。SwiftShader ~1fps 下该项**预期不达标**——失败不 fail 用例，登记 `OBS` annotation + 证据 JSON 标记 `softGate.pass=false`；带 GPU 的真机/集显环境预期转绿。**60/30 门禁判定不在自动化范围**（CI 读数只是软件光栅化硬下界），判定权归 `docs/spec/human-gate-checklist.md` §2 真机人工录测。
+- **证据落点（三件套）**：① `test-results/world-spike-metrics.jsonl` 的 `WS-PERF-01 evidence` 行（环境指纹 UA/核数/DPR/`navigator.gpu` 有无 + 后端 + HUD 文本 + 仪表读数 + 采样统计 + 软门禁与 60/30 参考判定）；② Playwright 报告附件 `world-spike-perf-evidence.json`（同一 JSON 随 HTML 报告归档）；③ HUD 读数截图 `docs/spec/assets/e2e-integration/world_perf_hud_after_drive.png`（入库）。
+- **运行纪律**：独占 `world-perf-chromium` project 殿后串行（帧间隔采样对并发 3D 负载最敏感）；录像显式关闭（Playwright 录屏 CPU 开销会系统性拉低读数）；用例零 skip、零 Spike 功能降级——帧率数值一律走软门禁 + 证据留档，硬断言只挡「链路死了」。
+
 ## 4. 体积实测 vs 门禁（Step 9）
 
 | 门禁 | 实测 | 判定 |
@@ -102,4 +111,4 @@ dt 纪律照抄 folio §5.3：车辆积分用 **30 帧滑动平均 dt**（与渲
 
 ## 8. 结论（Step 10 ⑤）
 
-**通过。** Phase B（最小可玩）可排期：本 Spike 的 vehicle/carRig/inputs/camera 四模块按 `engine.ts` 头注的 tick 契约插进正式 Game 循环即可转正。条件项：**真机帧率录测（桌面 + 中端安卓）须在 Phase B 合并前补齐**——本记录的帧率证据链是「软件渲染下界 + 场景复杂度预算」，非真机读数；若中端安卓实测持续 <24fps 且三板斧无效，仍按 roadmap 止损路径执行（Spike 归档为 ai-lab 实验记录，世界降级 HOME-07/08 保守方案）。
+**通过。** Phase B（最小可玩）可排期：本 Spike 的 vehicle/carRig/inputs/camera 四模块按 `engine.ts` 头注的 tick 契约插进正式 Game 循环即可转正。条件项：**真机帧率录测（桌面 + 中端安卓）须在 Phase B 合并前补齐**——本记录的帧率证据链是「软件渲染下界（§3 + §3.1 常驻采样）+ 场景复杂度预算」，非真机读数；执行脚本与签字回填表已就位：`docs/spec/human-gate-checklist.md` §2（自动化采样为辅助证据，不替代真机）。若中端安卓实测持续 <24fps 且三板斧无效，仍按 roadmap 止损路径执行（Spike 归档为 ai-lab 实验记录，世界降级 HOME-07/08 保守方案）。

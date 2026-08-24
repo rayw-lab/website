@@ -47,8 +47,8 @@
 - [x] A4：RSS（insights ∪ ai-lab）/ sitemap / JSON-LD 全站（Person+WebSite+Breadcrumb+Article，`src/data/site.ts` 单源）
 - [x] D3：Lighthouse CI 真实断言（`treosh/lighthouse-ci-action@v12`，首页+双 Lab 壳页移动端四项 ≥95 中位轮 error 断言，阈值/URL 单源 `lighthouserc.json`，无 continue-on-error；在 PR 检查线执行，即 main 合并线阻断）——门禁基建已交付；**实跑当前红**，见下「D3 Lighthouse CI 实跑」
 - [x] D5：GoatCounter 接入（生产构建注入 count.js + SRD §9.5 事件委托）+ Lab 两 Demo 页接入 BaseLayout
-- [ ] **人工**：10 秒定位测试 ≥80% —— 未组织，待王磊安排被试执行
-- [ ] **人工**：真机帧率（桌面 60fps / 安卓中端 30fps）—— CI 仅 SwiftShader 软件渲染，需真机录测
+- [ ] **人工**：10 秒定位测试 ≥80% —— 未组织，待王磊安排被试执行；执行脚本与记录表：`docs/spec/human-gate-checklist.md` §1
+- [ ] **人工**：真机帧率（桌面 60fps / 安卓中端 30fps）—— CI 仅 SwiftShader 软件渲染，需真机录测；录测步骤与记录表：`docs/spec/human-gate-checklist.md` §2（CI 侧 WS-PERF-01 帧率证据包为辅助下界读数，`world-spike-log.md` §3.1）
 
 ### D3 Lighthouse CI 实跑（PR #12 检查线，2026-08-24）
 
@@ -72,7 +72,7 @@
 - [x] Spike 新增资产 `public/world/` ≤1MB（实测 0）
 - [x] CarConcept 复用豁免 3.5MB（显式登记）
 - [x] E2E 不 skip world（41/41，world-spike 11 例实跑）
-- [ ] **人工**：桌面 60fps / 安卓 30fps 真机录测 —— CI 环境仅 SwiftShader，Phase B 前补
+- [ ] **人工**：桌面 60fps / 安卓 30fps 真机录测 —— CI 环境仅 SwiftShader，Phase B 前补（执行脚本：`human-gate-checklist.md` §2；CI 常驻辅助证据：WS-PERF-01）
 
 ## Gate 结论
 
@@ -83,7 +83,8 @@
 ### 证据索引
 
 - Lighthouse 报告：见「D3 Lighthouse CI 实跑」表内链接（CI 产物；仓库内无入库报告文件）。
-- 人工 Gate 清单（human-gate-checklist）：尚未建立独立文件，两项人工验证暂以本看板「下一批任务」跟踪；王磊执行时另建清单并回链此处。
+- 人工 Gate 清单：[`docs/spec/human-gate-checklist.md`](human-gate-checklist.md) 已建档——10 秒定位测试脚本与记录表（§1）、真机帧率录测步骤与记录表（§2）、王磊签字与回填动作清单（§3/§4）；两项人工验证按该清单执行并回填本看板。
+- 帧率自动化辅助证据：WS-PERF-01（`e2e/world-spike-perf.spec.ts`，测试计划 §5.8）——每次全量 e2e 留档 SwiftShader 下界读数 + 帧间隔分布，软门禁失败记 OBS 不阻断；设计与证据落点见 `world-spike-log.md` §3.1。
 
 ## 已完成（冻结为 Batch 1+2+3 基线）
 
@@ -100,6 +101,6 @@
 1. D3 整改：`/lab/car-configurator/` accessibility 0.93 → ≥0.95（确定性失败，按报告逐项修）
 2. D3 整改：`/lab/tts-cockpit/` performance 0.86 → ≥0.95（波动敏感，修后需连续两轮 CI 绿确认）
 3. D3 转绿后：建 `docs/spec/mvp-gate-signoff.md`，补自动化侧签署（人工签署区留空待王磊）
-4. 人工 Gate：10 秒定位测试（≥80%）组织与记录
-5. 人工 Gate：真机帧率录测（桌面 60fps / 安卓中端 30fps）
+4. 人工 Gate：10 秒定位测试（≥80%）组织与记录——按 `human-gate-checklist.md` §1 执行
+5. 人工 Gate：真机帧率录测（桌面 60fps / 安卓中端 30fps）——按 `human-gate-checklist.md` §2 执行
 6. 上述全部回填后，本看板「目标整体」翻绿为完整 Go
