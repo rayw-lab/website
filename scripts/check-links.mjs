@@ -12,6 +12,9 @@
  *      则 dist 中所有指向 /lab/{slug}/ 的链接的 slug 必须在 manifest 注册，
  *      且 manifest 中每个 status='live' 模块的路由页必须存在于 dist。
  *      manifest 尚未建立时该项跳过并明示（脚本先于内容存在，roadmap §4.4 D2 备注）。
+ *   4. 待交付路由白名单（PENDING_ROUTES）：Batch 1 首页/导航（Track A）先于
+ *      内容页（Track B/C）合入产生的预期缺页，精确枚举、只收缩不增长——
+ *      条目对应路由一旦真实存在于 dist，本脚本反而报错，强制删除过期条目。
  *
  * 零依赖（Node 内建模块 + 正则提取），适配 Astro 静态产物。
  */
@@ -168,10 +171,29 @@ function idsOf(htmlPath) {
   return idCache.get(htmlPath);
 }
 
+/* ---------- 待交付路由白名单（临时，自动过期） ---------- */
+// 集成顺序产物：Track A 首页/导航先于 Track B/C 内容页合入（roadmap 四轨并行）。
+// 仅允许精确路由（base 剥离后的站内路径）；路由交付后条目自动过期并阻断 CI，
+// 由交付该页面的 PR 负责删除对应条目——白名单只能收缩，门禁不降级。
+const PENDING_ROUTES = new Map([
+  ['/work/', 'Track B 旗舰案例列表页'],
+  ['/work/multilingual-cockpit/', 'Track B 案例详情页'],
+  ['/work/llm-capability-layering/', 'Track B 案例详情页'],
+  ['/work/ai-native-workflow/', 'Track B 案例详情页'],
+  ['/insights/', 'Track B Insights 列表页'],
+  ['/ai-lab/', 'Track B AI Lab 主张页'],
+  ['/about/', 'Track B About 页'],
+  ['/contact/', 'Track B Contact 页'],
+  ['/world-spike/', 'Track C world Spike 页（PRD HOME-10）'],
+  ['/rss.xml', 'Track B thesis RSS 输出'],
+]);
+
 /* ---------- 主检查循环 ---------- */
 
 const errors = [];
 let checkedLinks = 0;
+let pendingSkipped = 0;
+const pendingRoutesHit = new Set();
 const labSlugsLinked = new Set();
 
 for (const htmlPath of htmlFiles) {
@@ -199,6 +221,11 @@ for (const htmlPath of htmlFiles) {
 
     const target = resolveToFile(urlPath);
     if (!target) {
+      if (PENDING_ROUTES.has(urlPath)) {
+        pendingSkipped++;
+        pendingRoutesHit.add(urlPath);
+        continue;
+      }
       errors.push(`${rel} → "${url}"：dist 内无对应文件`);
       continue;
     }
@@ -248,10 +275,28 @@ if (existsSync(manifestPath)) {
   manifestNote = 'manifest 一致性：src/lab/manifest.json 尚未建立（Track C · C2 未交付），跳过——C2 合并后本检查自动生效';
 }
 
+/* ---------- 白名单过期检查：路由已交付则强制清退条目 ---------- */
+
+for (const [route, owner] of PENDING_ROUTES) {
+  if (resolveToFile(route)) {
+    errors.push(
+      `PENDING_ROUTES 条目已过期：「${route}」（${owner}）已存在于 dist，须从白名单删除该条目`,
+    );
+  }
+}
+
 /* ---------- 报告 ---------- */
 
 console.log(`check-links：扫描 ${htmlFiles.length} 个 HTML 页面，核对 ${checkedLinks} 条内部引用（base=${BASE || '/'}）`);
 console.log(`  ${manifestNote}`);
+if (pendingSkipped > 0) {
+  console.log(
+    `  待交付路由白名单：放行 ${pendingSkipped} 条链接（${pendingRoutesHit.size} 个路由；页面交付后条目自动过期并阻断 CI）：`,
+  );
+  for (const route of [...pendingRoutesHit].sort()) {
+    console.log(`    · ${route}（${PENDING_ROUTES.get(route)}）`);
+  }
+}
 
 if (errors.length > 0) {
   console.error(`\n✖ 发现 ${errors.length} 处断链/失配（CI 阻断）：`);
