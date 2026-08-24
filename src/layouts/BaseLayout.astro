@@ -1,0 +1,112 @@
+---
+// BaseLayout —— HTML 骨架：SEO meta / canonical / JSON-LD 插槽、
+// 字体子集预加载、主题防闪烁内联脚本、Header/Footer 组装。
+// 规格来源：homepage-redesign-spec §5.1；master-plan §8。
+import '../styles/tokens.css';
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  /** OG 类型，内容页可传 'article' */
+  ogType?: string;
+  /** JSON-LD 结构化数据（对象或数组）；Phase 3 SEO 收尾时逐页完善 */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const { title, description, ogType = 'website', jsonLd } = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+
+// @font-face 内联：字体在 public/fonts/（手放子集模式，master-plan §6），
+// URL 必须拼 BASE_URL —— Vite 不改写 CSS 文件内指向 public/ 的绝对路径。
+const fontFaceCss = `
+@font-face{font-family:'Inter Variable';font-style:normal;font-weight:100 900;font-display:swap;src:url('${base}/fonts/inter-var-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212;}
+@font-face{font-family:'JetBrains Mono Variable';font-style:normal;font-weight:100 800;font-display:swap;src:url('${base}/fonts/jetbrains-mono-var-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+2212;}
+`;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <!-- 主题防闪烁：首帧前应用持久化的手动主题（≤ 0.2KB，spec §3.1） -->
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || t === 'light')
+            document.documentElement.classList.add(t);
+        } catch (e) {
+          /* localStorage 不可用时跟随系统 */
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <link rel="sitemap" href={`${base}/sitemap-index.xml`} />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#FAFAF8"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#0C0D0F"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="王磊｜汽车智能座舱与 AI 解决方案" />
+    <meta property="og:locale" content="zh_CN" />
+
+    <!-- 字体子集预加载（latin 可变字体，woff2，不计入 200KB 预算） -->
+    <link
+      rel="preload"
+      href={`${base}/fonts/inter-var-latin.woff2`}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={`${base}/fonts/jetbrains-mono-var-latin.woff2`}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <style set:html={fontFaceCss}></style>
+
+    {
+      jsonLd && (
+        <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+      )
+    }
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主内容</a>
+    <SiteHeader />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>
+
+<style>
+  main:focus {
+    outline: none;
+  }
+</style>
