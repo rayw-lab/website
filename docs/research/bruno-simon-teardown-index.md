@@ -13,8 +13,9 @@
 | **[bruno-simon-teardown-ux.md](./bruno-simon-teardown-ux.md)** | 产品 / 设计 | 体验怎么设计？Start here 为何有效？2019 vs 2025 差异？ |
 | **[bruno-simon-teardown-tech.md](./bruno-simon-teardown-tech.md)** | 工程师 | Game Loop 怎么搭？WebGPU/TSL/Rapier 怎么用？资产管线？ |
 | **[bruno-simon-teardown-adaptation.md](./bruno-simon-teardown-adaptation.md)** | 决策 / 全员 | **推荐怎么做？** Hybrid 路线、试验场世界地图、三阶段计划 |
+| **[bruno-simon-folio-source-teardown.md](./bruno-simon-folio-source-teardown.md)** | 实施工程师 | **源码级下钻**：126 文件模块清单（含 tick order 与可移植性判定）、Game.js 启动序列逐行注释、raycast vehicle 复现手册、Start here 两代事件链、资产 Top 20、≤15 模块最小移植集、morph 插入点、与 car-configurator 的 diff 矩阵。源码已 clone 至 `vendor/`（见 [vendor/README.md](../../vendor/README.md)，commit `41046b5` / `540f135`） |
 
-**建议阅读顺序**：adaptation（结论）→ ux（体验细节）→ tech（实现细节）
+**建议阅读顺序**：adaptation（结论）→ ux（体验细节）→ tech（实现细节）→ source-teardown（动手实施时逐节对照）
 
 ---
 
@@ -111,6 +112,8 @@ Vite + singleton Game class
 | folio-2025（现行站源码 + Blender） | https://github.com/brunosimon/folio-2025 | ~1.7k |
 | folio-2019（经典开车版） | https://github.com/brunosimon/folio-2019 | ~4.7k |
 | Awwwards 案例研究 | https://www.awwwards.com/brunos-portfolio-case-study.html | — |
+
+两仓库已 `--depth 1` clone 至本仓库 `vendor/` 目录供团队长期参考（762MB，已 gitignore；clone 记录与重新获取方式见 [vendor/README.md](../../vendor/README.md)）。
 
 ---
 
