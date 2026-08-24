@@ -1,4 +1,4 @@
-# CI 质量门禁（Track D · D2 一期 + D4 断言预埋）—— SRD §11.2、roadmap §4.4
+# CI 质量门禁（Track D · D2 一期 + D3 Lighthouse + D4 断言预埋）—— SRD §11.2、roadmap §4.4
 #
 # 与 deploy.yml 的分工与不冲突约定：
 #   - deploy.yml：main push → 构建 → 发布 Pages（concurrency group: pages，持有 pages/id-token 权限）；
@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   gate:
-    name: 门禁（check / build / links / budget）
+    name: 门禁（check / build / links / budget / lighthouse）
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -58,8 +58,32 @@ jobs:
       - name: Budget gate（audit-budget.mjs）
         run: node scripts/audit-budget.mjs dist/
 
-      # ⑤ Lighthouse CI —— Track D · D3 里程碑接入 treosh/lighthouse-ci-action
-      #    （首页 + 1 内容页 + 1 Lab 壳页；PR 报告、main 合并线四项 ≥95 阻断，SRD §11.2 ⑤）。
-      #    D2 阶段为占位说明，不产生虚假绿灯：本步骤不做任何断言。
-      - name: Lighthouse CI（D3 待接入，占位）
-        run: echo "Lighthouse 门禁由 D3 里程碑交付（treosh/lighthouse-ci-action，四项 ≥95）——本步骤为 D2 阶段占位说明，无断言。"
+      # ⑤ Lighthouse CI（Track D · D3，SRD §11.2 ⑤，NFR-P1 / C-2）
+      #    阈值与 URL 清单单源在仓库根 lighthouserc.json（本地 lhci autorun 与 CI 同源）：
+      #    - 靶站：pnpm preview 伺服 dist/（base=/website，端口 4321，AGENTS.md 约定）；
+      #      不用 LHCI 静态服务器——它按根路径伺服，会破坏 /website/ 前缀的绝对路径资产引用。
+      #    - 覆盖：首页 + /lab/car-configurator/ + /lab/tts-cockpit/，每 URL 3 轮取中位轮
+      #      （SRD 原文的「1 内容页」待 A3 内容页上线后在 lighthouserc.json 补一行 URL 即可）。
+      #    - 断言：Lighthouse 默认即移动端预设（Moto G 模拟 + 4x CPU throttle + Slow 4G，
+      #      formFactor 已在 lighthouserc.json 显式钉死）；四项（Perf/A11y/BP/SEO）≥ 95
+      #      为 error 级断言。裁决走不降级路径：不设 continue-on-error 过渡轮，
+      #      PR 检查即 main 合并线，断言失败直接阻断合并（与 push main 同一门禁）。
+      #    - 报告：结果上传为 workflow artifact + 临时公开存储（action 输出含逐页报告链接），
+      #      仅 contents:read 权限即可，不需要 PR comment 写权限。
+      - name: Start preview server（Lighthouse 靶站）
+        run: |
+          nohup pnpm preview --host 127.0.0.1 --port 4321 > preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sfo /dev/null http://127.0.0.1:4321/website/ && exit 0
+            sleep 1
+          done
+          echo "::error::preview server 30s 内未就绪"
+          cat preview.log
+          exit 1
+
+      - name: Lighthouse gate（treosh/lighthouse-ci-action，四项 ≥95 阻断）
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
