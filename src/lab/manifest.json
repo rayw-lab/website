@@ -9,7 +9,11 @@
     "entry": "modules/tts-cockpit/index.ts",
     "poster": "posters/tts-cockpit-poster.webp",
     "budgetClass": "S",
-    "budget": { "lazyJsKbGzip": 9, "assetsMb": 3.4 },
+    "budget": {
+      "lazyJsKbGzip": 9,
+      "assetsMb": 3.4,
+      "streaming": { "dir": "demo/tts", "singleFetchKbMax": 60 }
+    },
     "capabilities": { "webgpu": "unused", "webgl2": "unused", "audio": true, "pointerFine": false },
     "deepLinkParams": ["locale", "scene"],
     "viewTransitionName": "demo-cockpit",

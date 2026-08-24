@@ -16,6 +16,9 @@
  *          （folio-2025 的 129MB wav 母带教训，roadmap §8.2 纪律 1）
  *     G-G Lab 模块预算对照 manifest budget 声明（NFR-P4）：实测超声明 +10% 告警；
  *          超预算级上限（S≤50KB/1MB、M≤300KB/6MB、world 见 §12.7.2）阻断。
+ *          流式豁免（SRD §10.1 预算表注*）：模块声明 budget.streaming{dir,singleFetchKbMax}
+ *          时，磁盘资产不按全量一刀切，改为实测 public/{dir} 内每个文件 ≤ 单次拉取上限——
+ *          实测不达标则豁免不成立、照常阻断（豁免声明本身不构成放行）。
  *          manifest 未建（C2 未交付）时跳过并明示。
  *
  * 预算表输出到 stdout；CI 中同时写入 $GITHUB_STEP_SUMMARY（PR 可见，SRD「预算表进 PR 注释」的落地形式）。
@@ -328,7 +331,30 @@ if (existsSync(manifestPath)) {
       failures.push(`G-G 模块「${mod.slug}」声明 JS ${declared.lazyJsKbGzip}KB 超出预算级 ${mod.budgetClass} 上限 ${caps.jsKb}KB`);
     }
     if (caps && typeof declared.assetsMb === 'number' && declared.assetsMb > caps.assetsMb) {
-      failures.push(`G-G 模块「${mod.slug}」声明资产 ${declared.assetsMb}MB 超出预算级 ${mod.budgetClass} 上限 ${caps.assetsMb}MB`);
+      // 流式豁免（SRD §10.1 预算表注*）：assetsMb 计入语料全量、运行时单文件按需拉取。
+      // 豁免不是声明即放行——实测流式目录内每个文件 ≤ singleFetchKbMax 才成立，否则照常阻断。
+      const streaming = declared.streaming;
+      if (streaming && typeof streaming.dir === 'string' && typeof streaming.singleFetchKbMax === 'number') {
+        const streamDir = join(PUBLIC_DIR, streaming.dir);
+        const files = existsSync(streamDir) ? walk(streamDir) : [];
+        if (files.length === 0) {
+          failures.push(`G-G 模块「${mod.slug}」流式豁免不成立：public/${streaming.dir} 不存在或为空`);
+        } else {
+          const overs = files.filter((f) => statSync(f).size / 1024 > streaming.singleFetchKbMax);
+          if (overs.length > 0) {
+            failures.push(
+              `G-G 模块「${mod.slug}」流式豁免不成立：public/${streaming.dir} 内 ${overs.length} 个文件超单次拉取上限 ${streaming.singleFetchKbMax}KB（如 ${posix.relative(ROOT, overs[0])}）——资产 ${declared.assetsMb}MB 按预算级 ${mod.budgetClass} 上限 ${caps.assetsMb}MB 阻断`,
+            );
+          } else {
+            const maxKb = Math.max(...files.map((f) => statSync(f).size / 1024));
+            say(
+              `- 「${mod.slug}」资产 ${declared.assetsMb}MB > ${mod.budgetClass} 级上限 ${caps.assetsMb}MB，流式豁免成立（SRD §10.1 注*）：public/${streaming.dir} 共 ${files.length} 个文件，实测最大单文件 ${maxKb.toFixed(1)}KB ≤ 单次拉取上限 ${streaming.singleFetchKbMax}KB —— ✅`,
+            );
+          }
+        }
+      } else {
+        failures.push(`G-G 模块「${mod.slug}」声明资产 ${declared.assetsMb}MB 超出预算级 ${mod.budgetClass} 上限 ${caps.assetsMb}MB`);
+      }
     }
     // 实测：按 slug 命名约定定位懒加载 chunk（无法定位时提示，不阻断）
     const owned = chunks.filter((c) => c.includes(mod.slug));

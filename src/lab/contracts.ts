@@ -29,6 +29,20 @@ export const labModuleSchema = z.object({
   budget: z.object({
     lazyJsKbGzip: z.number().positive(),
     assetsMb: z.number().nonnegative(),
+    /**
+     * 流式豁免（SRD §10.1 预算表注*）：assetsMb 计入语料全量，但运行时按需
+     * 单文件流式拉取，不构成一次性加载。豁免不是自动放行——audit-budget 实测
+     * public/{dir} 内每个文件都 ≤ singleFetchKbMax 时才成立，否则照常按
+     * 预算级上限阻断。
+     */
+    streaming: z
+      .object({
+        /** 流式语料目录（public/ 相对路径） */
+        dir: z.string(),
+        /** 单次拉取（单文件）体积上限，KB */
+        singleFetchKbMax: z.number().positive(),
+      })
+      .optional(),
   }),
   /** 能力需求声明（facade 据此决定探测与降级链） */
   capabilities: z.object({
