@@ -18,24 +18,7 @@ const title = '王磊｜汽车智能座舱与 AI 解决方案经理';
 const description =
   '把复杂技术转化为可决策、可交付、可复用的解决方案——聚焦汽车 × 座舱 × 多语种 × 大模型 × AI 工作流的交叉地带。';
 
-// JSON-LD 占位（Person + WebSite）；Phase 3 SEO 收尾时补全 sameAs / image 等字段
-const jsonLd = [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: '王磊',
-    jobTitle: '汽车智能座舱与 AI 解决方案经理',
-    url: new URL(`${base}/`, Astro.site).href,
-    knowsAbout: ['智能座舱', '多语种 HMI', '车载大模型', 'AI 工作流'],
-  },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: title,
-    url: new URL(`${base}/`, Astro.site).href,
-    inLanguage: 'zh-CN',
-  },
-];
+// JSON-LD：全站 Person + WebSite 由 BaseLayout 自动注入（SRD §9.4 单点），首页无页型增量
 
 // 区块 2：能力三支柱（文案源 master-plan §3 区块 2；锚点均可被现有资产佐证）
 const pillars = [
@@ -93,7 +76,7 @@ const cases = [
 ];
 ---
 
-<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+<BaseLayout title={title} description={description}>
   <!-- 区块 1：Hero（定位） -->
   <HomeHero />
 
