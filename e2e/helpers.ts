@@ -11,6 +11,7 @@ export const u = (path: string): string => `${BASE}${path}`;
  * 待交付路由白名单 —— 与 scripts/check-links.mjs 的 PENDING_ROUTES 保持同步。
  * 语义与 CI 门禁一致：这些路由允许 404；一旦真实交付（返回 200），
  * 本白名单条目过期，site-health 测试会失败，强制删除条目（只收缩不增长）。
+ * integration 批次：`/world-spike/` 已交付（world-spike-vehicle 合流），条目清退。
  */
 export const PENDING_ROUTES = new Set([
   '/work/',
@@ -30,6 +31,14 @@ export const SHOT_DIR = 'docs/spec/assets/e2e-batch1';
 /** 关键状态截图：供 e2e-test-report-batch1.md 引用 */
 export async function shot(page: Page, name: string): Promise<void> {
   await page.screenshot({ path: `${SHOT_DIR}/${name}.png` });
+}
+
+/** integration 批次截图目录（e2e-test-report-integration.md 引用，随 docs 入库） */
+export const SHOT_DIR_INTEGRATION = 'docs/spec/assets/e2e-integration';
+
+/** integration 批次关键状态截图 */
+export async function shotIntegration(page: Page, name: string): Promise<void> {
+  await page.screenshot({ path: `${SHOT_DIR_INTEGRATION}/${name}.png` });
 }
 
 /**
