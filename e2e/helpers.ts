@@ -21,7 +21,6 @@ export const PENDING_ROUTES = new Set([
   '/ai-lab/',
   '/about/',
   '/contact/',
-  '/world-spike/',
   '/rss.xml',
 ]);
 
