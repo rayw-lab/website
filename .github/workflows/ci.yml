@@ -1,0 +1,65 @@
+# CI 质量门禁（Track D · D2 一期 + D4 断言预埋）—— SRD §11.2、roadmap §4.4
+#
+# 与 deploy.yml 的分工与不冲突约定：
+#   - deploy.yml：main push → 构建 → 发布 Pages（concurrency group: pages，持有 pages/id-token 权限）；
+#   - ci.yml（本文件）：PR + main push → 只验证不部署，仅 contents:read，
+#     使用独立 concurrency group，不触碰 Pages 部署队列。
+#   - 遗留 jekyll-gh-pages.yml 已删除（SRD 技术债 D1：与 deploy.yml 同触发同目标的部署竞态）。
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: 门禁（check / build / links / budget）
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # pnpm 版本由 package.json#packageManager 决定，不在此显式指定（与 deploy.yml 同约定）。
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # ① TS + content schema 校验（SRD §11.2 ①）
+      - name: astro check
+        run: pnpm astro check
+
+      # ② 构建（SRD §11.2 ②）
+      - name: Build
+        run: pnpm build
+
+      # ③ 内部链接/锚点 + DemoLink↔manifest 一致性（SRD §11.2 ③）
+      - name: Link gate（check-links.mjs）
+        run: node scripts/check-links.mjs dist/
+
+      # ④ 预算门禁：首页 <200KB gzip 分项核算、零 world 字节断言、
+      #    public/ ≤40MB 配额、资产黑名单、manifest 预算对照（SRD §11.2 ④，NFR-P2/P4/P6）。
+      #    预算表写入 job summary（PR 页可见）。
+      - name: Budget gate（audit-budget.mjs）
+        run: node scripts/audit-budget.mjs dist/
+
+      # ⑤ Lighthouse CI —— Track D · D3 里程碑接入 treosh/lighthouse-ci-action
+      #    （首页 + 1 内容页 + 1 Lab 壳页；PR 报告、main 合并线四项 ≥95 阻断，SRD §11.2 ⑤）。
+      #    D2 阶段为占位说明，不产生虚假绿灯：本步骤不做任何断言。
+      - name: Lighthouse CI（D3 待接入，占位）
+        run: echo "Lighthouse 门禁由 D3 里程碑交付（treosh/lighthouse-ci-action，四项 ≥95）——本步骤为 D2 阶段占位说明，无断言。"
