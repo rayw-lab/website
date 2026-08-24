@@ -31,9 +31,9 @@ export const FINISH_PARAMS: Record<
     iridescence: number;
   }
 > = {
-  metallic: { metalness: 1, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.06, iridescence: 0 },
+  metallic: { metalness: 0.9, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.04, iridescence: 0 },
   matte: { metalness: 0.4, roughness: 0.62, clearcoat: 0.12, clearcoatRoughness: 0.5, iridescence: 0 },
-  pearl: { metalness: 0.65, roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.05, iridescence: 0.6 },
+  pearl: { metalness: 0.6, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.04, iridescence: 0.6 },
 };
 
 /** 主车身（Paint 1 分区）自定义车漆，8 色 */
@@ -42,9 +42,9 @@ export const PAINTS: PaintPreset[] = [
   { id: 'moonlight', name: '月光白', color: '#e9eaec', swatch: '#e9eaec', finish: 'pearl' },
   { id: 'titanium', name: '钛灰', color: '#8f959c', swatch: '#8f959c', finish: 'metallic' },
   { id: 'graphene', name: '石墨', color: '#3c4046', swatch: '#3c4046', finish: 'matte' },
-  { id: 'crimson', name: '熔岩红', color: '#7d1020', swatch: '#8d1424', finish: 'metallic' },
-  { id: 'abyss', name: '深海蓝', color: '#1c3f73', swatch: '#1c3f73', finish: 'metallic' },
-  { id: 'forest', name: '竞速绿', color: '#1b4534', swatch: '#1b4534', finish: 'metallic' },
+  { id: 'crimson', name: '熔岩红', color: '#8c1120', swatch: '#8d1424', finish: 'metallic' },
+  { id: 'abyss', name: '深海蓝', color: '#1d4a8e', swatch: '#1d4a8e', finish: 'metallic' },
+  { id: 'forest', name: '竞速绿', color: '#175636', swatch: '#1b5c3a', finish: 'metallic' },
   { id: 'amber', name: '落日橙', color: '#c05a1e', swatch: '#c05a1e', finish: 'metallic' },
 ];
 
