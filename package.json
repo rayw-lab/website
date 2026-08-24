@@ -1,0 +1,28 @@
+{
+  "name": "mywebsite",
+  "version": "0.1.0",
+  "description": "个人网站：Astro + TypeScript + MDX，部署到 GitHub Pages（见 docs/website-plan/master-plan.md）",
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@10.33.3",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "devDependencies": {
+    "@astrojs/mdx": "^7.0.7",
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.2.4",
+    "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
