@@ -1,10 +1,15 @@
 // CarConcept 上车（roadmap §7.2 Step 6）：把配置器同款 3.5MB 资产
 // （public/models/car-concept/，Draco+KTX2，CC BY 4.0 显式豁免复用）挂到
-// 运动学车辆控制器上，并把四个烘死在模型空间的轮组改造成可转/可打方向的枢轴。
+// 运动学车辆控制器上，并把四个轮组改造成可滚转/可打方向的枢轴。
 //
-// CarConcept 的几何全部烘在模型空间（节点无 translation），因此轮组不能直接
-// rotate —— 必须先用包围盒实测轮心，再重挂到「转向枢轴(前轮) → 滚转枢轴 → 网格」
-// 的层级里（网格反向平移回原位）。卡钳（BrakePad）挂转向枢轴、不随轮滚转。
+// 资产实测结构（Spike 排查结论，勿凭直觉改）：
+//   · 场景唯一根 BodyUnderside 带 matrix = -90°X（Z-up 导出），车身网格几何
+//     烘在它的 Z-up 本地空间；
+//   · 四个轮组节点 WheelFront/RearL/R 用 matrix 承载「轮心平移 + 导出时随手
+//     转过的任意姿态旋转」，轮组内子网格（Rim/胎/卡钳/刹车盘）几何全部原点居中；
+//   · 因此枢轴 = 轮节点平移（父本地空间），烘死的姿态旋转直接丢弃（前轮导出
+//     时带转向角，不丢会呈内八字），旋转轴必须换算进父节点 Z-up 本地空间。
+// 层级：父 → 转向枢轴(steer) → 滚转枢轴(spin) → 网格；卡钳挂 steer 不随轮滚转。
 import * as THREE from 'three/webgpu';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
 import type { VehicleGeometry } from './vehicle';
@@ -14,6 +19,10 @@ interface WheelPivot {
   steer: THREE.Group;
   /** 滚转枢轴（绕轮轴自转） */
   spin: THREE.Group;
+  /** 转向轴（枢轴父节点本地空间；见 buildCarRig 内注释） */
+  steerAxis: THREE.Vector3;
+  /** 滚转轴（同上；轴随转向枢轴一起转 = 真实轮轴行为） */
+  spinAxis: THREE.Vector3;
   isFront: boolean;
 }
 
@@ -61,18 +70,14 @@ function makeContactShadow(length: number, width: number): THREE.Mesh {
 export function buildCarRig(gltf: GLTF): CarRig {
   const model = gltf.scene;
 
-  // ---- 1. 实测四个轮组的轮心（几何烘死 → 只能用包围盒） ----
+  // ---- 1. 轮心 = 轮节点世界位置（子网格几何原点居中 ⇒ 节点平移即轮心） ----
   model.updateMatrixWorld(true);
   const wheelNodes = WHEEL_NAMES.map((name) => {
     const node = model.getObjectByName(name);
     if (!node) throw new Error(`CarConcept 缺少轮组节点 ${name}`);
     return node;
   });
-  const box = new THREE.Box3();
-  const centers = wheelNodes.map((node) => {
-    box.setFromObject(node);
-    return box.getCenter(new THREE.Vector3());
-  });
+  const centers = wheelNodes.map((node) => node.getWorldPosition(new THREE.Vector3()));
   const [fl, fr, rl, rr] = centers as [
     THREE.Vector3,
     THREE.Vector3,
@@ -90,21 +95,35 @@ export function buildCarRig(gltf: GLTF): CarRig {
 
   const wheelbase = frontMid.distanceTo(rearMid);
   const track = fl.distanceTo(fr);
-  box.setFromObject(wheelNodes[0]!);
-  const wheelSize = box.getSize(new THREE.Vector3());
-  const wheelRadius = wheelSize.y / 2;
+  // 轮半径：轮组子网格本地几何（原点居中）的联合包围盒直径 / 2
+  const wheelBox = new THREE.Box3();
+  wheelNodes[0]!.traverse((o) => {
+    const mesh = o as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    mesh.geometry.computeBoundingBox();
+    wheelBox.union(mesh.geometry.boundingBox!);
+  });
+  const wheelRadius = (wheelBox.max.y - wheelBox.min.y) / 2;
 
-  // ---- 3. 轮组改枢轴：steer(前) → spin → 网格（反向平移回原位） ----
+  // ---- 3. 轮组改枢轴：steer(前) → spin → 网格 ----
+  // 陷阱回顾（Spike 实测教训）：轮节点 matrix 同时带「轮心平移 + 导出时的任意
+  // 姿态旋转」，子网格几何原点居中。旧实现用包围盒中心当轮心（包围盒来自
+  // accessor 声明、原点居中 → 轮心测成 0），四轮静止时全部叠在车体中心（被
+  // 车身轮拱遮住看似正常），一打方向/滚转就绕 1.8m 半径公转飞出车顶。
   const pivots: WheelPivot[] = wheelNodes.map((node, i) => {
-    const center = centers[i]!;
     const parent = node.parent!;
+    const qParentInv = parent.getWorldQuaternion(new THREE.Quaternion()).invert();
+    const steerAxis = upM.clone().applyQuaternion(qParentInv).normalize();
+    const spinAxis = leftM.clone().applyQuaternion(qParentInv).normalize();
+
     const steer = new THREE.Group();
-    steer.position.copy(center);
+    // 枢轴 = 轮节点平移（父本地空间）；节点烘死的姿态旋转刻意不继承
+    steer.position.copy(node.position);
     const spin = new THREE.Group();
     steer.add(spin);
     parent.add(steer);
 
-    // 卡钳不随轮滚转：BrakePad 留在转向枢轴层
+    // 卡钳不随轮滚转：BrakePad 留在转向枢轴层；子网格几何原点居中，本地位置原样保留
     const pads: THREE.Object3D[] = [];
     const spinners: THREE.Object3D[] = [];
     for (const child of [...node.children]) {
@@ -112,11 +131,9 @@ export function buildCarRig(gltf: GLTF): CarRig {
     }
     for (const child of spinners) spin.add(child);
     for (const child of pads) steer.add(child);
-    // 组内网格全部反向平移，使枢轴原点 = 轮心
-    for (const child of [...spinners, ...pads]) child.position.sub(center);
     node.removeFromParent(); // 空壳节点（无 mesh）退役
 
-    return { steer, spin, isFront: i < 2 };
+    return { steer, spin, steerAxis, spinAxis, isFront: i < 2 };
   });
 
   // ---- 4. 内层容器对齐：模型前向 → +Z，轮底 → y=0，轮轴中心 → 原点 ----
@@ -126,7 +143,7 @@ export function buildCarRig(gltf: GLTF): CarRig {
   inner.quaternion.copy(alignQ);
   // 平移：xz 用四轮心均值（轴中心），y 用整车包围盒底（轮胎着地面）
   const wheelMid = frontMid.clone().add(rearMid).multiplyScalar(0.5);
-  box.setFromObject(model);
+  const box = new THREE.Box3().setFromObject(model);
   model.position.set(-wheelMid.x, -box.min.y, -wheelMid.z);
 
   const root = new THREE.Group();
@@ -135,17 +152,13 @@ export function buildCarRig(gltf: GLTF): CarRig {
   const size = box.getSize(new THREE.Vector3());
   root.add(makeContactShadow(size.z, size.x));
 
-  // ---- 5. 每帧驱动：前轮转向（绕模型 up）+ 全轮滚转（绕模型 left） ----
-  const steerQ = new THREE.Quaternion();
-  const spinQ = new THREE.Quaternion();
+  // ---- 5. 每帧驱动：前轮转向（绕枢轴本地 up）+ 全轮滚转（绕枢轴本地 left） ----
+  // spin 轴以 steer 静止系度量：转向时轮轴随枢轴一起转（真实轮轴行为），
+  // 因此 spinAxis 常量即可，不需要每帧重算。
   const update = (steer: number, wheelSpin: number): void => {
-    spinQ.setFromAxisAngle(leftM, wheelSpin);
     for (const p of pivots) {
-      if (p.isFront) {
-        steerQ.setFromAxisAngle(upM, steer);
-        p.steer.quaternion.copy(steerQ);
-      }
-      p.spin.quaternion.copy(spinQ);
+      if (p.isFront) p.steer.quaternion.setFromAxisAngle(p.steerAxis, steer);
+      p.spin.quaternion.setFromAxisAngle(p.spinAxis, wheelSpin);
     }
   };
 
