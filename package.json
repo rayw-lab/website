@@ -15,7 +15,8 @@
     "astro": "astro",
     "test:e2e": "astro build && playwright test",
     "test:e2e:report": "playwright show-report",
-    "human-gate:preview": "node scripts/human-gate-preview.mjs"
+    "human-gate:preview": "node scripts/human-gate-preview.mjs",
+    "human-gate:verify": "node scripts/verify-human-gate.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

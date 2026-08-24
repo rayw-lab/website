@@ -49,6 +49,7 @@
 | 生产构建 | `pnpm build` | 产物输出到 `dist/` |
 | 本地预览 | `pnpm preview --host 0.0.0.0` | 预览 `dist/` 构建产物 |
 | 人工 Gate 预览 | `pnpm human-gate:preview` | build + 局域网 preview，打印 H1/H2 测试 URL（见 `docs/spec/human-gate-checklist.md`） |
+| 人工 Gate 校验 | `pnpm human-gate:verify` | 回填签署档与证据后运行，通过方可合并 main |
 
 注意：`astro.config.mjs` 配置了 `base: '/website'`（GitHub Pages 项目页路径），dev/preview 访问路径为 `http://localhost:4321/website/`。绑定自定义域名后需修改 `site` 并删除 `base`。
 

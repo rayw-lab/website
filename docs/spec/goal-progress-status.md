@@ -10,7 +10,7 @@
 | H1 10 秒定位 ≥80% | **王磊**（本机 + 3–5 被试手机） | `pnpm human-gate:preview` |
 | H2 桌面 60fps + H3 安卓 30fps | **王磊**（真机 Chrome） | 同上 URL → `world-spike/` |
 
-回填：`human-gate-checklist.md` → `mvp-gate-signoff.md` §人工签署区 → 回复「人工 Gate 已填」。
+回填：`human-gate-checklist.md` → `mvp-gate-signoff.md` §人工签署区 → 运行 `pnpm human-gate:verify` 确认可签署。
 
 **Agent 侧工程交付已 100% 完成**；在未收到人工 Gate 证据前，不得标 Goal Complete 或合并 main。
 
