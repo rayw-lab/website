@@ -48,6 +48,7 @@
 | 开发服务器 | `pnpm dev --host 0.0.0.0` | 端口 4321；Cloud Agent 中 `astro-dev` 终端已自动启动 |
 | 生产构建 | `pnpm build` | 产物输出到 `dist/` |
 | 本地预览 | `pnpm preview --host 0.0.0.0` | 预览 `dist/` 构建产物 |
+| 人工 Gate 预览 | `pnpm human-gate:preview` | build + 局域网 preview，打印 H1/H2 测试 URL（见 `docs/spec/human-gate-checklist.md`） |
 
 注意：`astro.config.mjs` 配置了 `base: '/website'`（GitHub Pages 项目页路径），dev/preview 访问路径为 `http://localhost:4321/website/`。绑定自定义域名后需修改 `site` 并删除 `base`。
 
