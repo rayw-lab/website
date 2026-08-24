@@ -9,7 +9,7 @@
 | 项 | 内容 |
 |----|------|
 | 文档名称 | 实施路径鸟瞰图（Implementation Roadmap · Bird's-Eye View） |
-| 版本 | v1.0.1（随审计 P0 修订同步，见 §11.3 修订记录） |
+| 版本 | v1.0.2（D3 Lighthouse CI 交付状态回写，见 §11.3 修订记录） |
 | 状态 | 评审稿（Draft for Review） |
 | 日期 | 2026-08-24 |
 | 读者 | 决策者（王磊）、实施工程师 / Cloud Agent、后续任何接手者 |
@@ -232,7 +232,7 @@ C4Container
 |--------|------|------|-----------|--------|
 | D1 删除 jekyll 遗留工作流 | 删 `.github/workflows/jekyll-gh-pages.yml`（与 deploy.yml 同触发同目标，部署竞态隐患）——**Phase 1 首个 PR 内完成**（SRD D1 债，高优先级） | 无 | 单独小 PR，随时可发 | Agent |
 | D2 ci.yml 门禁一期 | PR 触发：`astro check` + `build` + `check-links.mjs`（内部链接 + DemoLink↔manifest 一致性）+ `audit-budget.mjs`（预算表进 PR 注释） | 无（脚本可先于内容存在） | 与 A1 并行 | Agent |
-| D3 Lighthouse CI | `treosh/lighthouse-ci-action`：首页 + 1 内容页 + 1 Lab 页；PR 报告 + main 合并线四项 ≥ 95 阻断 | D2 | 与 A2~A4 并行 | Agent |
+| D3 Lighthouse CI | `treosh/lighthouse-ci-action`：首页 + 1 内容页 + 1 Lab 页；PR 报告 + main 合并线四项 ≥ 95 阻断——**已交付（2026-08-24）**：`ci.yml` ⑤ 接入 `treosh/lighthouse-ci-action@v12`，阈值/URL 单源 `lighthouserc.json`（首页 + 两 Lab 壳页，每 URL 3 轮取中位轮，移动端预设，四项 ≥ 95 error 级断言）；裁决走不降级路径——不设 continue-on-error 过渡轮，PR 检查即 main 合并线阻断；报告上传 workflow artifact + 临时公开存储。「1 内容页」待 A3 内容页上线后在 `lighthouserc.json` 补一行 URL | D2 | 与 A2~A4 并行 | Agent |
 | D4 world 断言预埋 | `audit-budget.mjs` 增加：首页/内容页关键路径无 world chunk/资产断言（NFR-P6）；资产黑名单（禁 `.wav`/母带/encoder 出库，§8.4 教训）；`public/` ≤ 40MB 配额 | D2；**必须先于 B1 合并** | 与 C2 并行 | Agent |
 | D5 统计与埋点 | GoatCounter 事件契约（SRD §9.5）全量：`lab-mount`/`lab-backend`/`scroll-75`/`pdf-download`；Phase B 起加 world 四事件 | A4 | 随各轨页面交付渐进接入 | Agent |
 | D6 生成管线 | `render-posters.mjs`（车漆 poster 变体）、OG 图端点（satori+resvg，构建时长 > 60s 触发降级为仅 featured）、TTS 管线 README 注记（清 D7 债） | D2 | Phase 2/3 内随需交付 | Agent |
@@ -629,6 +629,7 @@ CarConcept 是写实 PBR，世界建筑是低模风格化——张力**已知且
 |------|------|---------|--------|
 | v1.0 | 2026-08-24 | 初版：四轨并行模型、Phase 0–4 Gate 矩阵、关键路径、Spike 72h 清单、资产计划、风险 Top 10、度量仪表盘 | 云端子代理 |
 | v1.0.1 | 2026-08-24 | 随 PRD/SRD v1.1.1 审计 P0 修订同步（`docs/spec/audit-report-v1.1.md` §9）：**P0-2** Spike 资产门禁口径统一为「`public/world/` 新增 ≤1MB + CarConcept 3.5MB 复用显式豁免」（§5 Phase 2 行、§6 Spike Gate、§7.2 Step 6、§7.3 Step 9 命令注释）；**P0-5** B0 由「第 6 章三豁免」扩容为 master-plan 一揽子修订并标注已落笔（§4.2/§5/§6/§9 RR-07）；上游权威版本号更新为 PRD/SRD v1.1.1、master-plan v1.1 | 云端子代理 |
+| v1.0.2 | 2026-08-24 | Track D · D3 交付状态回写（§4.4 D3 行、§12 cheatsheet）：`ci.yml` ⑤ 占位替换为 `treosh/lighthouse-ci-action@v12` 真实门禁，阈值/URL 单源 `lighthouserc.json`（首页 + `/lab/car-configurator/` + `/lab/tts-cockpit/`，移动端预设四项 ≥ 95 error 级断言，中位轮聚合）；按裁决取不降级路径——无 continue-on-error 过渡轮，PR 检查线即 main 合并线阻断 | 云端子代理 |
 
 ---
 
@@ -651,6 +652,8 @@ pnpm astro check                    # TS + Content Collections zod 校验【P1+�
 
 # ───── Lighthouse（按路由考核，移动端预设）─────
 pnpm build && pnpm preview --host 0.0.0.0 &
+pnpm dlx @lhci/cli autorun --config=lighthouserc.json \
+    --collect.settings.chromeFlags='--no-sandbox'   # CI 同源门禁本地复跑（D3 起可用）
 npx lighthouse http://localhost:4321/website/ \
     --output=json --output=html --chrome-flags='--headless --no-sandbox'
 npx lighthouse http://localhost:4321/website/work/multilingual-cockpit/ \
@@ -686,4 +689,4 @@ gh run view <run-id> --log          # 门禁执行日志抽查
 
 ---
 
-*本文是实施顺序与门禁排布的单一事实来源（v1.0.1）。需求以 PRD v1.1.1 为准、架构以 SRD v1.1.1 为准；任何 Phase Gate 裁决、Spike 结论与数据阀门读数按 §11 规则回写本文。开工者从 §1.2「开工前必读」进入自己的轨道。*
+*本文是实施顺序与门禁排布的单一事实来源（v1.0.2）。需求以 PRD v1.1.1 为准、架构以 SRD v1.1.1 为准；任何 Phase Gate 裁决、Spike 结论与数据阀门读数按 §11 规则回写本文。开工者从 §1.2「开工前必读」进入自己的轨道。*
