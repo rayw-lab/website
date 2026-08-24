@@ -578,10 +578,11 @@ const fontCss = fontFaces
       .orb-label { font-size: 9px; color: var(--scr-dim); letter-spacing: 0.14em; }
 
       /* ---- 中控 ---- */
-      .console { display: grid; grid-template-rows: minmax(190px, 1fr) auto auto; min-width: 0; }
+      .console { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(190px, 1fr) auto auto; min-width: 0; }
+      .console > * { min-width: 0; }
       .cardstage { position: relative; margin: 12px 14px 0; border: 1px solid var(--scr-line-2); border-radius: 10px; background: var(--scr-panel); overflow: hidden; min-height: 200px; }
       .scene-card { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 0.25s; padding: 6px; }
-      .scene-card svg { width: 100%; height: 100%; display: block; }
+      .scene-card > svg { width: 100%; height: 100%; display: block; }
       .screen[data-scene='nav'] .card-nav,
       .screen[data-scene='tour'] .card-tour,
       .screen[data-scene='lane'] .card-lane,
@@ -616,6 +617,7 @@ const fontCss = fontFaces
       .chip {
         position: absolute; font-size: 10px; letter-spacing: 0.06em; color: var(--scr-bg);
         background: var(--scr-accent); border-radius: 3px; padding: 2px 8px;
+        direction: ltr; unicode-bidi: isolate;
         opacity: 0; transform: translateY(4px); transition: opacity 0.25s, transform 0.25s;
       }
       .chip.on { opacity: 1; transform: translateY(0); }
@@ -647,24 +649,25 @@ const fontCss = fontFaces
 
       /* 天气场景 */
       .card-weather { display: grid; }
-      .wx { display: grid; align-content: center; gap: 10px; padding: 12px 22px; }
-      .wx-head { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--scr-line-2); padding-bottom: 8px; }
-      .wx-head b { font-size: 16px; }
-      .wx-head .mono { font-size: 10px; color: var(--scr-dim); letter-spacing: 0.12em; }
-      .wx-main { display: flex; align-items: center; gap: 20px; }
-      .wx-temp { font-size: 52px; font-weight: 600; min-width: 3.2ch; color: var(--scr-text); }
-      .wx-icon { width: 44px; height: 44px; opacity: 0.25; transition: opacity 0.4s; }
+      .wx { display: grid; align-content: center; gap: 8px; padding: 8px 18px; height: 100%; box-sizing: border-box; }
+      .wx-head { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--scr-line-2); padding-bottom: 6px; }
+      .wx-head b { font-size: 15px; }
+      .wx-head .mono { font-size: 9.5px; color: var(--scr-dim); letter-spacing: 0.12em; }
+      .wx-main { display: flex; align-items: center; gap: 16px; min-width: 0; }
+      .wx-temp { font-size: 42px; font-weight: 600; min-width: 3.2ch; color: var(--scr-text); direction: ltr; unicode-bidi: isolate; }
+      .wx-icon { width: 36px; height: 36px; flex-shrink: 0; opacity: 0.25; transition: opacity 0.4s; }
       .wx-icon path { stroke: var(--scr-text); stroke-width: 2; fill: none; stroke-linecap: round; }
       .wx-icon .flake-x, .wx-icon .flake-tip { display: none; }
       .wx-icon.on { opacity: 1; animation: flake 6s linear infinite; }
       @keyframes flake { to { transform: rotate(60deg); } }
       .wx-icon { transform-origin: center; }
-      .wx-cond b { display: block; font-size: 16px; }
-      .wx-cond .mono { font-size: 9.5px; color: var(--scr-dim); letter-spacing: 0.1em; }
+      .wx-cond { min-width: 0; }
+      .wx-cond b { display: block; font-size: 15px; }
+      .wx-cond .mono { font-size: 9px; color: var(--scr-dim); letter-spacing: 0.08em; }
       .wx-chips { display: flex; gap: 8px; flex-wrap: wrap; }
       .wx-chip {
         border: 1px solid var(--scr-line); color: var(--scr-dim); border-radius: 4px;
-        padding: 4px 10px; font-size: 12px; transition: border-color 0.3s, color 0.3s, background 0.3s;
+        padding: 3px 9px; font-size: 12px; transition: border-color 0.3s, color 0.3s, background 0.3s;
       }
       .wx-chip i { font-style: normal; font-size: 9px; letter-spacing: 0.08em; margin-inline-start: 4px; }
       .wx-chip.on { border-color: var(--scr-accent); color: var(--scr-text); background: #ff8a4b14; }
@@ -677,7 +680,7 @@ const fontCss = fontFaces
       .u-line { opacity: 0; transition: opacity 0.3s; }
       .u-line.visible { opacity: 1; }
       .u-text { margin: 0; font-size: 13px; color: var(--scr-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      .caption { margin: 0; font-size: 16.5px; line-height: 1.75; min-height: 3.6em; color: var(--scr-text); unicode-bidi: plaintext; }
+      .caption { margin: 0; font-size: 16.5px; line-height: 1.75; min-height: 3.6em; color: var(--scr-text); unicode-bidi: plaintext; overflow-wrap: anywhere; }
       .cap-placeholder { color: var(--scr-dim); font-size: 13px; }
       .caption .w { opacity: 0.32; transition: opacity 0.12s; border-radius: 2px; }
       .caption .w.said { opacity: 1; }
@@ -687,7 +690,7 @@ const fontCss = fontFaces
       /* ---- 波形区 ---- */
       .wave-row { display: flex; align-items: center; gap: 12px; padding: 6px 16px 14px; }
       #wave { flex: 1; min-width: 0; height: 44px; }
-      .clock { font-size: 10px; color: var(--scr-dim); letter-spacing: 0.08em; white-space: nowrap; }
+      .clock { font-size: 10px; color: var(--scr-dim); letter-spacing: 0.08em; white-space: nowrap; direction: ltr; unicode-bidi: isolate; }
 
       .stage-note { font-size: 11.5px; color: var(--ink-2); margin: 10px 2px 0; max-width: 80ch; }
 
