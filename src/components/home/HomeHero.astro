@@ -1,7 +1,10 @@
 ---
 // HomeHero —— 区块 1：定位首屏（PRD HOME-01；spec §2 / §4.1）。
 // 文案 3 秒可读完，永不做入场延迟（LCP 红线）；文字取 master-plan §3 区块 1。
-// Start here 入口视觉降一级（PRD HOME-10 占位，指向 /world-spike/）。
+// Start here 入口按 PRD HOME-10 门控隐藏（审计 F-1 整改）：world 未 Phase B 正式
+// 上线（LAB-16）前按钮不出现（无 Coming soon）；/world-spike/ 是 noindex 隐藏路由，
+// 依 PRD §7.4「不进导航」不得从首页链接。Phase B /world/ 转正时在 stage-col 内
+// 恢复「Start here」<a>（纯 <a>+CSS 零字节，G-D 导航豁免口径不变）。
 import CtaButton from '../ui/CtaButton.astro';
 import HeroCarStage from './HeroCarStage.astro';
 
@@ -45,9 +48,7 @@ const domains = ['汽车', '座舱', '多语种', '大模型', 'AI 工作流', '
 
     <div class="stage-col">
       <HeroCarStage />
-      <a class="start-here data" href={`${base}/world-spike/`}>
-        Start here · 进入试验场 <span class="arrow" aria-hidden="true">→</span>
-      </a>
+      {/* Start here 入口：HOME-10 门控中（见文件头注），Phase B /world/ 上线随 LAB-16 恢复 */}
     </div>
   </div>
 </section>
@@ -142,28 +143,5 @@ const domains = ['汽车', '座舱', '多语种', '大模型', 'AI 工作流', '
   .stage-col {
     display: grid;
     gap: var(--space-3);
-  }
-
-  .start-here {
-    justify-self: end;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding-block: var(--space-2);
-    color: var(--ink-2);
-    letter-spacing: 0.02em;
-    transition: color var(--duration-hover) var(--ease-out);
-  }
-
-  .start-here:hover {
-    color: var(--accent);
-  }
-
-  .arrow {
-    transition: transform var(--duration-hover) var(--ease-out);
-  }
-
-  .start-here:hover .arrow {
-    transform: translateX(4px);
   }
 </style>
