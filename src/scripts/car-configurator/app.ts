@@ -7,7 +7,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
-import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import {
   PAINTS,
   WHEELS,
@@ -70,7 +70,7 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
     forceWebGL: query.get('gl') === '1',
   });
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.12;
+  renderer.toneMappingExposure = 1.05;
   // 移动端 DPR 封顶 1.5，桌面 2 —— 控制像素负载（性能预算见调研 7.2）
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarsePointer ? 1.5 : 2));
   await renderer.init();
@@ -95,7 +95,7 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
 
   const [gltf, envTex] = await Promise.all([
     gltfLoader.loadAsync(`${base}/models/car-concept/CarConcept.gltf`),
-    new RGBELoader(manager).loadAsync(`${base}/hdri/studio_small_08_1k.hdr`),
+    new HDRLoader(manager).loadAsync(`${base}/hdri/studio_small_08_1k.hdr`),
   ]);
   setProgress(1);
 
@@ -103,7 +103,7 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
   const scene = new THREE.Scene();
   envTex.mapping = THREE.EquirectangularReflectionMapping;
   scene.environment = envTex;
-  scene.environmentIntensity = 1.1;
+  scene.environmentIntensity = 0.95;
   const bgColor = new THREE.Color('#101216');
   scene.background = bgColor;
 
