@@ -21,10 +21,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # package manager 版本由 package.json 的 packageManager 字段决定，
+      # 不在此显式指定以避免 pnpm/action-setup 版本冲突报错。
       - name: Build with Astro
         uses: withastro/action@v6
-        with:
-          package-manager: pnpm@latest
 
   deploy:
     needs: build
