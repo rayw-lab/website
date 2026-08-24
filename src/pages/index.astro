@@ -1,0 +1,70 @@
+---
+// 首页占位页：仅验证工程与部署链路可用。
+// 正式首页按 master-plan 第 3 章「首页五区块」实现。
+const title = '王磊｜汽车智能座舱与 AI 解决方案经理';
+const tagline = '把复杂技术转化为可决策、可交付、可复用的解决方案';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={tagline} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <main>
+      <h1>{title}</h1>
+      <p>{tagline}</p>
+      <p class="note">网站建设中 — 站点骨架已就绪（Astro + TypeScript + MDX）。</p>
+      <p class="note">
+        实验室：<a href={`${import.meta.env.BASE_URL}/lab/tts-cockpit`.replace('//', '/')}
+          >多语言 TTS × 智能座舱可视化演示</a
+        >
+      </p>
+    </main>
+  </body>
+</html>
+
+<style>
+  :root {
+    color-scheme: light dark;
+  }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: #fafaf8;
+    color: #111;
+    font-family:
+      Inter,
+      'Source Han Sans SC',
+      'Noto Sans SC',
+      system-ui,
+      sans-serif;
+  }
+  main {
+    max-width: 68ch;
+    padding: 2rem;
+    text-align: center;
+  }
+  h1 {
+    font-size: 1.75rem;
+    line-height: 1.4;
+  }
+  .note {
+    color: #666;
+    font-size: 0.9rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: #111;
+      color: #fafaf8;
+    }
+    .note {
+      color: #999;
+    }
+  }
+</style>

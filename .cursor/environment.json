@@ -1,0 +1,17 @@
+{
+  "name": "website (Astro + TypeScript + MDX)",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "astro-dev",
+      "description": "Astro dev server（端口 4321）。package.json 含 astro dev 脚本时自动启动，否则打印提示并保持空闲。",
+      "command": "bash .cursor/dev-server.sh"
+    }
+  ],
+  "ports": [
+    {
+      "name": "astro-dev",
+      "port": 4321
+    }
+  ]
+}
