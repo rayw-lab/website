@@ -21,7 +21,8 @@
 
 | 项 | 状态 |
 |----|------|
-| 集成基线 | `cursor/bruno-implementation-plan-1d6f` @ `96c1314` |
+| 集成基线 | `cursor/bruno-implementation-plan-1d6f` @ `2b76c9c` |
+| E2E 复跑 | ✅ **42/42**（13.9m，world-spike 全例 + WS-PERF-01） |
 | 推送 | ✅ `origin/cursor/bruno-implementation-plan-1d6f` |
 | PR | [#12](https://github.com/rayw-lab/website/pull/12)（草稿） |
 
