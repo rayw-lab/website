@@ -12,6 +12,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     // /world-spike/ 是 noindex 隐藏路由（roadmap §7.1 Step 2），不进 sitemap
+    // （engine 与 vehicle 两分支同一过滤条件，合并取一）
     sitemap({ filter: (page) => !page.includes('/world-spike/') }),
   ],
   vite: {

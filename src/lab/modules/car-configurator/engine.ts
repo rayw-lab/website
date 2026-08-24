@@ -4,15 +4,10 @@
 // 本文件是重资产分包：只允许经 index.ts 的 mount() 动态 import（SRD §12.2 第 3 步），
 // 生命周期（挂载条件/暂停/卸载/进度/后端徽章）全部交给统一 facade（§9.2）。
 import * as THREE from 'three/webgpu';
-// 仅类型导入：KTX2Loader.detectSupport 的类型签名要求核心包的 WebGLRenderer，
-// 而 three/webgpu 的类型不再导出它（运行时传 WebGPURenderer 是受支持的）。
-import type { WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import type { LabInstance, LabMountOptions } from '../../contracts';
+import { createGltfLoaderBundle } from '../../shared/gltf-loaders';
 import {
   PAINTS,
   WHEELS,
@@ -85,24 +80,13 @@ export async function createCarConfigurator(opts: LabMountOptions): Promise<LabI
   );
   opts.onBackend?.(isWebGPU ? 'webgpu' : 'webgl2');
 
-  // ---- 资产加载（LoadingManager 汇总进度 → facade 进度条） ----
+  // ---- 资产加载（共享 loader 组：Draco+KTX2，进度 → facade 进度条） ----
   const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
-  const manager = new THREE.LoadingManager();
-  manager.onProgress = (_url, loaded, total) => opts.onProgress?.(loaded, Math.max(total, 1));
-
-  // Draco / Basis 解码器不设路径：r185 起 loader 内置 import.meta.url 解析，
-  // 由 bundler 自动携带 wasm 产物（带内容 hash，走同源 CDN 缓存）。
-  const dracoLoader = new DRACOLoader(manager);
-  const ktx2Loader = new KTX2Loader(manager).detectSupport(
-    renderer as unknown as WebGLRenderer,
-  );
-  const gltfLoader = new GLTFLoader(manager)
-    .setDRACOLoader(dracoLoader)
-    .setKTX2Loader(ktx2Loader);
+  const loaders = createGltfLoaderBundle(renderer, opts.onProgress);
 
   const [gltf, envTex] = await Promise.all([
-    gltfLoader.loadAsync(`${base}/models/car-concept/CarConcept.gltf`),
-    new HDRLoader(manager).loadAsync(`${base}/hdri/studio_small_08_1k.hdr`),
+    loaders.gltfLoader.loadAsync(`${base}/models/car-concept/CarConcept.gltf`),
+    new HDRLoader(loaders.manager).loadAsync(`${base}/hdri/studio_small_08_1k.hdr`),
   ]);
   opts.onProgress?.(1, 1);
 
@@ -514,8 +498,7 @@ export async function createCarConfigurator(opts: LabMountOptions): Promise<LabI
       disposeMaterial(customPaint);
       envTex.dispose();
       shadowTexture.dispose();
-      dracoLoader.dispose();
-      void ktx2Loader.dispose();
+      loaders.dispose();
       void renderer.dispose();
       // dispose 后原 canvas 的 GL 上下文已不可复用：原位换成全新克隆，保证舞台可重复挂载
       canvas.replaceWith(canvas.cloneNode(false));
