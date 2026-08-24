@@ -16,11 +16,44 @@ import {
 const module = getLabModule('car-configurator');
 ---
 
-<LabLayout module={module} theme="dark">
+<LabLayout module={module} theme="dark" skipHref="#cfg-notes">
   <Fragment slot="lede">
     一台通用概念车的虚拟展厅：换车漆、切轮毂、一键涂装，全部在浏览器里实时完成。
     WebGPU 优先渲染，WebGL&nbsp;2 自动回退；整车 3D 资产约 5&nbsp;MB。
   </Fragment>
+
+  <!-- LAB-05：30 秒结论（零交互可读） -->
+  <Fragment slot="conclusion">
+    <p>
+      这个演示证明：<b>浏览器已经可以承载「座舱级」的实时 3D HMI</b>——WebGPU
+      优先渲染、WebGL&nbsp;2 自动回退，8 车漆 × 2 轮毂 × 3 涂装实时切换，
+      交互范式与量产座舱的可视化车控同构。
+    </p>
+    <p>
+      同样重要的是工程纪律：Draco + KTX2 压缩整车资产约 3.5&nbsp;MB、poster
+      懒加载、画面静止零重绘——重资产永不进首屏预算。不想交互，拿走一句话：
+      <b>网页配置器与座舱 3D HMI，在渲染管线与状态管理上是同一套工程判断</b>。
+    </p>
+  </Fragment>
+  <figure class="lab-flowfig" slot="capability-figure">
+    <div
+      class="lab-flow"
+      role="img"
+      aria-label="能力示意：Draco 与 KTX2 压缩的整车资产经 poster 懒加载进入渲染层，WebGPU 优先、WebGL 2 自动回退，驱动实时换漆、轮毂与涂装切换"
+    >
+      <span class="lab-flow-node">GLB · Draco+KTX2</span>
+      <span class="lab-flow-arrow" aria-hidden="true">→</span>
+      <span class="lab-flow-node">poster facade 懒加载</span>
+      <span class="lab-flow-arrow" aria-hidden="true">→</span>
+      <span class="lab-flow-group">
+        <span class="lab-flow-node hl">WebGPU 渲染</span>
+        <span class="lab-flow-node">WebGL 2 自动回退</span>
+      </span>
+      <span class="lab-flow-arrow" aria-hidden="true">→</span>
+      <span class="lab-flow-node">实时换漆 / 轮毂 / 涂装</span>
+    </div>
+    <figcaption>能力示意：压缩资产 → 懒加载 → 双后端渲染 → 实时配置</figcaption>
+  </figure>
 
   <!-- ============ 3D 配置器（统一 facade 舞台 + 控制坞） ============ -->
   <LabStage
@@ -133,7 +166,7 @@ const module = getLabModule('car-configurator');
   </LabStage>
 
   <!-- ============ 场景注解（虚构） ============ -->
-  <section class="sect">
+  <section class="sect" id="cfg-notes">
     <h2><span class="sect-no">01</span>场景注解<em class="sect-fiction">虚构演示说明</em></h2>
     <p>
       在新一代智能座舱里，「可视化车控」把整车状态浓缩成中控屏上一台可交互的 3D

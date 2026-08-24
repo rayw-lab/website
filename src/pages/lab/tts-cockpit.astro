@@ -45,7 +45,7 @@ const fontCss = fontFaces
   .join('\n');
 ---
 
-<LabLayout module={module} theme="paper" bodyClass="ttsc">
+<LabLayout module={module} theme="paper" bodyClass="ttsc" skipHref="#fn">
   <Fragment slot="head">
     <style is:global set:html={fontCss}></style>
   </Fragment>
@@ -55,6 +55,40 @@ const fontCss = fontFaces
     SVG 路线随播报推进、Canvas 波形来自真实音频频谱。「多语种不是翻译一遍」：切换语言，
     听节奏差异，看 RTL 布局镜像与字宽变化。
   </Fragment>
+
+  <!-- LAB-05：30 秒结论（零交互可读） -->
+  <Fragment slot="conclusion">
+    <p>
+      这个演示证明：<b>「多语种座舱」不是把文案翻译 16 遍</b>——同一条播报指令在不同语种下的
+      时长、节奏、字宽与书写方向都不同；字幕逐词点亮、路线推进与频谱波形全部由词级时间戳驱动、
+      同一条时间轴对齐。
+    </p>
+    <p>
+      全部音频与时间轴离线预生成（eSpeak NG 管线，零 API Key），覆盖阿拉伯语、希伯来语两个
+      RTL 语种的布局镜像。不想交互，拿走一句话：
+      <b>多语种座舱的验收要看时间轴与排版，不只是翻译质量</b>。
+    </p>
+  </Fragment>
+  <figure class="lab-flowfig" slot="capability-figure">
+    <div
+      class="lab-flow"
+      role="img"
+      aria-label="能力示意：16 语种语料经 eSpeak NG 构建期离线合成为音频与词级时间轴，运行时由同一条时间轴驱动字幕、路线与波形三路同步"
+    >
+      <span class="lab-flow-node">语料 × 16 语种</span>
+      <span class="lab-flow-arrow" aria-hidden="true">→</span>
+      <span class="lab-flow-node">eSpeak NG 离线合成</span>
+      <span class="lab-flow-arrow" aria-hidden="true">→</span>
+      <span class="lab-flow-node hl">mp3 + 词级时间轴</span>
+      <span class="lab-flow-arrow" aria-hidden="true">→</span>
+      <span class="lab-flow-group">
+        <span class="lab-flow-node">字幕逐词点亮</span>
+        <span class="lab-flow-node">SVG 路线推进</span>
+        <span class="lab-flow-node">频谱波形</span>
+      </span>
+    </div>
+    <figcaption>能力示意：一条时间轴驱动三路音画同步——资产全部构建期预生成</figcaption>
+  </figure>
 
   <Fragment slot="masthead-extra">
     <p class="disclaimer">
@@ -406,7 +440,8 @@ const fontCss = fontFaces
           Rive 状态机动效、MapLibre + deck.gl 真实路线动画。
         </li>
         <li>
-          本页零第三方运行时请求：音频、时间轴、字体全部同源托管；无 Cookie、无统计脚本。
+          音频、时间轴、字体全部同源托管，演示本体零第三方运行时请求；无 Cookie——
+          站点统计仅 GoatCounter 匿名计数（无 Cookie、无个体追踪，SRD §9.5 事件契约）。
           动效遵循 <code>prefers-reduced-motion</code>。
         </li>
       </ol>
@@ -680,7 +715,8 @@ const fontCss = fontFaces
   .stage-note { font-size: 11.5px; color: var(--ink-2); margin: 10px 2px 0; max-width: 80ch; }
 
   /* ================= 页脚 ================= */
-  .fnotes { max-width: 90ch; padding-inline-start: 20px; margin: 8px 0 18px; display: grid; gap: 8px; font-size: 13px; color: var(--ink-2); }
+  /* list-style 显式声明：接入 BaseLayout 后 global.css 的 ul/ol reset 会清掉序号 */
+  .fnotes { list-style: decimal; max-width: 90ch; padding-inline-start: 20px; margin: 8px 0 18px; display: grid; gap: 8px; font-size: 13px; color: var(--ink-2); }
   .fnotes b { color: var(--ink); }
   .fnotes code { font-family: var(--mono); font-size: 12px; background: var(--paper-2); padding: 0 4px; border-radius: 2px; }
   .foot-code { font-size: 10px; color: var(--ink-2); letter-spacing: 0.1em; border-top: 1px solid var(--hairline); padding-top: 10px; }

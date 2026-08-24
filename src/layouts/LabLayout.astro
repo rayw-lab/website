@@ -1,34 +1,42 @@
 ---
-// Lab Demo 页壳（SRD §7 [P2]）：读 manifest 渲染页眉（LAB 编号 / 状态 / 技术角标）、
-// 面包屑与页脚回链；演示主体（LabStage + 模块专属控制面）由页面经默认 slot 组装。
-// 页面瘦身目标：pages/lab/*.astro = LabLayout + 静态控制面 + facade 挂载点（§12.1 Phase 2）。
+// Lab Demo 页壳（SRD §7 [P2]；Track C · C1）：嵌入 BaseLayout 获得全站导航 /
+// SEO meta / JSON-LD / 统计（LAB-03/04「接入全站布局与导航」），并读 manifest
+// 渲染页眉（LAB 编号 / 状态 / 技术角标）、面包屑与页脚回链。
+// LAB-05「30 秒结论 + 跳过出口」内建于本布局：页面经 slot="conclusion"（两三句话）
+// 与 slot="capability-figure"（一张能力示意）供稿，结论区无需任何交互即可读完；
+// 跳过出口 = 「跳过演示直接看说明」锚点 + 「返回 Lab 索引」双链。
+// 演示主体（LabStage + 模块专属控制面）仍由页面经默认 slot 组装。
+import BaseLayout from './BaseLayout.astro';
 import type { LabModule } from '../lab/contracts';
+import { breadcrumbJsonLd } from '../data/jsonld';
 
 interface Props {
   module: LabModule;
   /** 视觉主题：dark（配置器系）/ paper（技术编辑部系） */
   theme?: 'dark' | 'paper';
-  /** 附加 body class（旧页面样式命名空间，如 ttsc） */
+  /** 附加命名空间 class（旧页面样式命名空间，如 ttsc），挂在 .lab-scope 包装层 */
   bodyClass?: string;
+  /** 「跳过演示」锚点（默认页脚说明区 #lab-notes；页面可指向自己的说明章节） */
+  skipHref?: string;
 }
 
-const { module, theme = 'dark', bodyClass } = Astro.props;
+const { module, theme = 'dark', bodyClass, skipHref = '#lab-notes' } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const title = `${module.title}｜LAB ${module.code}｜王磊`;
 const statusLabel = { live: 'LIVE', wip: 'WIP', archived: 'ARCHIVED' }[module.status];
+
+const homeUrl = new URL(`${base}/`, Astro.site).href;
+const jsonLd = breadcrumbJsonLd([
+  { name: '首页', url: homeUrl },
+  { name: 'Lab 实验室', url: new URL(`${base}/lab/`, Astro.site).href },
+  { name: module.title, url: new URL(`${base}/lab/${module.slug}/`, Astro.site).href },
+]);
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={module.description} />
-    <meta name="color-scheme" content={theme === 'dark' ? 'dark' : 'light'} />
-    <title>{title}</title>
-    <slot name="head" />
-  </head>
-  <body class:list={[`lab-theme-${theme}`, bodyClass]}>
+<BaseLayout title={title} description={module.description} jsonLd={jsonLd} trackScroll>
+  <Fragment slot="head"><slot name="head" /></Fragment>
+
+  <div class:list={['lab-scope', `lab-theme-${theme}`, bodyClass]}>
     <div class="lab-page">
       <header class="lab-masthead">
         <nav class="lab-crumb lab-mono" aria-label="面包屑">
@@ -50,21 +58,52 @@ const statusLabel = { live: 'LIVE', wip: 'WIP', archived: 'ARCHIVED' }[module.st
         <slot name="masthead-extra" />
       </header>
 
-      <main class="lab-main">
-        <slot />
-      </main>
+      <!-- LAB-05：30 秒结论区（零交互可读）+ 跳过出口 -->
+      {
+        Astro.slots.has('conclusion') && (
+          <section class="lab-tldr" aria-labelledby="lab-tldr-heading">
+            <div class="lab-tldr-bar">
+              <h2 class="lab-tldr-heading" id="lab-tldr-heading">
+                <span class="lab-mono lab-tldr-tag">30 SEC</span>这个演示证明什么
+              </h2>
+              <p class="lab-skip lab-mono">
+                不想交互？
+                <a href={skipHref}>跳过演示，直接看实现说明 ↓</a>
+                <span aria-hidden="true">·</span>
+                <a href={`${base}/lab/`}>返回 Lab 索引</a>
+              </p>
+            </div>
+            <div class="lab-tldr-grid">
+              <div class="lab-tldr-text">
+                <slot name="conclusion" />
+              </div>
+              {Astro.slots.has('capability-figure') && (
+                <div class="lab-tldr-figure">
+                  <slot name="capability-figure" />
+                </div>
+              )}
+            </div>
+          </section>
+        )
+      }
 
-      <footer class="lab-foot">
+      <div class="lab-main">
+        <slot />
+      </div>
+
+      <footer class="lab-foot" id="lab-notes">
         <slot name="footer" />
         <p class="lab-back"><a href={`${base}/`}>← 返回首页</a> · <a href={`${base}/lab/`}>Lab 索引</a></p>
       </footer>
     </div>
-  </body>
-</html>
+  </div>
+</BaseLayout>
 
 <style is:global>
-  /* ---------- Lab 主题 token（LabLayout / LabStage / 页面共用） ---------- */
-  body.lab-theme-dark {
+  /* ---------- Lab 主题 token（LabLayout / LabStage / 页面共用） ----------
+     挂在 .lab-scope 包装层（非 body）：站点 Header/Footer 保持全站主题，
+     演示画布区独立配色（C1 接入 BaseLayout 后的分层约定）。 */
+  .lab-scope.lab-theme-dark {
     --lab-bg: #0b0c0f;
     --lab-panel: #101216;
     --lab-line: #23252c;
@@ -75,7 +114,7 @@ const statusLabel = { live: 'LIVE', wip: 'WIP', archived: 'ARCHIVED' }[module.st
     --lab-accent-on-stage: #9ecbff;
     color-scheme: dark;
   }
-  body.lab-theme-paper {
+  .lab-scope.lab-theme-paper {
     --lab-bg: #f5f4ef;
     --lab-panel: #fffdf7;
     --lab-line: #d8d5c9;
@@ -86,14 +125,13 @@ const statusLabel = { live: 'LIVE', wip: 'WIP', archived: 'ARCHIVED' }[module.st
     --lab-accent-on-stage: #ff8a4b;
     color-scheme: light;
   }
-  body.lab-theme-dark,
-  body.lab-theme-paper {
+  .lab-scope {
     --lab-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
-    margin: 0;
     background: var(--lab-bg);
     color: var(--lab-text);
     font-family: Inter, 'Source Han Sans SC', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei',
       system-ui, sans-serif;
+    font-size: 1rem;
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
   }
@@ -183,6 +221,118 @@ const statusLabel = { live: 'LIVE', wip: 'WIP', archived: 'ARCHIVED' }[module.st
     color: var(--lab-muted);
     white-space: nowrap;
   }
+
+  /* ---------- LAB-05：30 秒结论区 + 跳过出口 ---------- */
+  .lab-tldr {
+    margin-top: 1.2rem;
+    border: 1px solid var(--lab-line);
+    border-left: 3px solid var(--lab-accent);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--lab-panel) 82%, transparent);
+    padding: 1rem 1.2rem 1.1rem;
+  }
+  .lab-tldr-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.4rem 1.2rem;
+    margin-bottom: 0.7rem;
+  }
+  .lab-tldr-heading {
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 650;
+    letter-spacing: 0.02em;
+  }
+  .lab-tldr-tag {
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    color: var(--lab-accent);
+    border: 1px solid var(--lab-line-strong);
+    border-radius: 999px;
+    padding: 0.15em 0.75em;
+    margin-right: 0.8em;
+    vertical-align: 0.12em;
+  }
+  .lab-skip {
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--lab-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6em;
+  }
+  .lab-tldr-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 1.2rem;
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .lab-tldr-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .lab-tldr-text p {
+    margin: 0 0 0.7rem;
+    font-size: 0.95rem;
+    color: var(--lab-text);
+  }
+  .lab-tldr-text p:last-child {
+    margin-bottom: 0;
+  }
+  .lab-tldr-text b {
+    color: var(--lab-accent);
+  }
+
+  /* 能力示意（一张图讲清管线；HTML 流程图，随主题配色） */
+  .lab-flowfig {
+    margin: 0;
+    border: 1px dashed var(--lab-line-strong);
+    border-radius: 10px;
+    padding: 0.9rem 1rem 0.75rem;
+  }
+  .lab-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .lab-flow-node {
+    font-family: var(--lab-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    border: 1px solid var(--lab-line-strong);
+    border-radius: 6px;
+    padding: 0.32em 0.7em;
+    background: var(--lab-panel);
+    color: var(--lab-text);
+    white-space: nowrap;
+  }
+  .lab-flow-node.hl {
+    border-color: var(--lab-accent);
+    color: var(--lab-accent);
+  }
+  .lab-flow-arrow {
+    font-family: var(--lab-mono);
+    font-size: 0.78rem;
+    color: var(--lab-muted);
+  }
+  .lab-flow-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .lab-flowfig figcaption {
+    margin-top: 0.7rem;
+    font-size: 0.7rem;
+    color: var(--lab-muted);
+    font-family: var(--lab-mono);
+    letter-spacing: 0.04em;
+  }
+
   .lab-main {
     margin-top: 1.4rem;
   }
