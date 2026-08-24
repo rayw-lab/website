@@ -1,0 +1,155 @@
+---
+// CaseCard —— 区块 4：旗舰案例预览卡（PRD HOME-04）。
+// 固定三行结构：问题 → 动作 → 结果 + 证据等级徽章 + 「配套 Demo →」挂钩。
+// P1 占位文案（写实格式）；P3 接 Content Collections 单源同步。
+import EvidenceBadge from '../ui/EvidenceBadge.astro';
+
+interface Props {
+  title: string;
+  level: 'L1' | 'L2' | 'L3' | 'L4';
+  problem: string;
+  action: string;
+  result: string;
+  href: string;
+  demoHref?: string;
+  demoLabel?: string;
+  style?: string;
+}
+
+const {
+  title,
+  level,
+  problem,
+  action,
+  result,
+  href,
+  demoHref,
+  demoLabel = '配套 Demo',
+  style,
+} = Astro.props;
+
+const rows = [
+  { key: '问题', value: problem },
+  { key: '动作', value: action },
+  { key: '结果', value: result },
+];
+---
+
+<article class="card case-card reveal" style={style}>
+  <header>
+    <h3><a href={href}>{title}</a></h3>
+    <EvidenceBadge level={level} />
+  </header>
+  <dl>
+    {
+      rows.map((row) => (
+        <div class="row">
+          <dt>{row.key}</dt>
+          <dd>{row.value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+  <footer>
+    <a class="more" href={href}>
+      阅读案例 <span class="arrow" aria-hidden="true">→</span>
+    </a>
+    {
+      demoHref && (
+        <a class="more demo" href={demoHref}>
+          {demoLabel} <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      )
+    }
+  </footer>
+</article>
+
+<style>
+  .case-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-6);
+  }
+
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  h3 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  h3 a {
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  h3 a:hover {
+    color: var(--accent);
+  }
+
+  dl {
+    display: grid;
+    gap: var(--space-4);
+    margin-block: var(--space-5);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--space-3);
+  }
+
+  dt {
+    font-size: var(--text-label);
+    font-weight: 500;
+    line-height: 1.9;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+
+  dd {
+    font-size: var(--text-small);
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin-block-start: auto;
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--line);
+  }
+
+  .more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--ink-2);
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  .more:hover {
+    color: var(--accent);
+  }
+
+  .demo {
+    color: var(--accent);
+  }
+
+  .arrow {
+    transition: transform var(--duration-hover) var(--ease-out);
+  }
+
+  .more:hover .arrow {
+    transform: translateX(4px);
+  }
+</style>

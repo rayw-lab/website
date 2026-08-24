@@ -1,0 +1,54 @@
+---
+// CtaButton —— 主/次两态 CTA 按钮（spec §5.2）。
+// 主态：工业橙图形级底 + 近黑文字（白字对 #E8590C 对比不足 4.5:1，禁用）。
+// 悬停位移 ≤ 4px，只动 transform（spec §3.4）。
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary';
+  class?: string;
+}
+
+const { href, variant = 'primary', class: className } = Astro.props;
+---
+
+<a class:list={['cta', variant, className]} href={href}><slot /></a>
+
+<style>
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 2.75rem; /* 触控目标 ≥ 44px */
+    padding: var(--space-2) var(--space-5);
+    border-radius: var(--radius-card);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: var(--leading-small);
+    transition:
+      transform var(--duration-hover) var(--ease-out),
+      border-color var(--duration-hover) var(--ease-out),
+      background-color var(--duration-hover) var(--ease-out);
+  }
+
+  .cta:hover {
+    transform: translateY(-2px);
+  }
+
+  .primary {
+    background: var(--accent-strong);
+    color: var(--on-accent);
+    font-weight: 600;
+  }
+
+  .secondary {
+    border: 1px solid var(--line);
+    color: var(--ink);
+    background: transparent;
+  }
+
+  .secondary:hover {
+    border-color: var(--accent-strong);
+    background: var(--accent-soft);
+  }
+</style>

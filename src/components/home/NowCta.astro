@@ -1,0 +1,111 @@
+---
+// NowCta —— 区块 5：Now 摘要 + 等宽「最后更新」时间戳 + 收尾 CTA 带
+// （PRD HOME-06；spec §5.3）。P1 壳：文案手写；P3 接 /now/ frontmatter 自动化。
+import CtaButton from '../ui/CtaButton.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+const lines = [
+  { key: 'RESEARCH', text: '正在研究：WebGPU 在智能座舱 HMI 渲染中的工程化边界' },
+  { key: 'WRITING', text: '正在写：多语种座舱交付的验收清单方法论' },
+  {
+    key: 'OPEN TO',
+    text: '开放合作：多语种座舱落地咨询 · AI 工作流内训 · 技术分享邀约',
+  },
+];
+
+const lastUpdate = '2026-08';
+---
+
+<div class="now reveal">
+  <dl class="lines">
+    {
+      lines.map((line) => (
+        <div class="line">
+          <dt class="data">{line.key}</dt>
+          <dd>{line.text}</dd>
+        </div>
+      ))
+    }
+  </dl>
+  <p class="stamp data">LAST UPDATE · {lastUpdate}</p>
+</div>
+
+<div class="card band reveal" style="--reveal-delay: 6%">
+  <p class="ask">有类似问题要解决？</p>
+  <div class="actions">
+    <CtaButton href={`${base}/contact/`}>邮件联系 →</CtaButton>
+    <CtaButton href={`${base}/contact/`} variant="secondary">LinkedIn</CtaButton>
+    <CtaButton href="https://github.com/rayw-lab" variant="secondary">
+      GitHub
+    </CtaButton>
+  </div>
+</div>
+
+<style>
+  .now {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-5) var(--space-7);
+  }
+
+  .lines {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .line {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: var(--space-3);
+    align-items: baseline;
+  }
+
+  dt {
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+
+  dd {
+    font-size: var(--text-body);
+    line-height: var(--leading-small);
+    color: var(--ink-2);
+    max-inline-size: var(--measure);
+  }
+
+  .stamp {
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+
+  .band {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4) var(--space-6);
+    margin-block-start: var(--space-7);
+    padding: var(--space-6) var(--space-6);
+  }
+
+  .ask {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  @media (max-width: 639.98px) {
+    .line {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+    }
+  }
+</style>

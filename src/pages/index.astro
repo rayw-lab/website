@@ -1,70 +1,180 @@
 ---
-// 首页占位页：仅验证工程与部署链路可用。
-// 正式首页按 master-plan 第 3 章「首页五区块」实现。
+// 首页 —— 五区块骨架（Track A Phase 1）。
+// 信任递进：定位 → 能力 → 证据 → 观点（P3 填充，空态隐藏）→ 近况。
+// 规格：homepage-redesign-spec §2 / §7 Phase 1；PRD HOME-01~04/06。
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import HomeHero from '../components/home/HomeHero.astro';
+import PillarCard from '../components/home/PillarCard.astro';
+import LabBento from '../components/home/LabBento.astro';
+import LabCardCar from '../components/home/LabCardCar.astro';
+import LabCardTts from '../components/home/LabCardTts.astro';
+import CaseCard from '../components/home/CaseCard.astro';
+import NowCta from '../components/home/NowCta.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
 const title = '王磊｜汽车智能座舱与 AI 解决方案经理';
-const tagline = '把复杂技术转化为可决策、可交付、可复用的解决方案';
+const description =
+  '把复杂技术转化为可决策、可交付、可复用的解决方案——聚焦汽车 × 座舱 × 多语种 × 大模型 × AI 工作流的交叉地带。';
+
+// JSON-LD 占位（Person + WebSite）；Phase 3 SEO 收尾时补全 sameAs / image 等字段
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: '王磊',
+    jobTitle: '汽车智能座舱与 AI 解决方案经理',
+    url: new URL(`${base}/`, Astro.site).href,
+    knowsAbout: ['智能座舱', '多语种 HMI', '车载大模型', 'AI 工作流'],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: title,
+    url: new URL(`${base}/`, Astro.site).href,
+    inLanguage: 'zh-CN',
+  },
+];
+
+// 区块 2：能力三支柱（文案源 master-plan §3 区块 2；锚点均可被现有资产佐证）
+const pillars = [
+  {
+    title: '智能座舱多语种',
+    desc: '多语种座舱产品从需求定义到量产交付的全链路把控。',
+    anchor: '16 语种 · RTL/CJK 全覆盖',
+    caseHref: `${base}/work/multilingual-cockpit/`,
+    caseLabel: '旗舰案例 A · 多语种座舱能力地图',
+  },
+  {
+    title: '端云大模型',
+    desc: '车端/云端大模型分层架构设计与场景化选型落地。',
+    anchor: '端 × 云 · 2 层选型框架',
+    caseHref: `${base}/work/llm-capability-layering/`,
+    caseLabel: '旗舰案例 B · 端云大模型分层',
+  },
+  {
+    title: 'AI 原生工作流',
+    desc: '用 AI 重构需求、开发、测试、复盘全流程的提效体系。',
+    anchor: '需求 → 复盘 · 4 阶段覆盖',
+    caseHref: `${base}/work/ai-native-workflow/`,
+    caseLabel: '旗舰案例 C · AI 原生工作流',
+  },
+];
+
+// 区块 4：旗舰案例预览（P1 占位文案，按「问题→动作→结果」写实；P3 接真数据）
+const cases = [
+  {
+    title: '多语种座舱能力地图',
+    level: 'L2' as const,
+    problem: '多市场车型的语音与显示需同时覆盖十余个语种，需求口径与验收标准分散。',
+    action: '建立「语种 × 功能」能力地图与分级验收标准，打通需求到交付的单一口径。',
+    result: '多语种交付口径统一，验证与回归周期显著压缩（脱敏图表见案例正文）。',
+    href: `${base}/work/multilingual-cockpit/`,
+    demoHref: `${base}/lab/tts-cockpit/`,
+    demoLabel: '配套 Demo · TTS 座舱',
+  },
+  {
+    title: '端云大模型分层',
+    level: 'L3' as const,
+    problem: '车端算力与云端能力边界不清，场景选型反复摇摆、评审难以收敛。',
+    action: '制定端云能力分层框架与场景化选型决策表，明确每类场景的归属与降级路径。',
+    result: '选型决策有据可依，方案评审收敛效率明显提升（量化口径见案例正文）。',
+    href: `${base}/work/llm-capability-layering/`,
+  },
+  {
+    title: 'AI 原生工作流',
+    level: 'L3' as const,
+    problem: '需求、测试与复盘环节存在大量重复人工劳动，产出质量依赖个人经验。',
+    action: '以节点契约与风险分级人审重构关键流程，在四个工作阶段引入 AI 工位。',
+    result: '关键环节提效可量化、产出质量可审计（数据口径见案例正文）。',
+    href: `${base}/work/ai-native-workflow/`,
+  },
+];
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={tagline} />
-    <title>{title}</title>
-  </head>
-  <body>
-    <main>
-      <h1>{title}</h1>
-      <p>{tagline}</p>
-      <p class="note">网站建设中 — 站点骨架已就绪（Astro + TypeScript + MDX）。</p>
-      <p class="note">
-        实验室：<a href={`${import.meta.env.BASE_URL}/lab/tts-cockpit`.replace('//', '/')}
-          >多语言 TTS × 智能座舱可视化演示</a
-        >
-      </p>
-    </main>
-  </body>
-</html>
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <!-- 区块 1：Hero（定位） -->
+  <HomeHero />
+
+  <!-- 区块 2：能力三支柱 -->
+  <section class="section" aria-labelledby="capabilities-title">
+    <div class="container">
+      <SectionHeading
+        index="01"
+        label="Capabilities"
+        title="能力三支柱"
+        id="capabilities-title"
+      />
+      <div class="grid-3">
+        {
+          pillars.map((p, i) => (
+            <PillarCard {...p} style={`--reveal-delay: ${i * 6}%`} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 区块 3：AI Lab 入口（证据前置） -->
+  <section class="section" aria-labelledby="live-demos-title">
+    <div class="container">
+      <SectionHeading
+        index="02"
+        label="Live Demos"
+        title="可交互的能力证据"
+        id="live-demos-title"
+        lede="不是录屏，是能上手的东西——两个在浏览器里实时运行的 Demo。"
+      />
+      <LabBento>
+        <LabCardCar />
+        <LabCardTts />
+      </LabBento>
+    </div>
+  </section>
+
+  <!-- 区块 4：旗舰案例预览（精选观点 P3 填充，空态整块隐藏） -->
+  <section class="section" aria-labelledby="selected-work-title">
+    <div class="container">
+      <SectionHeading
+        index="03"
+        label="Selected Work"
+        title="旗舰案例"
+        id="selected-work-title"
+      />
+      <div class="grid-3">
+        {
+          cases.map((c, i) => (
+            <CaseCard {...c} style={`--reveal-delay: ${i * 6}%`} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 区块 5：Now + CTA -->
+  <section class="section" aria-labelledby="now-title">
+    <div class="container">
+      <SectionHeading index="04" label="Now" title="正在进行" id="now-title" />
+      <NowCta />
+    </div>
+  </section>
+</BaseLayout>
 
 <style>
-  :root {
-    color-scheme: light dark;
+  .section {
+    padding-block: var(--section-pad);
+    border-block-start: 1px solid var(--line);
   }
-  body {
-    margin: 0;
-    min-height: 100vh;
+
+  .grid-3 {
     display: grid;
-    place-items: center;
-    background: #fafaf8;
-    color: #111;
-    font-family:
-      Inter,
-      'Source Han Sans SC',
-      'Noto Sans SC',
-      system-ui,
-      sans-serif;
+    gap: var(--grid-gutter);
   }
-  main {
-    max-width: 68ch;
-    padding: 2rem;
-    text-align: center;
-  }
-  h1 {
-    font-size: 1.75rem;
-    line-height: 1.4;
-  }
-  .note {
-    color: #666;
-    font-size: 0.9rem;
-  }
-  @media (prefers-color-scheme: dark) {
-    body {
-      background: #111;
-      color: #fafaf8;
-    }
-    .note {
-      color: #999;
+
+  @media (min-width: 640px) {
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 </style>

@@ -1,0 +1,30 @@
+---
+// LabBento —— 区块 3 容器：12 列内 7+5 bento 布局（PRD HOME-03；spec §3.3）。
+// < 960px 时上下堆叠（bento 启用断点 960）。
+---
+
+<div class="bento">
+  <slot />
+</div>
+
+<style>
+  .bento {
+    display: grid;
+    gap: var(--grid-gutter);
+  }
+
+  @media (min-width: 960px) {
+    .bento {
+      grid-template-columns: repeat(12, 1fr);
+      align-items: stretch;
+    }
+
+    .bento > :global(:first-child) {
+      grid-column: span 7;
+    }
+
+    .bento > :global(:last-child) {
+      grid-column: span 5;
+    }
+  }
+</style>
