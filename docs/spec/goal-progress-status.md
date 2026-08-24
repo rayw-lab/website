@@ -1,92 +1,52 @@
 # 目标进度看板（Goal Progress）
 
 > **目标**：Phase 1 MVP 门禁 + Phase A Spike 交付（鸟瞰图 + PRD/SRD v1.1.1）
-> **更新**：2026-08-24 · integration tip `96c1314`
+> **更新**：2026-08-24 · integration tip `ef15715`
+
+## ⛔ 当前阻塞（Agent 无法继续）
+
+| 阻塞项 | 执行人 | 工具 |
+|---|---|---|
+| H1 10 秒定位 ≥80% | **王磊**（本机 + 3–5 被试手机） | `pnpm human-gate:preview` |
+| H2 桌面 60fps + H3 安卓 30fps | **王磊**（真机 Chrome） | 同上 URL → `world-spike/` |
+
+回填：`human-gate-checklist.md` → `mvp-gate-signoff.md` §人工签署区 → 回复「人工 Gate 已填」。
+
+**Agent 侧工程交付已 100% 完成**；在未收到人工 Gate 证据前，不得标 Goal Complete 或合并 main。
 
 ## 总判定
 
 | 子目标 | 状态 | 证据 |
 |--------|------|------|
-| Phase A Spike（B1） | **已交付（Go with 真机帧率待补）** | `/world-spike/`、E2E 42/42（含 WS-PERF-01）、`world-spike-log.md` |
-| Phase 1 MVP（A+D+C） | **自动化 Go（CI D3 已绿）** | 见「MVP 门禁核对」+ [`mvp-gate-signoff.md`](mvp-gate-signoff.md) |
-| 目标整体 | **未完成** | 人工 Gate ×2（待王磊） |
+| Phase A Spike（B1） | **已交付（真机帧率待人工）** | E2E 42/42、`world-spike-log.md` |
+| Phase 1 MVP（A+D+C） | **自动化 Go** | [`mvp-gate-signoff.md`](mvp-gate-signoff.md) |
+| 目标整体 | **未完成** | 人工 Gate H1–H3 |
 
-> **「目标整体」未完成原因（仅人工 ×2）**：
->
-> 1. **人工 ×2**：10 秒定位测试 ≥80%、真机帧率（桌面 60fps / 安卓中端 30fps）——按 [`human-gate-checklist.md`](human-gate-checklist.md) 执行，待王磊回填。
->
-> 自动化侧（五门禁 + D3 Lighthouse CI）已于 `d34e6e5` 全部转绿（CI [#32777408128](https://github.com/rayw-lab/website/actions/runs/32777408128)）。
-
-## 分支合并状态
+## 分支 / PR
 
 | 项 | 状态 |
 |----|------|
-| 集成基线 | `cursor/bruno-implementation-plan-1d6f` @ `2b76c9c` |
-| E2E 复跑 | ✅ **42/42**（13.9m，world-spike 全例 + WS-PERF-01） |
-| 推送 | ✅ `origin/cursor/bruno-implementation-plan-1d6f` |
-| PR | [#12](https://github.com/rayw-lab/website/pull/12)（草稿） |
+| tip | `ef15715` · `cursor/bruno-implementation-plan-1d6f` |
+| PR | [#12](https://github.com/rayw-lab/website/pull/12) |
+| CI | ✅ [#32782338457](https://github.com/rayw-lab/website/actions/runs/32782338457)（`ef15715`） |
+| E2E | ✅ 42/42（`9200112` 复跑） |
 
-`bruno-implementation-plan` 为唯一集成基线：engine+vehicle 双实现、审计 F-1 整改、E2E 42/42、A3/A4/D5、D3 Lighthouse 六 URL、Lighthouse 对比度/perf 修复，全部在内。
+## 自动化门禁（全绿）
 
-## Phase 1 MVP 门禁核对（tip `96c1314` 实测）
+- [x] astro check / build / check-links / audit-budget
+- [x] test:e2e 42/42（world-spike + WS-PERF-01）
+- [x] D3 Lighthouse 六 URL（本地 + CI）
+- [x] 内容无【待填】残留（WORK-02）
 
-### 自动化门禁（本机复跑，2026-08-24）
+## 人工门禁（未执行）
 
-- [x] `pnpm astro check` —— 96 文件，0 errors / 0 warnings
-- [x] `pnpm build` —— 18 页全部构建成功
-- [x] `node scripts/check-links.mjs dist/` —— 307 条内部引用全部有效，PENDING_ROUTES 白名单已清空
-- [x] `node scripts/audit-budget.mjs dist/` —— 首屏 33.4KB；阻断级全过
-- [x] `pnpm test:e2e` —— 42/42 全绿（world-spike 11 例 + WS-PERF-01）
-- [x] **本地 LHCI** —— 六 URL 四项 ≥0.95（见 [`lighthouse-mvp-gate-report.md`](lighthouse-mvp-gate-report.md)）
-- [x] **CI D3** —— ✅ run [#32777408128](https://github.com/rayw-lab/website/actions/runs/32777408128)（`d34e6e5`）
+- [ ] H1：`human-gate-checklist.md` §1
+- [ ] H2/H3：`human-gate-checklist.md` §2
 
-### 交付项核对
+## 下一动作（仅王磊）
 
-- [x] A3：四集合 + 案例 A/B/C + Insights×2 + AI Lab×2
-- [x] A4：About/Now/Contact + RSS + JSON-LD + GoatCounter
-- [x] D3：Lighthouse CI 基建 + 六 URL 配置 + 达标修复
-- [x] D5：Lab BaseLayout + 30 秒结论区
-- [ ] **人工**：10 秒定位测试 ≥80% —— `human-gate-checklist.md` §1
-- [ ] **人工**：真机帧率 —— `human-gate-checklist.md` §2
+```bash
+git checkout cursor/bruno-implementation-plan-1d6f && pnpm install && pnpm human-gate:preview
+```
 
-### D3 Lighthouse 轨迹
-
-| 阶段 | commit | 结果 |
-|---|---|---|
-| 首轮 CI（扩展 URL 前） | `28b8ea2` 前后 | ❌ car-config a11y 0.93、tts perf 0.86 |
-| 本地修复 + autorun | `9451def` | ✅ 六 URL 全绿 |
-| 报告入库 | `96c1314` | [`lighthouse-mvp-gate-report.md`](lighthouse-mvp-gate-report.md) |
-| CI 回归 | `d34e6e5` | ✅ [#32777408128](https://github.com/rayw-lab/website/actions/runs/32777408128) |
-
-## Phase A Spike 门禁核对
-
-- [x] 路由 `/world-spike/` noindex
-- [x] 可驾驶 CarConcept + WASD/触屏
-- [x] 预算门禁（JS gzip、资产、E2E）
-- [ ] **人工**：桌面 60fps / 安卓 30fps —— `human-gate-checklist.md` §2
-
-## Gate 结论
-
-**MVP Gate：自动化侧 Go（CI D3 已绿）；人工侧差 2 项。**
-
-本机五门禁 + 本地/CI LHCI 在 `d34e6e5` 全部通过；两项人工验证由王磊组织后回填签署档 §人工签署区。
-
-### 证据索引
-
-- Lighthouse：[`lighthouse-mvp-gate-report.md`](lighthouse-mvp-gate-report.md)
-- 签署档：[`mvp-gate-signoff.md`](mvp-gate-signoff.md)
-- 人工 Gate：[`human-gate-checklist.md`](human-gate-checklist.md)
-- 帧率辅助：WS-PERF-01 · `world-spike-log.md` §3.1
-
-## 已完成（冻结基线）
-
-- P0 文档 v1.1.1、Batch1 审计、folio 差距报告
-- Track D/A/C2 + A3/A4/D5 全交付
-- world-spike 双实现合流 + E2E 体系
-- Lighthouse 六 URL 达标修复
-
-## 下一批任务
-
-1. ✅ CI D3 转绿 → `mvp-gate-signoff.md` 已更新
-2. 人工 Gate H1–H3（王磊）
-3. 全部回填后「目标整体」翻绿；可选合并 main → Phase B
+证据目录：`docs/spec/assets/human-gate/`
