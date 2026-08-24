@@ -7,6 +7,6 @@ import sitemap from '@astrojs/sitemap';
 // 绑定自定义域名后：site 改为正式域名，并删除 base。
 export default defineConfig({
   site: 'https://rayw-lab.github.io',
-  base: '/mywebsite',
+  base: '/website',
   integrations: [mdx(), sitemap()],
 });

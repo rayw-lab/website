@@ -49,7 +49,7 @@
 | 生产构建 | `pnpm build` | 产物输出到 `dist/` |
 | 本地预览 | `pnpm preview --host 0.0.0.0` | 预览 `dist/` 构建产物 |
 
-注意：`astro.config.mjs` 配置了 `base: '/mywebsite'`（GitHub Pages 项目页路径），dev/preview 访问路径为 `http://localhost:4321/mywebsite/`。绑定自定义域名后需修改 `site` 并删除 `base`。
+注意：`astro.config.mjs` 配置了 `base: '/website'`（GitHub Pages 项目页路径），dev/preview 访问路径为 `http://localhost:4321/website/`。绑定自定义域名后需修改 `site` 并删除 `base`。
 
 ### Lighthouse 测试
 
@@ -58,7 +58,7 @@ master-plan 7.5 的门槛：Lighthouse 四项（Performance / Accessibility / Be
 ```bash
 pnpm build
 pnpm preview --host 0.0.0.0 &   # 或在另一个终端运行
-npx lighthouse http://localhost:4321/mywebsite/ --output=json --output=html --chrome-flags='--headless --no-sandbox'
+npx lighthouse http://localhost:4321/website/ --output=json --output=html --chrome-flags='--headless --no-sandbox'
 ```
 
 ### 环境变量与密钥

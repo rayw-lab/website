@@ -1,5 +1,5 @@
 {
-  "name": "mywebsite",
+  "name": "website",
   "version": "0.1.0",
   "description": "个人网站：Astro + TypeScript + MDX，部署到 GitHub Pages（见 docs/website-plan/master-plan.md）",
   "type": "module",

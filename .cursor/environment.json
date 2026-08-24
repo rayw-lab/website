@@ -1,5 +1,5 @@
 {
-  "name": "mywebsite (Astro + TypeScript + MDX)",
+  "name": "website (Astro + TypeScript + MDX)",
   "install": "bash .cursor/install.sh",
   "terminals": [
     {
