@@ -77,6 +77,7 @@ dt 纪律照抄 folio §5.3：车辆积分用 **30 帧滑动平均 dt**（与渲
 - **软门禁（不阻断 CI）**：采样期 95% 帧间隔 < 50ms（p95 < 50ms，≈95% 帧保持 ≥20fps 节奏、无长时间 stall）。SwiftShader ~1fps 下该项**预期不达标**——失败不 fail 用例，登记 `OBS` annotation + 证据 JSON 标记 `softGate.pass=false`；带 GPU 的真机/集显环境预期转绿。**60/30 门禁判定不在自动化范围**（CI 读数只是软件光栅化硬下界），判定权归 `docs/spec/human-gate-checklist.md` §2 真机人工录测。
 - **证据落点（三件套）**：① `test-results/world-spike-metrics.jsonl` 的 `WS-PERF-01 evidence` 行（环境指纹 UA/核数/DPR/`navigator.gpu` 有无 + 后端 + HUD 文本 + 仪表读数 + 采样统计 + 软门禁与 60/30 参考判定）；② Playwright 报告附件 `world-spike-perf-evidence.json`（同一 JSON 随 HTML 报告归档）；③ HUD 读数截图 `docs/spec/assets/e2e-integration/world_perf_hud_after_drive.png`（入库）。
 - **运行纪律**：独占 `world-perf-chromium` project 殿后串行（帧间隔采样对并发 3D 负载最敏感）；录像显式关闭（Playwright 录屏 CPU 开销会系统性拉低读数）；用例零 skip、零 Spike 功能降级——帧率数值一律走软门禁 + 证据留档，硬断言只挡「链路死了」。
+- **首轮实测（2026-08-24，42/42 全绿轮，4 核 SwiftShader，默认腿回退 webgl2）**：驾驶 31.3s 末速 77.1km/h；HUD「1 / 0」，仪表 avg 0.90 / 1% low 0.13；rAF 采样 5475ms 共 7 帧，p50 716.6ms / p95 1166.6ms / stall 6/7 → 软门禁按预期不达标，OBS 登记、CI 不阻断；drawCalls 120 / triangles 225,224 与 §3 场景复杂度读数一致（证据链自洽）。60/30 参考判定 false = 软件光栅化下界事实，非真机裁决。
 
 ## 4. 体积实测 vs 门禁（Step 9）
 

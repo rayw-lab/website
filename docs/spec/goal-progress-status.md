@@ -7,7 +7,7 @@
 
 | 子目标 | 状态 | 证据 |
 |--------|------|------|
-| Phase A Spike（B1） | **已交付（Go with 真机帧率待补）** | `/world-spike/`、E2E 41/41、`world-spike-log.md` |
+| Phase A Spike（B1） | **已交付（Go with 真机帧率待补）** | `/world-spike/`、E2E 42/42（含 WS-PERF-01 帧率证据包）、`world-spike-log.md` |
 | Phase 1 MVP（A+D+C） | **本机五门禁绿；CI D3 Lighthouse 红 2 项** | 见「MVP 门禁核对」逐项 + 「D3 Lighthouse CI 实跑」 |
 | 目标整体 | **未完成** | 自动化缺口 ×1（D3 整改中）+ 人工 Gate ×2（待王磊） |
 
@@ -26,7 +26,7 @@
 | 合并后全门禁复跑 | ✅ 五道自动化门禁全绿（见下「MVP 门禁核对」实测列） |
 | 推送 | ✅ `origin/cursor/bruno-implementation-plan-1d6f` @ `28b8ea2` |
 
-`bruno-implementation-plan` 现为唯一集成基线：engine+vehicle 双实现、审计 F-1 整改、E2E 体系（30 站点用例 + 11 world-spike 用例）、A3 内容基建、A4 站点页面/RSS/JSON-LD/GoatCounter、D3 Lighthouse CI 真实门禁、D5 Lab 页 BaseLayout 接入，全部在内。
+`bruno-implementation-plan` 现为唯一集成基线：engine+vehicle 双实现、审计 F-1 整改、E2E 体系（30 站点用例 + 11 world-spike 用例 + 1 帧率证据包用例）、A3 内容基建、A4 站点页面/RSS/JSON-LD/GoatCounter、D3 Lighthouse CI 真实门禁、D5 Lab 页 BaseLayout 接入，全部在内。
 
 ## Phase 1 MVP 门禁核对（integration tip `28b8ea2` 实测）
 
@@ -36,7 +36,7 @@
 - [x] `pnpm build` —— 18 页全部构建成功（含 `/rss.xml`、`sitemap-index.xml`）
 - [x] `node scripts/check-links.mjs dist/` —— 307 条内部引用全部有效，PENDING_ROUTES 白名单已清空（只收缩不降级），manifest 一致性 2 模块核对通过
 - [x] `node scripts/audit-budget.mjs dist/` —— 首屏合计 33.4KB < 200KB 硬门禁；零 world 字节断言 14 页 0 命中；public/ 8.3MB / 40MB；资产格式黑名单 0 命中；Lab 模块预算（tts 流式豁免单文件 ≤60KB、懒加载 JS 实测≤声明）全过
-- [x] `pnpm test:e2e` —— 41/41 全绿（8.6m；world-spike 11 例实跑不 skip）
+- [x] `pnpm test:e2e` —— 42/42 全绿（12.4m；world-spike 11 例实跑不 skip + WS-PERF-01 帧率证据包，采样读数见 `world-spike-log.md` §3.1 首轮实测行）
 
 ### 交付项核对（原 MVP 缺口逐项清账）
 
@@ -71,7 +71,7 @@
 - [x] 懒加载 JS ≤400KB gzip（实测 ~283–301KB）
 - [x] Spike 新增资产 `public/world/` ≤1MB（实测 0）
 - [x] CarConcept 复用豁免 3.5MB（显式登记）
-- [x] E2E 不 skip world（41/41，world-spike 11 例实跑）
+- [x] E2E 不 skip world（42/42，world-spike 11 例实跑 + WS-PERF-01 帧率证据包殿后独占采样）
 - [ ] **人工**：桌面 60fps / 安卓 30fps 真机录测 —— CI 环境仅 SwiftShader，Phase B 前补（执行脚本：`human-gate-checklist.md` §2；CI 常驻辅助证据：WS-PERF-01）
 
 ## Gate 结论
