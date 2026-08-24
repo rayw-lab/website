@@ -421,6 +421,7 @@ function finishPlayback() {
   const tEnd = timeline.durationMs;
   paintCaption(tEnd);
   applyScene(tEnd);
+  speedNow = 0;
   paintGauge(0);
   paintWave(tEnd, false);
   progressFill.style.width = '100%';
@@ -528,6 +529,8 @@ function init() {
   selectLocale('zh-CN');
   selectScene('nav');
   paintWave(0, false);
+  // e2e 测试钩子（不影响功能）
+  (window as unknown as { __ttscAudio: HTMLAudioElement }).__ttscAudio = audio;
 }
 
 init();

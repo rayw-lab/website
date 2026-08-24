@@ -16,3 +16,6 @@ pnpm-debug.log*
 
 # 系统文件
 .DS_Store
+
+# e2e 浏览器测试临时输出
+.playwright-mcp/
