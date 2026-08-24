@@ -12,18 +12,9 @@ export const u = (path: string): string => `${BASE}${path}`;
  * 语义与 CI 门禁一致：这些路由允许 404；一旦真实交付（返回 200），
  * 本白名单条目过期，site-health 测试会失败，强制删除条目（只收缩不增长）。
  * integration 批次：`/world-spike/` 已交付（world-spike-vehicle 合流），条目清退。
+ * Phase 1 A3 批次：`/work/`（含三案例详情）、`/insights/`、`/ai-lab/` 已交付，条目清退。
  */
-export const PENDING_ROUTES = new Set([
-  '/work/',
-  '/work/multilingual-cockpit/',
-  '/work/llm-capability-layering/',
-  '/work/ai-native-workflow/',
-  '/insights/',
-  '/ai-lab/',
-  '/about/',
-  '/contact/',
-  '/rss.xml',
-]);
+export const PENDING_ROUTES = new Set(['/about/', '/contact/', '/rss.xml']);
 
 /** 报告截图输出目录（batch 1 报告引用，随 docs 入库） */
 export const SHOT_DIR = 'docs/spec/assets/e2e-batch1';

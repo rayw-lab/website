@@ -1,0 +1,358 @@
+---
+// ArticleLayout —— insights / ai-lab 详情布局（SRD §7 [P1]：阅读进度条、面包屑、related）。
+// insights 页头展示一句话论点（thesis，PRD INS-03「结论先行」）；
+// ai-lab 页头展示阶段标签 + 场景 + 前后对比摘要（master-plan §5.2 必备版式）。
+// 阅读进度条为 scroll-driven CSS（0KB JS），不支持的浏览器自动无痕缺席。
+import type { CollectionEntry } from 'astro:content';
+import { getEntries } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import EvidenceBadge from '../components/ui/EvidenceBadge.astro';
+import StageBadge from '../components/content/StageBadge.astro';
+
+type Entry = CollectionEntry<'insights'> | CollectionEntry<'ai-lab'>;
+
+interface Props {
+  entry: Entry;
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const isInsights = entry.collection === 'insights';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+const SECTION = isInsights
+  ? { label: 'Insights', href: `${base}/insights/`, name: '洞见' }
+  : { label: 'AI Lab', href: `${base}/ai-lab/`, name: 'AI Lab 实验记录' };
+
+const CATEGORY_LABELS = {
+  'industry-judgment': '行业判断',
+  methodology: '方法论沉淀',
+  retrospective: '复盘笔记',
+} as const;
+
+// 相关阅读（frontmatter related 引用，构建期存在性校验）
+const relatedEntries = d.related.length > 0 ? await getEntries(d.related) : [];
+
+const fmtDate = (date: Date) => date.toISOString().slice(0, 10);
+
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: d.title,
+    description: d.description,
+    author: {
+      '@type': 'Person',
+      name: '王磊',
+      jobTitle: '汽车智能座舱与 AI 解决方案经理',
+    },
+    datePublished: fmtDate(d.publishDate),
+    ...(d.updatedDate ? { dateModified: fmtDate(d.updatedDate) } : {}),
+    ...(d.keywords.length > 0 ? { keywords: d.keywords.join(',') } : {}),
+    mainEntityOfPage: pageUrl,
+    inLanguage: 'zh-CN',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: '首页',
+        item: new URL(`${base}/`, Astro.site).href,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: SECTION.label,
+        item: new URL(SECTION.href, Astro.site).href,
+      },
+      { '@type': 'ListItem', position: 3, name: d.title, item: pageUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={`${d.title}｜王磊 - 汽车智能座舱与 AI 解决方案`}
+  description={d.description}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <!-- 阅读进度条：scroll-driven CSS；不支持时保持 scaleX(0) 不可见 -->
+  <div class="read-progress" aria-hidden="true"></div>
+
+  <article class="article container">
+    <nav class="crumb data" aria-label="面包屑">
+      <a href={`${base}/`}>首页</a>
+      <span aria-hidden="true">/</span>
+      <a href={SECTION.href}>{SECTION.label}</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{d.title}</span>
+    </nav>
+
+    <header class="head">
+      <p class="band">
+        {
+          isInsights ? (
+            <span class="chip data">
+              {CATEGORY_LABELS[(d as CollectionEntry<'insights'>['data']).category]}
+            </span>
+          ) : (
+            <StageBadge stage={(d as CollectionEntry<'ai-lab'>['data']).stage} />
+          )
+        }
+        {
+          !isInsights && (
+            <EvidenceBadge
+              level={(d as CollectionEntry<'ai-lab'>['data']).evidenceLevel}
+            />
+          )
+        }
+        <time class="meta data" datetime={fmtDate(d.publishDate)}>
+          {fmtDate(d.publishDate)}
+        </time>
+        {
+          d.updatedDate && (
+            <span class="meta data">更新 {fmtDate(d.updatedDate)}</span>
+          )
+        }
+      </p>
+      <h1>{d.title}</h1>
+
+      {
+        isInsights ? (
+          <blockquote class="thesis">
+            <p class="thesis-label eyebrow">一句话论点</p>
+            <p class="thesis-body">
+              {(d as CollectionEntry<'insights'>['data']).thesis}
+            </p>
+          </blockquote>
+        ) : (
+          <div class="scenario card">
+            <p class="scenario-label eyebrow">场景</p>
+            <p class="scenario-body">
+              {(d as CollectionEntry<'ai-lab'>['data']).scenario}
+            </p>
+            <p class="scenario-metric data">
+              {(d as CollectionEntry<'ai-lab'>['data']).comparison.metric}
+            </p>
+          </div>
+        )
+      }
+    </header>
+
+    <div class="prose">
+      <slot />
+    </div>
+
+    <footer class="foot">
+      {
+        relatedEntries.length > 0 && (
+          <nav class="related" aria-label="相关阅读">
+            <p class="related-title eyebrow">相关阅读</p>
+            <ul>
+              {relatedEntries.map((rel) => (
+                <li>
+                  <a href={`${base}/${rel.collection}/${rel.id}/`}>
+                    <span class="related-kind data">
+                      {rel.collection === 'work'
+                        ? 'Work'
+                        : rel.collection === 'insights'
+                          ? 'Insights'
+                          : 'AI Lab'}
+                    </span>
+                    {rel.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+      <p class="back">
+        <a href={SECTION.href}>← 全部{SECTION.name}</a>
+      </p>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .read-progress {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: 2px;
+    z-index: 60;
+    background: var(--accent-strong);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+  }
+
+  @keyframes read-progress-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: scroll()) {
+      .read-progress {
+        animation: read-progress-grow linear both;
+        animation-timeline: scroll(root block);
+      }
+    }
+  }
+
+  .article {
+    padding-block: var(--space-7) var(--space-9);
+  }
+
+  .crumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    color: var(--ink-3);
+  }
+
+  .crumb a {
+    color: var(--ink-3);
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  .crumb a:hover {
+    color: var(--accent);
+  }
+
+  .head {
+    margin-block: var(--space-6) var(--space-7);
+    max-inline-size: var(--measure);
+  }
+
+  .band {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .chip {
+    display: inline-flex;
+    padding: 0.125rem var(--space-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-chip);
+    color: var(--ink-2);
+    background: var(--bg-raised);
+    white-space: nowrap;
+  }
+
+  .meta {
+    color: var(--ink-3);
+  }
+
+  h1 {
+    margin-block: var(--space-4) var(--space-5);
+    font-size: var(--text-h2);
+    font-weight: 600;
+    line-height: var(--leading-h2);
+    letter-spacing: -0.01em;
+  }
+
+  .thesis {
+    padding-inline-start: var(--space-4);
+    border-inline-start: 2px solid var(--accent-strong);
+  }
+
+  .thesis-label {
+    color: var(--accent);
+    margin-block-end: var(--space-2);
+  }
+
+  .thesis-body {
+    font-size: var(--text-h3);
+    font-weight: 500;
+    line-height: var(--leading-h3);
+  }
+
+  .scenario {
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .scenario-label {
+    color: var(--accent);
+    margin-block-end: var(--space-2);
+  }
+
+  .scenario-body {
+    color: var(--ink-2);
+  }
+
+  .scenario-metric {
+    margin-block-start: var(--space-3);
+    color: var(--accent);
+  }
+
+  .foot {
+    margin-block-start: var(--space-8);
+    max-inline-size: var(--measure);
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .related {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-raised);
+  }
+
+  .related-title {
+    color: var(--ink-3);
+    margin-block-end: var(--space-3);
+  }
+
+  .related ul {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .related a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    font-size: var(--text-small);
+    color: var(--ink-2);
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  .related a:hover {
+    color: var(--accent);
+  }
+
+  .related-kind {
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  .back {
+    padding-block-start: var(--space-4);
+    border-block-start: 1px solid var(--line);
+  }
+
+  .back a {
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--ink-2);
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  .back a:hover {
+    color: var(--accent);
+  }
+</style>

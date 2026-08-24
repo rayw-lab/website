@@ -1,0 +1,74 @@
+---
+// CompareBlock —— MDX 白名单组件（SRD §9.1）：前后对比块（ai-lab 必备版式）。
+// 「原流程 → AI 介入后」三段式；数字一律模糊化（master-plan 13.2）。零 JS。
+interface Props {
+  before: string;
+  after: string;
+  metric: string;
+}
+
+const { before, after, metric } = Astro.props;
+---
+
+<figure class="compare">
+  <div class="col">
+    <p class="head eyebrow">Before · 原流程</p>
+    <p class="body">{before}</p>
+  </div>
+  <div class="col after">
+    <p class="head eyebrow">After · AI 介入后</p>
+    <p class="body">{after}</p>
+  </div>
+  <figcaption class="metric data">{metric}</figcaption>
+</figure>
+
+<style>
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    margin-block: var(--space-6);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    background: var(--line);
+  }
+
+  .col {
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-raised);
+  }
+
+  .after {
+    background: var(--accent-soft);
+  }
+
+  .head {
+    color: var(--ink-3);
+    margin-block-end: var(--space-2);
+  }
+
+  .after .head {
+    color: var(--accent);
+  }
+
+  .body {
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    color: var(--ink-2);
+  }
+
+  .metric {
+    grid-column: 1 / -1;
+    padding: var(--space-2) var(--space-5);
+    background: var(--bg);
+    color: var(--accent);
+    border-block-start: 1px solid var(--line);
+  }
+
+  @media (max-width: 639.98px) {
+    .compare {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

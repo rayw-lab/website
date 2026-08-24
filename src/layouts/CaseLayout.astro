@@ -1,0 +1,362 @@
+---
+// CaseLayout —— work 案例详情布局（SRD §7 [P1]：模块导航、证据徽章带）。
+// 12 模块编号与命名以 master-plan §4.1 为唯一事实源（canonical）；
+// 顶部 30 秒结论区承载「一句话摘要」（PRD WORK-04，先给结果再给过程）；
+// 精简版（modules 不满 12）页头明示「完整版更新中」，无 Coming soon 空区块
+// （PRD WORK-07）。注意：frontmatter 注释里不能出现裸「小于号」——
+// astro 编译器扫描会误判为标签开始，破坏 Props → Astro.props 关联。
+import type { CollectionEntry } from 'astro:content';
+import type { MarkdownHeading } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import EvidenceBadge from '../components/ui/EvidenceBadge.astro';
+
+interface Props {
+  entry: CollectionEntry<'work'>;
+  headings: MarkdownHeading[];
+}
+
+const { entry, headings } = Astro.props;
+const d = entry.data;
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+const PILLAR_LABELS = {
+  'cockpit-i18n': '智能座舱多语种',
+  'edge-cloud-llm': '端云大模型',
+  'ai-workflow': 'AI 原生工作流',
+} as const;
+
+// 模块导航：MDX 正文中 `## NN · 模块名` 的 depth-2 标题（信息边界声明等
+// 非编号章节不进导航）；slug 取渲染器实际生成值，锚点永不失配。
+const moduleHeadings = headings.filter(
+  (h) => h.depth === 2 && /^\d{2} · /.test(h.text),
+);
+
+const isCondensed = d.modules.length < 12;
+const moduleList = d.modules.map((n) => String(n).padStart(2, '0')).join('/');
+
+const fmtDate = (date: Date) => date.toISOString().slice(0, 10);
+
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: d.title,
+    description: d.description,
+    about: PILLAR_LABELS[d.pillar],
+    author: {
+      '@type': 'Person',
+      name: '王磊',
+      jobTitle: '汽车智能座舱与 AI 解决方案经理',
+    },
+    datePublished: fmtDate(d.publishDate),
+    ...(d.updatedDate ? { dateModified: fmtDate(d.updatedDate) } : {}),
+    ...(d.keywords.length > 0 ? { keywords: d.keywords.join(',') } : {}),
+    mainEntityOfPage: pageUrl,
+    inLanguage: 'zh-CN',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: '首页',
+        item: new URL(`${base}/`, Astro.site).href,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Work',
+        item: new URL(`${base}/work/`, Astro.site).href,
+      },
+      { '@type': 'ListItem', position: 3, name: d.title, item: pageUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={`${d.title}｜王磊 - 汽车智能座舱与 AI 解决方案`}
+  description={d.description}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <article class="case container">
+    <nav class="crumb data" aria-label="面包屑">
+      <a href={`${base}/`}>首页</a>
+      <span aria-hidden="true">/</span>
+      <a href={`${base}/work/`}>Work</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{d.title}</span>
+    </nav>
+
+    <header class="head">
+      <!-- 证据徽章带：旗舰位 / 支柱 / 证据等级 / 日期 / 模块覆盖 -->
+      <p class="band">
+        {d.flagship && <span class="chip data">旗舰案例 {d.flagship}</span>}
+        <span class="chip data">{PILLAR_LABELS[d.pillar]}</span>
+        <EvidenceBadge level={d.evidenceLevel} />
+        <time class="meta data" datetime={fmtDate(d.publishDate)}>
+          {fmtDate(d.publishDate)}
+        </time>
+        {
+          d.updatedDate && (
+            <span class="meta data">更新 {fmtDate(d.updatedDate)}</span>
+          )
+        }
+      </p>
+      <h1>{d.title}</h1>
+
+      <!-- 30 秒结论区（PRD WORK-04）：扫读型读者先拿结论再决定是否读过程 -->
+      <div class="tldr card" aria-label="30 秒结论">
+        <p class="tldr-title eyebrow">TL;DR · 30 秒结论</p>
+        <p class="tldr-summary">{d.description}</p>
+        <dl class="tldr-rows">
+          <div class="row">
+            <dt class="data">问题</dt>
+            <dd>{d.problem}</dd>
+          </div>
+          <div class="row">
+            <dt class="data">动作</dt>
+            <dd>{d.action}</dd>
+          </div>
+          <div class="row">
+            <dt class="data">结果</dt>
+            <dd>{d.result}</dd>
+          </div>
+        </dl>
+        {
+          d.demo && (
+            <p class="tldr-demo">
+              <a class="demo-link" href={`${base}/lab/${d.demo}/`}>
+                配套可交互 Demo →
+              </a>
+            </p>
+          )
+        }
+      </div>
+
+      {
+        isCondensed && (
+          <p class="condensed-note">
+            本篇为精简版，含 12 模块结构（master-plan §4.1 canonical）中的模块
+            <span class="data"> {moduleList}</span>
+            ；其余模块的完整版更新中。
+          </p>
+        )
+      }
+    </header>
+
+    <div class="body">
+      <!-- 模块导航：编号锚点自动来自正文标题 -->
+      <nav class="module-nav" aria-label="案例模块导航">
+        <p class="module-nav-title eyebrow">模块导航</p>
+        <ol>
+          {
+            moduleHeadings.map((h) => (
+              <li>
+                <a class="data" href={`#${h.slug}`}>
+                  {h.text}
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <div class="prose">
+        <slot />
+      </div>
+    </div>
+
+    <footer class="foot">
+      <a href={`${base}/work/`}>← 全部案例</a>
+      <a href={`${base}/contact/`}>联系我聊类似问题 →</a>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .case {
+    padding-block: var(--space-7) var(--space-9);
+  }
+
+  .crumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    color: var(--ink-3);
+  }
+
+  .crumb a {
+    color: var(--ink-3);
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  .crumb a:hover {
+    color: var(--accent);
+  }
+
+  .head {
+    margin-block: var(--space-6) var(--space-7);
+    max-inline-size: var(--measure);
+  }
+
+  .band {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .chip {
+    display: inline-flex;
+    padding: 0.125rem var(--space-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-chip);
+    color: var(--ink-2);
+    background: var(--bg-raised);
+    white-space: nowrap;
+  }
+
+  .meta {
+    color: var(--ink-3);
+  }
+
+  h1 {
+    margin-block: var(--space-4) var(--space-5);
+    font-size: var(--text-h2);
+    font-weight: 600;
+    line-height: var(--leading-h2);
+    letter-spacing: -0.01em;
+  }
+
+  .tldr {
+    padding: var(--space-5) var(--space-6);
+  }
+
+  .tldr-title {
+    color: var(--accent);
+  }
+
+  .tldr-summary {
+    margin-block: var(--space-3) var(--space-4);
+    font-weight: 500;
+  }
+
+  .tldr-rows {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--space-3);
+  }
+
+  .row dt {
+    color: var(--ink-3);
+    line-height: 1.9;
+  }
+
+  .row dd {
+    font-size: var(--text-small);
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  .tldr-demo {
+    margin-block-start: var(--space-4);
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--line);
+  }
+
+  .demo-link {
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .condensed-note {
+    margin-block-start: var(--space-4);
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    color: var(--ink-2);
+    padding: var(--space-3) var(--space-4);
+    border-inline-start: 2px solid var(--accent-strong);
+    background: var(--accent-soft);
+    border-radius: 0 var(--radius-chip) var(--radius-chip) 0;
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-7);
+    align-items: start;
+  }
+
+  .module-nav {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-raised);
+  }
+
+  .module-nav-title {
+    color: var(--ink-3);
+    margin-block-end: var(--space-3);
+  }
+
+  .module-nav ol {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .module-nav a {
+    color: var(--ink-2);
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  .module-nav a:hover {
+    color: var(--accent);
+  }
+
+  /* 宽屏：模块导航吸附在正文右侧 */
+  @media (min-width: 1024px) {
+    .body {
+      grid-template-columns: minmax(0, var(--measure)) 1fr;
+    }
+
+    .module-nav {
+      order: 2;
+      position: sticky;
+      top: calc(var(--space-7) + var(--space-4));
+      max-inline-size: 18rem;
+    }
+  }
+
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-block-start: var(--space-8);
+    padding-block-start: var(--space-5);
+    border-block-start: 1px solid var(--line);
+    max-inline-size: var(--measure);
+  }
+
+  .foot a {
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--ink-2);
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  .foot a:hover {
+    color: var(--accent);
+  }
+</style>

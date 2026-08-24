@@ -1,0 +1,16 @@
+[
+  {
+    "id": "2026-08",
+    "updated": "2026-08-24",
+    "researching": [
+      "座舱大模型端云分层的验收口径与降级链设计",
+      "WebGPU 试验场（world）Phase B 收编的性能门禁"
+    ],
+    "writing": [
+      "旗舰案例 A：多语种座舱可量产能力地图",
+      "world spike 双代理并行实验复盘"
+    ],
+    "openTo": ["tech-exchange", "collaboration"],
+    "note": "本站 MVP 内容批次上线中：三旗舰案例 + 首批 Insights / AI Lab 实验记录。欢迎就多语种座舱与端云大模型话题交流。"
+  }
+]

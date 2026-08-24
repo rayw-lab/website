@@ -175,13 +175,8 @@ function idsOf(htmlPath) {
 // 集成顺序产物：Track A 首页/导航先于 Track B/C 内容页合入（roadmap 四轨并行）。
 // 仅允许精确路由（base 剥离后的站内路径）；路由交付后条目自动过期并阻断 CI，
 // 由交付该页面的 PR 负责删除对应条目——白名单只能收缩，门禁不降级。
+// Phase 1 A3 批次已交付并清退：/work/ 及三案例详情、/insights/、/ai-lab/。
 const PENDING_ROUTES = new Map([
-  ['/work/', 'Track B 旗舰案例列表页'],
-  ['/work/multilingual-cockpit/', 'Track B 案例详情页'],
-  ['/work/llm-capability-layering/', 'Track B 案例详情页'],
-  ['/work/ai-native-workflow/', 'Track B 案例详情页'],
-  ['/insights/', 'Track B Insights 列表页'],
-  ['/ai-lab/', 'Track B AI Lab 主张页'],
   ['/about/', 'Track B About 页'],
   ['/contact/', 'Track B Contact 页'],
   ['/rss.xml', 'Track B thesis RSS 输出'],

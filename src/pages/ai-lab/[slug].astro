@@ -1,0 +1,24 @@
+---
+// /ai-lab/{slug}/ —— 实验记录详情（master-plan §2.3）。
+// MDX 正文经 ArticleLayout 渲染；白名单组件经 components 映射注入（SRD §9.1）。
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import EvidenceTag from '../../components/content/EvidenceTag.astro';
+import CompareBlock from '../../components/content/CompareBlock.astro';
+import StageBadge from '../../components/content/StageBadge.astro';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('ai-lab')).filter((e) => !e.data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<ArticleLayout entry={entry}>
+  <Content components={{ EvidenceTag, CompareBlock, StageBadge }} />
+</ArticleLayout>
