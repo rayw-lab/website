@@ -91,12 +91,16 @@ const lastUpdate = latest.id;
     letter-spacing: 0.04em;
   }
 
+  /* 混排在时间戳文字里的链接：下划线区分（axe link-in-text-block，不能只靠颜色） */
   .stamp-link {
     color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    text-underline-offset: 0.2em;
   }
 
   .stamp-link:hover {
-    text-decoration: underline;
+    text-decoration-color: var(--accent);
   }
 
   .band {

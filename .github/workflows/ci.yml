@@ -62,8 +62,9 @@ jobs:
       #    阈值与 URL 清单单源在仓库根 lighthouserc.json（本地 lhci autorun 与 CI 同源）：
       #    - 靶站：pnpm preview 伺服 dist/（base=/website，端口 4321，AGENTS.md 约定）；
       #      不用 LHCI 静态服务器——它按根路径伺服，会破坏 /website/ 前缀的绝对路径资产引用。
-      #    - 覆盖：首页 + /lab/car-configurator/ + /lab/tts-cockpit/，每 URL 3 轮取中位轮
-      #      （SRD 原文的「1 内容页」待 A3 内容页上线后在 lighthouserc.json 补一行 URL 即可）。
+      #    - 覆盖：首页 + /work/ + /work/multilingual-cockpit/（案例 A 内容页）+ /about/
+      #      + /lab/car-configurator/ + /lab/tts-cockpit/，每 URL 3 轮取中位轮
+      #      （MVP Gate 六 URL 基线，实测见 docs/spec/lighthouse-mvp-gate-report.md）。
       #    - 断言：Lighthouse 默认即移动端预设（Moto G 模拟 + 4x CPU throttle + Slow 4G，
       #      formFactor 已在 lighthouserc.json 显式钉死）；四项（Perf/A11y/BP/SEO）≥ 95
       #      为 error 级断言。裁决走不降级路径：不设 continue-on-error 过渡轮，
