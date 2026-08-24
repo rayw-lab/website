@@ -3,6 +3,14 @@
 > 执行脚本：`docs/spec/human-gate-checklist.md`
 > 回填目标：`docs/spec/mvp-gate-signoff.md` §人工签署区
 
+## 一键启动（推荐）
+
+```bash
+pnpm human-gate:preview
+```
+
+自动 `build` + `preview --host`，终端打印手机可访问的局域网 URL。
+
 ## 命名规范
 
 | 类型 | 格式 | 示例 |

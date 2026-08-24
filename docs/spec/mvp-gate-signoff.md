@@ -1,6 +1,6 @@
 # Phase 1 MVP Gate 签署（自动化侧）
 
-> **分支**：`cursor/bruno-implementation-plan-1d6f` · integration tip `9200112`
+> **分支**：`cursor/bruno-implementation-plan-1d6f` · integration tip `54a8450`
 > **规格**：`docs/spec/implementation-roadmap-birdseye.md` Phase 1 MVP Gate · PRD/SRD v1.1.1
 > **签署日期**：2026-08-24（自动化侧；人工签署区待王磊）
 
