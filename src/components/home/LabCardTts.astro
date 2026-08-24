@@ -1,0 +1,187 @@
+---
+// LabCardTts —— TTS 智能座舱入口卡（中卡，5 列）。
+// P1 静态：SVG 假波形 + 多语种问候静态行 + 参数角标；
+// P2 增加语种字符轮播（RTL 翻转）与波形 hover 播放（lab-cards.ts）。
+// view-transition-name: demo-cockpit —— 与 Lab 页头图 morph 打通。
+import TechChip from '../ui/TechChip.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const chips = ['16 语种', '词级字幕', 'RTL', '真实频谱'];
+
+// 多语种问候静态样本（P2 换成读 tts-manifest 的字符轮播）
+const greetings = [
+  { lang: 'zh-CN', text: '你好' },
+  { lang: 'ar', text: 'مرحبًا' },
+  { lang: 'ja', text: 'こんにちは' },
+  { lang: 'de', text: 'Guten Tag' },
+  { lang: 'ko', text: '안녕하세요' },
+];
+
+// 确定性伪随机语音包络：双正弦叠加，构建期生成，0KB JS
+const BAR_COUNT = 44;
+const bars = Array.from({ length: BAR_COUNT }, (_, i) => {
+  const env = Math.abs(Math.sin(((i + 2) / (BAR_COUNT + 4)) * Math.PI));
+  const detail =
+    0.45 + 0.55 * Math.abs(Math.sin(i * 1.7) * Math.sin(i * 0.53) + 0.2);
+  const h = Math.max(3, Math.round(34 * env * Math.min(detail, 1)));
+  return { x: i * 4, y: (44 - h) / 2, h };
+});
+---
+
+<a class="card lab-card reveal" href={`${base}/lab/tts-cockpit/`} style="--reveal-delay: 6%">
+  <figure class="media">
+    <svg
+      class="wave"
+      viewBox="0 0 174 44"
+      role="img"
+      aria-label="多语种语音波形示意图"
+      preserveAspectRatio="none"
+    >
+      {
+        bars.map((b, i) => (
+          <rect
+            x={b.x}
+            y={b.y}
+            width="2.5"
+            height={b.h}
+            rx="1"
+            opacity={0.45 + 0.55 * Math.abs(Math.sin(i * 0.7))}
+          />
+        ))
+      }
+    </svg>
+    <p class="greetings data" aria-label="多语种问候示例">
+      {
+        greetings.map((g, i) => (
+          <>
+            <bdi lang={g.lang}>{g.text}</bdi>
+            {i < greetings.length - 1 && (
+              <span class="dot" aria-hidden="true">
+                ·
+              </span>
+            )}
+          </>
+        ))
+      }
+    </p>
+  </figure>
+  <div class="body">
+    <h3>TTS 智能座舱</h3>
+    <p class="desc">
+      多语种座舱播报台：16 语种离线预生成语音、词级时间戳字幕与 RTL
+      排版，零第三方请求。
+    </p>
+    <p class="chips">
+      {chips.map((c) => <TechChip label={c} />)}
+    </p>
+    <p class="enter">
+      进入播报台 <span class="arrow" aria-hidden="true">→</span>
+    </p>
+  </div>
+</a>
+
+<style>
+  .lab-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .media {
+    view-transition-name: demo-cockpit;
+    display: grid;
+    align-content: center;
+    gap: var(--space-4);
+    aspect-ratio: 16 / 9;
+    padding: var(--space-6);
+    border-block-end: 1px solid var(--line);
+    background:
+      radial-gradient(
+        ellipse 120% 90% at 50% 110%,
+        var(--accent-soft),
+        transparent 60%
+      ),
+      var(--bg);
+  }
+
+  @media (min-width: 960px) {
+    .media {
+      aspect-ratio: auto;
+      flex: 1 1 auto;
+      min-block-size: 10rem;
+    }
+
+    .body {
+      flex: 0 0 auto;
+    }
+  }
+
+  .wave {
+    inline-size: 100%;
+    block-size: clamp(2.5rem, 6vw, 3.5rem);
+    color: var(--accent-strong);
+  }
+
+  .wave rect {
+    fill: currentColor;
+  }
+
+  .greetings {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+    color: var(--ink-3);
+    font-weight: 400;
+  }
+
+  .dot {
+    color: var(--accent);
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: var(--space-6);
+  }
+
+  h3 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  .desc {
+    margin-block-start: var(--space-3);
+    font-size: var(--text-small);
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-start: auto;
+    padding-block-start: var(--space-5);
+  }
+
+  .enter {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-block-start: var(--space-4);
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .arrow {
+    transition: transform var(--duration-hover) var(--ease-out);
+  }
+
+  .lab-card:hover .arrow {
+    transform: translateX(4px);
+  }
+</style>

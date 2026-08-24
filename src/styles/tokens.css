@@ -1,0 +1,114 @@
+/* ============================================================
+   tokens.css — 全站唯一设计 token 源
+   规格来源：docs/research/homepage-redesign-spec.md §3（视觉系统规格）
+   定调：技术编辑部 × 工业设计；强调色 = 工业橙（全站唯一强调色）
+   主题机制：默认跟随系统（prefers-color-scheme），
+   手动切换写入 <html> 的 .light / .dark class（ThemeToggle）。
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  /* ---------- 色彩 §3.1 · Light（日间驾驶模式） ---------- */
+  --bg: #fafaf8; /* 页面底色 · 纸白 */
+  --bg-raised: #ffffff; /* 卡片 / 浮层 */
+  --ink: #111111; /* 标题 / 正文 */
+  --ink-2: #55554f; /* 次级文字 */
+  --ink-3: #8a8a85; /* meta / 时间戳 */
+  --line: #e4e4de; /* hairline 分隔线 / 卡片描边 */
+  --accent: #bf3f0a; /* 强调色 · 文本级（对比 ≥ 4.5:1） */
+  --accent-strong: #e8590c; /* 强调色 · 图形级（大字号/徽章/进度条） */
+  --accent-soft: rgba(232, 89, 12, 0.1); /* 强调底纹 / hover 背景 */
+  /* 派生：置于 accent-strong 之上的文字色（黑字对橙底对比 ≥ 4.5:1；
+     白字对 #E8590C 仅 3.6:1，不可用） */
+  --on-accent: #111111;
+
+  /* ---------- 字体栈 §3.2 ---------- */
+  --font-sans:
+    'Inter Variable', Inter, 'Source Han Sans SC', 'Noto Sans SC',
+    'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-mono:
+    'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono',
+    Consolas, monospace;
+
+  /* ---------- 字体层级 §3.2 ---------- */
+  --text-display: clamp(2.125rem, 1.5rem + 3vw, 3.25rem); /* Hero H1，仅一处 */
+  --text-h2: clamp(1.5rem, 1.2rem + 1.5vw, 2rem); /* 区块标题 */
+  --text-h3: 1.1875rem; /* 卡片标题 */
+  --text-body: 1.0625rem; /* 中文正文 17px */
+  --text-small: 0.875rem; /* 辅助说明 */
+  --text-label: 0.75rem; /* 英文 eyebrow 小标签 */
+  --text-data: 0.8125rem; /* 量化锚点 / 徽章 / 时间戳 */
+  --text-code: 0.875rem; /* 代码块（内容页） */
+
+  --leading-display: 1.15;
+  --leading-h2: 1.25;
+  --leading-h3: 1.45;
+  --leading-body: 1.8;
+  --leading-small: 1.6;
+  --leading-label: 1;
+  --leading-data: 1.4;
+  --leading-code: 1.7;
+
+  --tracking-label: 0.08em; /* eyebrow 字距 */
+
+  /* ---------- 间距与栅格 §3.3（4px 基数） ---------- */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.5rem; /* 24px */
+  --space-6: 2rem; /* 32px */
+  --space-7: 3rem; /* 48px */
+  --space-8: 4rem; /* 64px */
+  --space-9: 6rem; /* 96px */
+  --space-10: 8rem; /* 128px */
+
+  --container-max: 72rem; /* 页面容器 1152px */
+  --container-pad: clamp(1.25rem, 4vw, 2.5rem); /* 左右安全边距 */
+  --grid-gutter: 1.5rem; /* 12 列栅格 gutter 24px */
+  --measure: 70ch; /* 阅读主轴（详情页正文） */
+  --section-pad: clamp(4rem, 10vh, 8rem); /* 区块垂直节奏 */
+  --heading-gap: var(--space-7); /* 区块标题与内容间距 48px */
+  --radius-card: 8px; /* 卡片圆角 */
+  --radius-chip: 4px; /* 徽章 / 角标圆角 */
+
+  /* ---------- 动效 §3.4 ---------- */
+  --duration-hover: 180ms; /* 悬停 150–200ms */
+  --duration-fade: 400ms; /* poster→canvas 交叉淡入（P2） */
+  --duration-reveal: 500ms; /* 入场 400–600ms */
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ---------- 色彩 §3.1 · Dark（夜间驾驶模式，一等公民） ----------
+   两个选择器块的取值必须逐字一致：
+   1) 手动切换：html.dark；2) 跟随系统且未手动指定 light。 */
+:root.dark {
+  color-scheme: dark;
+  --bg: #0c0d0f; /* 近黑冷调 */
+  --bg-raised: #16181b;
+  --ink: #ecebe6;
+  --ink-2: #a8a8a0;
+  --ink-3: #6e6e68;
+  --line: #26282c;
+  --accent: #ff8a4a;
+  --accent-strong: #ff6b1a;
+  --accent-soft: rgba(255, 122, 26, 0.14);
+  --on-accent: #0c0d0f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    color-scheme: dark;
+    --bg: #0c0d0f;
+    --bg-raised: #16181b;
+    --ink: #ecebe6;
+    --ink-2: #a8a8a0;
+    --ink-3: #6e6e68;
+    --line: #26282c;
+    --accent: #ff8a4a;
+    --accent-strong: #ff6b1a;
+    --accent-soft: rgba(255, 122, 26, 0.14);
+    --on-accent: #0c0d0f;
+  }
+}

@@ -1,0 +1,83 @@
+---
+// SiteFooter —— 版权、RSS/Sitemap、性能自证行（spec §5.2；PRD HOME-09）。
+// 性能自证行只写可被 pnpm build 产物核算证实的事实。
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="row">
+      <p class="copyright">
+        © {year} 王磊 · 汽车智能座舱与 AI 解决方案经理
+      </p>
+      <nav aria-label="页脚导航">
+        <ul>
+          <li><a href={`${base}/rss.xml`}>RSS</a></li>
+          <li><a href={`${base}/sitemap-index.xml`}>Sitemap</a></li>
+          <li>
+            <a href="https://github.com/rayw-lab" rel="me noopener">GitHub</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <p class="proof data">
+      <span class="tick" aria-hidden="true"></span>
+      性能自证：首页传输 &lt; 200KB（不含字体）· 纯静态直出 · 零第三方请求
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-block-start: 1px solid var(--line);
+    padding-block: var(--space-7) var(--space-8);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-6);
+  }
+
+  .copyright {
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    color: var(--ink-2);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+  }
+
+  nav a {
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--ink-3);
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  nav a:hover {
+    color: var(--accent);
+  }
+
+  .proof {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-block-start: var(--space-6);
+    color: var(--ink-3);
+  }
+
+  .tick {
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 1px;
+    background: var(--accent-strong);
+    flex-shrink: 0;
+  }
+</style>

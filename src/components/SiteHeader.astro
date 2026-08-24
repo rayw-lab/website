@@ -1,0 +1,142 @@
+---
+// SiteHeader —— 顶部导航（六导航 = 品牌区 Home + 五栏目）+ 驾驶模式切换。
+// 规格：spec §2 线框首行；固定导航条是全站唯一允许 backdrop-filter 的位置（§3.1）。
+import ThemeToggle from './ThemeToggle.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+const nav = [
+  { href: `${base}/work/`, label: 'Work' },
+  { href: `${base}/insights/`, label: 'Insights' },
+  { href: `${base}/ai-lab/`, label: 'AI Lab' },
+  { href: `${base}/about/`, label: 'About' },
+  { href: `${base}/contact/`, label: 'Contact' },
+];
+
+const pathname = Astro.url.pathname.replace(/\/+$/, '/');
+const isActive = (href: string) => pathname.startsWith(href);
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a class="brand" href={`${base}/`} aria-label="王磊 W.L. — 返回首页">
+      <span class="brand-name">王磊</span>
+      <span class="brand-mark data" aria-hidden="true">W.L.</span>
+    </a>
+
+    <nav class="site-nav" aria-label="主导航">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <ThemeToggle />
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    border-block-end: 1px solid var(--line);
+  }
+
+  /* 全站唯一 backdrop-filter 豁免点（spec §3.1） */
+  @supports (backdrop-filter: blur(12px)) {
+    .site-header {
+      background: color-mix(in srgb, var(--bg) 84%, transparent);
+      backdrop-filter: blur(12px);
+    }
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    column-gap: var(--space-5);
+    padding-block: var(--space-3);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: var(--leading-data);
+    padding-block: var(--space-2);
+  }
+
+  .brand-mark {
+    color: var(--accent);
+  }
+
+  .site-nav {
+    margin-inline-start: auto;
+  }
+
+  .site-nav ul {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .site-nav a {
+    display: inline-block;
+    padding-block: var(--space-2);
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--ink-2);
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  .site-nav a:hover {
+    color: var(--ink);
+  }
+
+  .site-nav a[aria-current='page'] {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-strong);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.5em;
+  }
+
+  /* 移动端（< 640px）：品牌 + 切换占首行，导航折至第二行横向滚动 */
+  @media (max-width: 639.98px) {
+    .brand {
+      margin-inline-end: auto;
+    }
+
+    .site-nav {
+      order: 3;
+      flex-basis: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-inline-start: 0;
+    }
+
+    .site-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .site-nav ul {
+      gap: var(--space-4);
+      white-space: nowrap;
+      padding-block-end: var(--space-1);
+    }
+  }
+</style>
