@@ -42,6 +42,7 @@ master-plan.md          ← 业务总纲（定位、内容规范、视觉定调�
 | **[PRD.md](./PRD.md)** | 产品负责人、内容作者 | 做什么？为谁做？优先级？成功标准？ |
 | **[SRD.md](./SRD.md)** | 工程师、Cloud Agent | 系统怎么拆？用什么技术？怎么验收？ |
 | **[implementation-roadmap-birdseye.md](./implementation-roadmap-birdseye.md)** | 决策者（5 分钟路径）、施工工程师（30 分钟路径） | 按什么顺序做？谁来做？每步的过门命令与阻断条件？哪里止损？ |
+| **[audit-report-v1.1.md](./audit-report-v1.1.md)** | 评审者、全体 | v1.1 全套文档交叉审计：矛盾/遗漏/不可执行项清单、预算交叉验证、P0/P1/P2 修订行动清单与 Phase A sign-off 条件 |
 
 **阅读顺序**：先 PRD 建立产品共识 → 再 SRD 理解架构 → **排期与开工看 `implementation-roadmap-birdseye.md`**（含各轨「开工前必读」清单）→ 首页施工读 `homepage-redesign-spec.md`；涉及 `/world/` 的施工再读 `bruno-simon-teardown-adaptation.md` 与 `bruno-simon-folio-source-teardown.md`。
 
@@ -73,7 +74,7 @@ master-plan.md          ← 业务总纲（定位、内容规范、视觉定调�
 
 | 优先级 | 动作 | 依据 |
 |--------|------|------|
-| P0 | 评审并冻结 PRD/SRD v1.1 与实施路径鸟瞰图 | 本文档 |
+| P0 | 处理交叉审计报告的 P0 修订项（12 模块裁决、Spike 门禁算法、thesis/RSS 口径、B0 扩容提级），随后评审并冻结 PRD/SRD v1.1 与实施路径鸟瞰图 | [audit-report-v1.1.md](./audit-report-v1.1.md) §9 |
 | P0 | Phase 1：首页五区块 + Content Collections + CI 门禁（Track A + D） | SRD §13 Phase 1 / 鸟瞰图 §5 |
 | P1 | Lab 子系统化（manifest 收编两个引子 Demo，Track C）——world 启动的前置条件 | SRD §12 / 鸟瞰图 §4.3 |
 | P1 | V1 三个新 Lab（端云可视化 / Prompt 对比台 / 多语种 QA） | PRD §7.2 |
