@@ -43,6 +43,8 @@ const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v
 export class KinematicVehicle {
   /** 底盘参考点（几何中心）世界坐标 */
   readonly position = new THREE.Vector3(P.spawn.x, 0, P.spawn.z);
+  /** 上一物理步的位置（锥桶扫掠碰撞防隧穿用） */
+  readonly prevPosition = new THREE.Vector3(P.spawn.x, 0, P.spawn.z);
   /** 平面速度向量 */
   readonly velocity = new THREE.Vector3();
   /** 航向角（绕 y，0 = +Z 方向） */
@@ -90,6 +92,7 @@ export class KinematicVehicle {
 
   respawn(): void {
     this.position.set(P.spawn.x, 0, P.spawn.z);
+    this.prevPosition.copy(this.position);
     this.velocity.set(0, 0, 0);
     this.yaw = P.spawn.yaw;
     this.steer = 0;
@@ -105,6 +108,7 @@ export class KinematicVehicle {
    * 瞬时 dt 分离」的等价纪律，防帧尖峰打乱手感积分）。
    */
   step(dt: number, intent: DriveIntent, groundMeshes: THREE.Object3D[]): void {
+    this.prevPosition.copy(this.position);
     const forward = this.forwardDir(this.tmpForward);
     const right = this.tmpRight.set(-forward.z, 0, forward.x);
 
@@ -151,6 +155,13 @@ export class KinematicVehicle {
       if (intent.throttle === 0 && !intent.brake) {
         vLong *= Math.exp(-P.idleDrag * dt); // 怠速滑行（folio idleBrake 连续化）
         applyBrake(P.rollingDecel);
+      }
+      // 超速回落：向当前档软限速指数逼近（运动学模型的「轮胎阻力」替身）
+      const cap =
+        vLong >= 0 ? (intent.boost ? P.topSpeedBoost : P.topSpeed) : P.topSpeedReverse;
+      if (Math.abs(vLong) > cap) {
+        const sign = Math.sign(vLong);
+        vLong = sign * (cap + (Math.abs(vLong) - cap) * Math.exp(-P.overspeedDecay * dt));
       }
       // ---- 侧向抓地：指数衰减（sideFrictionStiffness 的运动学等价物） ----
       const grip =

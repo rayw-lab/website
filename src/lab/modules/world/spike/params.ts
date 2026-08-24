@@ -20,6 +20,12 @@ export const VEHICLE_PARAMS = {
   topSpeedReverse: 7,
   /** 软限速衰减斜率：超速 overflow 后引擎力 ×1/(1+overflow×k)——folio 同型，无硬限速 */
   overflowSlope: 1.6,
+  /**
+   * 超速回落速率 s⁻¹：|v| 超过当前档软限速后按指数向限速回落。
+   * folio 靠 Rapier 轮胎摩擦/阻力天然耗散，运动学模型必须显式补这一项，
+   * 否则持续踩油门时速度无界攀升（Spike 实测 GL 腿 126km/h 的教训）。
+   */
+  overspeedDecay: 0.9,
 
   /* ———— 制动与阻力（folio：主动 brake=1 / 怠速 0.06 / 换向刹停 0.4，×35 尺度） ———— */
   /** 主动刹车减速度 m/s²（Space / B） */

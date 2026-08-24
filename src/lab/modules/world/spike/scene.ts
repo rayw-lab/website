@@ -257,12 +257,32 @@ export function createGrayboxWorld(envTexture: THREE.Texture): GrayboxWorld {
     const rz = fwd.x; // 车身右向
     const carSpeed = Math.abs(vehicle.speed);
 
+    // 扫掠段：本帧位移（高速防隧穿——20fps × 35m/s 时单步位移可达 1.75m）
+    const sx = vehicle.position.x - vehicle.prevPosition.x;
+    const sz = vehicle.position.z - vehicle.prevPosition.z;
+    const segLen2 = sx * sx + sz * sz;
+
     for (let i = 0; i < cones.length; i++) {
       const c = cones[i]!;
 
-      // 碰撞：锥桶入车身 OBB（半长 2.25 × 半宽 1.1，含锥桶半径余量）
-      const dx = c.pos.x - vehicle.position.x;
-      const dz = c.pos.z - vehicle.position.z;
+      // 碰撞：锥桶入车身 OBB（半长 2.25 × 半宽 1.1，含锥桶半径余量）；
+      // 参考点取「运动线段上离锥桶最近的点」= 对车身中心路径的扫掠测试
+      let refX = vehicle.position.x;
+      let refZ = vehicle.position.z;
+      if (segLen2 > 1e-6) {
+        const t = Math.max(
+          0,
+          Math.min(
+            1,
+            ((c.pos.x - vehicle.prevPosition.x) * sx + (c.pos.z - vehicle.prevPosition.z) * sz) /
+              segLen2,
+          ),
+        );
+        refX = vehicle.prevPosition.x + sx * t;
+        refZ = vehicle.prevPosition.z + sz * t;
+      }
+      const dx = c.pos.x - refX;
+      const dz = c.pos.z - refZ;
       if (dx * dx + dz * dz < 36 && c.pos.y < 0.9) {
         const lo = dx * fwd.x + dz * fwd.z;
         const la = dx * rx + dz * rz;

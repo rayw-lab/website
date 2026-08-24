@@ -33,6 +33,7 @@ declare global {
         cones: number;
       };
       fps: () => { avg: number; low1: number };
+      info: () => { drawCalls: number; triangles: number };
     };
   }
 }
@@ -113,9 +114,10 @@ export async function createWorldSpike(opts: LabMountOptions): Promise<LabInstan
 
   const loop = () => {
     const now = performance.now();
-    const rawDt = Math.min((now - last) / 1000, 1 / 20);
+    const wallDt = (now - last) / 1000; // 未 clamp 的真实帧间隔（帧率仪表读真值）
+    const rawDt = Math.min(wallDt, 1 / 20); // 物理 dt clamp：低于 20fps 世界进入慢动作而非隧穿
     last = now;
-    fps.push(rawDt);
+    fps.push(wallDt);
 
     dtWindow.push(rawDt);
     dtSum += rawDt;
@@ -191,6 +193,11 @@ export async function createWorldSpike(opts: LabMountOptions): Promise<LabInstan
       cones: world.knockedCount(),
     }),
     fps: () => fps.read(),
+    // 场景复杂度读数（drawCalls/triangles）——帧率论证的硬件无关依据
+    info: () => ({
+      drawCalls: renderer.info.render.drawCalls,
+      triangles: renderer.info.render.triangles,
+    }),
   };
 
   // ---- LabInstance 契约 ----
