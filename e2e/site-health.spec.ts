@@ -71,7 +71,9 @@ test.describe('全站健康度', () => {
     const xml = await sitemap.text();
     expect(xml).toContain(`${BASE}/lab/tts-cockpit/`);
     expect(xml).toContain(`${BASE}/lab/car-configurator/`);
-    expect(xml, 'world-spike 为 noindex 隐藏路由，不得进 sitemap').not.toContain('world-spike');
+    // 精确匹配隐藏路由本体（A3 起 /ai-lab/world-spike-parallel-agents/ 实验记录
+    // 合法进入 sitemap，裸子串断言会误伤内容 slug）
+    expect(xml, 'world-spike 为 noindex 隐藏路由，不得进 sitemap').not.toContain(`${BASE}/world-spike/`);
 
     // favicon 与自托管字体可达（BaseLayout 预加载引用）
     for (const asset of ['/favicon.svg', '/fonts/inter-var-latin.woff2']) {
