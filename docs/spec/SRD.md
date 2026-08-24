@@ -9,13 +9,20 @@
 | 项 | 内容 |
 |----|------|
 | 文档名称 | 个人网站系统需求规格说明书（SRD） |
-| 版本 | v1.0 |
+| 版本 | v1.1 |
 | 状态 | 评审稿（Draft for Review） |
 | 日期 | 2026-08-24 |
 | 读者 | 实施工程师（前端/全栈）、内容作者（站长本人）、外部协作代理（Cloud Agent） |
 | 关联文档 | `docs/spec/PRD.md`（产品需求文档，定义"做什么与为什么"；本文定义"系统如何构成与如何实现"） |
-| 上游输入 | `docs/website-plan/master-plan.md`（总纲，冲突时以其最新版为准）、`docs/website-plan/mvp-checklist.md`、`docs/website-plan/material-security-grading.md`、`docs/research/homepage-redesign-spec.md`、`docs/research/portfolio-inspiration-tech-showcase.md`、`docs/research/portfolio-inspiration-github.md` |
-| 效力约定 | 本文为**系统架构与技术规格的唯一权威文档**。与上游调研文档冲突时以本文为准；与 master-plan 的定位/内容规范冲突时以 master-plan 为准（见第 14.4 节已知张力清单）。执行中如需变更架构决策，先修订本文再动工。 |
+| 上游输入 | `docs/website-plan/master-plan.md`（总纲，冲突时以其最新版为准）、`docs/website-plan/mvp-checklist.md`、`docs/website-plan/material-security-grading.md`、`docs/research/homepage-redesign-spec.md`、`docs/research/portfolio-inspiration-tech-showcase.md`、`docs/research/portfolio-inspiration-github.md`；v1.1 起新增：`docs/research/bruno-simon-teardown-adaptation.md`（Hybrid 路线决策来源，其 §10.2 六处 SRD 修订建议已在本版落实）、`docs/research/bruno-simon-teardown-tech.md` |
+| 效力约定 | 本文为**系统架构与技术规格的唯一权威文档**。与上游调研文档冲突时以本文为准；与 master-plan 的定位/内容规范冲突时以 master-plan 为准（见第 14.4 节已知张力清单）。执行中如需变更架构决策，先修订本文再动工。**v1.1 起：凡涉及 `/world/` 与 3D 世界边界的条款，与本文旧表述冲突时以 Hybrid 决策（AP-9 + §12.7）为准。** |
+
+**版本修订记录**
+
+| 版本 | 日期 | 修订内容 | 修订人 |
+|------|------|---------|--------|
+| v1.0 | 2026-08-24 | 初版：六子系统架构、数据模型、接口契约、NFR、部署与演进路线 | 云端子代理 |
+| v1.1 | 2026-08-24 | **正式采纳 Hybrid 路线**（PRD §2.6，决策依据 `bruno-simon-teardown-adaptation.md`），落实其 §10.2 修订项 S1–S6：新增 AP-9（HTML 宪法 / world opt-in）；§2.5 C-2/C-3 增补按路由分层的适用范围说明（S1）；§8.2 `budgetClassEnum`/`kind` 增加 `'world'`、放宽 `viewTransitionName` 前缀（S2）；§9.2/§12.5 模式枚举扩展 `'world'`（S3）；§9.3 注册 `world-entry` 并扩展 `demo-car`/`demo-cockpit` 起点（S4）；§12.6 `public/` 配额 25MB→40MB、新增世界循环动画配额行（S5）；§13 Phase 2/4 加入 world spike 与收编、§14.1 新增 R8 工期黑洞风险（S6）。另新增 §12.7 world 模块专章（`/world/` 路由与 Astro 集成决策、独立运行时预算、降级链）、§7 目录树 `src/lab/world/` 目标态、§9.5 世界埋点事件、§10.1 NFR-P6 世界独立预算、术语表与参考索引更新 | 云端子代理 |
 
 **关键认知（先读）**：当前仓库已实现的 `/lab/tts-cockpit`（16 语种 TTS 座舱可视化）与 `/lab/car-configurator`（WebGPU 3D 车辆配置器）两个 Demo，是**能力证明的引子样本（proof-of-capability seed）**，不是系统终态。本文描述的是**完整目标系统**的架构：Demo 是其中 Lab 子系统的前两个注册模块，Lab 子系统本身是六个子系统之一。任何实施都不应把"维护好这两个 Demo"误解为系统边界。
 
@@ -38,7 +45,7 @@ master-plan 是**业务总纲**：定位（第 1 章）、信息架构（第 2 �
 | 1 | 全站静态站点系统 | Home / Work / Insights / AI Lab / About / Now / Contact 七类页面及索引页，URL 结构遵循 master-plan 2.3 |
 | 2 | 内容子系统（Content Layer） | Content Collections（work / insights / ai-lab / now）+ zod schema + MDX 渲染管线 |
 | 3 | 呈现子系统（Presentation Layer） | 设计 token、布局、全站组件库、动效基线、i18n（中文主站 + 少量英文页） |
-| 4 | Lab 子系统（Lab/Demo Subsystem） | 现有 2 个引子 Demo 的模块化改造 + 可插拔 Lab Module 扩展架构（manifest 注册、懒加载契约、降级链） |
+| 4 | Lab 子系统（Lab/Demo Subsystem） | 现有 2 个引子 Demo 的模块化改造 + 可插拔 Lab Module 扩展架构（manifest 注册、懒加载契约、降级链）；v1.1 起含 `/world/` 智能座舱试验场旗舰模块（Hybrid 决策，§12.7） |
 | 5 | 构建与部署管线 | GitHub Actions 构建、质量门禁（schema 校验/链接检查/性能预算）、GitHub Pages 发布、可选自定义域名与 PR 预览 |
 | 6 | 统计与可观测性 | 无 Cookie 隐私友好统计、关键事件埋点（Demo 挂载、PDF 下载、滚动深度）、构建期产物体积审计 |
 | 7 | SEO 与发现层 | meta/canonical/hreflang、JSON-LD 结构化数据、RSS、sitemap、构建期 OG 图 |
@@ -58,6 +65,8 @@ master-plan 是**业务总纲**：定位（第 1 章）、信息架构（第 2 �
 | 服务端 API / Edge Function | GitHub Pages 纯静态约束；一切能力必须构建期完成或纯客户端实现 | 硬约束 |
 | 英文全站 | 仅首页/About/Contact 提供英文版 + hreflang | Phase 3 局部 |
 | 课程/商城/付费墙、密码保护页 | 无受众基础；密码页 ≠ 授权（保密分级第 4 节） | 永久不做 |
+| **全屏 3D 世界作为首页/唯一入口（Full Bruno Clone）**（v1.1 新增） | 与 C-2/C-3 及 10 秒定位门禁正面冲突；Hybrid 决策仅允许 **opt-in 独立路由 `/world/`**（AP-9 + §12.7），首页与内容页对世界零字节依赖 | 永久不做（`/world/` 为在册例外形态） |
+| 世界内多人在线/全局状态（WebSocket 玩法）（v1.1 新增） | C-1 纯静态无后端；与信用系统定位无关（Bruno 的 server 侧玩法不跟） | 永久不做 |
 
 ### 2.5 系统级硬约束（全文档反复引用，编号 C-1…C-6）
 
@@ -70,11 +79,16 @@ master-plan 是**业务总纲**：定位（第 1 章）、信息架构（第 2 �
 | C-5 | URL 永不变更；确需变更必须 301（静态站上以 meta refresh + canonical 实现） | master-plan 2.3 |
 | C-6 | 依赖红线：不引入 React/R3F、Lenis、Tailwind；GSAP 仅在专项审批后引入 | homepage-redesign-spec §6 |
 
+> **v1.1 增补（C-2/C-3 适用范围说明，落实 adaptation §10.2 S1）**：C-2/C-3 **按路由考核**——
+> ① 首页与全部内容页：原样适用（四项 ≥ 95、首屏 < 200KB），且 **world 的任何 JS/资产不得出现在其关键路径**（`audit-budget.mjs` 增加断言，Start here 入口按钮 = 一个 `<a>` + 一段 CSS，零 JS 增量）；
+> ② `/world/` 静态壳页：**同样受 C-2 约束**（四项 ≥ 95，LCP = poster，NFR-P3 延伸）——canvas、three chunk、世界资产全部在用户显式确认进入后才开始加载；
+> ③ 世界运行态（确认进入后）：不适用 Lighthouse（它不度量交互式应用的运行质量），改用 **§12.7.2 独立运行时预算**（NFR-P6）。首页 C-3 的 200KB 预算与 world 预算完全分账，互不占用。
+
 ---
 
 ## 3. 架构原则
 
-以下 8 条原则约束一切实现决策。冲突时按编号优先级从高到低裁决。
+以下 9 条原则约束一切实现决策（v1.1 新增 AP-9）。冲突时按编号优先级从高到低裁决。
 
 **AP-1 静态优先，零 JS 基线（Static-first, Zero-JS baseline）**
 每个页面的默认输出是纯静态 HTML + CSS。JavaScript 是逐项申请的例外而非默认：每一段进入首屏关键路径的 JS 必须在 PR 中列"预算行"（新增 KB / LCP 影响 / 降级路径）。无 JS 环境下，全部**内容**必须完整可读（Demo 允许降级为海报 + 文字说明）。
@@ -99,6 +113,9 @@ C-2/C-3 是合并门禁：任何 PR 使其不达标即阻断合并，没有"先�
 
 **AP-8 单一事实源与类型安全（Single source, typed end-to-end）**
 设计 token 唯一来源是 `src/styles/tokens.css`；内容结构唯一来源是 `src/content.config.ts` 的 zod schema；Lab 模块元数据唯一来源是 Lab manifest。同一数据禁止在两处维护（如车漆预设 `presets.ts` 同时服务构建期 UI 与运行时 3D，已是范例）。
+
+**AP-9 HTML 是宪法，world 是 opt-in 公民（HTML-first constitution, world as opt-in citizen）**（v1.1 新增，承接 PRD §2.6 三层承诺）
+HTML 路径（首页五区块 + 全部内容页）承担 10 秒定位、猎头 30 秒路径、SEO、无障碍的全部职责，永不让渡给 3D。沉浸式 3D 世界仅存在于显式 opt-in 的独立路由 `/world/`：进入前首页不为其加载任何字节；世界内可见的每一条信息在 HTML 路径两跳内必达（3D 只做「橱窗」，内容永不进 canvas）；删除整个 world 模块，站点构建与信息完整性零损失（AP-3 解耦的极限情形，CI 可验证）。任何「世界独占信息」「自动进入世界」或「world 资产渗入首页关键路径」的提案直接驳回。
 
 ---
 
@@ -241,6 +258,7 @@ About 与 Contact 为**低频静态页**（`src/pages/about.astro`、`src/pages/
 | `edge-cloud-llm-arch` | 端云大模型分层架构可视化：交互式数据流图，拖动"延迟/算力/成本"参数看任务在车端/云端的路由决策变化 | data-viz（SVG/Canvas，零 WebGL） | S | 旗舰案例 B 的 L2 证据展项 |
 | `multimodal-hmi` | 多模态交互原型：语音（复用 TTS 资产管线）+ 触控 + 场景状态机的座舱多模态仲裁演示 | audio-viz + svg-hmi | M | 支柱 1/2 交叉证据 |
 | 配置器「工程模式」 | 现有 3D 配置器加 ASCII/线框渲染切换彩蛋 | 现有模块的能力扩展，**不是新模块** | 增量 S | 工程品味信号 |
+| `world`（v1.1 新增，**已立项**——Hybrid 旗舰） | `/world/` 智能座舱试验场：可驾驶 3D 世界、六分区 POI 空间化六导航、车↔机器人 morph（PRD LAB-16~18；专章 §12.7） | world | world（§12.7.2 独立预算） | 三支柱交叉；证据链上最大的 L2 展项；「网站即案例」传播杠杆 |
 
 **对外依赖**：Presentation Layer 的 LabLayout 与设计 token；构建管线的资产预算审计；统计层的挂载事件。禁止依赖 Content Layer 代码。
 
@@ -298,7 +316,9 @@ About 与 Contact 为**低频静态页**（`src/pages/about.astro`、`src/pages/
 | 语言 | TypeScript 5.x（strict） | ✅ | schema、组件 props、Lab 契约全程类型约束 | — | 无 |
 | 内容格式 | MDX（@astrojs/mdx） | ✅ | 文章内嵌交互组件（joshwcomeau 模式）是内容型炫技核心机制 | 纯 Markdown + remark 插件 | MDX 编译性能成为构建瓶颈（>2min）且无内嵌组件需求 |
 | 内容加载 | Astro Content Layer（glob/file loader）+ zod | 🔜 P1 | 构建期类型安全 + schema 即门禁（AP-2/AP-7） | — | 无 |
-| 3D 渲染 | three 0.185 `three/webgpu`（vanilla，TSL 材质） | ✅ | WebGPURenderer r171+ 生产可用；TSL 一份代码编 WGSL/GLSL 双后端；已验证跑通 KTX2/Draco 管线 | Babylon.js、OGL（轻量但无 WebGPU 优势） | three WebGPU 路线破坏性变更成本连续两次升级超过收益 |
+| 3D 渲染 | three 0.185 `three/webgpu`（vanilla，TSL 材质） | ✅ | WebGPURenderer r171+ 生产可用；TSL 一份代码编 WGSL/GLSL 双后端；已验证跑通 KTX2/Draco 管线；**Bruno folio-2025 同栈，world 模块零新增渲染选型** | Babylon.js、OGL（轻量但无 WebGPU 优势） | three WebGPU 路线破坏性变更成本连续两次升级超过收益 |
+| 物理/车辆控制（world） | 手写运动学控制器（raycast 贴地 + 简单碰撞）优先 | 🔜 P4（world Spike） | AP-6 平台原生优先；主动线只需车辆运动学，Rapier wasm ~1.5MB 是大开销（Bruno 用它是因为全场景物理玩具） | Rapier（Bruno 同款） | Spike 实测手写控制器手感不达标或碰撞需求超出 primitive 范围 → 评审引入 Rapier（预算行必附） |
+| 音频（world 场景音） | 手写 WebAudio | 🔜 P4（world Phase C） | 世界场景音需求简单（引擎音/morph 音/POI 环境音）；语种问候直接复用 `public/demo/tts/` 资产零新增 | Howler.js（Bruno 同款，~7KB gzip） | 手写超 ~150 行或跨浏览器兼容成本显现 → 引 Howler.js |
 | UI 框架（Lab 内） | 无（vanilla TS） | ✅ | 一个 React island = +45KB runtime；vanilla 已验证可行 | — | 无 |
 | React / R3F | — | ⛔ C-6 | 见上；R3F 生态仅作参考阅读 | — | —（引入需修订本文） |
 | CSS 方案 | 原生 CSS：token 变量 + Astro scoped style | 🔜 P1 | token 单一来源（AP-8）；免构建链依赖 | Tailwind v4 | 组件数 > 80 且样式重复率显著时重评（预计不会发生） |
@@ -345,6 +365,7 @@ About 与 Contact 为**低频静态页**（`src/pages/about.astro`、`src/pages/
 │   ├── models/car-concept/        # [P0] GLTF + KTX2 纹理
 │   ├── hdri/                      # [P0] 环境贴图
 │   ├── posters/                   # [P0] Demo facade 海报；[P2] + 车漆变体
+│   ├── world/                     # [P4·v1.1] 世界分区 GLB（Draco+KTX2 分区拆分）、2D 等距地图 SVG、壳页 poster
 │   ├── downloads/profile-onepager.pdf   # [P1] 一页纸简介（过元数据检查后入库）
 │   ├── robots.txt                 # [P1]
 │   └── favicon / og-default.png   # [P1]
@@ -373,13 +394,20 @@ About 与 Contact 为**低频静态页**（`src/pages/about.astro`、`src/pages/
 │   │   ├── manifest.json          # 模块注册表（lab 集合 file loader 数据源）
 │   │   ├── contracts.ts           # LabModule / LabMountOptions / LabInstance 类型与 zod schema
 │   │   ├── facade.ts              # 统一 facade 控制器（观察/挂载/降级/事件上报）
-│   │   └── modules/
-│   │       ├── tts-cockpit/       # 由 src/components/demo/tts-cockpit/ 迁入收编
-│   │       │   └── index.ts       # 实现 mount() 契约
-│   │       └── car-configurator/  # 由 src/scripts/car-configurator/ 迁入收编
-│   │           ├── index.ts       # mount() 契约入口（全功能）
-│   │           ├── viewer.ts      # 精简 viewer（Hero 复用：自转+HDRI+接触阴影，无 UI/OrbitControls）
-│   │           └── presets.ts     # 构建期/运行时共享数据（保持现状模式）
+│   │   ├── modules/
+│   │   │   ├── tts-cockpit/       # 由 src/components/demo/tts-cockpit/ 迁入收编
+│   │   │   │   └── index.ts       # 实现 mount() 契约
+│   │   │   └── car-configurator/  # 由 src/scripts/car-configurator/ 迁入收编
+│   │   │       ├── index.ts       # mount() 契约入口（全功能）
+│   │   │       ├── viewer.ts      # 精简 viewer（Hero 复用：自转+HDRI+接触阴影，无 UI/OrbitControls）
+│   │   │       └── presets.ts     # 构建期/运行时共享数据（保持现状模式）
+│   │   └── world/                 # [P4·v1.1] world 单例模块（budgetClass 'world'，专章 §12.7）
+│   │       ├── index.ts           #      mount() 契约入口（与常规模块同一 facade 协议挂载）
+│   │       ├── world.ts           #      场景编排：六分区流式加载、POI 注册、引导线、帧预算自适应
+│   │       ├── vehicle.ts         #      车辆运动学控制器（物理选型由 Phase A Spike 定案，见第 6 章）
+│   │       ├── morph.ts           #      车↔机器人变形（V1 遮蔽式；Phase C 交付）
+│   │       ├── overlay.ts         #      HTML overlay（<dialog> + iframe `?embed=1` 模式，§12.7.1）
+│   │       └── zones/             #      六分区逻辑与 POI 定义（标牌纹理构建期从 frontmatter 生成）
 │   ├── data/
 │   │   └── tts-manifest.json      # [P0] TTS 语种/场景清单（生成管线产物，勿手改）
 │   ├── pages/
@@ -389,6 +417,8 @@ About 与 Contact 为**低频静态页**（`src/pages/about.astro`、`src/pages/
 │   │   ├── ai-lab/index.astro / ai-lab/[slug].astro      # [P1] 索引含 Live Demo 区
 │   │   ├── lab/index.astro        # [P2] Demo 索引（读 manifest 生成）
 │   │   ├── lab/tts-cockpit.astro / lab/car-configurator.astro   # [P0] URL 不变，P2 接入 LabLayout
+│   │   ├── world/index.astro      # [P4·v1.1] world 静态壳页（独立 HTML 壳方案，§12.7.1）
+│   │   │                          #      Phase A Spike 期为 world-spike/index.astro（noindex 隐藏路由，验证后删除或转正）
 │   │   ├── about.astro / now.astro / contact.astro        # [P1]
 │   │   ├── en/index.astro / en/about.astro / en/contact.astro   # [P3]
 │   │   ├── rss.xml.ts             # [P1]
@@ -406,7 +436,8 @@ About 与 Contact 为**低频静态页**（`src/pages/about.astro`、`src/pages/
 2. `lab/modules/*` 之间禁止互相 import；共享逻辑上提到 `lab/facade.ts` 或 `contracts.ts`；
 3. `pages/` 只做组装，不写业务逻辑；任何超过 ~30 行的 `<script>` 必须抽为 `src/scripts/` 或 `lab/` 模块；
 4. `src/data/` 与 `public/demo/` 中由脚本生成的文件头部/旁注 README 标明"生成产物勿手改"，修改一律走 `scripts/` 管线重新生成；
-5. 迁移期兼容：Phase 0 → P2 收编时 `src/components/demo/` 与 `src/scripts/car-configurator/` 整体迁入 `src/lab/modules/`，git mv 保留历史，页面 URL 不变（C-5）。
+5. 迁移期兼容：Phase 0 → P2 收编时 `src/components/demo/` 与 `src/scripts/car-configurator/` 整体迁入 `src/lab/modules/`，git mv 保留历史，页面 URL 不变（C-5）；
+6. （v1.1）`lab/world/` 与 `lab/modules/*` 之间同样禁止互相 import 运行时代码；**唯一在册例外**：纯数据文件 `modules/car-configurator/presets.ts`（车漆预设，无副作用）允许被 world 涂装车间与 Hero 消费（AP-8 单一事实源的空间化延伸）；若共享数据继续增多，P4 收编时上提至 `src/lab/shared/` 并修订本条。
 
 ---
 
@@ -555,10 +586,13 @@ export const collections = { work, insights, 'ai-lab': aiLab, now, lab };
 import { z } from 'astro:content';
 
 /** 资源预算分级（gzip / 磁盘）——超级需在 PR 中专项审批 */
-export const budgetClassEnum = z.enum(['S', 'M', 'L']);
+export const budgetClassEnum = z.enum(['S', 'M', 'L', 'world']);
 // S：懒加载 JS ≤ 50KB gzip，资产 ≤ 1MB   —— 数据可视化 / SVG HMI 类
 // M：懒加载 JS ≤ 300KB gzip，资产 ≤ 6MB  —— WebGPU 3D 类（现配置器：256KB + 5MB，达标）
 // L：超出 M —— 默认拒绝，引入需修订本文并评审
+// world（v1.1 新增，落实 adaptation §10.2 S2 的意图，以独立枚举而非 L 例外形式表达）：
+//   仅限 slug='world' 的单例模块。预算：首屏可玩 JS ≤ 500KB gzip、JS 全量 ≤ 900KB gzip、
+//   资产首包 ≤ 5MB、分区流式合计 ≤ 12MB（详见 §12.7.2）。任何超出需重新评审本文。
 
 export const labModuleSchema = z.object({
   /** 路由 slug：/lab/{slug}/，全小写短横线（C-5：一经发布永不变更） */
@@ -568,9 +602,9 @@ export const labModuleSchema = z.object({
   title: z.string().max(40),
   description: z.string().max(160),
   status: z.enum(['live', 'wip', 'archived']),
-  /** 模块类别（决定 LabLayout 的默认壳与审计规则） */
-  kind: z.enum(['webgpu-3d', 'audio-viz', 'svg-hmi', 'data-viz']),
-  /** 动态 import 入口，相对 src/lab/modules/，必须导出 mount()（8.3 节契约） */
+  /** 模块类别（决定 LabLayout 的默认壳与审计规则）；'world' 为 v1.1 新增（专用壳见 §12.7.1） */
+  kind: z.enum(['webgpu-3d', 'audio-viz', 'svg-hmi', 'data-viz', 'world']),
+  /** 动态 import 入口，相对 src/lab/（常规模块位于 modules/{slug}/，world 单例位于 world/），必须导出 mount()（9.2 节契约） */
   entry: z.string(),
   /** facade 海报（public/ 相对路径）；无 JS / 降级态的视觉底座 */
   poster: z.string(),
@@ -589,8 +623,8 @@ export const labModuleSchema = z.object({
   }),
   /** 深链参数白名单（URL 状态契约，9.2 节）；不在此表的 query 参数一律忽略 */
   deepLinkParams: z.array(z.string()).default([]),
-  /** View Transitions 跨页 morph 名（9.3 节注册表，全站唯一） */
-  viewTransitionName: z.string().regex(/^demo-[a-z0-9-]+$/),
+  /** View Transitions 跨页 morph 名（9.3 节注册表，全站唯一）；v1.1 放宽前缀以容纳 world-entry */
+  viewTransitionName: z.string().regex(/^(demo|world)-[a-z0-9-]+$/),
   /** 首页/索引卡片角标（工程外显） */
   techChips: z.array(z.string().max(16)).max(6),
   /** 证据链反向引用：作为哪些案例/文章的 L2 展项 */
@@ -612,7 +646,7 @@ export type LabModule = z.infer<typeof labModuleSchema>;
     "description": "16 语种 × 5 场景座舱播报对照：词级时间轴驱动字幕、SVG 路线与真实频谱波形，离线预生成、零第三方请求。",
     "status": "live",
     "kind": "audio-viz",
-    "entry": "tts-cockpit/index.ts",
+    "entry": "modules/tts-cockpit/index.ts",
     "poster": "posters/tts-cockpit-poster.webp",
     "budgetClass": "S",
     "budget": { "lazyJsKbGzip": 8, "assetsMb": 3.4 },
@@ -630,7 +664,7 @@ export type LabModule = z.infer<typeof labModuleSchema>;
     "description": "WebGPU 实时渲染（WebGL 2 自动回退）的概念车虚拟展厅：8 车漆 × 2 轮毂 × 3 涂装，KTX2/Draco 资产管线。",
     "status": "live",
     "kind": "webgpu-3d",
-    "entry": "car-configurator/index.ts",
+    "entry": "modules/car-configurator/index.ts",
     "poster": "posters/car-configurator-poster.webp",
     "budgetClass": "M",
     "budget": { "lazyJsKbGzip": 256, "assetsMb": 5.0 },
@@ -712,7 +746,9 @@ MDX 内**只允许**使用以下注册组件（经 `ArticleLayout`/`CaseLayout` 
 ```ts
 export interface LabMountOptions {
   host: HTMLElement;                     // 舞台容器（含 canvas 或由模块自建 DOM）
-  mode: 'full' | 'viewer';               // full = Lab 页全功能；viewer = Hero/嵌入精简态
+  mode: 'full' | 'viewer' | 'world';     // full = Lab 页全功能；viewer = Hero/嵌入精简态；
+                                         // world = 世界消费态（v1.1，§12.5/§12.7：viewer 能力 +
+                                         //         材质热更接口 + 位置/状态序列化接口）
   params: URLSearchParams;               // 已按 manifest.deepLinkParams 白名单过滤
   onProgress?(loaded: number, total: number): void;   // 驱动 facade 进度条
   onBackend?(backend: 'webgpu' | 'webgl2' | 'canvas2d' | 'dom'): void;  // 实时后端徽章
@@ -739,10 +775,11 @@ export default function mount(opts: LabMountOptions): Promise<LabInstance>;
 
 | 名称 | 起点（列表/卡片） | 终点（详情页） |
 |------|------------------|---------------|
-| `demo-car` | 首页 LabCardCar 海报图 / `/lab/` 索引卡 | `/lab/car-configurator` 舞台容器 |
-| `demo-cockpit` | 首页 LabCardTts 视觉区 / `/lab/` 索引卡 | `/lab/tts-cockpit` HMI 主视区 |
+| `demo-car` | 首页 LabCardCar 海报图 / `/lab/` 索引卡 / **世界内涂装车间转盘（v1.1 扩展，`?paint=` 状态随转场携带）** | `/lab/car-configurator` 舞台容器 |
+| `demo-cockpit` | 首页 LabCardTts 视觉区 / `/lab/` 索引卡 / **世界内 TTS 电台塔立面（v1.1 扩展）** | `/lab/tts-cockpit` HMI 主视区 |
 | `case-cover-{slug}` | Work 索引/首页案例卡封面 | 案例详情页头图 |
 | `site-header` | 全站页眉（跨页保持稳定，避免导航条闪跳） | 同 |
+| `world-entry`（v1.1 新增） | 首页 Hero 车模舞台容器（HOME-10 Start here 点击） | `/world/` 壳页加载屏 poster——「同一辆车开进试验场」，车的视觉连续性是叙事锚点 |
 
 - 动态命名（`case-cover-{slug}`）在列表页由每张卡的 inline style 赋值，详情页在头图赋同名；
 - 禁止对正文文本块设置 morph 名（避免大面积伪元素截图开销）；
@@ -769,6 +806,10 @@ export default function mount(opts: LabMountOptions): Promise<LabInstance>;
 | `lab-error:{slug}` | facade error 态 | 降级链健康度 |
 | `scroll-75:{path}` | 内容详情页滚动 75%（一次性） | master-plan 12.1"案例页浏览深度" |
 | `contact-click` | Contact 页邮件/社交链接点击 | 转化漏斗 |
+| `world-enter`（v1.1） | `/world/` 壳页用户确认进入 3D | PRD §10 世界子指标：Start here 点击→进入漏斗 |
+| `world-skip`（v1.1） | 加载屏「跳过 3D，直接看内容」点击 | 跳过出口健康度 |
+| `world-poi:{slug}`（v1.1） | 世界内 POI 交互（overlay 打开 / Demo 跳转） | 世界→内容转化率分子 |
+| `world-exit-to:{path}`（v1.1） | 从世界跳出到 HTML 路径（overlay「独立页打开」/退出按钮/招聘方速览） | 世界→内容转化归因 |
 
 事件脚本合计 ≤ 1KB，内联于相应布局；`prefers-reduced-motion` 与 Do-Not-Track 不影响计数（无个体追踪，仅匿名聚合），但 `localhost` 与 `*.github.io` 之外的预览域不上报。
 
@@ -784,7 +825,8 @@ export default function mount(opts: LabMountOptions): Promise<LabInstance>;
 | NFR-P2 | 首页首屏传输 < 200KB gzip（不含字体），常态 ≤ 120KB | `scripts/audit-budget.mjs` 按 8.2 节预算表核算：HTML+CSS ≤ 35KB、Hero poster ≤ 40KB、JS ≤ 15KB（引 GSAP 专项放宽至 80KB）、图标 ≤ 30KB、three chunk/模型/HDRI = 0 |
 | NFR-P3 | LCP 元素恒为 poster 或 H1（禁止 canvas）；CLS < 0.1；中端机（4x throttle）TTI < 3.5s | Lighthouse + 手工核验 LCP 元素 |
 | NFR-P4 | 重资产永不进首屏关键路径；Lab 模块预算不超 manifest 声明值 +10% | CI 审计脚本对照 manifest `budget` 字段 |
-| NFR-P5 | 循环动画全站同时可见 ≤ 2 处，且视口外/标签页隐藏必须暂停 | 人工核验清单（Hero 车模自转、TTS 语种轮播两个配额） |
+| NFR-P5 | 循环动画全站同时可见 ≤ 2 处，且视口外/标签页隐藏必须暂停 | 人工核验清单（Hero 车模自转、TTS 语种轮播两个配额）；世界内另设 ≤ 5 处同屏配额，与本条分账（§12.6） |
+| NFR-P6（v1.1 新增） | **world 路由独立预算，不占用首页 C-3 的 200KB**：`/world/` 壳页四项 ≥ 95 且 LCP=poster；world 首屏预算单独定义——首屏可玩 JS ≤ 500KB gzip + 资产 lazy（首包 ≤ 5MB，加载→可驾驶 ≤ 8s @Fast 4G）；JS 全量 ≤ 900KB gzip、流式资产合计 ≤ 12MB；首页/内容页对 world 零字节依赖 | `audit-budget.mjs` 对照 manifest `budget` 与 §12.7.2 预算表核算；首页关键路径断言无 world chunk/资产；Lighthouse 对 `/world/` 壳页照常执行 |
 
 ### 10.2 可访问性（NFR-A，WCAG 2.1 AA）
 
@@ -927,18 +969,108 @@ flowchart TD
 
 **配套纪律**：自定义材质一律 TSL 编写（GLSL `ShaderMaterial` 在 WebGPURenderer 不可用，TSL 自动编译 WGSL/GLSL 双后端）；DPR 封顶桌面 2 / 移动 1.5；`visibilitychange` 与离屏暂停 RAF（`LabInstance.pause()`）；WebGL 回退档位由模块自行声明（如粒子数降档），不由 facade 干预。
 
-### 12.5 Hero 复用契约（viewer 模式）
+### 12.5 Hero / world 复用契约（模式枚举，v1.1 扩展）
 
 首页 Hero 舞台是 Lab 模块的**嵌入消费方**，不是特例：调用同一 `mount()`，`mode: 'viewer'`——模块须在该模式下裁剪为「无 UI 面板、无 OrbitControls、自转 + 单 HDRI + 接触阴影」的最小场景；Hero 的挂载条件比 Lab 页更严（移动端一律不自动挂载）。这保证 Hero 与 `/lab/car-configurator` 是**同一套渲染资产的两种展示模式**（homepage-redesign-spec §4.1），无第二套代码。
+
+**v1.1（落实 adaptation §10.2 S3）**：模式枚举由 `'full' | 'viewer'` 扩展为 **`'full' | 'viewer' | 'world'`**。`world` 模式契约 = viewer 能力 + 两个附加接口：
+
+1. **材质热更接口**：供世界涂装车间换色（数据源直接 import 现有 `presets.ts`，AP-8 单一事实源的空间化延伸）；换色后玩家在整个世界开的都是该配色，`?paint=` 状态与配置器、首页 Hero 三处共享；
+2. **位置/状态序列化接口**：供 `?poi=` 深链出生与从内容页返回世界时恢复车辆位置/形态/配色（sessionStorage）。
+
+world 模式仍是「同一套渲染资产的第三种展示模式，无第二套代码」。
 
 ### 12.6 资源预算与配额总账
 
 | 配额 | 上限 | 现状占用 |
 |------|------|---------|
-| 单模块懒加载 JS | S≤50KB / M≤300KB gzip | tts 8KB（S）；car 256KB（M） |
-| 单模块磁盘资产 | S≤1MB / M≤6MB | tts 3.4MB*（流式豁免，单次拉取 ≤60KB）；car 5.0MB |
-| `public/` 总量 | ≤ 25MB（Pages 软限额 1GB 的自留余量，含未来 poster 变体/OG 图） | 约 8.8MB |
-| 同页并存模块 | 1（Lab 页）；首页 Hero viewer + 卡片微动画不构成第二模块 | 达标 |
+| 单模块懒加载 JS | S≤50KB / M≤300KB gzip / world 见 §12.7.2 | tts 8KB（S）；car 256KB（M） |
+| 单模块磁盘资产 | S≤1MB / M≤6MB / world 流式合计 ≤12MB | tts 3.4MB*（流式豁免，单次拉取 ≤60KB）；car 5.0MB |
+| `public/` 总量 | **≤ 40MB**（v1.1 由 25MB 上调：为 world 分区资产预留 12MB + 余量；Pages 软限额 1GB 下仍充裕） | 约 8.8MB |
+| 同页并存模块 | 1（Lab 页与 `/world/` 均适用）；首页 Hero viewer + 卡片微动画不构成第二模块；世界跳转真实 Demo 页前必须 `dispose()` 释放 GPU（两个 WebGPU 上下文并存必炸预算） | 达标 |
+| 世界内同屏循环动画（v1.1 新增） | ≤ 5 处（与首页 ≤ 2 处配额**分账**，NFR-P5）；overlay 打开与离屏/隐藏标签页全停 | —（Phase B 起核验） |
+
+### 12.7 world 模块专章（v1.1 新增）：`/world/` 路由集成、运行时预算与降级
+
+本节是 PRD LAB-16~18 的技术承接，设计全文见 `bruno-simon-teardown-adaptation.md`。world 是 Lab 子系统的**单例旗舰模块**：注册进同一 manifest（`kind: 'world'`、`budgetClass: 'world'`）、走同一 facade 与 `mount()` 契约、受同一 CI 审计——不是平行子系统（AP-3/AP-9）。
+
+#### 12.7.1 路由与 Astro 集成方式：独立 HTML 壳（选定） vs islands（否决）
+
+| 方案 | 机制 | 判定 |
+|------|------|------|
+| **A. 独立 HTML 壳（选定）** | `src/pages/world/index.astro` 静态壳页：BaseLayout（或其轻量变体）+ poster（LCP）+ 加载屏文案（30 秒结论区：定位语 + 三支柱硬数字逐条点亮）+ 内联 2D 等距地图 SVG（降级态）+ noscript 六分区列表 + 「跳过 3D」链接。用户显式确认后由 facade 动态 import world 模块，单一 canvas 整体接管 | ✅ 壳页零重 JS，天然过 C-2；与现有 Lab 页薄壳模式（§12.2 第 5 步）完全同构；降级链在 HTML 层完整成立（AP-5） |
+| B. Astro islands 拼装 | 世界拆为多个 `client:*` island（场景、HUD、小地图各自水合） | ⛔ 否决：世界是**单体交互应用**而非可独立水合的内容碎片——canvas 只有一个、状态是全局的（车辆位置/形态/配色），多 island 意味着多水合边界与状态割裂，且不减少任何首屏字节（island 化的收益场景是「静态页里嵌小交互」，与此正好相反） |
+
+**HUD 与逃生出口一律 DOM 层**（非 canvas 内渲染）：右上角「退出 3D」+ 小地图 + 当前分区名常驻 DOM，保证屏幕阅读器与键盘可达（NFR-A2）。
+
+**overlay 机制**（内容永不进 3D 的技术执行）：
+
+- 轻内容（案例/文章/About/Contact）：`<dialog>` + `<iframe src="{canonical URL}?embed=1">`——BaseLayout 增加 `embed` 模式 prop（隐藏页头页脚），内容零重复、URL 权威性天然保持；打开时世界 `pause()`（RAF 停、音频停），关闭时 `resume()`；「在独立页打开」链接常驻 overlay 右上角；
+- 重 Demo（TTS、配置器）：真实跳转 + View Transitions morph（`demo-cockpit`/`demo-car`，§9.3）——Demo 页独占 GPU，跳转前世界 `dispose()`；
+- 深链参数经 manifest `deepLinkParams` 白名单：`?poi=`（出生分区）、`?paint=`（车漆，三处共享）。
+
+**world 的 manifest 注册示例**（Phase B 转正时写入，数字为预算上限而非实测）：
+
+```json
+{
+  "slug": "world",
+  "code": "RX-01",
+  "title": "智能座舱试验场",
+  "description": "可驾驶的座舱试验场：六分区空间化全站导航，车↔机器人双形态，每个展项挂证据链。",
+  "status": "wip",
+  "kind": "world",
+  "entry": "world/index.ts",
+  "poster": "world/world-poster.webp",
+  "budgetClass": "world",
+  "budget": { "lazyJsKbGzip": 500, "assetsMb": 5.0 },
+  "capabilities": { "webgpu": "preferred", "webgl2": "fallback", "audio": true, "pointerFine": true },
+  "deepLinkParams": ["poi", "paint"],
+  "viewTransitionName": "world-entry",
+  "techChips": ["WebGPU", "TSL", "六分区流式", "车↔机器人 morph"],
+  "relatedWork": ["multilingual-cockpit", "llm-capability-layering", "ai-native-workflow"],
+  "relatedArticles": []
+}
+```
+
+#### 12.7.2 独立运行时预算（NFR-P6 明细；不占用首页 C-3）
+
+| 预算项 | 上限 | 说明 |
+|--------|------|------|
+| `/world/` 静态壳页 | Lighthouse 四项 ≥ 95；LCP = poster | 确认进入前零 three/世界资产（§2.5 增补 ②） |
+| 首屏可玩 JS | ≤ 500KB gzip | three ~256KB 基线 + 世界控制器/车辆运动学/HUD；Phase A Spike 门禁更严（≤ 400KB） |
+| JS 全量 | ≤ 900KB gzip | 含 morph、音效、分区逻辑等按需 chunk（动态 import，玩家接近才加载） |
+| 资产首包 | ≤ 5MB | 出发广场 + 主直道（出生 15 秒内会看到的东西）；加载→可驾驶 ≤ 8s @Fast 4G |
+| 分区流式合计 | ≤ 12MB | 六分区 GLB 按小地图方位预取（朝哪开、预取哪）；全部 Draco + KTX2 + 烘焙光照 |
+| 帧率 | 桌面 60fps / 中端移动 30fps | 连续 2s 低于阈值自动降档（DPR 降、阴影关、装饰实例减半）+ toast 告知；手动画质档常驻 ESC 菜单 |
+| shader 预热 | 加载屏末拍离屏预编译全部材质 | 防「进新区卡一下」；低端设备跳过预热防上下文丢失 |
+| 首页/内容页增量 | **0 字节** | CI 断言（AP-9 执行机制） |
+
+#### 12.7.3 降级链与跳过出口（PRD LAB-18 的技术口径）
+
+```text
+WebGPU 世界（完整体验）
+  ↓ 无 WebGPU（three 自动回退，特效降档）
+WebGL 2 世界（同一世界，粒子/阴影降档；morph 同样可播——TSL 双后端）
+  ↓ 无 WebGL2 / reduced-motion / saveData / 触屏窄屏默认
+2D 等距地图（SVG 插画：六分区可点、键盘可达、hover 微动效）——独立设计资产，非残缺态（AP-5）
+  ↓ 无 JS
+六分区文字列表 + 六导航链接（noscript）
+```
+
+- 触屏窄屏默认呈现 2D 地图 + 显式「仍要进入 3D（实验性）」按钮（虚拟摇杆 + 画质降档），与 facade `pointerFine` 规则一致；
+- 八条跳过出口（首页 HTML 路径零依赖 / 加载屏第 0 秒可跳过 / 右上角退出 / ESC 招聘方速览 / overlay 即真实 URL / 能力降级直达 2D 地图 / noscript / `?poi=` 深链）逐条列入人工走查表，**任一失效 = P0 bug**；
+- 每 Phase 合并前追加 Persona 2 门禁走查（PRD §7.4）。
+
+#### 12.7.4 与既有基建的复用关系（零新增子系统）
+
+| 既有基建 | world 的复用方式 |
+|---------|----------------|
+| facade（§9.2） | 同一状态机与挂载条件；壳页「进入试验场」按钮 = 显式点击启动路径 |
+| `LabInstance`（§9.2） | `pause()`/`resume()`（overlay 打开、离屏）、`dispose()`（跳转 Demo 页前释放 GPU）、`setParam()`（`?paint=` 热更） |
+| manifest + CI 一致性校验（§12.3） | POI 标牌引用的案例/文章 slug 走同一 `check-links.mjs` 校验；标牌纹理构建期从 frontmatter 生成，内容单源不漂移 |
+| TTS 资产管线 | 电台塔环境音直接流式拉取 `public/demo/tts/`（单文件 ≤ 60KB，零新增资产） |
+| CarConcept 资产 | 玩家车 = 配置器 = Hero 同一源文件；世界内用减面 LOD 副本（目标 ≤ 1.5MB） |
+| 统计事件（§9.5） | `world-enter` / `world-skip` / `world-poi:{slug}` / `world-exit-to:{path}` 四事件支撑 PRD §10 数据阀门 |
 
 ---
 
@@ -950,9 +1082,9 @@ flowchart TD
 |------|------|--------|-----------|---------|
 | **Phase 0（现状）** | 骨架与引子 | 占位首页；`/lab/` 两个 Demo；部署链路；调研与规划文档 | —（基线：Astro 7 + three/webgpu 管线已验证） | 已达成 |
 | **Phase 1（MVP）** | 视觉系统 + 内容基建 + 首批内容 | tokens/global.css、BaseLayout 族、全站组件库、五区块首页（Hero 为 poster 静态舞台）、`content.config.ts` 四集合、旗舰案例 A（12 模块）+ B/C 精简版、Insights×2、AI Lab×2、About/Now/Contact、RSS/sitemap/JSON-LD/robots、GoatCounter 接入、`ci.yml` 门禁上线、删除 jekyll 遗留工作流、一页纸 PDF | 新增 Presentation Layer 与 Content Layer 全量；SEO 层就位；管线从"只部署"升级为"门禁+部署" | C-2/C-3 达标；10 秒定位测试通过（homepage-redesign-spec 8.3）；脱敏检查表逐篇通过；首页无占位文案/断链 |
-| **Phase 2（炫技层）** | Lab 子系统化 + 活的首页 | Lab manifest/contracts/facade 落地，两引子收编（URL 不变）；`viewer.ts` 抽取，Hero 升级实时车模（facade+徽章+车漆深链）；LabCard 微动画（语种轮播/假波形）；`/lab/` 索引页；View Transitions morph 全线打通；poster 变体构建管线 | Lab 子系统从"两个页面"变为"注册模块体系"（第 12 章全量生效）；Hero 复用契约生效 | Phase 1 全指标回归 + 4x throttle Performance ≥ 95 + 降级链逐条人工走查 + 循环动画配额核验 |
+| **Phase 2（炫技层）** | Lab 子系统化 + 活的首页 | Lab manifest/contracts/facade 落地，两引子收编（URL 不变）；`viewer.ts` 抽取，Hero 升级实时车模（facade+徽章+车漆深链）；LabCard 微动画（语种轮播/假波形）；`/lab/` 索引页；View Transitions morph 全线打通；poster 变体构建管线；**（v1.1 可选尾项）World Phase A Spike**：隐藏路由 `/world-spike/`（noindex）灰盒验证操控/物理选型/双后端帧率/移动端摇杆——前置条件为本阶段 Lab 子系统化完成（world 复用 facade/manifest/mount() 全套基建），Spike 可丢弃，止损点见 PRD §7.4 | Lab 子系统从"两个页面"变为"注册模块体系"（第 12 章全量生效）；Hero 复用契约生效；world 模块启动条件达成 | Phase 1 全指标回归 + 4x throttle Performance ≥ 95 + 降级链逐条人工走查 + 循环动画配额核验；Spike（若启动）：JS ≤ 400KB gzip、资产 ≤ 3MB、帧率基线达标或触发止损 |
 | **Phase 3（内容饱和）** | 内容密度 + 分发闭环 | 稳态节奏（每 2 周 1 篇 insights/ai-lab 交替；每季度 1 案例）；featured 精选区上线；OG 图构建期生成；`/en/` 三页 + hreflang；Search Console 基线与月度复盘机制运转；案例↔Demo 证据链全部挂钩 | SEO 层补全（OG 端点）；i18n 局部生效；无新子系统 | 内容量达 mvp-checklist 第 1 节数量表；月度指标表开始记录；自然外链 ≥ 3 |
-| **Phase 4（可选增强）** | 按数据决策的增强池 | 候选（逐项独立评审，非承诺）：新 Lab 模块（端云架构可视化 / 多模态原型）；配置器工程模式彩蛋；滚动叙事段（需先修订 master-plan 第 6 章豁免）；TSL 自定义车漆 shader；Pagefind 搜索（内容 ≥ 20 篇后）；自定义域名迁移（11.3 清单）；文章离线阅读 | 每项增强按第 12.2 六步或第 6 章决策表流程走；无整体性架构变更 | 逐项预算行 + 既有全部 NFR 回归 |
+| **Phase 4（可选增强）** | 按数据决策的增强池 | 候选（逐项独立评审，非承诺）：**（v1.1）World Phase B/C 收编**——B：`/world/` 正式路由转正（Start here + 3 POI + 两 Demo 空间化接入 + 八跳过出口 + 2D 等距地图 + overlay 机制），C：morph/音效/全内容映射（前置：Phase A Spike 通过；门禁与数据阀门见 PRD §7.4 与本文 §12.7）；新 Lab 模块（端云架构可视化 / 多模态原型）；配置器工程模式彩蛋；滚动叙事段（需先修订 master-plan 第 6 章豁免）；TSL 自定义车漆 shader（可与 world Phase C 合并评审）；Pagefind 搜索（内容 ≥ 20 篇后）；自定义域名迁移（11.3 清单）；文章离线阅读 | world 作为单例模块收编进 Lab manifest（`kind/budgetClass: 'world'`），无平行子系统；其余每项增强按第 12.2 六步或第 6 章决策表流程走；无整体性架构变更 | 逐项预算行 + 既有全部 NFR 回归；world 各阶段按 §12.7.2 运行时预算 + PRD §7.4 数据阀门（世界→内容转化率 < 25% 冻结 Phase C） |
 
 **跨阶段不变量**：URL 永不变更（C-5）；每阶段合并即可上线（无长寿分支）；任何阶段允许内容先行（内容生产不被工程阶段阻塞，只被分级流程阻塞）。
 
@@ -971,6 +1103,7 @@ flowchart TD
 | R5 | **`base: '/website'` 迁移风险**：绑定自定义域名要求删 base，所有绝对路径假设一次性翻转 | 外链/收录断裂违反 C-5 | 低 | 全站已统一 `import.meta.env.BASE_URL`；迁移走 11.3 一次性清单；迁移前用 CI 链接检查全量回归 |
 | R6 | **单人维护的公交因子**：架构知识集中于文档而非团队 | 维护中断 | 中 | 本文 + AGENTS.md 保持"可交给任意工程师/Agent 按图施工"的完备度；生成管线全部脚本化可重建（NFR-M） |
 | R7 | **eSpeak NG 音质影响 Demo 可信度**：合成音质明显机械，行家可能低估工程含金量 | 引子效果打折 | 低 | 页面已明示引擎与"离线预生成"卖点（工程叙事优先于音质）；第 6 章已登记淘汰条件（可换 Piper 类可分发模型，架构不变） |
+| R8（v1.1 新增） | **world 工期黑洞**：Bruno folio-2025 为全职约一年 + 十余年 three.js 积累，单人兼职复刻是未定义行为；世界可能长期挤占 Lab 路线图与内容生产 | 交付停滞、内容断更（连坐 master-plan 13.1 内容密度风险） | 中-高 | 三阶段止损点：Phase A Spike 可整体丢弃并归档为 ai-lab 实验记录（失败入档，PRD §7.3 规则 5）；每阶段独立可上线、独立门禁；数据阀门（世界→内容转化率 < 25% 冻结 Phase C）；门禁分层使 world 失败只影响 `/world/` 一条路由（§2.5 增补/AP-9）；不做时间承诺，内容生产优先级恒高于世界施工 |
 
 ### 14.2 技术债登记（现状即债，按优先级）
 
@@ -996,6 +1129,7 @@ flowchart TD
 |------|------|---------|
 | Hero 实时渲染 vs "无大图 banner" | homepage-redesign-spec §4 vs master-plan 第 3 章 | 支持豁免，但生效前置条件是修订总纲（R4 行动项） |
 | 循环动画配额 vs "动效仅 hover 与渐入" | homepage-redesign-spec §3.4 vs master-plan 第 6 章 | 同上 |
+| `/world/` 沉浸式展项 vs "动效仅 hover 与渐入"（v1.1 新增） | 本文 §12.7 / PRD LAB-16 vs master-plan 第 6 章 | 支持豁免：独立路由的沉浸式展项不受该条约束，受 §12.7.2 运行时预算约束。**执行方式：与 R4 行动项同一次总纲修订顺带加入第三条豁免（adaptation §10.3 M1），避免二次修订**；master-plan 修订不属本次 spec v1.1 范围，故此处登记为待办而非已落实 |
 | content collections 时序 | homepage-redesign-spec P3 vs master-plan 30 天 MVP | 提前到 Phase 1（13 章已明确，属实施排序非原则冲突） |
 | content config 路径 | master-plan 7.2 vs Astro 5+ 规范 | 以本文 `src/content.config.ts` 为准（D8） |
 | MVP 内容数量口径 | mvp-checklist（案例 3/文章 6/实验 2）vs master-plan 11.1（案例 A 全 + B/C 简 + Insights 2 + AI Lab 2） | Phase 1 按 master-plan 11.1 执行（后者为总纲且更克制）；mvp-checklist 数量表作为 Phase 3 内容饱和目标 |
@@ -1023,6 +1157,12 @@ flowchart TD
 | 深链（deep link） | 以 URL query 编码 Demo 状态（如 `?paint=crimson`），使外部入口可直达特定配置 |
 | 八问题模板 | master-plan 附录 A：案例/文章成文前的自访谈问题集，保证内容密度 |
 | 一站多入口 | master-plan 第 9 章：主站唯一内容资产库，各渠道深链回流 |
+| Hybrid 路线（v1.1） | 已正式采纳的 3D 世界收编方案：HTML 首页/内页原样保留（宪法），3D 世界为 opt-in 独立路由 `/world/` 的旗舰 Lab 展项（PRD §2.6 三层承诺、AP-9） |
+| world 模块（v1.1） | `/world/` 智能座舱试验场：Lab 子系统的单例旗舰模块（`kind/budgetClass: 'world'`），可驾驶 3D 世界 + 六分区 POI + 车↔机器人 morph（§12.7） |
+| POI（v1.1） | Point of Interest：世界内六分区的交互展项（标牌/展馆/台架）——只做「橱窗」（标题+一句话+证据徽章），深度内容一律 HTML overlay/真实 URL |
+| morph（载具变形，v1.1） | 车（交付载体）↔ 机器人（座舱 AI 人格化）双形态自动切换，隐喻端云分层；V1 遮蔽式变形，V2 预烘焙动画。区别于 View Transitions morph（页面元素过渡） |
+| 2D 等距地图（v1.1） | world 的降级态：Blender 等距渲染描线成 SVG 的六分区可点导览图——独立设计资产而非残缺态（AP-5） |
+| Start here（v1.1） | 首页 Hero 车模旁进入 `/world/` 的第三 CTA（PRD HOME-10）：纯 `<a>`+CSS，点击前首页零 world 字节 |
 
 ### 15.2 参考架构模式
 
@@ -1038,9 +1178,10 @@ flowchart TD
 
 - 总纲与规划：`docs/website-plan/master-plan.md`、`mvp-checklist.md`、`material-security-grading.md`、`positioning-onepager.md`、`case-outlines.md`
 - 调研输入：`docs/research/homepage-redesign-spec.md`、`portfolio-inspiration-tech-showcase.md`、`portfolio-inspiration-github.md`、`portfolio-inspiration-community.md`、`portfolio-inspiration-index.md`、`tts-cockpit-visualization.md`、`3d-car-configurator.md`
+- Hybrid 决策输入（v1.1）：`docs/research/bruno-simon-teardown-adaptation.md`（决策与整合设计）、`bruno-simon-teardown-tech.md`（folio-2025/2019 源码级拆解）、`bruno-simon-teardown-ux.md`、`bruno-simon-teardown-index.md`
 - 产品需求：`docs/spec/PRD.md`
 - 工程约定：`AGENTS.md`（环境、命令、Lighthouse 测试方法）
 
 ---
 
-*本 SRD 为系统架构与技术规格唯一权威文档（v1.0）。实施工程师按第 7 章目录规范、第 8 章数据模型、第 9 章接口契约与第 13 章阶段门禁施工；任何偏离先修订本文再动工。*
+*本 SRD 为系统架构与技术规格唯一权威文档（v1.1）。实施工程师按第 7 章目录规范、第 8 章数据模型、第 9 章接口契约与第 13 章阶段门禁施工；任何偏离先修订本文再动工。*
