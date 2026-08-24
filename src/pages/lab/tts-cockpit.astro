@@ -9,47 +9,13 @@ import ttsManifest from '../../data/tts-manifest.json';
 
 const module = getLabModule('tts-cockpit');
 
-// Noto 子集（可变字重，unicode-range 命中才会下载）
-const BASE = import.meta.env.BASE_URL.endsWith('/')
-  ? import.meta.env.BASE_URL
-  : import.meta.env.BASE_URL + '/';
-const fontFaces = [
-  {
-    family: 'Noto Sans Arabic',
-    file: 'noto-sans-arabic-var.woff2',
-    range:
-      'U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC',
-  },
-  {
-    family: 'Noto Sans Hebrew',
-    file: 'noto-sans-hebrew-var.woff2',
-    range: 'U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F',
-  },
-  {
-    family: 'Noto Sans Thai',
-    file: 'noto-sans-thai-var.woff2',
-    range: 'U+02D7, U+0303, U+0331, U+0E01-0E5B, U+200C-200D, U+25CC',
-  },
-  {
-    family: 'Noto Sans Devanagari',
-    file: 'noto-sans-devanagari-var.woff2',
-    range:
-      'U+0900-097F, U+1CD0-1CF9, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B09',
-  },
-];
-const fontCss = fontFaces
-  .map(
-    (f) => `@font-face{font-family:'${f.family}';font-style:normal;font-weight:400 700;` +
-      `font-display:swap;src:url('${BASE}fonts/${f.file}') format('woff2');unicode-range:${f.range};}`
-  )
-  .join('\n');
+// Noto 子集 @font-face 不进 <head>：四个子集 ~320KB，控制面原生语名一渲染就会
+// 触发下载，在 Lighthouse 移动端模拟里挤占首屏带宽（FCP/LCP 悲观图计入首屏前
+// 发起的字体请求，Perf 掉到 0.86 < 0.95 门槛）。改由演示 mount() 时注入
+//（src/lab/modules/tts-cockpit/fonts.ts），注入前原生语名走系统字体回退。
 ---
 
 <LabLayout module={module} theme="paper" bodyClass="ttsc" skipHref="#fn">
-  <Fragment slot="head">
-    <style is:global set:html={fontCss}></style>
-  </Fragment>
-
   <Fragment slot="lede">
     同一组座舱语音指令，在 <b>16 个语种</b>下的可听、可看对照——词级时间戳驱动字幕逐词点亮、
     SVG 路线随播报推进、Canvas 波形来自真实音频频谱。「多语种不是翻译一遍」：切换语言，
@@ -432,7 +398,8 @@ const fontCss = fontFaces
         </li>
         <li>
           字体：<a href="https://fonts.google.com/noto" rel="noopener">Noto Sans</a> Arabic / Hebrew / Thai /
-          Devanagari 子集（SIL OFL 1.1，自托管、按 unicode-range 懒加载）；中文与韩文使用系统字体。
+          Devanagari 子集（SIL OFL 1.1，自托管、演示启动时按 unicode-range 懒加载，不占首屏带宽）；
+          中文与韩文使用系统字体。
         </li>
         <li>
           技术选型与完整版路线：见站内调研 <code>docs/research/tts-cockpit-visualization.md</code>。
@@ -458,8 +425,9 @@ const fontCss = fontFaces
     --ink: #1c1d1f;
     --ink-2: #595b60;
     --hairline: #d8d5c9;
-    --accent: #cf4a17;
-    --accent-soft: #cf4a1722;
+    /* 对 --paper #f5f4ef 对比 ≥ 4.5:1（#cf4a17 只有 4.1，与 LabLayout paper 主题同值） */
+    --accent: #b8420f;
+    --accent-soft: #b8420f22;
     --scr-bg: #11151b;
     --scr-panel: #171d26;
     --scr-line: #2a3342;

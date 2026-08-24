@@ -14,7 +14,7 @@
   --bg-raised: #ffffff; /* 卡片 / 浮层 */
   --ink: #111111; /* 标题 / 正文 */
   --ink-2: #55554f; /* 次级文字 */
-  --ink-3: #8a8a85; /* meta / 时间戳 */
+  --ink-3: #6e6e68; /* meta / 时间戳（对 --bg/--bg-raised 对比 ≥ 4.5:1，MVP Gate a11y） */
   --line: #e4e4de; /* hairline 分隔线 / 卡片描边 */
   --accent: #bf3f0a; /* 强调色 · 文本级（对比 ≥ 4.5:1） */
   --accent-strong: #e8590c; /* 强调色 · 图形级（大字号/徽章/进度条） */

@@ -303,17 +303,17 @@ hr {
   navigation: auto;
 }
 
-/* 区块入场 reveal：opacity + translateY，scroll-driven CSS（0KB JS）。
+/* 区块入场 reveal：仅 translateY，scroll-driven CSS（0KB JS）。
    @supports 守卫：不支持 animation-timeline 的浏览器直接呈现终态。
    Hero 文案永不做入场延迟（LCP / 3 秒可读红线），Hero 内不使用 .reveal。
-   卡片组 stagger 通过 --reveal-delay（entry 区间偏移）实现。 */
+   卡片组 stagger 通过 --reveal-delay（entry 区间偏移）实现。
+   不做 opacity 淡入：scroll-scrubbed 半透明会让视口边缘的文字被 axe
+   按混合色计算对比度（MVP Gate a11y 曾在 /about/ 抽中 4.25:1 < 4.5）。 */
 @keyframes reveal-rise {
   from {
-    opacity: 0;
     transform: translateY(12px);
   }
   to {
-    opacity: 1;
     transform: none;
   }
 }

@@ -3,6 +3,9 @@
     "collect": {
       "url": [
         "http://127.0.0.1:4321/website/",
+        "http://127.0.0.1:4321/website/work/",
+        "http://127.0.0.1:4321/website/work/multilingual-cockpit/",
+        "http://127.0.0.1:4321/website/about/",
         "http://127.0.0.1:4321/website/lab/car-configurator/",
         "http://127.0.0.1:4321/website/lab/tts-cockpit/"
       ],

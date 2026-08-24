@@ -121,7 +121,8 @@ const jsonLd = breadcrumbJsonLd([
     --lab-line-strong: #b0ac9d;
     --lab-text: #1c1d1f;
     --lab-muted: #595b60;
-    --lab-accent: #cf4a17;
+    /* 对 --lab-bg #f5f4ef 对比 ≥ 4.5:1（#cf4a17 只有 4.1，MVP Gate a11y） */
+    --lab-accent: #b8420f;
     --lab-accent-on-stage: #ff8a4b;
     color-scheme: light;
   }
@@ -146,6 +147,13 @@ const jsonLd = breadcrumbJsonLd([
   }
   .lab-page a:hover {
     text-decoration: underline;
+  }
+  /* 段落文字里的链接必须有下划线区分（axe link-in-text-block，不能只靠颜色）：
+     脚注/说明区与「跳过演示」文案是链接混排在正文里的两处 */
+  .lab-foot a,
+  .lab-skip a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
   .lab-mono {
     font-family: var(--lab-mono);
@@ -186,6 +194,11 @@ const jsonLd = breadcrumbJsonLd([
   .lab-status-live {
     color: #59c99a;
     border-color: #59c99a66;
+  }
+  /* 亮色纸面上浅绿只有 1.9:1 —— paper 主题换用深绿（≥ 4.5:1） */
+  .lab-theme-paper .lab-status-live {
+    color: #176946;
+    border-color: #17694666;
   }
   .lab-title {
     margin: 0.35rem 0 0.5rem;
