@@ -533,10 +533,12 @@ const fontCss = fontFaces
   .screen[data-state='error'] .led { background: #e05656; }
 
   .hmi-body { display: grid; grid-template-columns: 212px minmax(0, 1fr); }
-  @media (max-width: 640px) { .hmi-body { grid-template-columns: 1fr; } .cluster { display: none; } }
 
   /* ---- 仪表簇 ---- */
   .cluster { border-inline-end: 1px solid var(--scr-line-2); padding: 14px 12px 10px; display: grid; gap: 8px; align-content: start; }
+  /* < 640px：中控单列、仪表簇隐藏。必须位于 .cluster 基础规则之后——同特异性下靠源序生效，
+     置前会被基础规则的 display: grid 反向覆盖（E2E MOB-E2E-02 发现的真实缺陷，见 e2e-test-report-batch1）。 */
+  @media (max-width: 640px) { .hmi-body { grid-template-columns: 1fr; } .cluster { display: none; } }
   .gauge { width: 100%; }
   .gauge-arc { fill: none; stroke: var(--scr-line); stroke-width: 3; stroke-linecap: round; }
   .gauge-arc-fill {

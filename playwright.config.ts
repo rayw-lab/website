@@ -17,8 +17,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  // WebGL（SwiftShader 软渲染）+ 3D 资产挂载并行时内存占用高，封顶 4 worker
-  workers: process.env.CI ? 2 : 4,
+  // WebGL（SwiftShader 软渲染）3D 挂载单次约 50s 且吃满 CPU，并行度封顶 2，
+  // 避免多个 3D 上下文互相挤兑导致超时假阴性（首轮实测 4 worker 时 5/7 车配置器用例超时）
+  workers: 2,
   timeout: 60_000,
   expect: { timeout: 15_000 },
   reporter: [['list'], ['html', { open: 'never' }]],

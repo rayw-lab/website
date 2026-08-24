@@ -4,12 +4,28 @@
 // 后端徽标断言说明：headless Chromium（含 CI runner）无 navigator.gpu，
 // three.js WebGPURenderer 自动走 WebGL 2 后端（SwiftShader 软渲染）——
 // 因此本套件在 CI 恒验证「回退链路」；WebGPU 正路径需本地带 GPU 的 headed 运行验证。
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { u, shot, waitLabReady, expectImageLoaded } from './helpers';
 
 const PAGE_URL = u('/lab/car-configurator/');
-/** 3D 挂载（5MB 资产 + SwiftShader 初始化）宽限 */
-const MOUNT_TIMEOUT = 60_000;
+/** 3D 挂载（5MB 资产 + SwiftShader 软渲染初始化）实测单次约 50s，并行时更久 */
+const MOUNT_TIMEOUT = 100_000;
+
+// 本文件每个用例都要完整挂载一次 3D 引擎，整体放宽超时
+test.describe.configure({ timeout: 150_000 });
+
+/**
+ * 挂载后的控制坞按钮统一用「可见性断言 + dispatchEvent」触发。
+ * 原因（实测）：按钮 handler 内 history.replaceState 回写 URL 时，若 WebGL rAF 渲染循环
+ * 正把 SwiftShader 软渲染的合成器压满，locator.click 的收尾等待
+ * （waiting for scheduled navigations to finish）可能长挂直至用例超时；
+ * 主线程本身响应正常（evaluate 往返 <200ms），属驱动侧等待判定问题，非站点缺陷。
+ */
+async function tap(page: Page, selector: string): Promise<void> {
+  const btn = page.locator(selector);
+  await expect(btn).toBeVisible();
+  await btn.dispatchEvent('click');
+}
 
 test.describe('3D 车辆配置器', () => {
   test('CAR-E2E-01 facade → ready：canvas 呈现、HUD 揭示、后端徽标显示实际渲染后端', async ({ page, request }) => {
@@ -52,7 +68,7 @@ test.describe('3D 车辆配置器', () => {
     await expect(page.locator('[data-lab-backend]')).toHaveText('WebGL 2');
 
     // 交互回写 URL 时 gl=1 不得丢失（writeURL 显式保留）
-    await page.locator('[data-cfg-paint="abyss"]').click();
+    await tap(page, '[data-cfg-paint="abyss"]');
     await expect(page).toHaveURL(/gl=1/);
     await expect(page).toHaveURL(/paint=abyss/);
   });
@@ -87,7 +103,7 @@ test.describe('3D 车辆配置器', () => {
     await waitLabReady(page, MOUNT_TIMEOUT);
 
     // 车漆：熔岩红 → aria-pressed 迁移 + HUD + URL
-    await page.locator('[data-cfg-paint="crimson"]').click();
+    await tap(page, '[data-cfg-paint="crimson"]');
     await expect(page.locator('[data-cfg-paint="crimson"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('[data-cfg-paint="livery"]')).toHaveAttribute('aria-pressed', 'false');
     await expect(page.locator('[data-cfg-config-name]')).toContainText('熔岩红');
@@ -95,22 +111,22 @@ test.describe('3D 车辆配置器', () => {
     await shot(page, 'car_paint_crimson');
 
     // Tab 切到轮毂：aria-selected 迁移、面板 hidden 切换
-    await page.locator('[data-cfg-tab="wheels"]').click();
+    await tap(page, '[data-cfg-tab="wheels"]');
     await expect(page.locator('[data-cfg-tab="wheels"]')).toHaveAttribute('aria-selected', 'true');
     await expect(page.locator('[data-cfg-tab="paint"]')).toHaveAttribute('aria-selected', 'false');
     await expect(page.locator('[data-cfg-panel="wheels"]')).toBeVisible();
     await expect(page.locator('[data-cfg-panel="paint"]')).toBeHidden();
 
     // 轮毂：曜黑竞速 → URL 追加 wheels
-    await page.locator('[data-cfg-wheel="stealth"]').click();
+    await tap(page, '[data-cfg-wheel="stealth"]');
     await expect(page).toHaveURL(/wheels=stealth/);
     await expect(page).toHaveURL(/paint=crimson/);
 
     // 切回默认（原厂漆 + 原厂轮毂）→ URL 参数全部清理
-    await page.locator('[data-cfg-tab="paint"]').click();
-    await page.locator('[data-cfg-paint="livery"]').click();
-    await page.locator('[data-cfg-tab="wheels"]').click();
-    await page.locator('[data-cfg-wheel="machined"]').click();
+    await tap(page, '[data-cfg-tab="paint"]');
+    await tap(page, '[data-cfg-paint="livery"]');
+    await tap(page, '[data-cfg-tab="wheels"]');
+    await tap(page, '[data-cfg-wheel="machined"]');
     await expect(page).not.toHaveURL(/paint=|wheels=|livery=/);
   });
 
@@ -147,13 +163,19 @@ test.describe('3D 车辆配置器', () => {
 test.describe('3D 车辆配置器（无 JS）', () => {
   test.use({ javaScriptEnabled: false });
 
-  test('CAR-E2E-07 禁用 JS：noscript 提示可见，技术说明/署名静态可读', async ({ page }) => {
+  test('CAR-E2E-07 禁用 JS：noscript 提示就位，技术说明/署名静态可读', async ({ page }) => {
     await page.goto(PAGE_URL);
-    await expect(page.getByText('本演示需要启用 JavaScript')).toBeVisible();
+
+    // noscript 文案合同（同 TTS-E2E-07：CDP 禁 JS 下以 textContent 断言）
+    const noscript = page.locator('[data-lab-facade] noscript');
+    await expect(noscript).toHaveCount(1);
+    expect(await noscript.textContent()).toContain('本演示需要启用 JavaScript');
+
     await expect(page.locator('h1')).toBeVisible();
     // 静态区块（操作方式 / 技术实现 / 素材署名）不依赖脚本
     await expect(page.getByRole('heading', { name: /技术实现/ })).toBeVisible();
     await expect(page.getByText('素材署名与免责声明')).toBeVisible();
     await expectImageLoaded(page.locator('.lab-poster'));
+    await expect(page.locator('[data-lab-host]')).toHaveAttribute('data-state', 'idle');
   });
 });

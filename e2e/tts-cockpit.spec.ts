@@ -63,8 +63,9 @@ test.describe('TTS 座舱可视化', () => {
     await waitLabReady(page);
 
     // 默认态：zh-CN × nav，URL 无参数
+    // 注意：#screen 也带 data-scene 属性，场景按钮必须用 .scene-btn 收窄
     await expect(page.locator('[data-locale="zh-CN"]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('[data-scene="nav"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.scene-btn[data-scene="nav"]')).toHaveAttribute('aria-pressed', 'true');
 
     // 切语言 → aria-pressed 迁移 + HMI 徽标 + URL ?locale=
     await page.locator('[data-locale="ko-KR"]').click();
@@ -74,14 +75,14 @@ test.describe('TTS 座舱可视化', () => {
     await expect(page).toHaveURL(/locale=ko-KR/);
 
     // 切场景 → 屏幕场景卡切换（data-scene）+ URL ?scene=
-    await page.locator('[data-scene="park"]').click();
-    await expect(page.locator('[data-scene="park"]')).toHaveAttribute('aria-pressed', 'true');
+    await page.locator('.scene-btn[data-scene="park"]').click();
+    await expect(page.locator('.scene-btn[data-scene="park"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('#screen')).toHaveAttribute('data-scene', 'park');
     await expect(page).toHaveURL(/scene=park/);
 
     // 切回默认 → URL 参数清理（不产生历史条目的 replaceState 契约）
     await page.locator('[data-locale="zh-CN"]').click();
-    await page.locator('[data-scene="nav"]').click();
+    await page.locator('.scene-btn[data-scene="nav"]').click();
     await expect(page).not.toHaveURL(/locale=|scene=/);
   });
 
@@ -91,7 +92,7 @@ test.describe('TTS 座舱可视化', () => {
 
     // 深链选中态
     await expect(page.locator('[data-locale="ar-SA"]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('[data-scene="park"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.scene-btn[data-scene="park"]')).toHaveAttribute('aria-pressed', 'true');
 
     // RTL：HMI 徽标 / 屏幕 data-dir / 对话区 dir 属性三处镜像
     await expect(page.locator('#hmi-locale')).toHaveText('ar-SA');
@@ -118,7 +119,7 @@ test.describe('TTS 座舱可视化', () => {
     await waitLabReady(page);
 
     await expect(page.locator('[data-locale="zh-CN"]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('[data-scene="nav"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.scene-btn[data-scene="nav"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('#screen')).toHaveAttribute('data-scene', 'nav');
     expect(errors, '非法参数不应产生未捕获异常').toEqual([]);
   });
@@ -160,13 +161,20 @@ test.describe('TTS 座舱可视化', () => {
 test.describe('TTS 座舱可视化（无 JS）', () => {
   test.use({ javaScriptEnabled: false });
 
-  test('TTS-E2E-07 禁用 JS：noscript 提示可见，页眉说明与脚注仍可读', async ({ page }) => {
+  test('TTS-E2E-07 禁用 JS：noscript 提示就位，页眉说明与脚注仍可读', async ({ page }) => {
     await page.goto(PAGE_URL);
-    await expect(page.getByText('本演示需要启用 JavaScript')).toBeVisible();
+
+    // noscript 文案合同：CDP 禁 JS 不改变解析器 scripting flag，noscript 子树
+    // 不会被解析成可见 DOM——以 textContent 断言文案（真机无 JS 时浏览器会渲染它）
+    const noscript = page.locator('[data-lab-facade] noscript');
+    await expect(noscript).toHaveCount(1);
+    expect(await noscript.textContent()).toContain('本演示需要启用 JavaScript');
+
     // 静态内容不依赖脚本：页眉 lede 与页脚脚注照常渲染
     await expect(page.locator('h1')).toBeVisible();
     await expect(page.locator('#fn')).toBeVisible();
-    // poster 仍在（facade 覆盖层为纯 HTML/CSS）
+    // poster 仍在且 facade 保持 idle 覆盖（无脚本推进状态机）
     await expectImageLoaded(page.locator('.lab-poster'));
+    await expect(page.locator('[data-lab-host]')).toHaveAttribute('data-state', 'idle');
   });
 });

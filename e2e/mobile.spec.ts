@@ -3,6 +3,9 @@
 import { test, expect } from '@playwright/test';
 import { u, shot, waitLabReady } from './helpers';
 
+// MOB-E2E-03 含完整 3D 挂载（SwiftShader 软渲染），放宽文件级超时
+test.describe.configure({ timeout: 150_000 });
+
 test.describe('移动端 375px', () => {
   test('MOB-E2E-01 首页：无水平溢出、导航横滚可用、主题切换触控目标 ≥ 44px', async ({ page }) => {
     await page.goto(u('/'));
@@ -55,7 +58,7 @@ test.describe('移动端 375px', () => {
 
     // 显式启动（§12.4 流程图 POSTER -.-> 探测 的显式路径）
     await page.locator('[data-lab-start]').click();
-    await expect(host).toHaveAttribute('data-state', 'ready', { timeout: 60_000 });
+    await expect(host).toHaveAttribute('data-state', 'ready', { timeout: 100_000 });
     await expect(page.locator('[data-lab-backend]')).toHaveText(/^(WebGPU|WebGL 2)$/);
     await shot(page, 'mobile_car_ready_375');
   });
