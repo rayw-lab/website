@@ -3,6 +3,9 @@
 // 资产：Khronos CarConcept（CC BY 4.0，Draco + KTX2 官方压缩变体）+ Poly Haven 影棚 HDRI（CC0）。
 // 本模块由页面脚本按「client:visible 语义」动态 import，three.js 不进入首屏 bundle。
 import * as THREE from 'three/webgpu';
+// 仅类型导入：KTX2Loader.detectSupport 的类型签名要求核心包的 WebGLRenderer，
+// 而 three/webgpu 的类型不再导出它（运行时传 WebGPURenderer 是受支持的）。
+import type { WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -87,7 +90,7 @@ export async function mountCarConfigurator(root: HTMLElement): Promise<void> {
   // 由 bundler 自动携带 wasm 产物（带内容 hash，走同源 CDN 缓存）。
   const dracoLoader = new DRACOLoader(manager);
   const ktx2Loader = new KTX2Loader(manager).detectSupport(
-    renderer as unknown as THREE.WebGLRenderer,
+    renderer as unknown as WebGLRenderer,
   );
   const gltfLoader = new GLTFLoader(manager)
     .setDRACOLoader(dracoLoader)
