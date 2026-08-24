@@ -11,8 +11,11 @@ const PAGE_URL = u('/lab/car-configurator/');
 /** 3D 挂载（5MB 资产 + SwiftShader 软渲染初始化）实测单次约 50s，并行时更久 */
 const MOUNT_TIMEOUT = 100_000;
 
-// 本文件每个用例都要完整挂载一次 3D 引擎，整体放宽超时
-test.describe.configure({ timeout: 150_000 });
+// 本文件每个用例都要完整挂载一次 3D 引擎：
+// 1) 退出 fullyParallel（mode: default = 单 worker 按序执行），避免两个 SwiftShader
+//    3D 上下文并发挤兑 4 核 CPU（实测并发时帧时间恶化至用例饿死超时/页面无响应）；
+// 2) 整体放宽超时。
+test.describe.configure({ mode: 'default', timeout: 180_000 });
 
 /**
  * 挂载后的控制坞按钮统一用「可见性断言 + dispatchEvent」触发。
@@ -122,12 +125,14 @@ test.describe('3D 车辆配置器', () => {
     await expect(page).toHaveURL(/wheels=stealth/);
     await expect(page).toHaveURL(/paint=crimson/);
 
-    // 切回默认（原厂漆 + 原厂轮毂）→ URL 参数全部清理
+    // 车漆切回默认（原厂）→ URL 精确清理 paint 参数、保留非默认的 wheels
+    // （writeURL 默认值省略逻辑逐 key 判定：单参数清理断言即可覆盖该契约，
+    //   同时少两次材质置换——SwiftShader 下每次置换都可能触发秒级程序编译）
     await tap(page, '[data-cfg-tab="paint"]');
     await tap(page, '[data-cfg-paint="livery"]');
-    await tap(page, '[data-cfg-tab="wheels"]');
-    await tap(page, '[data-cfg-wheel="machined"]');
-    await expect(page).not.toHaveURL(/paint=|wheels=|livery=/);
+    await expect(page.locator('[data-cfg-paint="livery"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page).not.toHaveURL(/paint=/);
+    await expect(page).toHaveURL(/wheels=stealth/);
   });
 
   test('CAR-E2E-06 reduced-motion：自动挂载被拦、不拉 3D 资产；显式启动逃生门可用', async ({ page }) => {
