@@ -1,818 +1,573 @@
 ---
-// AI Lab · 3D 车辆配置器 Demo（路线 B MVP，调研见 docs/research/3d-car-configurator.md）。
-// 页面主体为零 JS 静态渲染；3D 岛按 client:visible 语义懒加载（进入视口才拉取 three.js 与资产）。
+// LAB RB-01 · 3D 车辆配置器 —— 薄壳页（SRD §12.2 第 5 步）。
+// 组装：LabLayout（manifest 页眉）+ LabStage（统一 facade）+ 模块专属静态控制面。
+// 引擎与生命周期在 src/lab/（facade + modules/car-configurator），本页零业务逻辑。
+import LabLayout from '../../layouts/LabLayout.astro';
+import LabStage from '../../components/lab/LabStage.astro';
+import { getLabModule } from '../../lab/manifest';
 import {
   PAINTS,
   WHEELS,
   LIVERIES,
   FINISH_LABELS,
   SECTIONS,
-} from '../../scripts/car-configurator/presets';
+} from '../../lab/modules/car-configurator/presets';
 
-const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
-const title = '3D 车辆配置器 Demo｜AI Lab｜王磊';
-const description =
-  '交互式 3D 汽车配色 / 涂装配置器：WebGPU 实时渲染（WebGL 2 自动回退）、8 种车漆、2 款轮毂饰面、3 套预设涂装一键切换。通用概念车模型，与任何汽车品牌无关。';
+const module = getLabModule('car-configurator');
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
-    <meta name="color-scheme" content="dark" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <div class="page">
-      <header class="head">
-        <nav class="crumb" aria-label="面包屑">
-          <a href={`${base}/`}>首页</a>
-          <span aria-hidden="true">/</span>
-          <span>AI Lab</span>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page">Car Configurator</span>
-        </nav>
-        <h1>3D 车辆配置器 <span class="head-tag">Demo · MVP</span></h1>
-        <p class="lede">
-          一台通用概念车的虚拟展厅：换车漆、切轮毂、一键涂装，全部在浏览器里实时完成。
-          WebGPU 优先渲染，WebGL&nbsp;2 自动回退；整车 3D 资产约 3.5&nbsp;MB。
-        </p>
-      </header>
+<LabLayout module={module} theme="dark">
+  <Fragment slot="lede">
+    一台通用概念车的虚拟展厅：换车漆、切轮毂、一键涂装，全部在浏览器里实时完成。
+    WebGPU 优先渲染，WebGL&nbsp;2 自动回退；整车 3D 资产约 5&nbsp;MB。
+  </Fragment>
 
-      <!-- ============ 3D 配置器岛 ============ -->
-      <section class="cfg" data-cfg-root data-state="idle" aria-label="3D 车辆配置器">
-        <div class="cfg-stage" data-cfg-stage>
-          <canvas class="cfg-canvas" data-cfg-canvas aria-label="3D 车模视图，可拖拽旋转、滚轮缩放"
-          ></canvas>
+  <!-- ============ 3D 配置器（统一 facade 舞台 + 控制坞） ============ -->
+  <LabStage
+    module={module}
+    class="cfg"
+    stageClass="cfg-stage"
+    heading="Concept GT 虚拟展厅"
+    note="滚动到此处自动加载 · 3D 资产约 5 MB"
+    startLabel="启动 3D 配置器"
+    errorText="3D 引擎初始化失败：当前浏览器可能不支持 WebGPU / WebGL 2。可更换浏览器后重试。"
+    noscriptText="本演示需要启用 JavaScript；下方技术说明仍可正常阅读。"
+  >
+    <Fragment slot="stage">
+      <canvas
+        class="cfg-canvas"
+        data-cfg-canvas
+        aria-label="3D 车模视图，可拖拽旋转、滚轮缩放"></canvas>
 
-          <!-- Facade 占位：静态海报 + 加载进度，3D 就绪后淡出 -->
-          <div class="cfg-facade" data-cfg-facade>
-            <img
-              class="cfg-poster"
-              src={`${base}/posters/car-configurator-poster.webp`}
-              alt=""
-              loading="lazy"
-              onerror="this.style.display='none'"
-            />
-            <div class="cfg-facade-scrim" aria-hidden="true"></div>
-            <div class="cfg-facade-inner">
-              <span class="chip">Real-time 3D · WebGPU / WebGL 2</span>
-              <h2>Concept GT 虚拟展厅</h2>
-              <p class="cfg-facade-note">滚动到此处自动加载 · 3D 资产约 3.5 MB</p>
-              <button class="cfg-start" type="button" data-cfg-start>启动 3D 配置器</button>
-              <div class="cfg-progress" role="progressbar" aria-label="资产加载进度">
-                <i data-cfg-progress-bar></i>
-              </div>
-              <p class="cfg-error" data-cfg-error hidden>
-                3D 引擎初始化失败：当前浏览器可能不支持 WebGPU / WebGL 2。可更换浏览器后重试。
-              </p>
-              <noscript><p class="cfg-error">本演示需要启用 JavaScript。</p></noscript>
-            </div>
-          </div>
-
-          <!-- HUD：当前配置 + 渲染后端徽标 -->
-          <div class="cfg-hud" aria-hidden="true">
-            <div class="cfg-hud-left">
-              <span class="cfg-hud-label">当前配置</span>
-              <strong data-cfg-config-name>—</strong>
-            </div>
-            <span class="cfg-backend" data-cfg-backend title="实际使用的渲染后端">—</span>
-          </div>
-          <p class="cfg-hint" aria-hidden="true">拖拽旋转 · 滚轮 / 双指缩放</p>
+      <!-- HUD：当前配置 + 渲染后端徽标（facade 经 onBackend 填充） -->
+      <div class="cfg-hud" aria-hidden="true">
+        <div class="cfg-hud-left">
+          <span class="cfg-hud-label">当前配置</span>
+          <strong data-cfg-config-name>—</strong>
         </div>
+        <span class="cfg-backend" data-lab-backend title="实际使用的渲染后端">—</span>
+      </div>
+      <p class="cfg-hint" aria-hidden="true">拖拽旋转 · 滚轮 / 双指缩放</p>
+    </Fragment>
 
-        <!-- 控制坞：分区导航 + 色卡面板（3D 就绪前处于 inert 状态） -->
-        <div class="cfg-dock" data-cfg-gated inert>
-          <nav class="cfg-tabs" role="tablist" aria-label="配置分区">
-            {SECTIONS.map((s, i) => (
-              <button
-                type="button"
-                role="tab"
-                data-cfg-tab={s.id}
-                aria-selected={i === 0 ? 'true' : 'false'}
-              >
-                <span class="cfg-tab-index">{String(i + 1).padStart(2, '0')}</span>
-                {s.label}
-              </button>
-            ))}
-          </nav>
+    <!-- 控制坞：分区导航 + 色卡面板（facade ready 前处于 inert 状态） -->
+    <div class="cfg-dock" data-lab-gated inert>
+      <nav class="cfg-tabs" role="tablist" aria-label="配置分区">
+        {SECTIONS.map((s, i) => (
+          <button
+            type="button"
+            role="tab"
+            data-cfg-tab={s.id}
+            aria-selected={i === 0 ? 'true' : 'false'}
+          >
+            <span class="cfg-tab-index">{String(i + 1).padStart(2, '0')}</span>
+            {s.label}
+          </button>
+        ))}
+      </nav>
 
-          <!-- 车漆：原厂 + 8 色 -->
-          <div class="cfg-panel" data-cfg-panel="paint">
-            <div class="cfg-swatches" role="group" aria-label="车漆颜色">
-              <button
-                type="button"
-                class="swatch"
-                data-cfg-paint="livery"
-                aria-pressed="true"
-                title="跟随所选涂装的原厂配色"
-              >
-                <span class="swatch-dot swatch-dot-multi" aria-hidden="true"></span>
-                <span class="swatch-name">原厂</span>
-                <span class="swatch-finish">随涂装</span>
-              </button>
-              {PAINTS.map((p) => (
-                <button
-                  type="button"
-                  class="swatch"
-                  data-cfg-paint={p.id}
-                  aria-pressed="false"
-                  title={`${p.name}（${FINISH_LABELS[p.finish]}漆）`}
-                >
-                  <span class="swatch-dot" style={`--sw:${p.swatch}`} aria-hidden="true"></span>
-                  <span class="swatch-name">{p.name}</span>
-                  <span class="swatch-finish">{FINISH_LABELS[p.finish]}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <!-- 轮毂：2 款饰面 -->
-          <div class="cfg-panel" data-cfg-panel="wheels" hidden>
-            <div class="cfg-cards" role="group" aria-label="轮毂饰面">
-              {WHEELS.map((w) => (
-                <button type="button" class="card" data-cfg-wheel={w.id} aria-pressed="false">
-                  <span class="wheel-dot" style={`--sw:${w.swatch}`} aria-hidden="true"></span>
-                  <span class="card-text">
-                    <span class="card-name">{w.name}</span>
-                    <span class="card-desc">{w.desc}</span>
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <!-- 涂装：3 套官方材质变体 -->
-          <div class="cfg-panel" data-cfg-panel="livery" hidden>
-            <div class="cfg-cards" role="group" aria-label="预设涂装">
-              {LIVERIES.map((l) => (
-                <button type="button" class="card" data-cfg-livery={l.id} aria-pressed="false">
-                  <span
-                    class="livery-chip"
-                    style={`--c1:${l.chips[0]};--c2:${l.chips[1]}`}
-                    aria-hidden="true"
-                  ></span>
-                  <span class="card-text">
-                    <span class="card-name">{l.name}<em class="card-en">{l.variantName}</em></span>
-                    <span class="card-desc">{l.desc}</span>
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
+      <!-- 车漆：原厂 + 8 色 -->
+      <div class="cfg-panel" data-cfg-panel="paint">
+        <div class="cfg-swatches" role="group" aria-label="车漆颜色">
+          <button
+            type="button"
+            class="swatch"
+            data-cfg-paint="livery"
+            aria-pressed="true"
+            title="跟随所选涂装的原厂配色"
+          >
+            <span class="swatch-dot swatch-dot-multi" aria-hidden="true"></span>
+            <span class="swatch-name">原厂</span>
+            <span class="swatch-finish">随涂装</span>
+          </button>
+          {PAINTS.map((p) => (
+            <button
+              type="button"
+              class="swatch"
+              data-cfg-paint={p.id}
+              aria-pressed="false"
+              title={`${p.name}（${FINISH_LABELS[p.finish]}漆）`}
+            >
+              <span class="swatch-dot" style={`--sw:${p.swatch}`} aria-hidden="true"></span>
+              <span class="swatch-name">{p.name}</span>
+              <span class="swatch-finish">{FINISH_LABELS[p.finish]}</span>
+            </button>
+          ))}
         </div>
-      </section>
+      </div>
 
-      <!-- ============ 场景注解（虚构） ============ -->
-      <section class="sect">
-        <h2><span class="sect-no">01</span>场景注解<em class="sect-fiction">虚构演示说明</em></h2>
-        <p>
-          在新一代智能座舱里，「可视化车控」把整车状态浓缩成中控屏上一台可交互的 3D
-          车模——乘员旋转车辆、调整配置，所见即所得（交互范式可参考理想汽车 Livis
-          座舱对可视化车控的公开描述）。本页把同一范式搬进浏览器：换车漆、切轮毂、一键涂装，
-          全部在 3D 车模上实时完成。网页配置器与座舱 3D HMI
-          在交互模式、材质渲染与状态管理上高度同构——这正是本 Demo 想要演示的工程能力。
-        </p>
-        <p class="fine">
-          ※ 以上为虚构演示说明，仅用于展示交互范式；本页与理想汽车及任何品牌无关，不构成任何官方产品描述。
-        </p>
-      </section>
-
-      <!-- ============ 操作方式 ============ -->
-      <section class="sect">
-        <h2><span class="sect-no">02</span>操作方式</h2>
-        <ul class="ops">
-          <li><strong>旋转</strong>鼠标左键拖拽 / 单指滑动（未交互时车辆缓慢自转）</li>
-          <li><strong>缩放</strong>滚轮 / 双指捏合</li>
-          <li><strong>配置</strong>底部面板切换「车漆 / 轮毂 / 涂装」，切换分区时相机自动运镜到对应部位</li>
-          <li><strong>分享</strong>配置实时写入 URL 参数（<code>?livery=…&paint=…&wheels=…</code>），复制链接即可分享</li>
-        </ul>
-      </section>
-
-      <!-- ============ 技术实现 ============ -->
-      <section class="sect">
-        <h2><span class="sect-no">03</span>技术实现</h2>
-        <div class="tech-grid">
-          <div class="tech-card">
-            <h3>Astro Island 懒加载</h3>
-            <p>Facade 海报占位 + <code>client:visible</code> 语义：进入视口才动态 import three.js 与 3D 资产，不拖累站点首屏。</p>
-          </div>
-          <div class="tech-card">
-            <h3>WebGPU 优先</h3>
-            <p><code>three/webgpu</code> 的 WebGPURenderer，浏览器不支持时自动回退 WebGL 2——画面右上角徽标显示实际后端。</p>
-          </div>
-          <div class="tech-card">
-            <h3>压缩资产管线</h3>
-            <p>Draco 几何压缩 + KTX2 / BasisU GPU 纹理（Khronos 官方压缩变体），整车资产约 3.5 MB。</p>
-          </div>
-          <div class="tech-card">
-            <h3>材质变体涂装</h3>
-            <p>glTF 官方扩展 <code>KHR_materials_variants</code> 驱动整套涂装一键切换；自定义车漆在 <code>MeshPhysicalMaterial</code> 清漆层上实时调参。</p>
-          </div>
-          <div class="tech-card">
-            <h3>按需渲染</h3>
-            <p>画面静止零重绘、滚出视口暂停渲染循环、移动端 DPR 封顶 1.5——移动端与续航友好。</p>
-          </div>
-          <div class="tech-card">
-            <h3>影棚光照</h3>
-            <p>Poly Haven 影棚 HDRI 环境光 + 程序化接触阴影，运行时不计算实时阴影。</p>
-          </div>
+      <!-- 轮毂：2 款饰面 -->
+      <div class="cfg-panel" data-cfg-panel="wheels" hidden>
+        <div class="cfg-cards" role="group" aria-label="轮毂饰面">
+          {WHEELS.map((w) => (
+            <button type="button" class="card" data-cfg-wheel={w.id} aria-pressed="false">
+              <span class="wheel-dot" style={`--sw:${w.swatch}`} aria-hidden="true"></span>
+              <span class="card-text">
+                <span class="card-name">{w.name}</span>
+                <span class="card-desc">{w.desc}</span>
+              </span>
+            </button>
+          ))}
         </div>
-      </section>
+      </div>
 
-      <!-- ============ Footer：署名与免责声明 ============ -->
-      <footer class="foot">
-        <h2 class="foot-title">素材署名与免责声明</h2>
-        <ul>
-          <li>
-            3D 模型：<a href="https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CarConcept" rel="noopener">Car Concept</a>
-            — Eric Chadwick，© 2024 <a href="https://www.dgg3d.com/" rel="noopener">Darmstadt Graphics Group GmbH</a>，
-            来自 Khronos glTF Sample Assets，依
-            <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>
-            许可使用。本页采用其官方 Draco + KTX2 压缩变体，未修改模型内容；车身 Khronos 标识为 Khronos Group 商标。
-          </li>
-          <li>
-            环境贴图：<a href="https://polyhaven.com/a/studio_small_08" rel="noopener">Studio Small 08</a>
-            — <a href="https://polyhaven.com/" rel="noopener">Poly Haven</a>（CC0）。
-          </li>
-          <li>
-            免责声明：本演示使用通用概念车模型与原创界面图形，与任何汽车品牌无关，不代表任何雇主或客户的产品；
-            「场景注解」为虚构演示说明，非官方产品描述。
-          </li>
-        </ul>
-        <p class="foot-back"><a href={`${base}/`}>← 返回首页</a></p>
-      </footer>
+      <!-- 涂装：3 套官方材质变体 -->
+      <div class="cfg-panel" data-cfg-panel="livery" hidden>
+        <div class="cfg-cards" role="group" aria-label="预设涂装">
+          {LIVERIES.map((l) => (
+            <button type="button" class="card" data-cfg-livery={l.id} aria-pressed="false">
+              <span
+                class="livery-chip"
+                style={`--c1:${l.chips[0]};--c2:${l.chips[1]}`}
+                aria-hidden="true"
+              ></span>
+              <span class="card-text">
+                <span class="card-name">{l.name}<em class="card-en">{l.variantName}</em></span>
+                <span class="card-desc">{l.desc}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
+  </LabStage>
 
-    <script>
-      // client:visible 语义的懒加载：进入视口（或点击启动按钮）才拉取 3D 引擎分包。
-      const root = document.querySelector<HTMLElement>('[data-cfg-root]')!;
-      const stage = root.querySelector<HTMLElement>('[data-cfg-stage]')!;
-      const startBtn = root.querySelector<HTMLButtonElement>('[data-cfg-start]');
-      const errorEl = root.querySelector<HTMLElement>('[data-cfg-error]');
-      let started = false;
+  <!-- ============ 场景注解（虚构） ============ -->
+  <section class="sect">
+    <h2><span class="sect-no">01</span>场景注解<em class="sect-fiction">虚构演示说明</em></h2>
+    <p>
+      在新一代智能座舱里，「可视化车控」把整车状态浓缩成中控屏上一台可交互的 3D
+      车模——乘员旋转车辆、调整配置，所见即所得（交互范式可参考理想汽车 Livis
+      座舱对可视化车控的公开描述）。本页把同一范式搬进浏览器：换车漆、切轮毂、一键涂装，
+      全部在 3D 车模上实时完成。网页配置器与座舱 3D HMI
+      在交互模式、材质渲染与状态管理上高度同构——这正是本 Demo 想要演示的工程能力。
+    </p>
+    <p class="fine">
+      ※ 以上为虚构演示说明，仅用于展示交互范式；本页与理想汽车及任何品牌无关，不构成任何官方产品描述。
+    </p>
+  </section>
 
-      async function start(): Promise<void> {
-        if (started) return;
-        started = true;
-        root.dataset.state = 'loading';
-        try {
-          const { mountCarConfigurator } = await import('../../scripts/car-configurator/app');
-          await mountCarConfigurator(root);
-        } catch (err) {
-          console.error('[car-configurator] init failed:', err);
-          root.dataset.state = 'error';
-          if (errorEl) errorEl.hidden = false;
-        }
-      }
+  <!-- ============ 操作方式 ============ -->
+  <section class="sect">
+    <h2><span class="sect-no">02</span>操作方式</h2>
+    <ul class="ops">
+      <li><strong>旋转</strong>鼠标左键拖拽 / 单指滑动（未交互时车辆缓慢自转）</li>
+      <li><strong>缩放</strong>滚轮 / 双指捏合</li>
+      <li><strong>配置</strong>底部面板切换「车漆 / 轮毂 / 涂装」，切换分区时相机自动运镜到对应部位</li>
+      <li><strong>分享</strong>配置实时写入 URL 参数（<code>?livery=…&paint=…&wheels=…</code>），复制链接即可分享</li>
+    </ul>
+  </section>
 
-      startBtn?.addEventListener('click', () => void start());
-      const io = new IntersectionObserver(
-        (entries) => {
-          if (entries.some((e) => e.isIntersecting)) {
-            io.disconnect();
-            void start();
-          }
-        },
-        { rootMargin: '120px' },
-      );
-      io.observe(stage);
-    </script>
+  <!-- ============ 技术实现 ============ -->
+  <section class="sect">
+    <h2><span class="sect-no">03</span>技术实现</h2>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <h3>统一 Lab Facade</h3>
+        <p>manifest 注册 + <code>mount()</code> 契约：进入视口且浏览器空闲才动态 import three.js 分包，poster 400ms 交叉淡入，减动效 / 省流量 / 触屏默认不自动挂载。</p>
+      </div>
+      <div class="tech-card">
+        <h3>WebGPU 优先</h3>
+        <p><code>three/webgpu</code> 的 WebGPURenderer，浏览器不支持时自动回退 WebGL 2——画面右上角徽标显示实际后端（<code>?gl=1</code> 可强制回退验证）。</p>
+      </div>
+      <div class="tech-card">
+        <h3>压缩资产管线</h3>
+        <p>Draco 几何压缩 + KTX2 / BasisU GPU 纹理（Khronos 官方压缩变体），整车资产约 3.5 MB。</p>
+      </div>
+      <div class="tech-card">
+        <h3>材质变体涂装</h3>
+        <p>glTF 官方扩展 <code>KHR_materials_variants</code> 驱动整套涂装一键切换；自定义车漆在 <code>MeshPhysicalMaterial</code> 清漆层上实时调参。</p>
+      </div>
+      <div class="tech-card">
+        <h3>按需渲染</h3>
+        <p>画面静止零重绘、滚出视口 / 隐藏标签页由 facade 统一 <code>pause()</code>、移动端 DPR 封顶 1.5——移动端与续航友好。</p>
+      </div>
+      <div class="tech-card">
+        <h3>影棚光照</h3>
+        <p>Poly Haven 影棚 HDRI 环境光 + 程序化接触阴影，运行时不计算实时阴影。</p>
+      </div>
+    </div>
+  </section>
 
-    <style>
-      :root {
-        color-scheme: dark;
-        --bg: #0b0c0f;
-        --panel: #101216;
-        --line: #23252c;
-        --line-strong: #34373f;
-        --text: #e8e9eb;
-        --muted: #9aa0aa;
-        --accent: #9ecbff;
-        --mono: ui-monospace, 'SF Mono', 'Cascadia Code', Consolas, monospace;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--text);
-        font-family: Inter, 'Source Han Sans SC', 'Noto Sans SC', system-ui, sans-serif;
-        line-height: 1.7;
-        -webkit-font-smoothing: antialiased;
-      }
-      a {
-        color: var(--accent);
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-      code {
-        font-family: var(--mono);
-        font-size: 0.85em;
-        background: #1a1c22;
-        border: 1px solid var(--line);
-        border-radius: 4px;
-        padding: 0.08em 0.35em;
-      }
-      button {
-        font: inherit;
-        color: inherit;
-        cursor: pointer;
-      }
-      button:focus-visible {
-        outline: 2px solid var(--accent);
-        outline-offset: 2px;
-      }
-      .page {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 2.2rem 1.25rem 3rem;
-      }
+  <!-- ============ Footer：署名与免责声明 ============ -->
+  <Fragment slot="footer">
+    <h2 class="foot-title">素材署名与免责声明</h2>
+    <ul class="foot-list">
+      <li>
+        3D 模型：<a href="https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CarConcept" rel="noopener">Car Concept</a>
+        — Eric Chadwick，© 2024 <a href="https://www.dgg3d.com/" rel="noopener">Darmstadt Graphics Group GmbH</a>，
+        来自 Khronos glTF Sample Assets，依
+        <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>
+        许可使用。本页采用其官方 Draco + KTX2 压缩变体，未修改模型内容；车身 Khronos 标识为 Khronos Group 商标。
+      </li>
+      <li>
+        环境贴图：<a href="https://polyhaven.com/a/studio_small_08" rel="noopener">Studio Small 08</a>
+        — <a href="https://polyhaven.com/" rel="noopener">Poly Haven</a>（CC0）。
+      </li>
+      <li>
+        免责声明：本演示使用通用概念车模型与原创界面图形，与任何汽车品牌无关，不代表任何雇主或客户的产品；
+        「场景注解」为虚构演示说明，非官方产品描述。
+      </li>
+    </ul>
+  </Fragment>
+</LabLayout>
 
-      /* ---------- 页头 ---------- */
-      .crumb {
-        font-family: var(--mono);
-        font-size: 0.75rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--muted);
-        display: flex;
-        gap: 0.6em;
-      }
-      .crumb a {
-        color: var(--muted);
-      }
-      .crumb a:hover {
-        color: var(--accent);
-      }
-      .head h1 {
-        margin: 0.7rem 0 0.4rem;
-        font-size: clamp(1.6rem, 3.4vw, 2.1rem);
-        font-weight: 650;
-        letter-spacing: 0.01em;
-      }
-      .head-tag {
-        font-family: var(--mono);
-        font-size: 0.62em;
-        font-weight: 500;
-        color: var(--accent);
-        border: 1px solid var(--line-strong);
-        border-radius: 999px;
-        padding: 0.18em 0.7em;
-        vertical-align: 0.32em;
-        margin-left: 0.4em;
-        white-space: nowrap;
-      }
-      .lede {
-        margin: 0 0 1.8rem;
-        max-width: 62ch;
-        color: var(--muted);
-      }
+<style is:global>
+  /* 模块专属样式（.cfg-* 命名空间）；基础 token / 页眉 / facade 样式由 LabLayout + LabStage 提供 */
+  .cfg button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+  .cfg button:focus-visible {
+    outline: 2px solid var(--lab-accent);
+    outline-offset: 2px;
+  }
 
-      /* ---------- 3D 舞台 ---------- */
-      .cfg-stage {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 16 / 9;
-        max-height: 640px;
-        min-height: 320px;
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        overflow: hidden;
-        background: radial-gradient(120% 95% at 50% 18%, #1a1d24 0%, #0e0f13 72%);
-      }
-      @media (max-width: 640px) {
-        .cfg-stage {
-          aspect-ratio: 5 / 6;
-        }
-      }
-      .cfg-canvas {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        display: block;
-        touch-action: none;
-      }
+  /* ---------- 3D 舞台 ---------- */
+  .cfg .lab-stage {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 640px;
+    min-height: 320px;
+    border: 1px solid var(--lab-line);
+    border-radius: 16px;
+    background: radial-gradient(120% 95% at 50% 18%, #1a1d24 0%, #0e0f13 72%);
+  }
+  @media (max-width: 640px) {
+    .cfg .lab-stage {
+      aspect-ratio: 5 / 6;
+    }
+  }
+  .cfg-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+  }
 
-      /* facade */
-      .cfg-facade {
-        position: absolute;
-        inset: 0;
-        display: grid;
-        place-items: center;
-        text-align: center;
-        transition: opacity 0.7s ease;
-      }
-      .cfg[data-state='ready'] .cfg-facade {
-        opacity: 0;
-        pointer-events: none;
-      }
-      .cfg-poster {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      .cfg-facade-scrim {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(10, 11, 14, 0.2) 0%, rgba(10, 11, 14, 0.78) 100%);
-      }
-      .cfg-facade-inner {
-        position: relative;
-        padding: 1rem;
-        max-width: 34rem;
-      }
-      .chip {
-        font-family: var(--mono);
-        font-size: 0.7rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--accent);
-        border: 1px solid var(--line-strong);
-        border-radius: 999px;
-        padding: 0.3em 1em;
-        background: rgba(12, 13, 17, 0.6);
-      }
-      .cfg-facade h2 {
-        margin: 0.9rem 0 0.2rem;
-        font-size: clamp(1.3rem, 2.6vw, 1.7rem);
-        font-weight: 600;
-      }
-      .cfg-facade-note {
-        margin: 0 0 1.1rem;
-        font-size: 0.85rem;
-        color: var(--muted);
-      }
-      .cfg-start {
-        border: 1px solid var(--line-strong);
-        background: rgba(22, 24, 30, 0.85);
-        border-radius: 10px;
-        padding: 0.62em 1.6em;
-        font-weight: 550;
-        transition: border-color 0.2s, background 0.2s;
-      }
-      .cfg-start:hover {
-        border-color: var(--accent);
-        background: rgba(30, 34, 44, 0.9);
-      }
-      .cfg[data-state='loading'] .cfg-start,
-      .cfg[data-state='error'] .cfg-start {
-        display: none;
-      }
-      .cfg-progress {
-        display: none;
-        width: min(260px, 60vw);
-        height: 3px;
-        margin: 1.2rem auto 0;
-        border-radius: 2px;
-        background: #23252c;
-        overflow: hidden;
-      }
-      .cfg[data-state='loading'] .cfg-progress {
-        display: block;
-      }
-      .cfg-progress i {
-        display: block;
-        width: 0%;
-        height: 100%;
-        background: var(--accent);
-        transition: width 0.25s ease;
-      }
-      .cfg-error {
-        margin-top: 1rem;
-        font-size: 0.85rem;
-        color: #f2b8b5;
-      }
+  /* HUD */
+  .cfg-hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0.9rem 1.1rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease 0.3s;
+    z-index: 1;
+  }
+  .cfg[data-state='ready'] .cfg-hud {
+    opacity: 1;
+  }
+  .cfg-hud-label {
+    display: block;
+    font-family: var(--lab-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--lab-muted);
+  }
+  .cfg-hud-left strong {
+    font-size: 0.92rem;
+    font-weight: 550;
+  }
+  .cfg-backend {
+    font-family: var(--lab-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--lab-accent);
+    border: 1px solid var(--lab-line-strong);
+    border-radius: 999px;
+    padding: 0.22em 0.8em;
+    background: rgba(12, 13, 17, 0.55);
+  }
+  .cfg-hint {
+    position: absolute;
+    right: 1.1rem;
+    bottom: 0.7rem;
+    margin: 0;
+    font-size: 0.72rem;
+    color: var(--lab-muted);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease 0.5s;
+    z-index: 1;
+  }
+  .cfg[data-state='ready'] .cfg-hint {
+    opacity: 0.85;
+  }
 
-      /* HUD */
-      .cfg-hud {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        padding: 0.9rem 1.1rem;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.5s ease 0.3s;
-      }
-      .cfg[data-state='ready'] .cfg-hud {
-        opacity: 1;
-      }
-      .cfg-hud-label {
-        display: block;
-        font-family: var(--mono);
-        font-size: 0.62rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-      .cfg-hud-left strong {
-        font-size: 0.92rem;
-        font-weight: 550;
-      }
-      .cfg-backend {
-        font-family: var(--mono);
-        font-size: 0.68rem;
-        letter-spacing: 0.1em;
-        color: var(--accent);
-        border: 1px solid var(--line-strong);
-        border-radius: 999px;
-        padding: 0.22em 0.8em;
-        background: rgba(12, 13, 17, 0.55);
-      }
-      .cfg-hint {
-        position: absolute;
-        right: 1.1rem;
-        bottom: 0.7rem;
-        margin: 0;
-        font-size: 0.72rem;
-        color: var(--muted);
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.5s ease 0.5s;
-      }
-      .cfg[data-state='ready'] .cfg-hint {
-        opacity: 0.85;
-      }
+  /* ---------- 控制坞 ---------- */
+  .cfg-dock {
+    margin-top: 0.9rem;
+    border: 1px solid var(--lab-line);
+    border-radius: 14px;
+    background: var(--lab-panel);
+    padding: 0.85rem 1rem 1rem;
+    transition: opacity 0.4s ease;
+  }
+  .cfg-dock[inert] {
+    opacity: 0.55;
+  }
+  .cfg-tabs {
+    display: flex;
+    gap: 0.4rem;
+    border-bottom: 1px solid var(--lab-line);
+    padding-bottom: 0.7rem;
+    margin-bottom: 0.9rem;
+  }
+  .cfg-tabs [role='tab'] {
+    border: 1px solid transparent;
+    background: none;
+    border-radius: 8px;
+    padding: 0.32em 0.95em;
+    color: var(--lab-muted);
+    font-weight: 520;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .cfg-tab-index {
+    font-family: var(--lab-mono);
+    font-size: 0.68em;
+    color: var(--lab-accent);
+    margin-right: 0.5em;
+    opacity: 0.75;
+  }
+  .cfg-tabs [role='tab']:hover {
+    color: var(--lab-text);
+  }
+  .cfg-tabs [aria-selected='true'] {
+    color: var(--lab-text);
+    border-color: var(--lab-line-strong);
+    background: #171920;
+  }
 
-      /* ---------- 控制坞 ---------- */
-      .cfg-dock {
-        margin-top: 0.9rem;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        background: var(--panel);
-        padding: 0.85rem 1rem 1rem;
-        transition: opacity 0.4s ease;
-      }
-      .cfg-dock[inert] {
-        opacity: 0.55;
-      }
-      .cfg-tabs {
-        display: flex;
-        gap: 0.4rem;
-        border-bottom: 1px solid var(--line);
-        padding-bottom: 0.7rem;
-        margin-bottom: 0.9rem;
-      }
-      .cfg-tabs [role='tab'] {
-        border: 1px solid transparent;
-        background: none;
-        border-radius: 8px;
-        padding: 0.32em 0.95em;
-        color: var(--muted);
-        font-weight: 520;
-        transition: color 0.2s, border-color 0.2s, background 0.2s;
-      }
-      .cfg-tab-index {
-        font-family: var(--mono);
-        font-size: 0.68em;
-        color: var(--accent);
-        margin-right: 0.5em;
-        opacity: 0.75;
-      }
-      .cfg-tabs [role='tab']:hover {
-        color: var(--text);
-      }
-      .cfg-tabs [aria-selected='true'] {
-        color: var(--text);
-        border-color: var(--line-strong);
-        background: #171920;
-      }
+  /* 色卡 */
+  .cfg-swatches {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.28rem;
+    border: 1px solid transparent;
+    background: none;
+    border-radius: 10px;
+    padding: 0.55rem 0.65rem 0.45rem;
+    min-width: 4.2rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .swatch:hover {
+    border-color: var(--lab-line-strong);
+  }
+  .swatch[aria-pressed='true'] {
+    border-color: var(--lab-accent);
+    background: #14161c;
+  }
+  .swatch-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--sw, #555);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.18), inset 0 -3px 6px rgba(0, 0, 0, 0.35);
+  }
+  .swatch-dot-multi {
+    background: conic-gradient(#a01020 0 33%, #d6d8dc 33% 66%, #2f3033 66% 100%);
+  }
+  .swatch-name {
+    font-size: 0.74rem;
+    line-height: 1.2;
+  }
+  .swatch-finish {
+    font-size: 0.62rem;
+    color: var(--lab-muted);
+    line-height: 1;
+  }
 
-      /* 色卡 */
-      .cfg-swatches {
-        display: flex;
-        gap: 0.35rem;
-        flex-wrap: wrap;
-      }
-      .swatch {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.28rem;
-        border: 1px solid transparent;
-        background: none;
-        border-radius: 10px;
-        padding: 0.55rem 0.65rem 0.45rem;
-        min-width: 4.2rem;
-        transition: border-color 0.2s, background 0.2s;
-      }
-      .swatch:hover {
-        border-color: var(--line-strong);
-      }
-      .swatch[aria-pressed='true'] {
-        border-color: var(--accent);
-        background: #14161c;
-      }
-      .swatch-dot {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background: var(--sw, #555);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.18), inset 0 -3px 6px rgba(0, 0, 0, 0.35);
-      }
-      .swatch-dot-multi {
-        background: conic-gradient(#a01020 0 33%, #d6d8dc 33% 66%, #2f3033 66% 100%);
-      }
-      .swatch-name {
-        font-size: 0.74rem;
-        line-height: 1.2;
-      }
-      .swatch-finish {
-        font-size: 0.62rem;
-        color: var(--muted);
-        line-height: 1;
-      }
+  /* 卡片（轮毂 / 涂装） */
+  .cfg-cards {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .cfg .card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid var(--lab-line);
+    background: none;
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    min-width: min(15.5rem, 100%);
+    text-align: left;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .cfg .card:hover {
+    border-color: var(--lab-line-strong);
+  }
+  .cfg .card[aria-pressed='true'] {
+    border-color: var(--lab-accent);
+    background: #14161c;
+  }
+  .card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  .card-name {
+    font-size: 0.88rem;
+    font-weight: 550;
+    line-height: 1.3;
+  }
+  .card-en {
+    font-family: var(--lab-mono);
+    font-style: normal;
+    font-size: 0.64rem;
+    color: var(--lab-muted);
+    margin-left: 0.55em;
+    letter-spacing: 0.04em;
+  }
+  .card-desc {
+    font-size: 0.72rem;
+    color: var(--lab-muted);
+    line-height: 1.4;
+  }
+  .wheel-dot {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--sw), #0c0d10 82%);
+    border: 3px solid #34373f;
+  }
+  .livery-chip {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--c1) 0 52%, var(--c2) 52% 100%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
 
-      /* 卡片（轮毂 / 涂装） */
-      .cfg-cards {
-        display: flex;
-        gap: 0.6rem;
-        flex-wrap: wrap;
-      }
-      .card {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        border: 1px solid var(--line);
-        background: none;
-        border-radius: 12px;
-        padding: 0.7rem 1rem;
-        min-width: min(15.5rem, 100%);
-        text-align: left;
-        transition: border-color 0.2s, background 0.2s;
-      }
-      .card:hover {
-        border-color: var(--line-strong);
-      }
-      .card[aria-pressed='true'] {
-        border-color: var(--accent);
-        background: #14161c;
-      }
-      .card-text {
-        display: flex;
-        flex-direction: column;
-        gap: 0.1rem;
-      }
-      .card-name {
-        font-size: 0.88rem;
-        font-weight: 550;
-        line-height: 1.3;
-      }
-      .card-en {
-        font-family: var(--mono);
-        font-style: normal;
-        font-size: 0.64rem;
-        color: var(--muted);
-        margin-left: 0.55em;
-        letter-spacing: 0.04em;
-      }
-      .card-desc {
-        font-size: 0.72rem;
-        color: var(--muted);
-        line-height: 1.4;
-      }
-      .wheel-dot {
-        flex: none;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 35% 30%, var(--sw), #0c0d10 82%);
-        border: 3px solid #34373f;
-      }
-      .livery-chip {
-        flex: none;
-        width: 34px;
-        height: 34px;
-        border-radius: 9px;
-        background: linear-gradient(135deg, var(--c1) 0 52%, var(--c2) 52% 100%);
-        border: 1px solid rgba(255, 255, 255, 0.14);
-      }
+  /* ---------- 内容区块 ---------- */
+  .sect {
+    margin-top: 3rem;
+    max-width: 74ch;
+  }
+  .sect h2 {
+    font-size: 1.05rem;
+    font-weight: 620;
+    letter-spacing: 0.02em;
+    margin: 0 0 0.7rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.7em;
+  }
+  .sect-no {
+    font-family: var(--lab-mono);
+    font-size: 0.78em;
+    color: var(--lab-accent);
+    opacity: 0.85;
+  }
+  .sect-fiction {
+    font-style: normal;
+    font-family: var(--lab-mono);
+    font-size: 0.62em;
+    color: var(--lab-muted);
+    border: 1px solid var(--lab-line);
+    border-radius: 999px;
+    padding: 0.15em 0.8em;
+  }
+  .sect p {
+    margin: 0 0 0.8rem;
+    color: #c6c9cf;
+  }
+  .sect code {
+    font-family: var(--lab-mono);
+    font-size: 0.85em;
+    background: #1a1c22;
+    border: 1px solid var(--lab-line);
+    border-radius: 4px;
+    padding: 0.08em 0.35em;
+  }
+  .fine {
+    font-size: 0.8rem;
+    color: var(--lab-muted) !important;
+  }
+  .ops {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.45rem;
+  }
+  .ops li {
+    color: #c6c9cf;
+    font-size: 0.92rem;
+    border-left: 2px solid var(--lab-line-strong);
+    padding-left: 0.9rem;
+  }
+  .ops strong {
+    color: var(--lab-text);
+    font-weight: 600;
+    margin-right: 0.7em;
+  }
 
-      /* ---------- 内容区块 ---------- */
-      .sect {
-        margin-top: 3rem;
-        max-width: 74ch;
-      }
-      .sect h2 {
-        font-size: 1.05rem;
-        font-weight: 620;
-        letter-spacing: 0.02em;
-        margin: 0 0 0.7rem;
-        display: flex;
-        align-items: baseline;
-        gap: 0.7em;
-      }
-      .sect-no {
-        font-family: var(--mono);
-        font-size: 0.78em;
-        color: var(--accent);
-        opacity: 0.85;
-      }
-      .sect-fiction {
-        font-style: normal;
-        font-family: var(--mono);
-        font-size: 0.62em;
-        color: var(--muted);
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        padding: 0.15em 0.8em;
-      }
-      .sect p {
-        margin: 0 0 0.8rem;
-        color: #c6c9cf;
-      }
-      .fine {
-        font-size: 0.8rem;
-        color: var(--muted) !important;
-      }
-      .ops {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: grid;
-        gap: 0.45rem;
-      }
-      .ops li {
-        color: #c6c9cf;
-        font-size: 0.92rem;
-        border-left: 2px solid var(--line-strong);
-        padding-left: 0.9rem;
-      }
-      .ops strong {
-        color: var(--text);
-        font-weight: 600;
-        margin-right: 0.7em;
-      }
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.7rem;
+    max-width: none;
+  }
+  .sect:has(.tech-grid) {
+    max-width: none;
+  }
+  .tech-card {
+    border: 1px solid var(--lab-line);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    background: var(--lab-panel);
+  }
+  .tech-card h3 {
+    margin: 0 0 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .tech-card p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--lab-muted);
+  }
 
-      .tech-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-        gap: 0.7rem;
-        max-width: none;
-      }
-      .sect:has(.tech-grid) {
-        max-width: none;
-      }
-      .tech-card {
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 1rem 1.1rem;
-        background: var(--panel);
-      }
-      .tech-card h3 {
-        margin: 0 0 0.35rem;
-        font-size: 0.9rem;
-        font-weight: 600;
-      }
-      .tech-card p {
-        margin: 0;
-        font-size: 0.8rem;
-        color: var(--muted);
-      }
-
-      /* ---------- footer ---------- */
-      .foot {
-        margin-top: 3.2rem;
-        border-top: 1px solid var(--line);
-        padding-top: 1.6rem;
-      }
-      .foot-title {
-        font-size: 0.85rem;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        color: var(--muted);
-        margin: 0 0 0.7rem;
-        text-transform: uppercase;
-        font-family: var(--mono);
-      }
-      .foot ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: grid;
-        gap: 0.5rem;
-      }
-      .foot li {
-        font-size: 0.8rem;
-        color: var(--muted);
-      }
-      .foot-back {
-        margin: 1.6rem 0 0;
-        font-size: 0.88rem;
-      }
-    </style>
-  </body>
-</html>
+  /* ---------- footer 内容 ---------- */
+  .foot-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--lab-muted);
+    margin: 0 0 0.7rem;
+    text-transform: uppercase;
+    font-family: var(--lab-mono);
+  }
+  .foot-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .foot-list li {
+    font-size: 0.8rem;
+    color: var(--lab-muted);
+  }
+</style>

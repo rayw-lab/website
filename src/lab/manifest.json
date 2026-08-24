@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "tts-cockpit",
+    "code": "RA-01",
+    "title": "多语言 TTS × 智能座舱可视化",
+    "description": "16 语种 × 5 场景座舱播报对照：词级时间轴驱动字幕、SVG 路线与真实频谱波形，离线预生成、零第三方请求。",
+    "status": "live",
+    "kind": "audio-viz",
+    "entry": "modules/tts-cockpit/index.ts",
+    "poster": "posters/tts-cockpit-poster.webp",
+    "budgetClass": "S",
+    "budget": { "lazyJsKbGzip": 9, "assetsMb": 3.4 },
+    "capabilities": { "webgpu": "unused", "webgl2": "unused", "audio": true, "pointerFine": false },
+    "deepLinkParams": ["locale", "scene"],
+    "viewTransitionName": "demo-cockpit",
+    "techChips": ["16 语种", "逐词时间轴", "RTL ×2", "零 API Key"],
+    "relatedWork": ["multilingual-cockpit"],
+    "relatedArticles": []
+  },
+  {
+    "slug": "car-configurator",
+    "code": "RB-01",
+    "title": "3D 车辆配置器",
+    "description": "WebGPU 实时渲染（WebGL 2 自动回退）的概念车虚拟展厅：8 车漆 × 2 轮毂 × 3 涂装，KTX2/Draco 资产管线。",
+    "status": "live",
+    "kind": "webgpu-3d",
+    "entry": "modules/car-configurator/index.ts",
+    "poster": "posters/car-configurator-poster.webp",
+    "budgetClass": "M",
+    "budget": { "lazyJsKbGzip": 257, "assetsMb": 5.0 },
+    "capabilities": { "webgpu": "preferred", "webgl2": "fallback", "audio": false, "pointerFine": true },
+    "deepLinkParams": ["paint", "wheels", "livery", "gl"],
+    "viewTransitionName": "demo-car",
+    "techChips": ["WebGPU", "WebGL 2 回退", "KTX2", "Draco", "HDRI IBL"],
+    "relatedWork": ["edge-cloud-llm-arch-case"],
+    "relatedArticles": []
+  }
+]
