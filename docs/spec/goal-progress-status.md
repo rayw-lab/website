@@ -8,13 +8,14 @@
 | 子目标 | 状态 | 证据 |
 |--------|------|------|
 | Phase A Spike（B1） | **已交付（Go with 真机帧率待补）** | `/world-spike/`、E2E 42/42（含 WS-PERF-01）、`world-spike-log.md` |
-| Phase 1 MVP（A+D+C） | **本机五门禁 + 本地 LHCI 全绿；CI D3 待终态** | 见「MVP 门禁核对」+ [`mvp-gate-signoff.md`](mvp-gate-signoff.md) |
-| 目标整体 | **未完成** | 人工 Gate ×2（待王磊）+ D3 CI 终态确认 |
+| Phase 1 MVP（A+D+C） | **自动化 Go（CI D3 已绿）** | 见「MVP 门禁核对」+ [`mvp-gate-signoff.md`](mvp-gate-signoff.md) |
+| 目标整体 | **未完成** | 人工 Gate ×2（待王磊） |
 
-> **「目标整体」未完成的全部原因（1 项 CI 确认 + 2 项人工）**：
+> **「目标整体」未完成原因（仅人工 ×2）**：
 >
-> 1. **CI 确认 ×1**：D3 Lighthouse 在 `9451def` 已本地六 URL 全绿并修复 CI 曾红的 a11y/perf 项；`96c1314` push 后 CI run [#32777109888](https://github.com/rayw-lab/website/actions/runs/32777109888) 进行中，待转绿后自动化侧可最终签署。
-> 2. **人工 ×2**：10 秒定位测试 ≥80%、真机帧率（桌面 60fps / 安卓中端 30fps）——按 [`human-gate-checklist.md`](human-gate-checklist.md) 执行，待王磊回填。
+> 1. **人工 ×2**：10 秒定位测试 ≥80%、真机帧率（桌面 60fps / 安卓中端 30fps）——按 [`human-gate-checklist.md`](human-gate-checklist.md) 执行，待王磊回填。
+>
+> 自动化侧（五门禁 + D3 Lighthouse CI）已于 `d34e6e5` 全部转绿（CI [#32777408128](https://github.com/rayw-lab/website/actions/runs/32777408128)）。
 
 ## 分支合并状态
 
@@ -36,7 +37,7 @@
 - [x] `node scripts/audit-budget.mjs dist/` —— 首屏 33.4KB；阻断级全过
 - [x] `pnpm test:e2e` —— 42/42 全绿（world-spike 11 例 + WS-PERF-01）
 - [x] **本地 LHCI** —— 六 URL 四项 ≥0.95（见 [`lighthouse-mvp-gate-report.md`](lighthouse-mvp-gate-report.md)）
-- [ ] **CI D3** —— `96c1314` run 进行中；历史红项（car-config a11y 0.93 / tts perf 0.86）已在 `9451def` 修复
+- [x] **CI D3** —— ✅ run [#32777408128](https://github.com/rayw-lab/website/actions/runs/32777408128)（`d34e6e5`）
 
 ### 交付项核对
 
@@ -54,7 +55,7 @@
 | 首轮 CI（扩展 URL 前） | `28b8ea2` 前后 | ❌ car-config a11y 0.93、tts perf 0.86 |
 | 本地修复 + autorun | `9451def` | ✅ 六 URL 全绿 |
 | 报告入库 | `96c1314` | [`lighthouse-mvp-gate-report.md`](lighthouse-mvp-gate-report.md) |
-| CI 回归 | `96c1314` | ⏳ run [#32777109888](https://github.com/rayw-lab/website/actions/runs/32777109888) |
+| CI 回归 | `d34e6e5` | ✅ [#32777408128](https://github.com/rayw-lab/website/actions/runs/32777408128) |
 
 ## Phase A Spike 门禁核对
 
@@ -65,9 +66,9 @@
 
 ## Gate 结论
 
-**MVP Gate：自动化侧本机 Go + 签署档已建（[`mvp-gate-signoff.md`](mvp-gate-signoff.md)），待 CI D3 终态确认；人工侧差 2 项。**
+**MVP Gate：自动化侧 Go（CI D3 已绿）；人工侧差 2 项。**
 
-本机五门禁 + 本地 LHCI 在 `96c1314` 全部通过；D3 CI 待最新 push 转绿后补签自动化终态。两项人工验证由王磊组织后回填签署档 §人工签署区。
+本机五门禁 + 本地/CI LHCI 在 `d34e6e5` 全部通过；两项人工验证由王磊组织后回填签署档 §人工签署区。
 
 ### 证据索引
 
@@ -85,6 +86,6 @@
 
 ## 下一批任务
 
-1. ⏳ 确认 CI D3 转绿 → 更新 `mvp-gate-signoff.md` D3 行为 ✅
+1. ✅ CI D3 转绿 → `mvp-gate-signoff.md` 已更新
 2. 人工 Gate H1–H3（王磊）
 3. 全部回填后「目标整体」翻绿；可选合并 main → Phase B

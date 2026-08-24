@@ -8,7 +8,7 @@
 
 | 侧 | 判定 | 说明 |
 |---|---|---|
-| **自动化门禁** | **Go（待 CI 终态确认）** | 本机五门禁 + 本地 LHCI 六 URL 全绿；PR #12 最新 push CI 运行中 |
+| **自动化门禁** | **Go** | 本机五门禁 + 本地/CI LHCI 六 URL 全绿（CI run #32777408128） |
 | **人工门禁** | **未签署** | 10 秒定位测试 ≥80%、真机帧率（桌面 60fps / 安卓中端 30fps） |
 | **MVP Gate 整体** | **未完成** | 人工两项未回填前不得合并 main |
 
@@ -21,14 +21,14 @@
 | 3 | `check-links` | 内部引用有效；PENDING_ROUTES 白名单清空 | 307 条引用；manifest 2 模块一致 | ✅ |
 | 4 | `audit-budget` | 首屏 <200KB；零 world 字节；Lab 预算 | 首屏 33.4KB；阻断级全过 | ✅ |
 | 5 | `pnpm test:e2e` | 全绿；world-spike 不 skip | **42/42**（含 WS-PERF-01 软门禁） | ✅ |
-| 6 | D3 Lighthouse CI | 六 URL × 四项 ≥0.95；移动端；3 轮中位 | 本地 LHCI 全绿（见 `lighthouse-mvp-gate-report.md`）；CI 见下 | ⏳ |
+| 6 | D3 Lighthouse CI | 六 URL × 四项 ≥0.95；移动端；3 轮中位 | 本地 + CI 全绿（见 `lighthouse-mvp-gate-report.md`） | ✅ |
 
 ### D3 Lighthouse
 
 - **配置单源**：`lighthouserc.json`（6 URL，无豁免、无 continue-on-error）
 - **本地 autorun**（`9451def` 修复后）：六 URL 四项全过；报告见 [`lighthouse-mvp-gate-report.md`](lighthouse-mvp-gate-report.md)
-- **CI 历史**：`28b8ea2` 时 PR #12 检查线红（car-configurator a11y 0.93、tts-cockpit perf 0.86）；`9451def`/`96c1314` 已修复并推送，**最新 run 待终态**
-- **CI run**：[#32777109888](https://github.com/rayw-lab/website/actions/runs/32777109888)（`96c1314`，进行中）
+- **CI 历史**：`28b8ea2` 时红（car-config a11y 0.93、tts perf 0.86）；`9451def` 修复后本地全绿
+- **CI 回归**：✅ run [#32777408128](https://github.com/rayw-lab/website/actions/runs/32777408128)（`d34e6e5`，job 全绿）
 
 ## 交付项签署（A3 / A4 / D5）
 
