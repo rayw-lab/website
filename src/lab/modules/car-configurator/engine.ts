@@ -514,6 +514,8 @@ export async function createCarConfigurator(opts: LabMountOptions): Promise<LabI
       dracoLoader.dispose();
       void ktx2Loader.dispose();
       void renderer.dispose();
+      // dispose 后原 canvas 的 GL 上下文已不可复用：原位换成全新克隆，保证舞台可重复挂载
+      canvas.replaceWith(canvas.cloneNode(false));
     },
     setParam: (key, value) => {
       const apply = applyById[key];
