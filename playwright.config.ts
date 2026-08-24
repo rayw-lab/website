@@ -38,7 +38,7 @@ export default defineConfig({
     {
       // 桌面基线：1440×900（homepage-redesign-spec 桌面栅格）
       name: 'desktop-chromium',
-      testIgnore: /mobile\.spec\.ts|world-spike\.spec\.ts/,
+      testIgnore: /mobile\.spec\.ts|world-spike.*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
     {
@@ -58,6 +58,15 @@ export default defineConfig({
       name: 'world-chromium',
       testMatch: /world-spike\.spec\.ts/,
       dependencies: ['desktop-chromium', 'mobile-375'],
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+    },
+    {
+      // WS-PERF-01 帧率证据包（e2e-test-plan §5.8）：帧间隔采样对并发负载最敏感，
+      // 单列 project 且依赖 world-chromium 殿后串行——保证采样期整机独占，
+      // 读数可作为「该 CI 环境软件光栅化硬下界」归档（真机门禁另走人工录测）。
+      name: 'world-perf-chromium',
+      testMatch: /world-spike-perf\.spec\.ts/,
+      dependencies: ['world-chromium'],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
   ],
