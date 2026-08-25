@@ -1,7 +1,8 @@
 // /world/ Spike 挂载入口——遵守既有 lab mount() 契约（SRD §9.2，同 contracts.LabMount 形状），
 // 但作为独立 Spike 入口由 world-spike 壳页直接动态 import（不进 manifest/facade 分包映射：
 // /world-spike/ 是 noindex 隐藏路由，Phase B 转正 /world/ 时再登记 manifest 单例）。
-// 深链参数白名单：gl（?gl=1 强制 WebGL 2 复测，roadmap §7.1 检查点）。
+// 深链参数白名单：gl（?gl=1 强制 WebGL 2 复测，roadmap §7.1 检查点）；
+// city（?city=1 隐藏路径挂载 CC-E3 程序化科技城，动态 import 独立分包，默认零城市字节）。
 import type { LabInstance, LabMountOptions } from '../contracts';
 import { Game } from './core/Game';
 
@@ -25,6 +26,15 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   });
 
   await game.init();
+
+  // CC-E3 隐藏路径：?city=1 挂载程序化科技城（十字路口 + 12 栋在册楼 + 剪影层）。
+  // 壳页只转发白名单参数，故同时兜底读 location.search；默认不挂载，灰盒零回归。
+  const cityRequested =
+    opts.params.get('city') === '1' || new URLSearchParams(location.search).get('city') === '1';
+  if (cityRequested) {
+    const { mountCity } = await import('./city');
+    mountCity(game);
+  }
 
   // Spike 级行为（不写进引擎）：无车阶段 R/respawn 顺带复位锥桶，
   // 让键盘输入 → 动作路由 → 物理复位的整条链路肉眼可验。
