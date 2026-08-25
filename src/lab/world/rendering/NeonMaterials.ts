@@ -63,10 +63,23 @@ function linearColorNode(hex: string) {
   return vec3(c.r, c.g, c.b);
 }
 
+/**
+ * [CC-L1 A3] 全城窗色纪律 palette（单一事实源）：窗格只从青/品红/暖白三族取色，
+ * 楼体 `neonColor` 不再直出窗格（rubric V3「绿红紫白同帧互撞」扣分项）——
+ * neonColor 保留给招牌带/信标/大堂光带等「楼宇身份件」（ThemeTowers/CityBlocks
+ * 的 createNeonGlowMaterial 调用与 lobby 光带不变）。
+ * 色值与双主轴道路霓虹同源（Roads ROAD_NEON：南北=青 #49c5b6 / 东西=品红 #ff2d6f）。
+ */
+const WINDOW_PALETTE = {
+  cyan: '#49c5b6',
+  magenta: '#ff2d6f',
+  warmWhite: '#f5decb',
+} as const;
+
 export interface FacadeMaterialOptions {
   /** 楼体高度（米）——局部坐标窗格以楼底为 0 层 */
   height: number;
-  /** 主霓虹色 hex（JSON neonColor 直入） */
+  /** 主霓虹色 hex（JSON neonColor 直入；[CC-L1 A3] 只进大堂光带——窗格走 WINDOW_PALETTE） */
   neonColor: string;
   /** 确定性种子（hashStringToSeed(building.id)），窗亮分布跨端一致 */
   seed: number;
@@ -84,8 +97,9 @@ export interface FacadeMaterialOptions {
 
 /**
  * 楼体幕墙材质（几何以「楼体中心为原点、真实米制」构建时使用——positionGeometry 即米）。
- * 窗格 = 层高 × 列宽栅格；每窗一个 hash：亮/灭、色相偏移（80% 主题色 + 20% 暖白）、
- * 呼吸闪烁相位（相位散布/振幅/时间轴受品质档 uniform 控制）、亮屏升格（~7% 高亮窗）。
+ * 窗格 = 层高 × 列宽栅格；每窗一个 hash：亮/灭、色相（[CC-L1 A3] 三族纪律：
+ * 青 55% / 品红 25% / 暖白 20%，WINDOW_PALETTE 单源）、呼吸闪烁相位
+ * （相位散布/振幅/时间轴受品质档 uniform 控制）、亮屏升格（~7% 高亮窗）。
  */
 export function createFacadeMaterial(options: FacadeMaterialOptions): THREE.MeshStandardNodeMaterial {
   const floorHeight = options.floorHeight ?? 3.4;
@@ -124,8 +138,14 @@ export function createFacadeMaterial(options: FacadeMaterialOptions): THREE.Mesh
     const cellId = cellX.floor().mul(157.31).add(cellY.floor().mul(913.73));
     const rand = hash(cellId.add(seedNode));
     const lit = step(1 - options.litRatio, rand);
+    // [CC-L1 A3] 窗色三族纪律：青 55% / 品红 25% / 暖白 20%（WINDOW_PALETTE 单源；
+    // neonColor 不再直出窗格——见 palette 常量注释）
     const hueRand = hash(cellId.mul(1.618).add(seedNode));
-    const windowColor = mix(linearColorNode(options.neonColor), vec3(0.92, 0.86, 0.72), step(0.8, hueRand));
+    const windowColor = mix(
+      mix(linearColorNode(WINDOW_PALETTE.cyan), linearColorNode(WINDOW_PALETTE.magenta), step(0.55, hueRand)),
+      linearColorNode(WINDOW_PALETTE.warmWhite),
+      step(0.8, hueRand),
+    );
 
     const amp = float(0.08).mul(neonUniforms.flickerScale);
     const flicker = sin(neonTime.mul(0.6).add(rand.mul(43.7).mul(neonUniforms.phaseSpread)))
@@ -191,8 +211,8 @@ export function createSilhouetteMaterial(
     const rand = hash(cellId);
     const lit = step(1 - litRatio, rand);
 
-    // 远景冷色系：青 × 紫按窗随机（全站霓虹色族的低饱和版）
-    const coolMix = mix(vec3(0.11, 0.5, 0.46), vec3(0.35, 0.2, 0.62), step(0.5, hash(cellId.add(7.31))));
+    // 远景冷色系：青 × 品红按窗随机（[CC-L1 A3] 与 WINDOW_PALETTE 同轴的低饱和版）
+    const coolMix = mix(vec3(0.11, 0.5, 0.46), vec3(0.5, 0.05, 0.17), step(0.5, hash(cellId.add(7.31))));
 
     const amp = float(0.1).mul(neonUniforms.flickerScale);
     const flicker = sin(neonTime.mul(0.35).add(rand.mul(61.3).mul(neonUniforms.phaseSpread)))

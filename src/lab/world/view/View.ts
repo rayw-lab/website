@@ -24,6 +24,14 @@ export class View {
   /** 视线目标离地高（米）：城市首幕上抬 2.5（9m 机器人构图）；灰盒 0（folio 原样） */
   private readonly lookAtHeight: number;
   private readonly lookAtTarget = new THREE.Vector3();
+  /**
+   * [CC-L1 A4] 城市首幕构图件（rubric §6 Tier A4「偏轴 1/3 构图 + 慢 yaw 微动」）：
+   * lateral = 机位与视线目标同步沿相机右向平移（纯屏幕平移——主体让出画面中心，
+   * 落 1/3 竖线，峡谷对景占开阔侧）；thetaDrift = 慢 yaw 呼吸微动振幅（弧度，
+   * reduced-motion 置 0——静止用户偏好零动画）。灰盒档两者归零（folio 原样零回归）。
+   */
+  private readonly framing: { lateral: number; thetaDrift: number };
+  private readonly lateralOffset = new THREE.Vector3();
 
   /** 输出相机（Rendering 渲染它） */
   camera!: THREE.PerspectiveCamera;
@@ -83,6 +91,16 @@ export class View {
   constructor(game: Game, idealRatio = 1920 / 1080) {
     this.game = game;
     this.lookAtHeight = game.cameraFraming === 'city' ? 2.5 : 0;
+
+    // [CC-L1 A4] 城市首幕：右向平移 3.4m ≈ 1/3 竖线（FOV 42°/斜距 18m 下画面半宽
+    // ≈12m）；慢 yaw ±1.1°（周期 ~50s 设计秒，远低于可察觉眩晕阈）。
+    // reduced-motion 关微动（构图平移是静态取景，不属动画，保留）。
+    const reducedMotion =
+      typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.framing =
+      game.cameraFraming === 'city'
+        ? { lateral: 3.4, thetaDrift: reducedMotion ? 0 : 0.019 }
+        : { lateral: 0, thetaDrift: 0 };
 
     this.idealRatio = idealRatio;
     this.ratioOverflow = Math.max(1, this.idealRatio / this.game.viewport.ratio) - 1;
@@ -161,7 +179,11 @@ export class View {
       phi: city
         ? Math.PI * (68 / 180)
         : Math.PI * (this.game.quality.level === 0 ? 0.31 : 0.27),
-      theta: Math.PI * 0.25,
+      // [CC-L1 A4] 城市首幕 theta 45°→25°（偏轴 20°，rubric §6 Tier A4）：机位南偏东、
+      // 视线朝北压中轴大道——峡谷对景（西 agent-nexus 96m / 东 autodrive-lab 60m 夹持
+      // 北向路廊）取代原 45° 平铺斜视；机器人 headingY 不动，自然获得 3/4 侧身位。
+      // 灰盒保持 folio 原值 45°（零回归）。
+      theta: city ? Math.PI * (25 / 180) : Math.PI * 0.25,
       radius: {
         // 城市首幕：静止机位斜距 = min + (max-min)×(1-baseRatio) = 14+10×0.4 = 18m
         edges: city ? { min: 14, max: 24 } : { min: 15, max: 30 },
@@ -330,7 +352,7 @@ export class View {
     this.zoom.ratio = clamp(this.zoom.ratio, -1, 1);
     this.zoom.smoothedRatio = lerp(this.zoom.smoothedRatio, this.zoom.ratio, this.game.ticker.delta * 10);
 
-    // 半径与球坐标偏移
+    // 半径与球坐标偏移（[CC-L1 A4] 城市档叠加慢 yaw 微动：theta 呼吸 ±thetaDrift）
     const radiusMax =
       this.spherical.radius.edges.max +
       this.ratioOverflow * this.spherical.radius.nonIdealRatioOffset;
@@ -339,20 +361,32 @@ export class View {
       radiusMax,
       1 - this.zoom.smoothedRatio,
     );
+    const theta =
+      this.spherical.theta +
+      this.framing.thetaDrift * Math.sin(this.game.ticker.elapsed * 0.13);
     this.spherical.offset.setFromSphericalCoords(
       this.spherical.radius.current,
       this.spherical.phi,
-      this.spherical.theta,
+      theta,
     );
 
+    // [CC-L1 A4] 偏轴构图：机位与视线目标同步沿相机右向平移（视向 -(sinθ,0,cosθ)
+    // 的右向 = (cosθ,0,-sinθ)）——纯屏幕平移，主体落 1/3 竖线；灰盒 lateral=0 恒零
+    this.lateralOffset
+      .set(Math.cos(theta), 0, -Math.sin(theta))
+      .multiplyScalar(this.framing.lateral);
+
     // 机位
-    this.position.copy(this.focusPoint.smoothedPosition).add(this.spherical.offset);
+    this.position
+      .copy(this.focusPoint.smoothedPosition)
+      .add(this.spherical.offset)
+      .add(this.lateralOffset);
     this.delta = this.position.clone().sub(this.defaultCamera.position);
     this.defaultCamera.position.copy(this.position);
 
     // 朝向 + roll（弹簧-阻尼镜头晃动，碰撞时 kick）；城市首幕视线上抬 lookAtHeight
     this.defaultCamera.rotation.set(0, 0, 0);
-    this.lookAtTarget.copy(this.focusPoint.smoothedPosition);
+    this.lookAtTarget.copy(this.focusPoint.smoothedPosition).add(this.lateralOffset);
     this.lookAtTarget.y += this.lookAtHeight;
     this.defaultCamera.lookAt(this.lookAtTarget);
 

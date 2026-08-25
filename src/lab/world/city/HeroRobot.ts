@@ -12,6 +12,7 @@
 //   · 光幕峰值热交换 = robot.setVisible(false) + car.visible = true，本类不自带变形逻辑；
 //   · idle 呼吸灯占用世界循环动画配额（CITY-03：≤2 处 = idle 呼吸 + 招牌脉动）。
 import * as THREE from 'three/webgpu';
+import { Fn, float, smoothstep, uv, vec3 } from 'three/tsl';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
 import type { ResourceFile, ResourcesLoader } from '../core/ResourcesLoader';
 
@@ -113,6 +114,8 @@ export class HeroRobot {
     else this.setFallbackMech(targetHeight);
 
     this.setBreathLight(targetHeight);
+    this.setRimLight(targetHeight);
+    this.setGroundRing(targetHeight);
     this.setPillar();
   }
 
@@ -313,6 +316,52 @@ export class HeroRobot {
     this.breathLight = new THREE.PointLight(0x49c5b6, 6, targetHeight * 2.4, 1.8);
     this.breathLight.position.y = targetHeight * 0.66;
     this.group.add(this.breathLight);
+  }
+
+  /**
+   * [CC-L1 A5] 轮廓背光（rubric §6 Tier A5「机器人 rim light」）：品红聚光从
+   * 后上方勾轮廓——对手色 = 胸口青呼吸灯（品牌双色轴），主体从暗底里剥离。
+   * SpotLight 锥角/距离双限位，只打机器人邻域不污染全城；常亮不占循环动画配额，
+   * 不投影（阴影预算留给主方向光）。挂 group：随 setVisible 与机器人同显同隐。
+   */
+  private setRimLight(targetHeight: number): void {
+    const rim = new THREE.SpotLight(0xff2d6f, 60, targetHeight * 4.5, 0.5, 0.7, 1.2);
+    rim.position.set(-targetHeight * 0.9, targetHeight * 1.5, -targetHeight * 0.8);
+    rim.target.position.set(0, targetHeight * 0.55, 0);
+    this.group.add(rim, rim.target);
+  }
+
+  /**
+   * [CC-L1 A5] 接地常亮青环（「接地环」）：additive 径向环带贴脚下，与 Roads 出生
+   * 光圈（r≈2.9 路面 emissive）同心分层——机器人「站在能量位上」的视觉锚。
+   * 常亮零时间项（不占动画配额）；挂 group：热交换隐藏机器人时随之让位充能环。
+   */
+  private setGroundRing(targetHeight: number): void {
+    const radius = targetHeight * 0.24;
+    const geometry = new THREE.CircleGeometry(radius, 40);
+    this.ownedGeometries.push(geometry);
+
+    const material = new THREE.MeshBasicNodeMaterial({
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    material.colorNode = Fn(() => {
+      const radial = uv().sub(0.5).mul(2).length();
+      // 外缘锐环 + 中心渐弱辉光（TransformSystem 充能环同语法的静态版）
+      const band = smoothstep(0.55, 0.88, radial).mul(smoothstep(1.0, 0.94, radial));
+      const core = smoothstep(0.7, 0.0, radial).mul(0.14);
+      return vec3(0.29, 0.78, 0.72).mul(band.mul(0.85).add(core));
+    })();
+    material.opacityNode = float(0.85);
+    this.ownMaterial(material);
+
+    const ring = new THREE.Mesh(geometry, material);
+    ring.name = 'hero-ground-ring';
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 0.13; // 路面 0.1 之上（Roads ROAD_Y），防 z-fight/被路面盖没
+    this.group.add(ring);
   }
 
   private setPillar(): void {

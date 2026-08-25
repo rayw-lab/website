@@ -60,7 +60,11 @@ export class World {
       this.setGround();
     } else {
       this.setGroundPhysical();
-      this.setCones();
+      // [CC-L1 A2] 锥桶撤出城市首幕（rubric V4/V7「驾校」出戏扣分）：spike 试车
+      // 锥桶只在灰盒档出场（/world-spike/ 锥桶 e2e 闭环被测面不动）；城市取景档
+      //（ritual/city/poi/robot）道具层由 city/StreetProps.ts 霓虹隔离墩承接，
+      // knockedConeCount 自然为 0（CITY 用例经核对零锥桶依赖）。
+      if (this.game.cameraFraming === 'greybox') this.setCones();
     }
   }
 

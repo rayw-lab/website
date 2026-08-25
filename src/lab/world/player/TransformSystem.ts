@@ -32,7 +32,7 @@
 // 埋点：变形完成 game.events.trigger('world-transform', [to])（SRD §9.5）；
 //       首个驾驶输入 trigger('world-drive-start')（实施方案 §1.1 幕④）。
 import * as THREE from 'three/webgpu';
-import { Fn, atan, smoothstep, uniform, uv, vec3 } from 'three/tsl';
+import { Fn, atan, mix, smoothstep, uniform, uv, vec3 } from 'three/tsl';
 import { Events } from '../core/Events';
 import type { Game } from '../core/Game';
 import type { HeroRobot } from '../city/HeroRobot';
@@ -376,7 +376,12 @@ export class TransformSystem {
     this.game.scene.add(this.ringMesh);
   }
 
-  /** 全屏截面光幕：additive 竖幕（青→白渐变 + 扫描线），billboard 面向相机 */
+  /**
+   * 全屏截面光幕：additive 竖幕（[CC-L1 A6] 品牌双色 青→品红 横向渐变 + 扫描线），
+   * billboard 面向相机。白爆抑制（rubric §6 Tier A6「光幕洗帧」扣分项）：
+   * 近白单色 ×1.9 改双色 tint ×1.3 + 峰值不透明度 ×0.7（降 30%）——热交换仍被
+   * 完整遮蔽（四拍时间轴常量零改动），但 car 落地帧不再被余辉洗成灰绿低对比。
+   */
   private setVeil(): void {
     const geometry = new THREE.PlaneGeometry(26, 15);
     this.ownedGeometries.push(geometry);
@@ -395,11 +400,14 @@ export class TransformSystem {
       );
       // 扫描线（沿高度细纹 + 随时间流动）
       const scan = centered.y.mul(34).sub(this.ringSpin.mul(16)).sin().mul(0.12).add(0.88);
-      // 中腰亮带（热交换截面高光）
-      const beltLine = smoothstep(0.5, 0.0, centered.y.abs()).mul(0.6).add(0.55);
-      return vec3(0.62, 0.97, 0.92).mul(falloff).mul(scan).mul(beltLine).mul(1.9);
+      // 中腰亮带（热交换截面高光，[CC-L1 A6] 0.6→0.42 降腰线白热）
+      const beltLine = smoothstep(0.5, 0.0, centered.y.abs()).mul(0.42).add(0.55);
+      // [CC-L1 A6] 品牌双色：左青 → 右品红（Roads ROAD_NEON 同源线性近似）
+      const tint = mix(vec3(0.32, 0.9, 0.8), vec3(0.95, 0.2, 0.5), smoothstep(-0.85, 0.85, centered.x));
+      return tint.mul(falloff).mul(scan).mul(beltLine).mul(1.3);
     })();
-    material.opacityNode = this.veilOpacity;
+    // [CC-L1 A6] 峰值不透明度封顶 0.7（时间轴 0→1→0 曲线不动，整体降 30%）
+    material.opacityNode = this.veilOpacity.mul(0.7);
     this.ownedMaterials.push(material);
 
     this.veilMesh = new THREE.Mesh(geometry, material);
