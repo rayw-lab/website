@@ -772,3 +772,43 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   含可聚焦元素）；`/` BP 96（`font-size`：移动 formFactor 下壳上 <12px 小字）——
   三项修法已写进 baseline 文档 §A.5，归 Loop 1。
 - 测试运行重写的 `docs/spec/assets/e2e-*` 历史截图已按「不提交无关 png」纪律全部还原。
+
+## CC-L1-improve — 视觉 Tier A 五项聚焦 PR（Loop 1，2026-08-25）
+
+- 分支 `cursor/cc-l1-visual-tier-a-1d6f`（base：`main@6e2ad63`，L0 基线 87.2/视觉 51）。
+  单聚焦 PR 纪律：只做 AL0 审计 §8 Tier A1 五项（对应 rubric §6 A1-A6，A4/A5 合并施工）；
+  HUD 面板化（A7）/排版（A8）/湿反射调参（A9）/poster 重拍（A10）留 Loop 2。
+- 交付五件（全程序化 TSL，零新资产、零 gsap、禁令红线未触碰）：
+  1. **A1 天空/雾**：新建 `city/Sky.ts` 反面穹顶（垂直渐变：天顶深蓝紫→地平线
+     青⇄品红光污染辉光带，方位混色与双主轴道路同源；峰值 ≈0.45 线性 < bloom
+     threshold=1 纪律）；雾色 `#0d0c11` 纯黑 → `SKY_FOG_COLOR #101c26` 与辉光带
+     同源（Fog 140/850），远楼渐隐进光污染而非黑幕。
+  2. **A2 锥桶撤场**：`World.setCones` 只在 `cameraFraming==='greybox'` 执行——
+     `/world-spike/` 锥桶 e2e 闭环被测面不动，城市首幕零锥桶；新建
+     `city/StreetProps.ts` 8 只街角霓虹隔离墩替换道具层（双色族 InstancedMesh
+     4 draw call + 单 fixed 刚体 8 cylinder 碰撞体；常亮不占 CITY-03 动画配额）。
+  3. **A3 窗色纪律**：`NeonMaterials.ts` 新增 `WINDOW_PALETTE` 单源（青 55%/品红
+     25%/暖白 20%），楼体 `neonColor` 不再直出窗格（保留招牌带/信标/大堂光带的
+     楼宇身份职责）；剪影层第二色相紫→品红同轴。
+  4. **A4+A5 首幕构图与主体光**：`View.ts` 城市档 theta 45°→25°（峡谷对景）+
+     右移 4.2m 偏轴 1/3 构图 + phi 68°→75°（俯角 22°→15°，天际线入画）+ 斜距
+     18→20m + 慢 yaw ±1.1° 微动（reduced-motion 关）；`HeroRobot.ts` 品红 rim
+     SpotLight（对置机位方位经 -headingY 反旋校正，锥角/距离双限位不污染全城）+
+     接地常亮青环（additive 径向带，随 setVisible 同显隐）。
+  5. **A6 光幕白爆抑制**：`TransformSystem.setVeil` 近白单色 ×1.9 → 品牌双色
+     青→品红 tint ×1.3 + 峰值不透明度 ×0.7；四拍时间轴常量零改动
+     （RING_IN/VEIL_IN/VEIL_OUT/DROP 原值），car_ready 帧对比度保住（帧证）。
+- 帧优先实拍迭代一轮：首拍发现 22° 俯角下天空被楼群顶出画框 → 调 phi/radius/
+  lookAtHeight 后天际线带 + 峡谷层次入画（V1/V2 证据帧
+  `assets/visual-rubric/l1-world-{robot,veil,car}-1440.webp`，veil 中帧补上
+  AL0 条款「V5 动态证据不足」的缺口）。
+- 验证：`pnpm astro check` 0 err；`node scripts/audit-budget.mjs` 全过（world JS
+  79.4KB/900KB）；`pnpm test:visual` 4/4（VIS-01/02 入库基线零 diff——DOM 壳未动，
+  3D 帧变化只落在非像素基线的 VIS-03/04）；**全量 e2e 52/52 零回归**（17.3m，
+  world-spike 灰盒锥桶闭环 WS-E2E-04 照常绿）。
+- 视觉自评 **51 → 59（+8）**：V1 45→56 / V2 52→60 / V3 55→68 / V4 35→44 /
+  V5 58→65 / V6 55（未动） / V7 70→72——单评自评，待 AL1 复核（±5 容差）。
+  综合分 `COMPOSITE_SCORE=89.2`（LHCI 沿用 CI artifact @71e7c59 回填口径）。
+- 交接：Tier A 尾件 A7-A10（HUD 面板化 + mini 楼宇快览、H1 排版、湿反射调参、
+  poster 重拍——重拍必须在前三件落定后）归 Loop 2 →目标 ~62；Tier B（招牌文字
+  /街道灯箱）在 A 复评达标后开工。
