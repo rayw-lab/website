@@ -32,7 +32,7 @@ LHCI 无需另装 Chrome：`run-quality-loop.mjs` 自动把 Playwright Chromium 
 | `pnpm lhci:local` | build + LHCI 全七 URL × 3 轮中位 + 门禁断言（CI ci.yml 同口径） | ~4 min |
 | `pnpm quality:loop:full` | 一键链 full 档：全 e2e 五 project 链 + 全量 LHCI + 综合分（基线登记/审计复算用） | **~23 min 实测**（CC-L0-baseline 首跑登记：build 3s + e2e 52 例 1105s + LHCI 21 run 227s + assert/score ~1s） |
 | `pnpm test:e2e` | 既有全量 e2e（build + 五 project 链） | **~18.5 min 实测**（52 例；CITY/VIS 长挂载用例集中在 world/visual 串行 project） |
-| `pnpm score` | 只读既有工件重算综合分（不跑任何测试） | <1s |
+| `pnpm score` | 只读既有工件重算综合分（不跑测试；fresh clone 须先生成/下载下述输入） | <1s |
 
 常用旗标（`run-quality-loop.mjs`）：`--skip-build/--skip-e2e/--skip-lhci/--skip-score`、
 `--lhci-runs N`、`--visual-score N`（透传）、`--min N`（综合分门槛，低于则退出 1）。
@@ -61,7 +61,9 @@ node scripts/score-loop.mjs --lhci-dir /tmp/ci-lhci     # ①②维改读 CI 工
 输入：`.lighthouseci/lhr-*.json`（每 URL 多轮取分类中位）、`test-results/e2e-results.json`
 （json reporter 常开；`@smoke3d` 标签用例 = 冒烟维度，未执行的 spec 不计入）、视觉 rubric 登记在
 `docs/research/cyber-city-visual-rubric-score.json`（`{"score": 0-100}`，CC-L0-visual 交付后落位）或 `--visual-score N`。
-缺失维度按可用权重归一化并明示覆盖率，不计 0 分。示例输出（末行机读）：
+缺失维度按可用权重归一化并明示覆盖率，不计 0 分。该行为只供诊断；发布/基线登记除
+`COMPOSITE_SCORE` 达标外，还必须核对 `test-results/quality-score.json` 的
+`availableWeight === 1` 且 `missing` 为空，禁止以缺维归一分放行。示例输出（末行机读）：
 
 ```
   综合分 90.5/100（按可用权重 100% 归一化；五维齐套)

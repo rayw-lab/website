@@ -155,7 +155,7 @@ palette 纪律（深蓝底 + 青/品红 + 工业橙，设计提案 §2/§5.2 tok
 
 ## 4. 打分规程（复现协议）
 
-1. **取证 A（框架路径，推荐）**：`pnpm test:visual`（visual-chromium 单 worker）产出 E1 `world-shell-static.png`（VIS-01 壳基线）、E2 `world-esc-menu.png`（VIS-02）、E3 `test-results/visual/world-robot-idle.png`（VIS-03 首幕）、E4 `test-results/visual/world-poi-concept-garage.png`（VIS-04 POI）。注：VIS-01/02 的 `toHaveScreenshot` 基线暂未入库（归 CC-L0-setup/baseline 裁决）——全新 VM 首跑加 `--update-snapshots` 生成本地基线即可，E3/E4 取证图不受影响。
+1. **取证 A（框架路径，推荐）**：`pnpm test:visual`（visual-chromium 单 worker）产出 E1 `world-shell-static.png`（VIS-01 壳基线）、E2 `world-esc-menu.png`（VIS-02）、E3 `test-results/visual/world-robot-idle.png`（VIS-03 首幕）、E4 `test-results/visual/world-poi-concept-garage.png`（VIS-04 POI）。VIS-01/02 的 `toHaveScreenshot` 基线已入库 `e2e/visual/__screenshots__/`，全新 VM 直接比对；只有经审阅确认的有意视觉变更才可用 `--update-snapshots` 更新，E3/E4 继续作为非像素基线的当轮取证图。
 2. **取证 B（手动路径，Pass A 协议，覆盖变形段与移动端）**：`pnpm build && pnpm preview` → headless Chromium 访问 `/website/`——①静态壳 1440×900（domcontentloaded+0.8s）②等 `data-state="ready"` 截首幕 ③Space 触发变形、车落地后截帧 ④375×812 移动壳。软渲染下 RAF 独占主线程会使 screenshot 超时：先派发 `visibilitychange(hidden)` 暂停渲染循环再截（引导脚本生命周期契约）。参考帧存 `assets/visual-rubric/`（shell-static-1440 / world-ready-1440 / world-car-1440 / shell-mobile-375，Pass A 实拍）。
 3. **代码核对**（防「截图偶然」误判；帧疑点必须落到代码定位）：已核对事实见下表，新疑点照此格式补行。
 
