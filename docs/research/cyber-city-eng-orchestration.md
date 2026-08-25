@@ -26,7 +26,7 @@
 |----|------|------|-------|
 | CC-E2 | `cursor/cc-e2-spike-merge-1d6f` | 🚀 | [E2](bc-6b4bd201-0d3c-5790-9df4-e3626b18a5da) |
 | CC-E4 | `cursor/cc-e4-neon-visual-1d6f` | 🚀 | [E4](bc-7d272a74-a4c6-56cb-bcd0-835ef0d67f44) |
-| CC-E6 | `cursor/cc-e6-transform-reveal-1d6f` | 🚀 | [E6](bc-8f8aa756-44ba-5809-a6b1-b0cdeaabe150) |
+| CC-E6 | `cursor/cc-e6-transform-reveal-1d6f` | ✅ | [E6](bc-8f8aa756-44ba-5809-a6b1-b0cdeaabe150) |
 | CC-A2 | 波 2 齐套后审计 | ⏳ | — |
 
 *波 2 启动于波 1 合流完成后。*
