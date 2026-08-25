@@ -546,3 +546,91 @@ e2e 冒烟准备说明（§4.4 第 5 项落地口径）：SRD §11.2 ⑥ 要求�
 - `pnpm test:e2e` 全量回归 → **48 = 42 passed + 6 skipped，exit 0**（10.1 分钟，
   Chrome Headless Shell 151）——既有 42 绿路径零破坏，CITY-E2E-01~06 维持 skip
   （本 Task 红线「不解禁 CITY skip」遵守），与 A2 合流树口径一致。
+
+---
+
+## CC-E9 — POI 十二楼 · Phase 1 先遣（波 3，2026-08-25）
+
+分支 `cursor/cc-e9-poi-areas-1d6f`（base：`cursor/cyber-city-hero-design-1d6f`）。
+上位条款：PRD CITY-07（主题大楼 POI 10–20，首发四主楼）+ CITY-08 Phase 1（触发圈+深链先行，
+完整进站动线归后续）；SRD §12.7.5（深链出生）§12.7.8 出口⑧（?poi= 深链）§9.5（world-poi 埋点名）；
+实施方案 §7 CC-E9 行；folio-gap-and-reuse-report §5.3 B-3/B-5（Area/InteractivePoints 搬运裁决）。
+
+### 交付物
+
+| 文件 | 内容 |
+|------|------|
+| `src/data/world-pois.json` | 新增。POI 单源注册表（schemaVersion 0.1.0）：`pois[]` 12 条只存 `id/buildingId/kind/action(/align)` 外键与交互语义，坐标/标题/霓虹色/触发圈半径/进站 URL 全部经 `buildingId` 引用 `cyber-city-buildings.json`（零硬编码验收口径）；`deepLink` 块声明 `?poi=` 参数契约（`param/slugField/entryUrlField`）；`interaction` 块注入键位（`Keyboard.KeyE`/`Keyboard.Enter`）与键帽字符/提示词；`point.hoverHeight` 标点悬浮高（3.2m，运行时标定） |
+| `src/lab/world/areas/Areas.ts` | 新增（重写自 folio `Areas.js` 81 行）。区域注册表：folio 从 areas.glb 节点前缀实例化 → 本站双 JSON 数据驱动。每条 POI = Area 触发圈（game.zones 圆柱）+ 泊车位霓虹光圈（NeonMaterials 同源 Torus，pulseSpeed 0 常亮不占 CITY-03 循环动画配额，几何按半径去重共享）+ InteractivePoints 标点（楼名双语标签 + E 键帽）。轻量运行期校验（id 重复/外键悬空/数量 <10 告警）；`?poi=` 深链出生改写 `respawns.getDefault()`（heading→rotationY 换算与 E6 M3 同式）+ 光圈提亮 3.4×；无效 slug 告警并原地出生（不阻断）。运动学档兜底：`game.zones` 缺席时按需补建（Zones 零物理依赖，只测 player 距离） |
+| `src/lab/world/areas/Area.ts` | 新增（移植 folio `Area.js` 177 行）。POI 区域基类：setBounding 触发圈（zones 圆柱 enter/leave → boundingIn/Out 事件，folio 原样，数据源从 Blender 参考节点改显式构造参数）；setFrustum 视野剔除改圆-圆相交近似（本站 View 精简版无 quad2 四边形，用既有 optimalArea 外接圆，宁显勿隐）；setObjects 砍除（楼体/碰撞体归 E3 city 系统），留 `addHideable()` 接缝。tick order 10 原样 |
+| `src/lab/world/areas/InteractivePoints.ts` | 新增（移植精简 folio `InteractivePoints.js` 663→~300 行）。标点三件套：TSL 菱形圈（Chebyshev 距离场 + threshold/lineThickness/lineOffset 三 uniform 开合）+ TextCanvas 标签滑入 + 键帽图标（canvas 手绘共享单 mesh，folio 三款 KTX 键图 → 零资产）。状态机 HIDDEN/OPEN/CONCEALED 原样；gsap → 手写缓动（power2/back.in/elastic.out 数值等价）+ tick 驱动 tween 通道表（同通道覆盖 = gsap overwrite:true 语义）。砍除：音效/成就/debug 面板/Gamepad 键图/temporaryHide 全局隐显/逐帧玩家距离扫描（触发圈归 zones）。交互动作 `poiInteract` 只挂 wandering/driving categories——intro 的 Space/CTA 归 Reveal，不抢键 |
+| `src/lab/world/areas/index.ts` | 新增。装配入口 `mountAreas(game, map, options)`，areas/ 唯一对外面 |
+| `src/lab/world/world/TextCanvas.ts` | 新增（移植 folio `TextCanvas.js` 112 行）。Canvas 2D 文字 → THREE.Texture；改动：位置参数→options、width 可缺省 = 自动量宽（folio 需调用方手工 measureText）、padding 左右非对称（键帽让位语义参数化）、补 dispose()。flipY=false 原样（采样侧 v.oneMinus() 翻转，双后端一致前提） |
+| `src/lab/world/inputs/RayCursor.ts` | 新增（移植 folio `RayCursor.js` 219 行）。射线点击/悬停管理（Sphere/Box3/Plane/Mesh 四形状，onEnter/onLeave/onDown/onUp/onClick + 光标态切换）；改动：去 Game 单例（构造注入）、NDC 归一化补 stage 边界偏移（本站画布嵌页面中段，Nipple.ts L199 同款口径）、`rayPointer` 动作 categories 补 driving。只管指针，不含键位 |
+| `src/lab/world/index.ts` | 最小接线：`?poi=` 深链隐含挂城（`?city=1` 同路径）；city 就位后动态 import areas 分包（默认路径零字节纪律与 city 同）；ritual 模式触发圈照挂、深链出生让位首幕锚点（M3 纪律，`deepLinkPoi: null`）；dispose 链补 `areas?.dispose()` |
+| `src/pages/world-spike/index.astro` | `PARAM_ALLOWLIST` 增补 `'poi'`（M4/M6 纪律：壳只透传，引擎吃 `opts.params`） |
+| `e2e/cyber-city.spec.ts` | 仅注释更新（不解 skip）：头部绿灯条件登记 CC-E9 已交付面（?poi= 深链 + world-poi:<id> 埋点在隐藏路径可测） |
+
+### 深链契约（E7/E8 交接）
+
+- **URL 参数**：`?poi=<slug>`，slug = `cyber-city-buildings.json` `buildings[].id`
+  （即 `world-pois.json` `pois[].buildingId`；12 候选见下）。隐含挂城（无需另带 `?city=1`）。
+- **进站 URL 字段**：`buildings[].deepLink`（相对站根，运行时拼 `import.meta.env.BASE_URL`）。
+  `world-pois.json` `deepLink.entryUrlField` 声明了这一间接层——E7 壳/overlay 读 JSON 即可，勿硬编码。
+- **交互**：驶入触发圈（`parkingBay.radius`）→ 标点开态（标签 + E 键帽）→ E/Enter/点按标点 →
+  `game.events.trigger('world-poi', [buildingId])` + `action: 'navigate'` 直跳进站 URL
+  （CITY-08 Phase 1 占位；overlay/View Transition 归 CC-P1，届时把 action 语义升级即可，JSON 不动）。
+- **12 slug**：lingua-tower / voice-pod / agent-nexus / autodrive-lab / concept-garage /
+  work-gallery / insights-archive / about-pavilion / contact-beacon / edge-cloud-hub /
+  workflow-foundry / now-signal。
+- **E7 待办**：`/` 壳 `PARAM_ALLOWLIST` 同样增补 `poi`；**E8 待办**：world-pois.json ⇄
+  buildings.json 外键完整性收进构建期 zod 校验（本波只做运行期 console.warn）。
+
+### 验证记录（全部通过）
+
+- `pnpm astro check` 0 errors 0 warnings；`pnpm build` 18 页全绿；`areas.*.js` 独立懒分包
+  （world-pois.json 打进该包，无独立请求）。
+- 默认路径零回归：无 `?poi`/`?city` 时网络零 `areas`/`world-pois` 请求实测；
+  `cyber-city-buildings.js` 分包出现为既有基线行为（M3 出生单源 World.ts 消费，非 E9 引入）。
+- 浏览器实测（headless Chromium + SwiftShader，preview :4321）：
+  ① `?poi=lingua-tower`：出生 (−28,28) 泊位居中、青色光圈提亮、标点开态标签
+    「多语种方案塔 / Lingua Tower · E 进站」可读；控制台深链日志 + 系统就位日志（12/12）；
+  ② 驶离触发圈 → 标点收合（conceal）+ 光圈仍显；驶回 → boundingIn 重开（pinned 悬停不抢收）；
+  ③ E 键交互（autodrive-lab 圈内）：`world-poi:autodrive-lab` 事件 + 直跳 `/work/` 落地成功；
+  ④ RayCursor 点按标点（lingua-tower）：`world-poi:lingua-tower` + 直跳 `/work/multilingual-cockpit/`；
+  ⑤ 运动学回退档 `?vehicle=kinematic&poi=voice-pod`：zones 兜底补建成立，出生 (28,28) 正确；
+  ⑥ 无效 slug `?poi=not-a-building`：console.warn 候选清单 + 原地出生，零未捕获异常。
+- **已知观察（非 E9 缺陷，留档防后人误判）**：`?poi=voice-pod` 画面底部出现大黑菱形。
+  根因 = E3 裙房基座（`ThemeTowers.createPodiumMaterial` #101018 近黑，w×1.14 方盒）×
+  固定等距相机（View θ=π/4, φ=0.31π）：voice-pod 是全城唯一「楼体在自家泊位相机对角线上」
+  的楼（bay (28,28) → bldg (52,52)），相机落点 ≈(45.6,16.9,45.6) 在楼体积内——幕墙从内侧
+  被背面剔除（所以能看穿墙看到泊位），基座顶面（y=4 轴对齐正方形）从上方可见，θ=π/4 下
+  投影恰为 45° 黑菱形。对照验证：`?poi=autodrive-lab`（楼不在对角线上）画面完全干净。
+  处置建议（三选一，归 E3/E7 排期）：voice-pod 泊位挪出对角线（buildings JSON 数据改动）/
+  相机遮挡淡出（View 系统）/ 基座材质提亮。POI 系统本身各态渲染全部正确。
+
+### folio 移植台账（vendor/README.md commit 41046b5，MIT）
+
+| folio 源 | 行数 | 本站 | 处置 |
+|----------|------|------|------|
+| `Game/World/Areas/Areas.js` | 81 | `areas/Areas.ts` | 重写：glb 节点驱动 → 双 JSON 数据驱动 |
+| `Game/World/Areas/Area.js` | 177 | `areas/Area.ts` | bounding 原样 / frustum 改圆-圆 / setObjects 砍 |
+| `Game/InteractivePoints.js` | 663 | `areas/InteractivePoints.ts` | 精简至 ~300 行（砍单 = gap 报告口径） |
+| `Game/TextCanvas.js` | 112 | `world/TextCanvas.ts` | 全量 + 自动量宽/dispose 增强 |
+| `Game/RayCursor.js` | 219 | `inputs/RayCursor.ts` | 全量 + stage 偏移修正 |
+
+### 资产台账
+
+新增 public 重资产 **0 字节**：键帽图标 canvas 手绘（folio 三款 KTX 键图砍）、标签 TextCanvas
+程序化、菱形圈/光圈纯 TSL/Torus 几何。gsap/howler 零引入（依赖红线 G5）。
+
+### 遗留与交接（CC-P1+）
+
+- **CITY-08 Phase 2**：进站 overlay/View Transition 替换 `location.assign` 直跳；
+  `world-pois.json` `action` 字段留好语义位（navigate/console），升级零 schema 变更。
+- **frustum 精化**：本波圆-圆近似偏保守（宁显勿隐）；若 CC-P1 回捡 folio quad2
+  四边形剔除，需给 View 补 `optimalArea.quad2` 计算（folio View.js L214）。
+- **世界内招牌**：TextCanvas 已就位，楼顶全息招牌（buildings `title.en`）可直接消费——
+  归 E4 Phase B/CC-P1。
+- **触屏键帽**：MODE_TOUCH 下键帽隐藏、点按标点即交互（RayCursor onClick 等价键）；
+  DOM 侧「进站」按钮提示归 E7 壳 HUD。

@@ -10,11 +10,16 @@
 //   vehicle=kinematic 运动学回退档 A/B（SRD §12.7.5「世界永远能开」显式腿）；
 //   city=1    挂载 CC-E3 程序化科技城（动态 import 独立分包，默认零城市字节）；
 //   robot=1   机器人英雄演示挂点（CC-E5）；
-//   ritual=1  首幕全流程（CC-E6：城市+机器人+TransformSystem+Reveal——D4 变形后即开）。
+//   ritual=1  首幕全流程（CC-E6：城市+机器人+TransformSystem+Reveal——D4 变形后即开）；
+//   poi=slug  POI 深链（CC-E9 / SRD §12.7.8 出口⑧）：隐含挂城 + 挂 POI 系统，
+//             出生点改写到对应楼 parkingBay（ritual 模式仅挂 POI，出生锚点归首幕）；
+//             无 ?poi/?city 时 areas 分包零字节（与 city 同纪律）。
 //
 // CC-A2 M5：ritual 模式下 autoReveal=false，mount 不得 await 'revealed'（否则死锁）；
 // 输入放行由 TransformSystem 在 car_ready 帧 intro→driving 热切，ready = 首幕剧本已接管。
 import type { LabInstance, LabMountOptions } from '../contracts';
+import type { Areas } from './areas';
+import type { City } from './city';
 import type { HeroRobot } from './city/HeroRobot';
 import type { TransformSystem } from './player/TransformSystem';
 import type { Reveal } from './world/Reveal';
@@ -66,6 +71,8 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
 
   // CC-E6 首幕剧本：filters 由 Reveal/TransformSystem 接管（intro → driving）
   const ritualRequested = opts.params.get('ritual') === '1';
+  // CC-E9：?poi= 深链 slug（buildings JSON id）——存在即隐含挂城
+  const poiSlug = opts.params.get('poi');
 
   const game = new Game({
     domElement: stage,
@@ -83,6 +90,7 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   let heroRobot: HeroRobot | null = null;
   let transformSystem: TransformSystem | null = null;
   let reveal: Reveal | null = null;
+  let city: City | null = null;
   if (ritualRequested) {
     if (game.visualVehicle) game.visualVehicle.root.visible = false;
 
@@ -95,7 +103,7 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
         import('./world/Reveal'),
       ]);
 
-    const city = mountCity(game);
+    city = mountCity(game);
     const spawn = city.map.world.spawn;
     const spawnRotationY = Math.PI / 2 - (spawn.heading * Math.PI) / 180;
 
@@ -132,15 +140,23 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
     opts.host.querySelector('[data-ws-hint]')?.setAttribute('data-dismissed', 'true');
   }
 
-  // CC-E3：?city=1（ritual 已含城市则跳过）
-  if (opts.params.get('city') === '1' && !ritualRequested) {
+  // CC-E3：?city=1（ritual 已含城市则跳过）；CC-E9：?poi= 深链隐含挂城
+  if ((opts.params.get('city') === '1' || poiSlug !== null) && !ritualRequested) {
     const { mountCity } = await import('./city');
-    mountCity(game);
+    city = mountCity(game);
   }
 
   game.player.events.on('respawn', () => {
     game.objects.resetAll();
   });
+
+  // CC-E9：POI 系统（12 楼触发圈 + 标点 + ?poi= 深链出生）——城市就位才挂载，
+  // 独立分包默认零字节；ritual 模式触发圈照挂、深链出生让位首幕锚点（M3 纪律）
+  let areas: Areas | null = null;
+  if (city) {
+    const { mountAreas } = await import('./areas');
+    areas = mountAreas(game, city.map, { deepLinkPoi: ritualRequested ? null : poiSlug });
+  }
 
   // CC-E5：?robot=1（ritual 已含机器人则跳过）
   if (opts.params.get('robot') === '1' && !ritualRequested) {
@@ -247,6 +263,8 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       game.resume();
     },
     dispose() {
+      areas?.dispose();
+      areas = null;
       reveal?.dispose();
       reveal = null;
       transformSystem?.dispose();
