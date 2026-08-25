@@ -4,8 +4,8 @@
 |----|------|
 | 编排者 | 父代理（只编排） |
 | 模型 | `claude-fable-5-thinking-xhigh` |
-| 设计基线 tip | 波 2 已合流；波 3 齐套待 A3 |
-| 审计 | 波1 A1 **放行**；波2 A2 **有条件放行**（已兑现）；波3 A3 **派发中** |
+| 设计基线 tip | `97b783a`（波 3 已合流） |
+| 审计 | 波1 A1 **放行**；波2 A2 **有条件放行**（已兑现）；波3 A3 **放行** |
 
 ## 波 1 — ✅ 已合流
 
@@ -20,18 +20,24 @@ E1(#16) E3(#14) E5(#17) E10(#15) A1(#18)
 | CC-E6 | `cursor/cc-e6-transform-reveal-1d6f` | #19 | [E6](bc-8f8aa756-44ba-5809-a6b1-b0cdeaabe150) |
 | CC-A2 | `cursor/cc-a2-wave2-audit-1d6f` | #22 | [A2](bc-29b1f726-d13f-504e-a6b7-99c49fea7927) |
 
-## 波 3 — ✅ 齐套 · 审计中
+## 波 3 — ✅ 已合流（E8→E9 + A3）
 
 | ID | 分支 | PR | Agent |
 |----|------|-----|-------|
-| CC-E8 | `cursor/cc-e8-ci-gates-1d6f` | #23 | [E8](bc-d91376b0-98e2-5977-9113-2f6f99fb158a) ✅ |
-| CC-E9 | `cursor/cc-e9-poi-areas-1d6f` | #24 | [E9](bc-a5acf7bd-6424-5c2c-b54e-4ce4ab292ab1) ✅ |
-| CC-A3 | `cursor/cc-a3-wave3-audit-1d6f` | — | [A3](bc-5eebc75c-9bee-5d3b-82fa-dd139040faeb) |
+| CC-E8 | `cursor/cc-e8-ci-gates-1d6f` | #23 | [E8](bc-d91376b0-98e2-5977-9113-2f6f99fb158a) |
+| CC-E9 | `cursor/cc-e9-poi-areas-1d6f` | #24 | [E9](bc-a5acf7bd-6424-5c2c-b54e-4ce4ab292ab1) |
+| CC-A3 | `cursor/cc-a3-wave3-audit-1d6f` | #25 | [A3](bc-5eebc75c-9bee-5d3b-82fa-dd139040faeb) |
 
-文件域互斥成立：E8=CI/scripts；E9=areas/POI。合流建议 **E8 → E9**（几乎无文本冲突；notes 按小节拼接）。
+M10（notes E8→E9 小节拼接）已在合流兑现。
+
+## 波 4 — 🚀 派发中
+
+| ID | 分支 | PR | Agent |
+|----|------|-----|-------|
+| CC-E7 | `cursor/cc-e7-world-shell-1d6f` | — | 🚀 |
 
 ## 下一拍
 
-A3 放行后合流波 3 → 波 4 CC-E7（`/` 壳 + `/home/`；携带 M9、targetHeight 回 9m、voice-pod 裙房观察、manifest 激活拆弹）。
+E7 完成后派 A4 终审 → 合并进 `main`（唯一动用户可见面的原子切换）。
 
-*更新于波3齐套·派 A3。*
+*更新于波3合流·派波4。*
