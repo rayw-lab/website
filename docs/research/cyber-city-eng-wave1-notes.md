@@ -713,3 +713,29 @@ WS-E2E-01 静态合同随归档改述（noindex/标题/H1）。降 ≤1KB 占位
 - **POI 专项 e2e**（触发圈进出/无效 slug/`/?poi=` 深链用例）：归 Phase 1 首个 e2e 批次
   （契约已可测：`/?poi=lingua-tower` 实测出生泊位正确）。
 - **驾驶 e2e 迁移 → world-spike 降占位**：一个版本周期后执行（见归档评估）。
+
+## CC-M11 — A4 M11/M12 清条件（ESC 出口 + 走查表豁免留痕，2026-08-25）
+
+A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行」的两条硬条件在本分支销账：
+
+- **M11 · 八出口④ ESC 招聘方速览（走 A4 (a) 最小实现，未改期）**：`src/pages/index.astro`
+  壳层新增原生 `<dialog data-world-esc-menu>` —— Escape 开合（showModal = 焦点陷阱 +
+  背景 inert + Esc 原生可关，关闭后焦点自动还原），菜单含「招聘方速览 → `/work/`」+
+  「内容首页 → `/home/`」+ 关闭按钮，链接均带 BASE_URL；驾驶提示条追加「Esc 菜单」词条。
+  零框架零动画库（红线不动），纯壳层改动不碰引擎。体积计入 G-A′：壳 HTML+CSS
+  5.1→5.8KB、引导 JS 1.4→1.5KB、合计 38.4→**39.3/90KB gzip**（增量 ≈0.9KB，余量 50.7KB），
+  audit-budget 复跑零 ❌。PRD CITY-09②/SRD §12.7.8 出口④ 原文「必有」保持一致，零修订。
+- **M12 · 走查表豁免留痕（走 A4 (b)，云端无真机 60fps 不伪造读数）**：
+  `human-gate-checklist.md` §5 新增 §5.5 自动化证据摘要（tip `268e99f`、e2e 48/48、
+  LHCI `/` P100 A100 BP96 SEO100 + `/home/` 全 100、G-A′ 39.3/90KB、A4 冒烟四场景 +
+  本 PR ESC 冒烟）+ 总判定行显式 Go：产品负责人延续 `goal-progress-status.md`
+  2026-08-25「人工 Gate 豁免」先例至本路由切换 PR——列清自动化覆盖项
+  （§5.1-1/3/4/6/7、§5.2 ①②③④⑥⑦⑧、§5.3 全部）与仍欠真人回填项（§5.1-2/5 真机计时、
+  §5.1-8 D3 品质线目测、§5.4 真机帧率四行全部留空），豁免范围仅限 Phase 0 合入 main、
+  不免除 Phase 1 真机走查；§5.2④ 行同步标已实现（✅ 冒烟）。
+- **验证**：`astro check` 0 err / `build` 19 页 / `audit-budget` 零 ❌（G-A′ 转硬后仍绿）；
+  ESC 冒烟（Playwright + preview 伺服 dist）：`/` 挂载后按 Escape → 菜单可见（焦点落
+  「招聘方速览」）→ 点击落地 `/work/`，截图留档 `m11-esc-menu.png`。
+- **交接**：ESC 出口的 CITY 专项 e2e 用例（Esc 开合 + 链接直达断言）随 Phase 1 首个
+  e2e 批次（POI 专项用例同批）补入；SRD §11.2「手动画质档常驻 ESC 菜单」属 Phase 1
+  帧率自适应交付面，本次最小菜单不含画质档（口径见 SRD 原文，非缺口）。
