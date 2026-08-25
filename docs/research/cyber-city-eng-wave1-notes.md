@@ -739,3 +739,12 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
 - **交接**：ESC 出口的 CITY 专项 e2e 用例（Esc 开合 + 链接直达断言）随 Phase 1 首个
   e2e 批次（POI 专项用例同批）补入；SRD §11.2「手动画质档常驻 ESC 菜单」属 Phase 1
   帧率自适应交付面，本次最小菜单不含画质档（口径见 SRD 原文，非缺口）。
+
+## CC-L0-visual — 竞品视觉调研 + 85 分 rubric（Loop 0，2026-08-25）
+
+- 分支 `cursor/cc-l0-visual-research-1d6f`（base：`cursor/cc-l0-test-framework-1d6f`）；只读调研 + 文档/JSON，3D 代码零改动。
+- 交付：`cyber-city-visual-rubric.md` **v1.1 双评合议版**（竞品定标锚 6 档含 URL——Bruno folio-2025 95° / Cyber City Orion 88° / Jesse's Ramen 82° 等 + 施工参照 9 条 + 七维 0-100 锚点 + 帧优先复现协议 + Tier A/B/C 提分清单）+ `cyber-city-visual-rubric-score.json`（score-loop 维度④机读位，85° = Awwwards HM 量级标定）。
+- **双评合议 51/100**：本 Task 两轮独立打分同对象——Pass A 帧优先 13 项 41.5（证据帧 `assets/visual-rubric/` 4 帧 + 代码核对，git `2fc0702`）、Pass B 七维锚点初评 59（`pnpm test:visual` 4/4 实跑帧，git `0fe8a4b`）——按帧优先铁律逐维收敛：V1 45 / V2 52 / V3 55 / V4 35 / V5 58 / V6 55 / V7 70（权重 20/20/15/15/15/10/5）。
+- 核心结论：工程系统（bloom/湿反射/变形仪式/色彩单源/降级链）全部帧证成立；欠账在帧内美术——黑天空、spike 锥桶滞留首幕、窗色五彩纸屑、零招牌文字零街道层。综合分敏感度 ≈74.75+0.25×视觉分（当前 ≈87.5，视觉仍是唯一 <60 的轴）。
+- 域外最小改动一处：`e2e/visual/world-visual.spec.ts` JSON import 补 `with { type: 'json' }`——Node 22 ESM 硬性要求，原样在本 VM 报「No tests found」（astro check 0 err 复验，非 3D 代码）。
+- 交接：VIS-01/02 截图基线未入库（全新 VM 首跑 `--update-snapshots`，入库裁决归 CC-L0-setup/baseline）；`node scripts/score-loop.mjs` 已验维度④由「缺失」转 51.0；Loop 1 建议从 rubric §6 Tier A（十件低成本 →~62）起步，A10 poster 重拍永远排批次最后。
