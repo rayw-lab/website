@@ -16,7 +16,7 @@
 | CC-E3 | `cursor/cc-e3-city-procedural-1d6f` | #14 | ✅ | [E3](bc-22457f98-f1cb-5a4a-ba37-7705aaf339e7) |
 | CC-E5 | `cursor/cc-e5-hero-robot-1d6f` | #17 | ✅ | [E5](bc-6b35dde6-1fee-59f7-b5b8-f093f3b4a82c) |
 | CC-E10 | `cursor/cc-e10-e2e-skeleton-1d6f` | #15 | ✅ | [E10](bc-f4696da3-72d6-5848-883b-275ad65207e6) |
-| CC-A1 | `cursor/cc-a1-wave1-audit-1d6f` | — | 🚀 派发中 | — |
+| CC-A1 | `cursor/cc-a1-wave1-audit-1d6f` | — | ✅ **放行**（报告 `cyber-city-wave1-audit.md`：建议合并顺序 E1→E3→E5→E10；合流执行项 M1–M4；波 2 E2∥E4∥E6 可开工） | — |
 
 ## 波次总览
 
