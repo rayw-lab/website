@@ -370,8 +370,9 @@ About 与 Contact 为**低频静态页**（`src/pages/about.astro`、`src/pages/
 │   ├── models/hero-robot/         # [CC-P0·v2.0] 座舱 AI 机器人 GLB（原创块面机甲，Draco ≤800KB，零 IP 元素）
 │   ├── hdri/                      # [P0] 环境贴图
 │   ├── posters/                   # [P0] Demo facade 海报；[P2] + 车漆变体
-│   ├── world/                     # [CC-P0/P1·v2.0] 科技城资产：`/` 壳页 poster、emissive 窗格 atlas（512 单张）、
-│   │                              #      buildings/{id}.glb 大楼近景 GLB（Draco+KTX2，流式 LOD，CC-P1 起）、2D 等距地图 SVG
+│   ├── textures/city/             # [CC-P0·v2.0] 城市窗格共享 atlas（windows-512.ktx2，M 档实例化贴图，§12.7.6）
+│   ├── world/                     # [CC-P0/P1·v2.0] 科技城资产：`/` 壳页 poster、buildings/{id}.glb 大楼 H 档
+│   │                              #      GLB（Draco+KTX2，单楼 ≤220KB，流式 LOD）、2D 等距地图 SVG
 │   ├── downloads/profile-onepager.pdf   # [P1] 一页纸简介（过元数据检查后入库）
 │   ├── robots.txt                 # [P1]
 │   └── favicon / og-default.png   # [P1]
@@ -423,7 +424,8 @@ About 与 Contact 为**低频静态页**（`src/pages/about.astro`、`src/pages/
 │   │       ├── world/             #      World 场景编排：流式 LOD、楼宇注册（读 buildings JSON）、Reveal、Grid、overlay
 │   │       └── utils/             #      maths / ObservableSet / FpsMeter（spike 遗产）
 │   ├── data/
-│   │   ├── cyber-city-buildings.json   # [CC-P0·v2.0] 10–20 栋主题大楼单一事实源（schema 见 §12.7.3）
+│   │   ├── cyber-city-buildings.json   # [已存在·v2.0，CC-MAP1] 主题大楼单一事实源：12 栋在册 +
+│   │   │                          #      预留槽位至 20（schema 见 §12.7.3）
 │   │   └── tts-manifest.json      # [P0] TTS 语种/场景清单（生成管线产物，勿手改）
 │   ├── pages/
 │   │   ├── index.astro            # [CC-P0·v2.0] `/` = 科技城入口壳：poster LCP + 定位语 + 楼宇快览 +
@@ -1087,9 +1089,9 @@ window.load 事件后（关键路径已清空，LCP/FCP 不受 world 分包影�
 | `/` 壳静态段（交互/自动挂载前，不含字体） | ≤ 90KB gzip（HTML+CSS ≤ 35 / 引导 JS ≤ 15 / poster ≤ 40） | `audit-budget.mjs` 壳专项 G-A′ |
 | 首屏可玩 JS | ≤ 500KB gzip（引擎合体完成前维持 Spike 门禁 ≤ 400KB） | G-G 按 manifest `budgetClass:'world'` 实测（chunk 按 slug 命名） |
 | JS 全量（含按需 chunk） | ≤ 900KB gzip | 同上 |
-| 资产首包（首帧可见物：城市 + 机器人 + HDRI） | ≤ 5MB 硬上限；目标 ≈ 2.35MB——科技城净新增 ≤ 2MB（机器人 Draco GLB ≤ 0.8MB + 主题楼低模/emissive atlas ≤ 1.2MB）+ HDRI 0.35MB 复用 | G-G + 资产台账 |
+| 资产首包（首帧可见物：城市 + 机器人 + HDRI） | ≤ 5MB 硬上限；目标 ≈ 2.35MB——科技城净新增 ≤ 2MB（机器人 Draco GLB ≤ 0.8MB + 出生圈 H 档 5 栋 ≤ 0.9MB + 窗格 atlas/杂项 ≤ 0.3MB）+ HDRI 0.35MB 复用 | G-G + 资产台账（CC-MAP1 首包分解） |
 | CarConcept 高清 GLB（3.5MB 豁免复用件） | **不进首包**：挂载后 idle 预取，变形触发前须就位（充能 0.9s 为最后缓冲窗）；计入流式合计 | 资产台账 |
-| 大楼近景 GLB 流式合计（CC-P1 起） | ≤ 12MB（含 CarConcept 预取；单楼 ≤ 1.2MB） | G-G |
+| 大楼 H 档 GLB 流式合计 | ≤ 12MB 总额（含 CarConcept 预取）；H 档单楼 ≤ 220KB、出生圈 5 栋合计 ≤ 900KB（buildings JSON `streaming` 段，§12.7.6） | G-G + 资产台账 |
 | 机器人可见 | ≤ 2.5s（poster 先显，LCP 不等 GLB） | e2e 冒烟计时 |
 | 变形动画 | 1.0–1.2s（充能 0.15 + 光幕 0.35 + 热交换 + 落地 0.4） | 人工走查表 |
 | 加载 → 可驾驶 | ≤ 8s @Fast 4G | e2e 冒烟计时断言 |
@@ -1113,45 +1115,46 @@ window.load 事件后（关键路径已清空，LCP/FCP 不受 world 分包影�
 
 #### 12.7.3 大楼数据 schema：`src/data/cyber-city-buildings.json`
 
-主题大楼是「楼即导航」的单一事实源（AP-8）：3D 楼宇实例、DOM 楼宇快览、noscript 列表、2D 降级地图全部由本文件派生，禁止第二份维护。**10–20 栋可扩展**（PRD v2.0 硬需求）：首版交付 ≥ 10 栋可见地标——其中 ≥ 4 栋 live 主题楼（Lingua Tower 多语种 / Voice Pod 座舱 TTS / Agent Nexus Master Agent / AutoDrive Lab 智驾），其余可为 planned 占位楼——槽位预留到 20；超 20 栋或变更字段语义须修订本节。
+主题大楼是「楼即导航」的单一事实源（AP-8）：3D 楼宇实例、DOM 楼宇快览、noscript 列表、2D 降级地图、停车触发区全部由本文件派生，禁止第二份维护。**10–20 栋可扩展**（PRD v2.0 硬需求）：首版 **12 栋在册 + 8 个预留槽位**（合计封顶 `world.maxBuildingSlots = 20`）；字段字典、五大城区与扩展规则全文见 `docs/research/cyber-city-buildings-map.md`（CC-MAP1，数据文件已随其落库），本节固化其结构契约——变更字段语义或突破 20 槽须同时修订两处。
 
 ```ts
-/** src/data/cyber-city-buildings.json 条目 schema（zod，构建期校验；数组长度 10–20） */
-const cyberCityBuilding = z.object({
-  /** 唯一 id，如 "lingua-tower"；一经发布不变（?poi= 深链与 world-poi 事件引用它） */
-  id: z.string().regex(/^[a-z0-9-]+$/),
-  /** 楼顶全息招牌（中文主行）与英文副行 */
-  name: z.string().max(20),
-  nameEn: z.string().max(30).optional(),
-  /** 主题（决定招牌图标与默认配色语义） */
-  theme: z.enum(['i18n', 'tts', 'master-agent', 'autodrive',
-                 'work', 'insights', 'ai-lab', 'about', 'contact', 'ambient']),
-  /** 霓虹主色（须为 tokens.css 色板在册 hex，CI 校验） */
-  accent: z.string().regex(/^#[0-9a-fA-F]{6}$/),
-  /** 相对十字路口原点的世界坐标 [x, z]（y 由地面决定）与朝向 */
-  position: z.tuple([z.number(), z.number()]),
-  rotationY: z.number().default(0),
-  /** 占地 [宽, 深]（米——生成街区布局与碰撞体）与楼高 */
-  footprint: z.tuple([z.number().positive(), z.number().positive()]),
-  height: z.number().min(10).max(120),
-  /** 流式 LOD 声明（§12.7.6）；near 缺省 = 程序化到底（零资产楼） */
-  lod: z.object({
-    near: z.string().optional(),          // 近景 GLB：public/world/buildings/{id}.glb（Draco+KTX2，≤1.2MB）
-    nearRadius: z.number().default(60),   // 玩家进入该半径才流式拉取近景
-  }).default({}),
-  /** 楼的导航语义：href 为站内路由（check-links 存在性校验）；纯氛围楼可缺省 */
-  link: z.object({
-    href: z.string(),
-    kind: z.enum(['overlay', 'navigate']),  // 轻内容 overlay / 重 Demo 真实跳转（§12.7.1 纪律）
-  }).optional(),
-  /** live = 可交互主题楼；planned = 占位楼（亮灯、招牌灰显、不可进） */
-  status: z.enum(['live', 'planned']),
-  /** 流式预取权重（小者先；四主题楼 = 0–3） */
-  priority: z.number().int().min(0),
-});
+/** src/data/cyber-city-buildings.json 顶层结构（zod 构建期校验；与 CC-MAP1 落库文件一致） */
+interface CyberCityMap {
+  schemaVersion: number;              // 结构版本，破坏性变更 +1
+  world: {
+    units: 'meter';                   // three.js 右手系：+X=东、+Z=南、+Y=上；地面 y=0，position 省略 y
+    headingConvention: string;        // 朝向：度，0=北(-Z)，顺时针递增
+    maxBuildingSlots: 20;             // 扩展硬上限
+    spawn: { position: { x: number; z: number }; heading: number };
+                                      // 出生点 = 十字路口正中 (0,0)，车头朝北（§12.7.5）
+    roads: Road[];                    // 中轴大道（南北）× 霓虹大街（东西），halfWidth/range 生成路面与围栏
+  };
+  streaming: StreamingConfig;         // 三档流式 LOD 参数（§12.7.6 的数据单源）
+  districts: District[];              // 五大城区：language / ai-core / mobility / gallery / civic
+  buildings: Building[];              // 在册大楼（首版 12 栋）
+  reservedSlots: ReservedSlot[];      // 预留槽位 13–20：坐标与主题建议已备，补齐字段即上楼
+}
+
+interface Building {
+  id: string;                         // 唯一 id（kebab-case），一经发布不变（?poi= 深链与 world-poi 事件引用）
+  slug: string;                       // 与 id 一致，供路由/事件复用
+  title: { zh: string; en: string };  // 楼顶全息招牌双语（构建期生成纹理与 DOM 双份产物）
+  role: string;                       // 一句话职能（HUD 楼宇快览副行）
+  category: 'language' | 'ai-core' | 'mobility' | 'gallery' | 'civic';
+  position: { x: number; z: number; rotationY: number };   // 世界坐标（米）
+  footprint: { w: number; d: number; h: number };          // 占地与楼高（生成体块与碰撞体）
+  neonColor: string;                  // 霓虹主色 hex（四主题塔沿用设计提案锁定色标）
+  deepLink: string;                   // 站内路由（check-links 存在性校验）
+  deepLinkStatus: 'live' | 'fallback';   // fallback = 目标页未建，暂落上级索引（CI 放行但须登记）
+  priority: 'P0' | 'P1' | 'P2';       // 交付优先级（P0 = 出生圈四主题塔 + concept-garage 车库）
+  unlockPhase: 0 | 1 | 2;             // 可进入阶段，对应 §12.7.7 CC-P0/P1/P2
+  lodProfile: 'hero' | 'standard' | 'skyline';   // 流式档位画像（§12.7.6）
+  parkingBay: { x: number; z: number; heading: number; radius: number };
+                                      // 楼前停车触发区（进楼判定，CC-P1 启用）
+}
 ```
 
-**守则**：① `link.href` 走 `check-links.mjs` 一致性校验（同 §12.3；指向 Lab Demo 时校验 manifest slug 存在且 `status: live`）；② 近景 GLB 逐楼 ≤ 1.2MB、合计计入流式 12MB 总额（G-G）；③ 招牌文字构建期生成纹理与 DOM 双份产物，源头只有本 JSON；④ 新增一栋楼 = 追加一条 JSON +（可选）一个 GLB，**零代码改动**即出现在世界与全部降级态——这是「10–20 可扩展」的机器保证。
+**守则**：① `deepLink` 走 `check-links.mjs` 一致性校验（同 §12.3；`deepLinkStatus: 'fallback'` 条目允许暂落上级索引，但须在 PR 中登记转正计划）；② H 档单楼 GLB ≤ 220KB、出生圈高清合计 ≤ 900KB（`streaming.spawnHdBudgetKb`），全部计入流式 12MB 总额（G-G）；③ 招牌双语文字构建期从 `title` 生成纹理与 DOM 双份产物，源头只有本 JSON；④ 新增一栋楼 = 认领一个 `reservedSlots` 槽位并补齐 Building 字段（坐标已预分配），**零引擎代码改动**即出现在世界与全部降级态——这是「10–20 可扩展」的机器保证。
 
 #### 12.7.4 TransformSystem：机器人 ↔ 车变形（LAB-17 落地）
 
@@ -1185,30 +1188,33 @@ export interface TransformSystem {
 
 #### 12.7.5 十字路口出生与驾驶（CC-P0 即可开）
 
-- **出生点** = 科技城主十字路口中心（四栋 live 主题楼分居四象限视野内）；机器人站位即出生锚点，变形后车落地同点；`?poi={buildingId}` 深链 → 出生于对应楼前（朝向楼门）；
-- **可驾驶范围（CC-P0）** = 十字路口 + 四条主街（隐形围栏 + 尽头全息路障「CC-P1 开放」）；楼前停车触发进楼（overlay / View Transition）为 CC-P1 交付；
+- **出生点** = buildings JSON `world.spawn`（十字路口正中 `(0,0)`、车头朝北，四主题塔分居四象限视野内）；机器人站位即出生锚点，变形后车落地同点；`?poi={buildingId}` 深链 → 出生于对应楼 `parkingBay`（朝向楼门）；
+- **可驾驶范围（CC-P0）** = 十字路口 + 中轴大道/霓虹大街两条主轴（`world.roads` 的 halfWidth/range 生成路面与隐形围栏，尽头全息路障「CC-P1 开放」）；楼前停车触发区 = 各楼 `parkingBay` 字段，进楼（overlay / View Transition）为 CC-P1 交付（`unlockPhase` 控制）；
 - **物理主路径** = Rapier `DynamicRayCastVehicleController`（folio `PhysicsVehicle` 参数表原封起步，第 6 章 v2.0 转正）；**回退档** = spike 运动学控制器（`player/KinematicFallback.ts`）：Rapier wasm 加载失败/超时 > 10s 顶上，两者对 Player 暴露同一 `PlayerVehicle` 接口——「世界永远能开」；
 - **引擎合体**（执行 `full-entry-world-proposal-tech.md` §4 映射表）：`src/lab/world/` 为唯一引擎；spike 四模块按既定约定并入（carRig → VisualVehicle、ChaseCamera 参数 → View、键位 → Inputs 动作表、锥桶 → World 动态体清单）；`spike/engine.ts` 装配器与 `?impl=` 分叉退役，`/world-spike/` 归档。**施工顺序**（每步独立验证、独立止损）：① PhysicsVehicle + VisualVehicle 上车（`/world-spike/?impl=engine` 原地验证手感）→ ② Grid/MeshGridMaterial/PreRenderer/Reveal + 科技城场景件（`city/`）→ ③ spike 并入、单实现 → ④ 路由切换 + CI 改造（**唯一动用户可见面的原子 PR**，含 `/home/` 平移，可整体回滚）。
 
 #### 12.7.6 城市流式 LOD（10–20 楼的预算解法）
 
-| 层 | 内容 | 资产 | 加载时机 |
-|----|------|------|---------|
-| L2 远景 | 天际线剪影 12–20 楼块：程序化几何 + 随机 emissive 窗格 | 0（代码 + 共享 512 atlas 单张） | 首包 |
-| L1 中景 | 全部在册大楼的程序化体块 + 楼顶全息招牌（构建期纹理 / TextCanvas） | ≈ 0（atlas 复用） | 首包 |
-| L0 近景 | `lod.near` 声明了 GLB 的大楼高模（Draco + KTX2，单楼 ≤ 1.2MB） | 计入流式 12MB | 玩家进入 `nearRadius`，按「行进朝向 × priority」预取（朝哪开、预取哪） |
+三档流式，参数单源 = buildings JSON `streaming` 段（CC-MAP1）：
 
-- **卸载**：驶离 `nearRadius × 1.5` 释放 L0（几何/贴图显存回收），防 10–20 楼常驻爆显存；
+| 档 | 内容 | 资产 | 加载时机 |
+|----|------|------|---------|
+| **S 剪影**（skyline） | 程序化 footprint 挤出 + 随机 emissive 窗格 | 0 网络请求 | 首包（全部在册楼 + 天际线填充块） |
+| **M 中模**（instanced-atlas） | 实例化体块 + 共享窗格 atlas（`public/textures/city/windows-512.ktx2`，512 单张）+ 招牌全息字（构建期纹理 / TextCanvas） | ≈ 0（atlas 一次） | 进入 `mediumRadius`（260m） |
+| **H 高清**（draco-glb） | `lodProfile: 'hero'/'standard'` 楼的高模 GLB（Draco + KTX2，单楼 ≤ 220KB） | 计入流式 12MB | 进入 `hdRadius`（120m）；`prefetchRadius`（160m）内按「行进朝向 × priority」预取（朝哪开、预取哪） |
+
+- **出生圈特例**：`spawnHd` 五栋（四主题塔 + concept-garage 车库）随首包直出 H 档，合计 ≤ 900KB（`spawnHdBudgetKb`）——保证第一帧即「高端炫技」而非剪影（终裁 D3）；
+- **驻留与卸载**：同时驻留 H 档 ≤ 8 栋（`maxResidentHd`）、并发加载 ≤ 2（`maxConcurrentLoads`）；驶离 `hdRadius + hysteresis`（120+20m）降回 M 档并释放几何/贴图显存，防 10–20 楼常驻爆显存；
 - 中景雾 + 飞行光轨粒子 ≤ 800 点、近景雨丝（屏幕空间）——两者均在低配/降档档位关闭；
-- **高端不降级承诺（终裁 D3）的执行方式**：桌面高配走「L0 高模 + 全特效」，预算压力全部由 LOD 分层与流式吃掉，而非砍首包精度冒充交付。
+- **高端不降级承诺（终裁 D3）的执行方式**：桌面高配走「H 档 + 全特效」，预算压力全部由三档流式吃掉，而非砍首包精度冒充交付。
 
 #### 12.7.7 Full Entry 演进表（阶段门禁）
 
 | 阶段 | 交付 | 门禁 |
 |------|------|------|
-| **CC-P0（首屏）** | `/` 入口壳 + 条件自动挂载；城市 ≥ 10 栋可见地标（L1/L2 全量 + ≥ 4 栋 live 主题楼招牌）；机器人 idle；**变形可用**（TransformSystem V1）；**十字路口可驾驶**（WASD 第一拍，Rapier 主路径 + 运动学回退）；`/home/` 平移；CI 三件套改造（G-A/B/C 改 home、G-D 排除根 index、LHCI assertMatrix）；八跳过出口 | §12.7.2 预算总表全量 + 双口径 LHCI 全绿 + G-A′/G-D 改造后全绿 + 降级链人工走查 + Persona 2 门禁（PRD §7.4） |
-| **CC-P1（进楼与全图）** | 四条主街全图开放；楼前停车触发进楼（overlay / View Transition）；L0 近景 GLB 流式上线；`?poi=` 深链出生；2D 等距地图降级态；车↔机器人双向变形 | 流式 12MB 台账 + 帧率降档实测 + 世界→内容转化事件通路验证 |
-| **CC-P2（丰满）** | 手写 WebAudio 音效（引擎/变形/楼宇环境）；V2 预烘焙变形评审；planned 楼逐栋转 live；全内容映射 | 数据阀门：世界→内容转化率 < 25% 冻结本阶段（PRD §7.4 沿用） |
+| **CC-P0（首屏）** | `/` 入口壳 + 条件自动挂载；城市 12 栋在册地标可见（S/M 档全量 + 出生圈 5 栋 H 档直出 + 四主题塔招牌）；机器人 idle；**变形可用**（TransformSystem V1）；**十字路口可驾驶**（WASD 第一拍，Rapier 主路径 + 运动学回退）；`/home/` 平移；CI 三件套改造（G-A/B/C 改 home、G-D 排除根 index、LHCI assertMatrix）；八跳过出口 | §12.7.2 预算总表全量 + 双口径 LHCI 全绿 + G-A′/G-D 改造后全绿 + 降级链人工走查 + Persona 2 门禁（PRD §7.4） |
+| **CC-P1（进楼与全图）** | 两条主轴全图开放；`parkingBay` 停车触发进楼（overlay / View Transition，`unlockPhase: 1` 楼宇解锁）；出生圈外 H 档 GLB 流式上线（hdRadius 进出）；`?poi=` 深链出生；2D 等距地图降级态；车↔机器人双向变形 | 流式 12MB 台账 + 帧率降档实测 + 世界→内容转化事件通路验证 |
+| **CC-P2（丰满）** | 手写 WebAudio 音效（引擎/变形/楼宇环境）；V2 预烘焙变形评审；`reservedSlots` 槽位逐栋上楼（13–20）与 `unlockPhase: 2` 解锁；全内容映射 | 数据阀门：世界→内容转化率 < 25% 冻结本阶段（PRD §7.4 沿用） |
 
 **CC-P0 的「可变形 + 可开」是硬门禁**：变形不可用或十字路口不可驾驶，路由切换 PR（§12.7.5 步④）不得合并——首屏炫技承诺（终裁 D1/D3/D4）不允许打折上线。
 
@@ -1339,9 +1345,9 @@ WebGL 2 科技城（同一世界）
 | `/home/`（宪法首页，v2.0） | 原 HTML 首页五区块的零丢失平移驻地：全额继承四项 ≥ 95 + 200KB + 零 world 字节的「首页宪法」考核口径（AP-9 v2） |
 | 入口壳（entry shell，v2.0） | `/` 的静态 HTML 段（挂载前）：poster LCP + 定位语 + 楼宇快览 + 跳过出口 + 引导脚本 ≤ 15KB；预算 ≤ 90KB gzip（G-A′），同时是加载屏与降级态 |
 | TransformSystem（v2.0） | 机器人↔车变形系统（`src/lab/world/city/TransformSystem.ts`）：三态状态机（robot_idle / transforming / car_ready），V1 遮蔽式变形 1.0–1.2s，变形完即可驾驶（§12.7.4） |
-| buildings JSON（v2.0） | `src/data/cyber-city-buildings.json`：10–20 栋主题大楼的单一事实源（AP-8）——3D 实例、DOM 快览、noscript 列表、2D 地图全部派生自它（schema §12.7.3） |
+| buildings JSON（v2.0） | `src/data/cyber-city-buildings.json`：主题大楼的单一事实源（AP-8，12 栋在册 + 预留槽位至 20）——3D 实例、DOM 快览、noscript 列表、2D 地图、停车触发区全部派生自它（schema §12.7.3，字段字典 `cyber-city-buildings-map.md`） |
 | 十字路口出生（v2.0） | 世界默认出生点 = 科技城主十字路口（四栋 live 主题楼分居四象限）；机器人站位即锚点，变形后车落地同点、WASD 即刻可开（终裁 D4，§12.7.5） |
-| 流式 LOD（v2.0） | 城市三层加载策略：L2 程序化剪影 / L1 程序化体块 + 招牌（首包）/ L0 近景 GLB（进 `nearRadius` 按朝向 × priority 预取，驶离即卸载）——10–20 楼的预算解法（§12.7.6） |
+| 流式 LOD（v2.0） | 城市三档加载策略（参数单源 = buildings JSON `streaming` 段）：S 程序化剪影 / M 实例化体块 + 共享 atlas / H 高清 GLB——出生圈 5 栋 H 档随首包（≤ 900KB），其余进 `hdRadius` 按朝向 × priority 预取、驶离降档卸载（§12.7.6） |
 | POI（v1.1，v2.0 语义更新） | Point of Interest：世界内交互展项（v2.0 主形态 = 主题大楼招牌/楼前触发区）——只做「橱窗」（标题+一句话+证据徽章），深度内容一律 HTML overlay/真实 URL |
 | morph（载具变形，v1.1） | 车（交付载体）↔ 机器人（座舱 AI 人格化）双形态切换，隐喻端云分层；v2.0 由 TransformSystem 执行（§12.7.4）：V1 遮蔽式变形，V2 预烘焙动画。区别于 View Transitions morph（页面元素过渡） |
 | 2D 等距地图（v1.1） | world 的降级态：Blender 等距渲染描线成 SVG 的大楼可点导览图（v2.0 从 buildings JSON 派生）——独立设计资产而非残缺态（AP-5） |
@@ -1362,7 +1368,7 @@ WebGL 2 科技城（同一世界）
 - 总纲与规划：`docs/website-plan/master-plan.md`、`mvp-checklist.md`、`material-security-grading.md`、`positioning-onepager.md`、`case-outlines.md`
 - 调研输入：`docs/research/homepage-redesign-spec.md`、`portfolio-inspiration-tech-showcase.md`、`portfolio-inspiration-github.md`、`portfolio-inspiration-community.md`、`portfolio-inspiration-index.md`、`tts-cockpit-visualization.md`、`3d-car-configurator.md`
 - Hybrid 决策输入（v1.1）：`docs/research/bruno-simon-teardown-adaptation.md`（决策与整合设计）、`bruno-simon-teardown-tech.md`（folio-2025/2019 源码级拆解）、`bruno-simon-teardown-ux.md`、`bruno-simon-teardown-index.md`
-- Full Entry 决策输入（v2.0）：`docs/research/full-entry-world-proposal-tech.md`（门禁改造清单与引擎合体方案）、`full-entry-world-proposal-ux.md`、`full-entry-world-proposal-roadmap.md`、`cyber-city-hero-design-proposal.md`（科技城首屏设计 + 王磊 D1–D6 终裁）、`cyber-city-competitive-research.md`、`cyber-city-hero-fable5-tasks.md`、`folio-gap-and-reuse-report.md`、`bruno-simon-folio-source-teardown.md`、`world-spike-log.md`（spike 双实现与合体约定）
+- Full Entry 决策输入（v2.0）：`docs/research/full-entry-world-proposal-tech.md`（门禁改造清单与引擎合体方案）、`full-entry-world-proposal-ux.md`、`full-entry-world-proposal-roadmap.md`、`cyber-city-hero-design-proposal.md`（科技城首屏设计 + 王磊 D1–D6 终裁）、`cyber-city-competitive-research.md`、`cyber-city-hero-fable5-tasks.md`、`cyber-city-buildings-map.md`（CC-MAP1 大楼目录与字段字典，§12.7.3 数据契约来源）、`folio-gap-and-reuse-report.md`、`bruno-simon-folio-source-teardown.md`、`world-spike-log.md`（spike 双实现与合体约定）
 - 产品需求：`docs/spec/PRD.md`（v2.0 终裁 D1–D6 为本版效力来源）
 - 工程约定：`AGENTS.md`（环境、命令、Lighthouse 测试方法）
 
