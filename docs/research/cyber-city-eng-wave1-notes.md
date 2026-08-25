@@ -239,7 +239,17 @@ pnpm test:e2e  # 独立 worktree 全量验证（E2E_PORT=4620，避开共享 VM 
   W 巡航 ≈36km/h、boost 破 45km/h、直行撞锚点桩 cones>0、R 复位全场清零、
   CDP 真触摸摇杆 nippleActive/progress 遥测就位并驱动车辆、`?vehicle=kinematic` 可开、
   `?city=1&robot=1` 城市 + 机器人同帧渲染正常、控制台零未捕获异常。
-- `pnpm test:e2e` 全量结果见本小节末尾补记（E2E_PORT=4640 独占端口，避开共享 VM 其他 Task）。
+- `pnpm test:e2e` 全量（E2E_PORT=4640 独占端口，避开共享 VM 其他 Task）：
+  **42 passed / 6 skipped（= CITY-E2E-01~06 红灯态不动）/ 0 failed，15.1m，exit 0**——
+  既有 42 用例零回归达成。抽样读数（SwiftShader 软渲染下界）：WS-E2E-03 boost 峰值
+  57.9km/h（阈值 45）；WS-E2E-04 直线锚点桩第 1 轮命中（knocked=1）；WS-E2E-09 摇杆
+  满推 progress=1 驱动至 30.9km/h；WS-PERF-01 软门禁照常 OBS 登记（p95 766.6ms，
+  ≈1.5fps 下界，不阻断）。
+- 截图纪律：e2e-batch1 无关截图（home/tts/car）运行再生成后已还原未入库；
+  e2e-integration 的 world_* 截图随场景实变（出生 (0,0)/新锥桶阵/3D 摇杆）更新入库，
+  新增 `world_kinematic_fallback.png`（WS-E2E-11 改测回退腿）；退役腿旧图
+  `world_engine_impl_ready.png` 保留（历史批次报告 `e2e-test-report-integration.md`
+  引用它，该报告为既往战役存档不追改）。
 
 ### 交接点（波 2 同僚 + 波 3）
 
