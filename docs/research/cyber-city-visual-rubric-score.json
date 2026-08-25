@@ -1,59 +1,59 @@
 {
   "schemaVersion": "1.1.0",
-  "score": 59,
+  "score": 62,
   "target": 85,
-  "subject": "Loop 1 `/` Full Entry 首幕 + 变形序列（分支 cursor/cc-l1-visual-tier-a-1d6f：视觉 Tier A 五项——天空/雾、锥桶撤场、窗色纪律、首幕构图+rim、光幕白爆抑制）",
+  "subject": "Loop 2 `/` Full Entry 首幕 + 变形序列 + 壳/HUD（分支 cursor/cc-l2-visual-a-tail-1d6f：Tier A 尾件 A7-A10——HUD 霓虹面板化+mini 楼宇快览、H1/标签排版强化、湿反射可见性、poster 重拍三处同吃）",
   "rubric": "docs/research/cyber-city-visual-rubric.md",
   "scoredAt": "2026-08-25",
-  "scoredBy": "CC-L1-improve 单评自评（帧优先协议 A 实跑帧 + 变形序列手动取证；待 AL1 独立复核，±5 容差纪律）",
+  "scoredBy": "CC-L2-improve 单评自评（帧优先协议 A 实跑帧 + 5-10s 固定脚本录屏；待 AL2 独立复核，±5 容差纪律）",
   "evidence": {
-    "protocolA": "pnpm test:visual 4/4（VIS-01~04，2.6m）：test-results/visual/world-robot-idle.png / world-poi-concept-garage.png 当轮取证帧",
-    "protocolB": "pnpm build && pnpm preview 手动变形序列三帧（robot_idle / 光幕中帧 / car_ready），存 docs/research/assets/visual-rubric/l1-world-{robot,veil,car}-1440.webp——补 AL0 条款「V5 动态证据只有前后静帧」的中帧证据",
-    "crossChecks": "city/Sky.ts 穹顶渐变+地平线辉光（<1 bloom 纪律）· World.ts setCones 仅 greybox 档 · city/StreetProps.ts 8 只隔离墩（2 色族+cylinder 碰撞）· NeonMaterials.ts WINDOW_PALETTE 三族单源 · View.ts phi 75°/theta 25°/lateral 4.2m/yaw ±1.1° · HeroRobot.ts rim SpotLight 190 + 接地常亮青环 · TransformSystem.ts 光幕双色 ×1.3 + 峰值不透明度 ×0.7 · e2e 52/52 零回归"
+    "protocolA": "pnpm test:visual 4/4（VIS-01~04，2.5m；VIS-01 壳基线经审阅 --update-snapshots，VIS-02 在 2% 容差内零 diff）：test-results/visual/world-robot-idle.png / world-poi-concept-garage.png 当轮取证帧",
+    "protocolB": "pnpm build && pnpm preview 固定脚本录屏 118.8s 墙钟全程（robot_idle 62.2s→Space 68.1s→transforming 73.0s→car_ready 113.8s），变长加速出 9.4s 序列 docs/research/assets/visual-rubric/l2-transform-seq.mp4——销 AL1 复评门「V5 只有关键帧」条款；关键帧 l2-world-{robot,veil,car}-1440.webp + 壳双端 l2-shell-{static-1440,mobile-375}.webp",
+    "crossChecks": "index.astro HUD 面板化（1px 描边+8% 填色 --neon-* 单源 token）+ hud-city 5 栋 hero 快览（lodProfile=hero 单源）+ visibility 门控销 aria-hidden-focus + 全壳小字号 ≥12px · Grid.ts puddleMask 0.3/0.64 + 反射 0.8/0.18（峰值系数 0.98<1，bloom threshold=1 不动）+ 网格线强 0.3/0.45 · poster 重拍 34.5KB/24.2KB ≤40KB + og:image 首接 · e2e 52/52 零回归"
   },
   "dimensions": {
     "v1FirstFrame": {
       "label": "首幕构图与第一印象",
       "weight": 0.2,
-      "score": 56,
-      "evidence": "l1-world-robot 帧：偏轴 1/3 构图（theta 25°+右移 4.2m）+ 峡谷缺口对景 + 四层纵深（前景斑马线/主体+接地环/背景楼群/天空渐变带）+ 锥桶噪音清除——落 50-65 段「有意识构图且要素齐」；扣分 = poster 仍为 L0 旧帧（A10 排下批）、远层楼体暗色块层次仍扁"
+      "score": 59,
+      "evidence": "l2-world-robot 帧：L1 偏轴 1/3 构图不动，新增地面反射层使前景多一层可读纵深；poster 三处重拍（L0 旧帧锥桶/杂色窗彻底出库，desktop 34.5KB + mobile 9:16 竖版构图销「移动 poster 无构图」判词）——50-65 段内上修 +3；扣分 = 远层楼体仍大色块、右半画面依旧偏空（B4 剪影密度未做）"
     },
     "v2LightingMaterial": {
       "label": "光照·材质·后处理",
       "weight": 0.2,
-      "score": 60,
-      "evidence": "天空/大气首次有经营（穹顶渐变+地平线青⇄品红辉光带+雾色同源 #101c26，首幕帧内可见）+ 机器人品红 rim 帧内可读（头顶/拳面）+ bloom threshold=1 纪律不破 + POI 帧倒影仍在——50-65 段上沿；扣分 = 首幕机位湿反射仍弱（A9 未做）、雾单层、无 IBL/AO、材质程序感"
+      "score": 64,
+      "evidence": "A9 落地销 L1 判词「首幕机位湿反射仍弱」：l2-world-robot 帧右侧广场楼体倒影/路缘霓虹反射清晰入画，机器人脚下品红 rim 溢光落进湿地（帧优先实证）；bloom threshold=1 纪律不破（反射项峰值系数 0.98<1）+ 棋盘格弱化让地面读作湿沥青而非发光网格——50-65 段上沿 64；扣分 = 雾仍单层、无 IBL/AO、材质程序感（Tier B/C）"
     },
     "v3PaletteAtmosphere": {
       "label": "色彩体系与氛围一致性",
       "weight": 0.15,
-      "score": 68,
-      "evidence": "WINDOW_PALETTE 三族单源（青 55/品红 25/暖白 20）替换 12 楼 neonColor 直出——绿红紫白同帧互撞清除（l1-world-robot 帧实证）；剪影层紫→品红同轴、天空辉光/光幕/隔离墩全部落品牌双轴——升 70-85 段下沿的「同帧色相受控」，扣分 = 明暗节奏/重点色运营缺席、楼宇信标仍多色"
+      "score": 70,
+      "evidence": "A8 补齐 DOM↔3D↔poster 三面同源最后一环：壳内霓虹全部收敛 --neon-cyan/--neon-magenta 单源 token（与 Roads ROAD_NEON 字面同值），新 poster 内嵌三族窗色纪律（旧 poster 绿/紫杂色出库）——「palette 单源落地+DOM↔3D 同色系」触 70-85 段下沿 70；扣分 = 明暗节奏/重点色面积运营仍缺"
     },
     "v4SceneDensity": {
       "label": "场景密度与世界可信度",
       "weight": 0.15,
       "score": 44,
-      "evidence": "出戏道具清除（锥桶撤场）+ 首个叙事一致道具层（8 只街角霓虹隔离墩，双色族对应双轴）+ 窗闪/信标/全息路障微动仍在——30-45 段顶（道具不再缺席/出戏）；扣分 = 3D 内仍零可读招牌文字（Tier B1）、道具稀薄、无氛围粒子/车流"
+      "evidence": "本 PR 零场景内容增量（A7-A10 均为 DOM/调参/资产），湿反射只提升已有物的可见性不新增密度——44 维持 L1 自评不动；3D 内仍零可读招牌文字、道具稀薄、无氛围粒子/车流（Tier B1/B2/B4 主战场，AL1 建议的下一批）"
     },
     "v5MotionTransition": {
       "label": "动效与转场工艺",
       "weight": 0.15,
       "score": 65,
-      "evidence": "变形四拍完整不变（e2e CITY-E2E-03/05 零回归）+ 光幕白爆抑制后 car_ready 帧对比度保住（l1-world-veil/car 帧对照：双色 tint 下建筑/斑马线仍可读，灰绿洗帧消除）+ 相机首次有微动（yaw ±1.1° 慢呼吸，reduced-motion 关）——「转场保画面对比度」达成，触 70-85 段门槛但镜头运动仍仅微量（B5 变形运镜未做），取 65"
+      "evidence": "动效本体零改动（B5 变形运镜留后），65 维持；AL1 复评门要求的时间维证据补齐——l2-transform-seq.mp4 固定脚本 9.4s（robot_idle 呼吸灯→Space→充能→双色光幕→热交换→easeOutBack 落地→car_ready 提示，veil 段楼体/斑马线全程可读，car 帧无灰绿余辉），中帧 l2-world-veil-1440.webp 双色光幕+车体空中同帧"
     },
     "v6UiHudIntegration": {
       "label": "DOM UI/HUD 视觉整合",
       "weight": 0.1,
-      "score": 55,
-      "evidence": "本 PR 零 HUD 改动（A7/A8 留 Loop 2）：静态壳 cover 语言完整、挂载后素面顶栏+恒 0 速度表/移动 poster 裁切维持 L0 判定——55 不变"
+      "score": 70,
+      "evidence": "A7+A8 主攻维：挂载后 HUD 全件霓虹面板化（速度表/回到路口/提示丸/backend 徽标 1px 描边+8% 填色，l2-world-robot 帧实证）+ 右下 5 栋 hero mini 快览常驻（销 A4 观察⑨「挂载后退化素面/快览随 cover 消失」）；H1 字距+双层辉光、全壳字号 ≥12px、发光描边体系贯穿挂载前后（l2-shell-static vs l2-world-robot 同语言）+ 移动竖版 poster——「HUD 与 3D 同族语言+排版精修」触 70-85 段下沿 70；扣分 = 系统字体栈无品牌级选型、速度表 robot 态恒 0（观察 F 装饰化留 Tier C）"
     },
     "v7ThematicOriginality": {
       "label": "主题原创性与叙事贴合",
       "weight": 0.05,
       "score": 72,
-      "evidence": "「驾校锥桶」叙事互斥项清除，道具层（隔离墩+接地能量环）回归「机甲站岗/变形落点」主叙事——70-85 段内小幅上修；扣分 = 楼=产品线仍靠 DOM 自明、城市面密度不足以脱离通用霓虹城"
+      "evidence": "72 维持：mini 快览让「楼=产品线」在驾驶态持续可见（此前仅 cover 态），但仍是 DOM 面而非 3D 内载体（B1 招牌文字才是实质增量）；城市面密度不变"
     }
   },
-  "notes": "自评总分 59/100 = 56×.20+60×.20+68×.15+44×.15+65×.15+55×.10+72×.05=58.85→59（对 L0 合议 51 = +8，落 CC-L1 预期区间 +8~15 下沿；未达 Tier A 满档 ~62 主因 A7-A10 四件留 Loop 2：HUD 面板化/排版强化/湿反射调参/poster 重拍）。帧优先核对：五项改动全部有帧内可见证据（穹顶/辉光带、锥桶清除+隔离墩、三族窗色、偏轴+rim+接地环、双色光幕+car 帧对比度），无「代码在帧不在」项。综合分敏感度 ≈74.44+0.25×视觉分 → 59 分 ≈89.2（L0 基线 87.2 → +2.0）。提分路径余量见 rubric §6：A7-A10 收尾 →~62，Tier B →~70。"
+  "notes": "自评总分 62/100 = 59×.20+64×.20+70×.15+44×.15+65×.15+70×.10+72×.05=62.05→62（对 L1 自评 59 = +3、对 AL1 独立 57 = +5；达 rubric §6 Tier A 完成档 ~62 预期）。增量全部来自 A7-A10 四件收尾：V6 55→70（主攻维，HUD 面板化+排版+快览常驻）、V2 60→64（湿反射主机位入画）、V1 56→59（poster 三处重拍）、V3 68→70（单源 token 补最后一环）；V4/V5/V7 诚实持平（本 PR 零场景内容/零动效改动）。帧优先核对：四件全部有帧内可见证据（HUD 面板/快览、右侧广场倒影、新 poster 双端、录屏时间维），无「代码在帧不在」项。综合分敏感度 ≈74.44+0.25×视觉分 → 62 分 ≈89.9。提分路径余量见 rubric §6：Tier B B1/B2/B4（V4 主战场）→~70。"
 }

@@ -812,3 +812,50 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
 - 交接：Tier A 尾件 A7-A10（HUD 面板化 + mini 楼宇快览、H1 排版、湿反射调参、
   poster 重拍——重拍必须在前三件落定后）归 Loop 2 →目标 ~62；Tier B（招牌文字
   /街道灯箱）在 A 复评达标后开工。
+
+## CC-L2-a-tail — 视觉 Tier A 尾件 A7-A10 聚焦 PR（Loop 2 第一段，2026-08-25）
+
+- 分支 `cursor/cc-l2-visual-a-tail-1d6f`（base：`main@8f7c86d`，L1 合入基线 89.2/
+  视觉 59、AL1 独立 57）。单聚焦 PR 纪律：只做 rubric §6 A7-A10 四尾件 +
+  AL1 复评门条款（§6-2 时间维证据）；Tier B B1/B2/B4 留下一 Task。
+- 交付四件（A7/A8 纯 DOM/CSS 零引擎改动，A9 uniform 级调参，A10 资产重拍）：
+  1. **A7 HUD 霓虹面板化 + mini 楼宇快览**：`index.astro` 挂载后 HUD 全件面板化
+     （1px 霓虹描边 + 8% 填色，设计提案 §5.2——速度表/回到路口/提示丸/backend
+     徽标同族）；右下常驻 5 栋 hero 楼 mini 快览（`lodProfile=hero` 单源筛选 =
+     `streaming.spawnHd` 五钉，真实 URL 直跳）——销 A4 观察⑨「挂载后退化素面
+     /快览随 cover 消失」。附带销 baseline §A.5-2：HUD 容器 aria-hidden →
+     visibility 门控（隐藏态不可聚焦不进 AT，`aria-hidden-focus` 违例清除，
+     ready 后回到路口/快览键盘可达）。
+  2. **A8 排版强化（零 webfont，G-A′ 红线内）**：霓虹色单源 token
+     `--neon-cyan/--neon-magenta/--neon-ink`（与 Roads `ROAD_NEON` 字面同值），
+     壳内全部霓虹描边/辉光/填色经 `color-mix` 取自 token；H1 字距 0.01→0.06em +
+     暗投影+青晕双层辉光；顶栏 brand/nav/backend、chip/pillars 同族化；
+     壳内小字号全部提至 ≥0.75rem/12px（销 §A.5-3 BP font-size 审计项）。
+  3. **A9 湿反射可见性**：`Grid.ts` 水洼掩码 smoothstep 0.42/0.78→0.3/0.64
+     （覆盖率 ~18%→~38%）+ Q0 反射强度 0.55/0.14→0.8/0.18（峰值系数 0.98<1，
+     bloom threshold=1 纪律不动）+ Q1 sheen 0.12→0.2；网格线强 0.55/0.8→0.3/0.45
+     （棋盘格弱化——地面读作湿沥青而非发光网格）。首幕主机位帧内可见（帧证）。
+  4. **A10 poster 重拍（最后执行）**：A1-A9 落地后按 rubric §4 协议 B 重截
+     robot_idle 主帧（canvas 纯帧，DOM 覆盖层隐藏）——desktop 1280×720 34.5KB +
+     **新增** mobile 9:16 竖版 720×1280 24.2KB（`<picture>` 断点单选，销「移动
+     poster 无构图」）+ og:image 首接（三处同源同帧）。壳静态段合计 67.3KB ≤90KB。
+     坑：`<picture>` 需自身绝对定位脱流——`display:contents` 方案会让空
+     `<source>` 变成 grid item 抢占 `.cover` 首列（实拍翻版发现，已修）。
+- AL1 复评门条款销账：固定脚本录屏 118.8s 墙钟全程（robot_idle 62.2s → Space
+  68.1s → transforming 73.0s → car_ready 113.8s，SwiftShader 时间膨胀 ×~39），
+  变长加速出 **9.4s** 序列 `assets/visual-rubric/l2-transform-seq.mp4`（idle 呼吸
+  →充能→双色光幕→热交换→easeOutBack 落地→提示丸，veil 段楼体/斑马线全程可读）；
+  关键帧 `l2-world-{robot,veil,car}-1440.webp` + 壳双端 `l2-shell-*.webp` 入库。
+- 验证：`pnpm astro check` 0 err；`node scripts/audit-budget.mjs` 全过（壳 67.3KB
+  /90、world JS 79.4KB/900）；`pnpm test:visual` 4/4（VIS-01 壳基线经审阅
+  `--update-snapshots`——A8 排版 + A10 新 poster 的有意变更；VIS-02 在 2% 容差内
+  零 diff）；**全量 e2e 52/52 零回归**（17.8m）；测试重写的 `docs/spec/assets/e2e-*`
+  历史截图照例还原不提交。
+- 视觉自评 **59 → 62（+3；对 AL1 独立 57 = +5）**：V6 55→70（主攻维）/ V2 60→64 /
+  V1 56→59 / V3 68→70 / V4 44、V5 65、V7 72 诚实持平（本 PR 零场景内容/零动效
+  改动）——达 rubric §6 Tier A 完成档 ~62。综合分 `COMPOSITE_SCORE=89.9`
+  （LHCI 沿用 CI artifact @8f7c86d 回填口径 + 当轮 e2e JSON，五维齐套）；
+  §A.5-2/3 两项 LHCI 修法落地后 `/` A11y/BP 有望在本 PR CI 上修（不预支计分）。
+- 交接：Tier B 主批 B1/B2/B4（5 栋 hero 可读招牌、沿街灯箱/灯杆 6-10 件、剪影
+  密度/高度方差）按 AL1 §6-3 开工，V4=44 仍是最低维；B3/B5 后置（动画配额与
+  运镜门禁先裁决）。
