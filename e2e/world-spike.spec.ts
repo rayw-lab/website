@@ -1,16 +1,34 @@
-// /world-spike/ —— 3D 智能座舱试验场（公开路由）的完整交互回归（integration 批次）。
-// 覆盖：e2e-test-plan §5.7（WS-E2E-01 ~ 10）。
+// /world-spike/ —— 灰盒工程验证场的完整交互回归（integration 批次）。
+// 覆盖：e2e-test-plan §5.7（WS-E2E-01 ~ 11）。
+//
+// CC-E7 归档重标定：路由原子切换后本页归档为工程验证入口（noindex,follow +
+// canonical → `/` + 剔出 sitemap），正式体验入口 = `/`（Full Entry 科技城壳）。
+// 驾驶/物理契约与被测面不变（引擎层单实现）；仅 WS-E2E-01 的静态壳合同
+// （robots/标题/H1 文案）随归档改述。待驾驶用例迁往 `/?...` 参数路径后本页降占位
+// （Phase 1 排期，见页面头注）。
+//
+// CC-E2 合流重标定：被测对象 = 引擎层单实现（folio Game loop + Rapier 物理车），
+// spike 装配器与 ?impl= 分叉已退役。随之重标定的断言口径：
+//   - 出生点 = 城市地图 world.spawn (0,0)（审计 M3；原 spike 出生 z=55）；
+//   - 速度 = 物理车真实 km/h（常态软限速 ≈36km/h = folio topSpeed 5 × scale 2；
+//     原 spike 运动学 65km/h 阈值同步下调）；
+//   - 锥桶 = Rapier 动态体 16 只（World.knockedConeCount 物理真值：位移>0.6m
+//     或倾角>56°）；出生正前方 -Z 直线上有确定性锚点桩 (0,-4.5)/(0,-9)；
+//   - 触屏摇杆 = 引擎 Nipple（随车 3D 环，非 DOM）——断言走遥测
+//     nippleActive/nippleProgress，不再查 .ws-nipple-base；
+//   - WS-E2E-11 从「?impl=engine 灰盒腿」改测「?vehicle=kinematic 运动学回退档」。
 //
 // 与 lab facade 页的关键差异（断言口径随之不同）：
 //   - 无自动挂载：规格要求「确认进入后才加载」——点击 [data-ws-start] 前零 world 字节；
-//   - 无 URL 回写：壳页只读入参（?gl=），不做 history.replaceState；
-//   - 测试钩子：window.__worldSpike（state/fps/info/backend，Spike 专用，dispose 时删除）。
+//   - 无 URL 回写：壳页只读白名单入参（gl/vehicle/city/robot），不做 history.replaceState；
+//   - 测试钩子：window.__worldSpike（state/fps/info/backend/vehicle，dispose 时删除）。
 //
 // 环境口径（承接 batch 1 §3 环境事实）：
 //   - headless Chromium 无 navigator.gpu → 默认腿即「WebGPU→WebGL 2 自动回退」链路；
-//   - SwiftShader 软渲染本场景 ~1fps（决策记录 §3 实测），物理 dt clamp 1/20 →
-//     世界时间以 ~5% 速率推进（慢动作而非隧穿）。驾驶用例的等待时长按此标定，
-//     真实按键事件（CDP）+ 遥测轮询闭环，任何用例不因环境慢而降级为 skip。
+//   - SwiftShader 软渲染 ~1fps（决策记录 §3 实测），Ticker maxDelta=1/30 +
+//     车辆控制器 dt=min(1/60, 30 帧均值) → 世界时间以极低速率推进（慢动作而非隧穿）。
+//     驾驶用例的等待时长按此标定，真实按键事件（CDP）+ 遥测轮询闭环，
+//     任何用例不因环境慢而降级为 skip。
 import { test, expect, devices, type Page } from '@playwright/test';
 import { appendFileSync, mkdirSync } from 'node:fs';
 import { u, expectImageLoaded, shotIntegration } from './helpers';
@@ -36,6 +54,8 @@ interface WorldState {
   speedKmh: number;
   grounded: boolean;
   cones: number;
+  nippleActive: boolean;
+  nippleProgress: number;
 }
 
 /** 读取 __worldSpike.state()（挂载后才可用） */
@@ -95,12 +115,13 @@ function logMetrics(label: string, data: Record<string, unknown>): void {
 }
 
 test.describe('world Spike 灰盒试验场', () => {
-  test('WS-E2E-01 壳页静态合同：index,follow、标题、逃生链接、poster、点击前零 world 字节', async ({ page, request }) => {
-    // SSR 合同（不受客户端时序影响）；路由已转公开：robots 必须允许收录
+  test('WS-E2E-01 壳页静态合同：noindex+canonical→/、标题、逃生链接、poster、点击前零 world 字节', async ({ page, request }) => {
+    // SSR 合同（不受客户端时序影响）；CC-E7 归档：noindex,follow + canonical 指向 `/`
     const res = await request.get(PAGE_URL);
     expect(res.status(), 'world-spike 路由必须已交付（integration 合流后不允许 404）').toBe(200);
     const html = await res.text();
-    expect(html).toMatch(/<meta name="robots" content="index, follow"\s*\/?>/);
+    expect(html).toMatch(/<meta name="robots" content="noindex, follow"\s*\/?>/);
+    expect(html).toMatch(/<link rel="canonical" href="[^"]*\/website\/"\s*\/?>/);
     expect(html).toContain('data-ws-host');
     expect(html).toContain('data-state="idle"');
     expect(html).toContain('进入试验场');
@@ -114,10 +135,10 @@ test.describe('world Spike 灰盒试验场', () => {
     });
 
     await page.goto(PAGE_URL);
-    await expect(page).toHaveTitle(/3D 智能座舱试验场/);
-    await expect(page.locator('h1')).toHaveText(/3D 智能座舱试验场/);
+    await expect(page).toHaveTitle(/灰盒工程验证场/);
+    await expect(page.locator('h1')).toHaveText(/灰盒工程验证场/);
 
-    // 逃生链接（降级链的静态壳级出口）：跳过 3D 返回首页，href 带 base
+    // 逃生链接（降级链的静态壳级出口）：指向 `/` 科技城正式入口，href 带 base
     await expect(page.locator('.ws-lede a')).toHaveAttribute('href', `${u('/')}`);
 
     // 覆盖层合同：poster 实际解码、启动按钮可见、HUD 淡出隐藏（opacity 0）
@@ -173,13 +194,21 @@ test.describe('world Spike 灰盒试验场', () => {
     expect(size.w).toBeGreaterThan(0);
     expect(size.h).toBeGreaterThan(0);
 
-    // 遥测钩子合同：state/fps/info 全部可读，出生点与场景复杂度合理
+    // 遥测钩子合同：state/fps/info 全部可读，出生点与场景复杂度合理。
+    // 出生点 = 城市地图 world.spawn (0,0)（M3 合流后单一事实源）；默认腿 = 物理车
     const telemetry = await page.evaluate(() => {
       const ws = (window as any).__worldSpike;
-      return { backend: ws.backend, state: ws.state(), fps: ws.fps(), info: ws.info() };
+      return {
+        backend: ws.backend,
+        vehicle: ws.vehicle,
+        state: ws.state(),
+        fps: ws.fps(),
+        info: ws.info(),
+      };
     });
+    expect(telemetry.vehicle, '默认腿必须是 Rapier 物理车').toBe('physics');
     expect(Math.abs(telemetry.state.x)).toBeLessThan(1);
-    expect(Math.abs(telemetry.state.z - 55)).toBeLessThan(1);
+    expect(Math.abs(telemetry.state.z)).toBeLessThan(1);
     expect(telemetry.state.cones).toBe(0);
     expect(telemetry.info.drawCalls).toBeGreaterThan(10);
     expect(telemetry.info.triangles).toBeGreaterThan(10_000);
@@ -195,9 +224,11 @@ test.describe('world Spike 灰盒试验场', () => {
     const spawn = await readState(page);
 
     try {
-      // ① W 前进：速度爬升 + 持续位移（真实 CDP keydown，非合成事件）
+      // ① W 前进：速度爬升 + 持续位移（真实 CDP keydown，非合成事件）。
+      //   物理车常态巡航 ≈36km/h（folio topSpeed 5 × Ticker.scale 2）——阈值 25 与
+      //   spike 时代一致，但此处证明的是 Rapier 链路（意图 → 引擎力 → 位姿回读）
       await page.keyboard.down('w');
-      const accel = await pollState(page, (s) => s.speedKmh > 25, 90_000);
+      const accel = await pollState(page, (s) => s.speedKmh > 25, 120_000);
       expect(accel.ok, `W 持续按住后应超过 25km/h（实测 ${accel.state.speedKmh.toFixed(1)}km/h）`).toBe(true);
       const moved = await pollState(
         page,
@@ -206,30 +237,31 @@ test.describe('world Spike 灰盒试验场', () => {
       );
       expect(moved.ok, '持续按 W 应产生 >5m 真实位移').toBe(true);
 
-      // ② 空格刹车：刹停（decel 30m/s²）
+      // ② 空格刹车：刹停（brake=1 × brakeAmplitude 35，folio 主刹）
       await page.keyboard.up('w');
       await page.keyboard.down(' ');
       const braked = await pollState(page, (s) => s.speedKmh < 5, 60_000);
       expect(braked.ok, `空格应能刹停（实测 ${braked.state.speedKmh.toFixed(1)}km/h）`).toBe(true);
       await page.keyboard.up(' ');
 
-      // ③ R 复位：回出生点（下一用例的锥桶闭环会做完整复位断言，此处验证键位语义）
+      // ③ R 复位：回出生点 (0,0)（下一用例的锥桶闭环会做完整复位断言，此处验证键位语义）
       await page.keyboard.press('r');
       const reset = await pollState(
         page,
-        (s) => Math.abs(s.x) < 1.5 && Math.abs(s.z - 55) < 1.5 && s.speedKmh < 2,
+        (s) => Math.abs(s.x) < 1.5 && Math.abs(s.z) < 1.5 && s.speedKmh < 2,
         45_000,
       );
       expect(reset.ok, `R 应复位到出生点（实测 x=${reset.state.x.toFixed(1)} z=${reset.state.z.toFixed(1)}）`).toBe(true);
 
-      // ④ Shift boost：软限速抬到 28m/s，速度应破 70km/h（常态软限速 65km/h 之上）
+      // ④ Shift boost：引擎力 ×3 + 软限速档抬升（folio topSpeedBoost 40）——
+      //   破 45km/h 即证明 boost 生效（常态巡航 ≈36km/h 之上）
       await page.keyboard.down('w');
       await page.keyboard.down('Shift');
-      const boosted = await pollState(page, (s) => s.speedKmh > 70, 120_000);
-      expect(boosted.ok, `Shift boost 应破 70km/h（实测 ${boosted.state.speedKmh.toFixed(1)}km/h）`).toBe(true);
+      const boosted = await pollState(page, (s) => s.speedKmh > 45, 150_000);
+      expect(boosted.ok, `Shift boost 应破 45km/h（实测 ${boosted.state.speedKmh.toFixed(1)}km/h）`).toBe(true);
       await page.keyboard.up('Shift');
 
-      // ⑤ A 左转：yaw 正向增长（自行车模型 +steer → +yawRate）
+      // ⑤ A 左转：yaw 正向增长（正 steer → 左转 → rotationY 增大，两档同约定）
       const before = await readState(page);
       await page.keyboard.down('a');
       const turned = await pollState(
@@ -258,24 +290,15 @@ test.describe('world Spike 灰盒试验场', () => {
     }
   });
 
-  test('WS-E2E-04 锥桶碰撞 + R 复位闭环：受控驾驶撞桩 → 计数/HUD 联动 → 复位清零', async ({ page }) => {
+  test('WS-E2E-04 锥桶碰撞 + R 复位闭环：直线撞桩 → 计数/HUD 联动 → 复位清零', async ({ page }) => {
     test.setTimeout(780_000);
     await enterWorld(page);
 
-    // 循迹控制器（决策记录 §6 同款打法）：沿「内侧慢弯桩线」行驶——期望航向 =
-    // 环形道切线（φ+π/2）+ 半径误差比例修正，目标半径 = 52.4m（scene.ts 阵位公式
-    // 55-2.6，i 偶数桩正落在该线上，φ∈{0.25,0.51,0.76,1.02}——单趟扫过 4 桩）。
-    // W 恒按 + A/D 开关式打舵（真实 CDP 按键）；cones>0 即成功；扫完桩区（φ>1.15）
-    // 未命中则 R 复位重试，最多 3 轮——决不 skip。
-    const CONE_LINE_R = 52.4;
-    let steerKey: 'a' | 'd' | null = null;
-    const setSteer = async (want: 'a' | 'd' | null) => {
-      if (want === steerKey) return;
-      if (steerKey) await page.keyboard.up(steerKey);
-      if (want) await page.keyboard.down(want);
-      steerKey = want;
-    };
-
+    // 撞桩打法（CC-E2 合流后重标定）：World.setCones 在出生点 (0,0) 车头正前方
+    // -Z 直线上摆了确定性锚点桩（(0,-4.5) 与 (0,-9) 正压直行路径）——W 直行即撞，
+    // 无需循迹控制器（原 spike 环道内线循迹随场地缩尺退役）。判定 = Rapier 物理
+    // 真值（位移>0.6m 或倾角>56°）。冲过桩区（z<-14）未命中则 R 复位重试，
+    // 最多 3 轮——决不 skip。
     let knocked = 0;
     try {
       for (let attempt = 1; attempt <= 3 && knocked === 0; attempt++) {
@@ -289,16 +312,10 @@ test.describe('world Spike 灰盒试验场', () => {
             knocked = s.cones;
             break;
           }
-          const phi = Math.atan2(s.x, s.z); // 环形道方位角（出生点 φ=0，前进方向 φ 增大）
-          if (phi > 1.15 || phi < -0.15) break; // 扫过全部内线桩仍未命中：本轮失败
-          const r = Math.hypot(s.x, s.z);
-          const corr = Math.max(-0.5, Math.min(0.5, (r - CONE_LINE_R) * 0.08));
-          const err = wrapAngle(phi + Math.PI / 2 + corr - s.yaw);
-          await setSteer(err > 0.06 ? 'a' : err < -0.06 ? 'd' : null);
-          await page.waitForTimeout(200);
+          if (s.z < -14) break; // 冲过两只锚点桩仍未命中：本轮失败
+          await page.waitForTimeout(300);
         }
         await page.keyboard.up('w');
-        await setSteer(null);
         logMetrics('WS-E2E-04 attempt', { attempt, knocked, lastState });
         if (knocked === 0) {
           await page.keyboard.press('r');
@@ -306,18 +323,18 @@ test.describe('world Spike 灰盒试验场', () => {
         }
       }
 
-      expect(knocked, '受控驾驶必须实际撞倒锥桶（不允许 skip）').toBeGreaterThan(0);
+      expect(knocked, '直线驾驶必须实际撞倒锥桶（不允许 skip）').toBeGreaterThan(0);
 
       // HUD 锥桶计数联动
       await expect(page.locator('[data-ws-cones]')).toHaveText(/[1-9]/, { timeout: 30_000 });
       logMetrics('WS-E2E-04 cones', { knocked });
       await shotIntegration(page, 'world_cone_knocked');
 
-      // R 复位闭环：位置回出生点、速度清零、锥桶阵列恢复、HUD 归零
+      // R 复位闭环：位置回出生点 (0,0)、速度清零、锥桶阵列恢复、HUD 归零
       await page.keyboard.press('r');
       const reset = await pollState(
         page,
-        (s) => Math.abs(s.x) < 1.5 && Math.abs(s.z - 55) < 1.5 && s.speedKmh < 2 && s.cones === 0,
+        (s) => Math.abs(s.x) < 1.5 && Math.abs(s.z) < 1.5 && s.speedKmh < 2 && s.cones === 0,
         45_000,
       );
       expect(
@@ -335,7 +352,8 @@ test.describe('world Spike 灰盒试验场', () => {
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
 
-    // gl=1 之外混入白名单外参数（壳页只透传 gl，其余必须被忽略且无异常）
+    // gl=1 之外混入白名单外参数（壳页白名单 = gl/vehicle/city/robot（M4 转正），
+    // 其余必须被忽略且无异常）
     await enterWorld(page, '?gl=1&paint=hotpink&bogus=1');
 
     await expect(page.locator('[data-ws-backend]')).toHaveText('WebGL 2');
@@ -347,25 +365,32 @@ test.describe('world Spike 灰盒试验场', () => {
     await shotIntegration(page, 'world_gl1_backend');
   });
 
-  test('WS-E2E-11 ?impl=engine 引擎层灰盒腿：Rapier 引擎挂载 ready、车辆 HUD 读数隐藏、零异常', async ({ page }) => {
-    // integration 合流后的第二入口（folio 架构 Game loop + Rapier 物理，无车）：
-    // 只做烟测级断言——挂载可达、壳文案切换、车辆读数整组隐藏、零未捕获异常。
+  test('WS-E2E-11 ?vehicle=kinematic 运动学回退档：同壳同 HUD 可驾驶、遥测上报回退腿、零异常', async ({ page }) => {
+    // CC-E2 合流后 ?impl=engine 退役，本用例改守「世界永远能开」的显式回退腿
+    // （SRD §12.7.5）：?vehicle=kinematic 走 spike 手写控制器迁入的
+    // KinematicFallback——同 PlayerVehicle 契约、同壳同 HUD，驾驶闭环必须活着。
+    test.setTimeout(600_000);
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
 
-    await page.goto(`${PAGE_URL}?impl=engine`);
-    const host = page.locator('[data-ws-host]');
-    await expect(host).toHaveAttribute('data-impl', 'engine');
-    await expect(page.locator('[data-ws-cover-note]')).toContainText('引擎层灰盒');
+    await enterWorld(page, '?vehicle=kinematic');
 
-    await page.locator('[data-ws-start]').click();
-    await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
-
-    // 车辆读数（速度/FPS/锥桶）无源 → 整组隐藏；后端徽标仍上报
-    await expect(page.locator('.ws-hud-cell').first()).toBeHidden();
+    // 遥测上报回退腿；HUD 车辆读数组不再隐藏（单实现后 HUD 恒有源）
+    expect(await page.evaluate(() => (window as any).__worldSpike.vehicle)).toBe('kinematic');
+    await expect(page.locator('.ws-hud-cell').first()).toBeVisible();
     await expect(page.locator('[data-ws-backend]')).toHaveText(/^(WebGPU|WebGL 2)$/);
-    expect(errors, '引擎层灰盒挂载零未捕获异常').toEqual([]);
-    await shotIntegration(page, 'world_engine_impl_ready');
+
+    // 驾驶闭环（运动学档 SI 参数：软限速 65km/h，加速度 24m/s² → 阈值可比物理档激进）
+    try {
+      await page.keyboard.down('w');
+      const drive = await pollState(page, (s) => s.speedKmh > 25, 90_000);
+      expect(drive.ok, `回退档应可驾驶（实测 ${drive.state.speedKmh.toFixed(1)}km/h）`).toBe(true);
+    } finally {
+      await page.keyboard.up('w').catch(() => {});
+    }
+
+    expect(errors, '运动学回退档全程零未捕获异常').toEqual([]);
+    await shotIntegration(page, 'world_kinematic_fallback');
   });
 
   test('WS-E2E-06 reduced-motion：静态壳保持零加载，显式「进入」逃生门照常工作', async ({ page }) => {
@@ -478,7 +503,7 @@ test.describe('world Spike（移动端 375px 触屏）', () => {
     hasTouch: true,
   });
 
-  test('WS-E2E-09 触屏摇杆驾驶：动态原点摇杆、真触摸驱动、复位按钮、无水平溢出', async ({ page }) => {
+  test('WS-E2E-09 触屏摇杆驾驶：随车 3D 摇杆遥测、真触摸驱动、复位按钮、无水平溢出', async ({ page }) => {
     test.setTimeout(600_000);
     await page.goto(PAGE_URL);
 
@@ -494,42 +519,54 @@ test.describe('world Spike（移动端 375px 触屏）', () => {
       timeout: MOUNT_TIMEOUT,
     });
 
-    // CDP 真触摸（Input.dispatchTouchEvent，pointerType=touch）：按下生成动态原点摇杆，
-    // 上推持杆 → y 轴油门（inputs.ts 摇杆契约）
+    // CDP 真触摸（Input.dispatchTouchEvent，pointerType=touch）。
+    // CC-E2 合流后摇杆 = 引擎 Nipple：跟车的场景内 3D 环（TSL shader），无 DOM 锚——
+    // 视觉/推量断言全部走遥测 nippleActive/nippleProgress。
+    // 手势标定：车在舞台正中（相机焦点跟踪），从舞台中心按下、向「屏幕上右」拖
+    // 150px（= 车头 -Z 在 θ=π/4 等距机位下的屏幕投影方向）：推离 >4.5 世界米
+    // → progress 满推 + forward 扇区内（油门 ≈1、转向 ≈0）。
     const box = (await page.locator('[data-ws-stage]').boundingBox())!;
     const cx = box.x + box.width / 2;
-    const cy = box.y + box.height * 0.65;
+    const cy = box.y + box.height / 2;
     const cdp = await page.context().newCDPSession(page);
     await cdp.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
       touchPoints: [{ x: cx, y: cy, id: 1 }],
     });
-    for (const dy of [30, 60, 90]) {
+    for (const d of [40, 90, 150]) {
       await cdp.send('Input.dispatchTouchEvent', {
         type: 'touchMove',
-        touchPoints: [{ x: cx, y: cy - dy, id: 1 }],
+        touchPoints: [{ x: cx + d, y: cy - d, id: 1 }],
       });
-      await page.waitForTimeout(120);
+      await page.waitForTimeout(150);
     }
 
-    // 摇杆视觉锚就位（动态原点基座显示）
-    await expect(page.locator('.ws-nipple-base')).toBeVisible();
+    // 摇杆遥测就位：激活 + 有推量（Pointer 双缓冲在 tick 结算，软渲染下放宽轮询）
+    const engaged = await pollState(page, (s) => s.nippleActive && s.nippleProgress > 0.2, 30_000);
+    expect(
+      engaged.ok,
+      `持杆应激活摇杆并产生推量（实测 active=${engaged.state.nippleActive} progress=${engaged.state.nippleProgress.toFixed(2)}）`,
+    ).toBe(true);
 
-    // 持杆驱动：速度爬升（真触摸 → 意图 → 物理 → 遥测全链路）
-    const driven = await pollState(page, (s) => s.speedKmh > 10, 90_000);
+    // 持杆驱动：速度爬升（真触摸 → Pointer → Nipple → 意图 → 物理 → 遥测全链路）
+    const driven = await pollState(page, (s) => s.speedKmh > 10, 120_000);
     expect(driven.ok, `摇杆持杆应驱动车辆（实测 ${driven.state.speedKmh.toFixed(1)}km/h）`).toBe(true);
     await shotIntegration(page, 'world_mobile_joystick');
-    logMetrics('WS-E2E-09 joystick', { speedKmh: driven.state.speedKmh });
+    logMetrics('WS-E2E-09 joystick', {
+      speedKmh: driven.state.speedKmh,
+      progress: driven.state.nippleProgress,
+    });
 
-    // 松杆：摇杆基座隐藏、油门归零（怠速滑行）
+    // 松杆：摇杆失活、油门归零（怠速滑行）
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-    await expect(page.locator('.ws-nipple-base')).toBeHidden();
+    const released = await pollState(page, (s) => !s.nippleActive, 30_000);
+    expect(released.ok, '松杆后摇杆应失活').toBe(true);
 
-    // 触屏复位按钮（HUD「复位 (R)」——键盘 R 的触屏等价物）
+    // 触屏复位按钮（HUD「复位 (R)」——键盘 R 的触屏等价物；出生点 = (0,0)）
     await page.locator('[data-ws-respawn]').dispatchEvent('click');
     const reset = await pollState(
       page,
-      (s) => Math.abs(s.x) < 1.5 && Math.abs(s.z - 55) < 1.5 && s.speedKmh < 2,
+      (s) => Math.abs(s.x) < 1.5 && Math.abs(s.z) < 1.5 && s.speedKmh < 2,
       45_000,
     );
     expect(reset.ok, '复位按钮应与键盘 R 同语义').toBe(true);

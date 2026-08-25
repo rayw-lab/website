@@ -1,0 +1,336 @@
+{
+  "schemaVersion": "0.1.0",
+  "task": "CC-MAP1",
+  "updatedAt": "2026-08-25",
+  "docs": "docs/research/cyber-city-buildings-map.md",
+  "world": {
+    "units": "meter",
+    "coordinateSystem": "three.js 右手系：+X=东，+Z=南，+Y=上；地面 y=0，position 省略 y",
+    "headingConvention": "度；0=北(-Z)，顺时针递增（90=东）",
+    "maxBuildingSlots": 20,
+    "spawn": {
+      "position": { "x": 0, "z": 0 },
+      "heading": 0,
+      "note": "十字路口正中，变形（机器人→车）落点，车头朝北"
+    },
+    "roads": [
+      {
+        "id": "axis-avenue",
+        "title": { "zh": "中轴大道", "en": "Axis Avenue" },
+        "axis": "north-south",
+        "halfWidth": 12,
+        "range": [-260, 260]
+      },
+      {
+        "id": "neon-boulevard",
+        "title": { "zh": "霓虹大街", "en": "Neon Boulevard" },
+        "axis": "east-west",
+        "halfWidth": 12,
+        "range": [-260, 260]
+      }
+    ]
+  },
+  "streaming": {
+    "tiers": {
+      "H": { "label": "高清", "source": "draco-glb", "budgetKbPerBuilding": 220 },
+      "M": { "label": "中模", "source": "instanced-atlas", "sharedAtlas": "public/textures/city/windows-512.ktx2" },
+      "S": { "label": "剪影", "source": "procedural-footprint-extrude", "networkRequests": 0 }
+    },
+    "hdRadius": 120,
+    "mediumRadius": 260,
+    "hysteresis": 20,
+    "prefetchRadius": 160,
+    "maxConcurrentLoads": 2,
+    "maxResidentHd": 8,
+    "spawnHd": ["lingua-tower", "voice-pod", "agent-nexus", "autodrive-lab", "concept-garage"],
+    "spawnHdBudgetKb": 900,
+    "idlePrefetchPhase": 1
+  },
+  "districts": [
+    {
+      "id": "language",
+      "title": { "zh": "南口语言双子", "en": "Language Twin Gate" },
+      "buildings": ["lingua-tower", "voice-pod"]
+    },
+    {
+      "id": "ai-core",
+      "title": { "zh": "北城 AI 中枢区", "en": "AI Core District" },
+      "buildings": ["agent-nexus", "edge-cloud-hub", "workflow-foundry", "now-signal"]
+    },
+    {
+      "id": "mobility",
+      "title": { "zh": "东城出行区", "en": "Mobility District" },
+      "buildings": ["autodrive-lab", "concept-garage"]
+    },
+    {
+      "id": "gallery",
+      "title": { "zh": "东南作品区", "en": "Gallery District" },
+      "buildings": ["work-gallery", "insights-archive"]
+    },
+    {
+      "id": "civic",
+      "title": { "zh": "西南个人区", "en": "Civic District" },
+      "buildings": ["about-pavilion", "contact-beacon"]
+    }
+  ],
+  "buildings": [
+    {
+      "id": "lingua-tower",
+      "slug": "lingua-tower",
+      "title": { "zh": "多语种方案塔", "en": "Lingua Tower" },
+      "role": "39 语种座舱本地化交付展馆",
+      "category": "language",
+      "position": { "x": -52, "z": 52, "rotationY": 0 },
+      "footprint": { "w": 36, "d": 36, "h": 78 },
+      "neonColor": "#49c5b6",
+      "deepLink": "/work/multilingual-cockpit/",
+      "deepLinkStatus": "live",
+      "priority": "P0",
+      "unlockPhase": 0,
+      "lodProfile": "hero",
+      "parkingBay": { "x": -28, "z": 28, "heading": 225, "radius": 6 }
+    },
+    {
+      "id": "voice-pod",
+      "slug": "voice-pod",
+      "title": { "zh": "座舱语音舱", "en": "Voice Pod" },
+      "role": "车载 TTS 声学舱，直通 TTS Cockpit Lab",
+      "category": "language",
+      "position": { "x": 52, "z": 52, "rotationY": 0 },
+      "footprint": { "w": 32, "d": 32, "h": 42 },
+      "neonColor": "#ff2d6f",
+      "deepLink": "/lab/tts-cockpit/",
+      "deepLinkStatus": "live",
+      "priority": "P0",
+      "unlockPhase": 0,
+      "lodProfile": "hero",
+      "parkingBay": { "x": 12, "z": 28, "heading": 135, "radius": 6 }
+    },
+    {
+      "id": "agent-nexus",
+      "slug": "agent-nexus",
+      "title": { "zh": "主智能体中枢", "en": "Agent Nexus" },
+      "role": "Master Agent 总部，机器人形态的「老家」",
+      "category": "ai-core",
+      "position": { "x": -52, "z": -52, "rotationY": 0 },
+      "footprint": { "w": 40, "d": 40, "h": 96 },
+      "neonColor": "#a855f7",
+      "deepLink": "/ai-lab/",
+      "deepLinkStatus": "fallback",
+      "priority": "P0",
+      "unlockPhase": 0,
+      "lodProfile": "hero",
+      "parkingBay": { "x": -28, "z": -28, "heading": 315, "radius": 6 }
+    },
+    {
+      "id": "autodrive-lab",
+      "slug": "autodrive-lab",
+      "title": { "zh": "智驾实验楼", "en": "AutoDrive Lab" },
+      "role": "智能驾驶案例实验楼",
+      "category": "mobility",
+      "position": { "x": 52, "z": -52, "rotationY": 0 },
+      "footprint": { "w": 44, "d": 36, "h": 60 },
+      "neonColor": "#ff6b35",
+      "deepLink": "/work/",
+      "deepLinkStatus": "fallback",
+      "priority": "P0",
+      "unlockPhase": 0,
+      "lodProfile": "hero",
+      "parkingBay": { "x": 28, "z": -28, "heading": 45, "radius": 6 }
+    },
+    {
+      "id": "concept-garage",
+      "slug": "concept-garage",
+      "title": { "zh": "概念车库", "en": "CarConcept Garage" },
+      "role": "变形后第一驾驶目标：3D 汽车配置器车库",
+      "category": "mobility",
+      "position": { "x": 140, "z": -44, "rotationY": 0 },
+      "footprint": { "w": 60, "d": 36, "h": 18 },
+      "neonColor": "#3b82f6",
+      "deepLink": "/lab/car-configurator/",
+      "deepLinkStatus": "live",
+      "priority": "P0",
+      "unlockPhase": 0,
+      "lodProfile": "hero",
+      "parkingBay": { "x": 140, "z": -18, "heading": 0, "radius": 8 }
+    },
+    {
+      "id": "work-gallery",
+      "slug": "work-gallery",
+      "title": { "zh": "交付案例馆", "en": "Works Gallery" },
+      "role": "Work 索引空间化：全部量产交付案例陈列",
+      "category": "gallery",
+      "position": { "x": 140, "z": 44, "rotationY": 0 },
+      "footprint": { "w": 56, "d": 32, "h": 36 },
+      "neonColor": "#f59e0b",
+      "deepLink": "/work/",
+      "deepLinkStatus": "live",
+      "priority": "P1",
+      "unlockPhase": 1,
+      "lodProfile": "standard",
+      "parkingBay": { "x": 140, "z": 18, "heading": 180, "radius": 6 }
+    },
+    {
+      "id": "insights-archive",
+      "slug": "insights-archive",
+      "title": { "zh": "洞察档案塔", "en": "Insights Archive" },
+      "role": "Insights 索引空间化：方法论与评审清单档案",
+      "category": "gallery",
+      "position": { "x": 44, "z": 150, "rotationY": 0 },
+      "footprint": { "w": 32, "d": 48, "h": 66 },
+      "neonColor": "#7dd3fc",
+      "deepLink": "/insights/",
+      "deepLinkStatus": "live",
+      "priority": "P1",
+      "unlockPhase": 1,
+      "lodProfile": "standard",
+      "parkingBay": { "x": 20, "z": 150, "heading": 90, "radius": 6 }
+    },
+    {
+      "id": "about-pavilion",
+      "slug": "about-pavilion",
+      "title": { "zh": "个人档案馆", "en": "About Pavilion" },
+      "role": "关于王磊：职业叙事与能力图谱",
+      "category": "civic",
+      "position": { "x": -44, "z": 150, "rotationY": 0 },
+      "footprint": { "w": 36, "d": 36, "h": 40 },
+      "neonColor": "#fef3c7",
+      "deepLink": "/about/",
+      "deepLinkStatus": "live",
+      "priority": "P1",
+      "unlockPhase": 1,
+      "lodProfile": "standard",
+      "parkingBay": { "x": -20, "z": 150, "heading": 270, "radius": 6 }
+    },
+    {
+      "id": "contact-beacon",
+      "slug": "contact-beacon",
+      "title": { "zh": "联络信标塔", "en": "Contact Beacon" },
+      "role": "细高信标塔，顶部脉冲天线即联系入口",
+      "category": "civic",
+      "position": { "x": -140, "z": 44, "rotationY": 0 },
+      "footprint": { "w": 24, "d": 24, "h": 88 },
+      "neonColor": "#a3e635",
+      "deepLink": "/contact/",
+      "deepLinkStatus": "live",
+      "priority": "P1",
+      "unlockPhase": 1,
+      "lodProfile": "standard",
+      "parkingBay": { "x": -140, "z": 24, "heading": 180, "radius": 6 }
+    },
+    {
+      "id": "edge-cloud-hub",
+      "slug": "edge-cloud-hub",
+      "title": { "zh": "端云算力枢纽", "en": "Edge-Cloud Hub" },
+      "role": "端云大模型能力分层案例的横向机房",
+      "category": "ai-core",
+      "position": { "x": -140, "z": -44, "rotationY": 0 },
+      "footprint": { "w": 64, "d": 40, "h": 32 },
+      "neonColor": "#22c55e",
+      "deepLink": "/work/llm-capability-layering/",
+      "deepLinkStatus": "live",
+      "priority": "P1",
+      "unlockPhase": 1,
+      "lodProfile": "standard",
+      "parkingBay": { "x": -140, "z": -18, "heading": 0, "radius": 6 }
+    },
+    {
+      "id": "workflow-foundry",
+      "slug": "workflow-foundry",
+      "title": { "zh": "AI 工作流工厂", "en": "Workflow Foundry" },
+      "role": "AI 原生工作流铸造车间",
+      "category": "ai-core",
+      "position": { "x": 48, "z": -150, "rotationY": 0 },
+      "footprint": { "w": 48, "d": 32, "h": 28 },
+      "neonColor": "#94a3b8",
+      "deepLink": "/work/ai-native-workflow/",
+      "deepLinkStatus": "live",
+      "priority": "P2",
+      "unlockPhase": 2,
+      "lodProfile": "standard",
+      "parkingBay": { "x": 18, "z": -150, "heading": 90, "radius": 6 }
+    },
+    {
+      "id": "now-signal",
+      "slug": "now-signal",
+      "title": { "zh": "当前状态塔", "en": "Now Signal" },
+      "role": "天线塔实时广播「王磊现在在做什么」",
+      "category": "ai-core",
+      "position": { "x": -44, "z": -150, "rotationY": 0 },
+      "footprint": { "w": 20, "d": 20, "h": 72 },
+      "neonColor": "#fb7185",
+      "deepLink": "/now/",
+      "deepLinkStatus": "live",
+      "priority": "P2",
+      "unlockPhase": 2,
+      "lodProfile": "standard",
+      "parkingBay": { "x": -26, "z": -150, "heading": 270, "radius": 6 }
+    }
+  ],
+  "reservedSlots": [
+    {
+      "id": "slot-13",
+      "position": { "x": 96, "z": -216, "rotationY": 0 },
+      "suggestedTheme": { "zh": "OTA 升级站", "en": "OTA Depot" },
+      "suggestedCategory": "mobility",
+      "unlockPhase": 2,
+      "lodProfile": "skyline"
+    },
+    {
+      "id": "slot-14",
+      "position": { "x": 216, "z": -96, "rotationY": 0 },
+      "suggestedTheme": { "zh": "导航地图中心", "en": "NavMap Center" },
+      "suggestedCategory": "mobility",
+      "unlockPhase": 2,
+      "lodProfile": "skyline"
+    },
+    {
+      "id": "slot-15",
+      "position": { "x": 216, "z": 96, "rotationY": 0 },
+      "suggestedTheme": { "zh": "HMI 设计工坊", "en": "HMI Studio" },
+      "suggestedCategory": "gallery",
+      "unlockPhase": 2,
+      "lodProfile": "skyline"
+    },
+    {
+      "id": "slot-16",
+      "position": { "x": 96, "z": 216, "rotationY": 0 },
+      "suggestedTheme": { "zh": "声学消音实验室", "en": "Acoustics Lab" },
+      "suggestedCategory": "language",
+      "unlockPhase": 2,
+      "lodProfile": "skyline"
+    },
+    {
+      "id": "slot-17",
+      "position": { "x": -96, "z": 216, "rotationY": 0 },
+      "suggestedTheme": { "zh": "职业机会之门", "en": "Career Gate" },
+      "suggestedCategory": "civic",
+      "unlockPhase": 2,
+      "lodProfile": "skyline"
+    },
+    {
+      "id": "slot-18",
+      "position": { "x": -216, "z": 96, "rotationY": 0 },
+      "suggestedTheme": { "zh": "天际观景台", "en": "Skyline Observatory" },
+      "suggestedCategory": "civic",
+      "unlockPhase": 2,
+      "lodProfile": "skyline"
+    },
+    {
+      "id": "slot-19",
+      "position": { "x": -216, "z": -96, "rotationY": 0 },
+      "suggestedTheme": { "zh": "多模态感知塔", "en": "Multimodal Tower" },
+      "suggestedCategory": "ai-core",
+      "unlockPhase": 2,
+      "lodProfile": "skyline"
+    },
+    {
+      "id": "slot-20",
+      "position": { "x": -96, "z": -216, "rotationY": 0 },
+      "suggestedTheme": { "zh": "功能安全中心", "en": "Safety Center" },
+      "suggestedCategory": "ai-core",
+      "unlockPhase": 2,
+      "lodProfile": "skyline"
+    }
+  ]
+}

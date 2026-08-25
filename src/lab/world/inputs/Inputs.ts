@@ -15,7 +15,12 @@ export type InputActionValue = number | Record<string, number>;
 
 export interface InputActionDescription {
   name: string;
-  /** 允许触发的输入上下文（intro/wandering/racing…）；空数组 = 任何上下文均可 */
+  /**
+   * 允许触发的输入上下文（intro/wandering/racing/driving…）；空数组 = 任何上下文均可。
+   * [CC-E6] 科技城首幕的上下文序：'intro'（机器人幕，仅变形 CTA/Space 放行）→
+   * 'driving'（car_ready 同帧热切，WASD 即刻可开——终裁 D4）；灰盒 spike 默认路径
+   * 仍走 'wandering'（Game.reveal 原语义，autoReveal 缺省不变）。
+   */
   categories: string[];
   /** 物理键：'Keyboard.KeyW' / 'Keyboard.ArrowUp' / 'Pointer.any' */
   keys: string[];
@@ -122,8 +127,10 @@ export class Inputs {
 
   private setNipple(): void {
     this.nipple = new Nipple(this.game);
+    // [CC-E6] 'driving' = 首幕变形后的驾驶上下文（filters intro → driving，
+    // TransformSystem.finish 热切；SRD §12.7.4 / 实施方案 §1.1 幕④）——触屏摇杆同步放行
     this.addActions([
-      { name: 'nipplePointer', categories: ['wandering', 'racing'], keys: ['Pointer.any'] },
+      { name: 'nipplePointer', categories: ['wandering', 'racing', 'driving'], keys: ['Pointer.any'] },
     ]);
 
     this.events.on('nipplePointer', (action: InputAction) => {

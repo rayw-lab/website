@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>赛博科技城首屏 · 交互灰盒 CC-T8</title>
+  <style>
+    :root {
+      --bg: #050810;
+      --cyan: #49c5b6;
+      --magenta: #ff2d6f;
+      --orange: #ff6b35;
+      --purple: #a855f7;
+      --text: #e8eef7;
+      --muted: #8b9cb3;
+      --panel: rgba(8, 16, 32, 0.72);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .skip { position: absolute; left: 1rem; top: 1rem; z-index: 10; }
+    .skip a { color: var(--cyan); font-size: 0.875rem; }
+    header {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 1rem 1.25rem;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      z-index: 5;
+      pointer-events: none;
+    }
+    header * { pointer-events: auto; }
+    .identity { font-size: 0.8rem; max-width: 280px; line-height: 1.4; }
+    .identity strong { display: block; font-size: 0.95rem; }
+    .stage {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .skyline {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(180deg, #0a1228 0%, #050810 55%, #020408 100%),
+        repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(73,197,182,0.03) 48px, rgba(73,197,182,0.03) 49px);
+    }
+    .buildings {
+      position: absolute; bottom: 28%; left: 10%; right: 10%;
+      height: 35%;
+      display: flex; justify-content: space-around; align-items: flex-end;
+      gap: 1rem;
+    }
+    .tower {
+      width: 18%; max-width: 100px;
+      background: linear-gradient(180deg, #1a2540, #0d1528);
+      border: 1px solid rgba(73,197,182,0.35);
+      border-radius: 4px 4px 0 0;
+      position: relative;
+      transition: box-shadow 0.3s;
+    }
+    .tower::before {
+      content: '';
+      position: absolute; inset: 8px;
+      background: repeating-linear-gradient(0deg, transparent, transparent 6px, rgba(255,255,255,0.06) 6px, rgba(255,255,255,0.06) 8px);
+    }
+    .tower span {
+      position: absolute; bottom: -1.6rem; left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.65rem; white-space: nowrap;
+      color: var(--muted);
+    }
+    .tower.lingua { height: 75%; box-shadow: 0 0 24px rgba(73,197,182,0.25); }
+    .tower.tts { height: 90%; box-shadow: 0 0 24px rgba(255,45,111,0.25); }
+    .tower.agent { height: 70%; box-shadow: 0 0 24px rgba(168,85,247,0.25); }
+    .tower.auto { height: 85%; box-shadow: 0 0 24px rgba(255,107,53,0.25); }
+    .platform {
+      position: absolute; bottom: 22%;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(73,197,182,0.15), transparent 70%);
+      border: 1px solid rgba(73,197,182,0.4);
+      border-radius: 50%;
+      transform: rotateX(60deg);
+    }
+    .hero {
+      position: relative; z-index: 2;
+      width: 120px; height: 160px;
+      transition: transform 0.5s ease, opacity 0.35s;
+    }
+    .robot {
+      width: 100%; height: 100%;
+      background: linear-gradient(180deg, #3d4f6f, #1e2a40);
+      clip-path: polygon(30% 0%, 70% 0%, 85% 25%, 75% 45%, 90% 100%, 10% 100%, 25% 45%, 15% 25%);
+      border: 2px solid var(--cyan);
+      box-shadow: 0 0 40px rgba(73,197,182,0.35);
+    }
+    .robot::after {
+      content: '';
+      position: absolute; top: 28%; left: 35%; right: 35%; height: 12%;
+      background: var(--cyan);
+      opacity: 0.6;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .car {
+      position: absolute; inset: 0;
+      opacity: 0;
+      transform: scale(0.6) translateY(20px);
+      background: linear-gradient(135deg, #2a3548, #ff6b35);
+      clip-path: polygon(5% 55%, 25% 35%, 75% 35%, 95% 55%, 85% 70%, 15% 70%);
+      border: 2px solid var(--orange);
+      box-shadow: 0 0 40px rgba(255,107,53,0.4);
+    }
+    .hero.car-mode .robot { opacity: 0; transform: scale(0.5); }
+    .hero.car-mode .car { opacity: 1; transform: scale(1) translateY(0); }
+    @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.9; } }
+  </style>
+</head>
+<body>
+  <div class="skip"><a href="#work">跳过 3D → 案例库</a></div>
+  <header>
+    <div class="identity">
+      <strong>王磊</strong>
+      汽车智能座舱与 AI 解决方案经理
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <div class="skyline"></div>
+    <div class="buildings">
+      <div class="tower lingua" style="--c:var(--cyan)"><span>多语种方案</span></div>
+      <div class="tower tts"><span>座舱 TTS</span></div>
+      <div class="tower agent"><span>Master Agent</span></div>
+      <div class="tower auto"><span>智能驾驶</span></div>
+    </div>
+    <div class="platform"></div>
+    <div class="hero" id="hero" aria-label="座舱 AI 机器人，可变形为汽车">
+      <div class="robot"></div>
+      <div class="car"></div>
+    </div>
+  </main>
+
+  <aside style="position:fixed;left:1rem;bottom:5rem;z-index:6;background:var(--panel);border:1px solid rgba(73,197,182,0.3);padding:0.75rem;border-radius:8px;font-size:0.75rem;max-width:200px;">
+    <div style="margin-bottom:0.35rem;color:var(--cyan)">楼宇快览</div>
+    <div>◉ 多语种方案</div>
+    <div>◉ 座舱 TTS</div>
+    <div>◉ Master Agent</div>
+    <div>◉ 智能驾驶</div>
+  </aside>
+
+  <footer style="position:fixed;bottom:0;left:0;right:0;padding:1rem 1.25rem;background:linear-gradient(transparent,var(--bg));z-index:6;">
+    <button type="button" id="transformBtn" style="background:var(--orange);color:#000;border:none;padding:0.75rem 1.5rem;font-weight:600;border-radius:6px;cursor:pointer;margin-right:0.5rem;">
+      变形 · 巡航态
+    </button>
+    <a href="#work" id="work" style="color:var(--muted);font-size:0.875rem;">60 秒了解王磊 →</a>
+    <p style="font-size:0.7rem;color:var(--muted);margin:0.5rem 0 0;">WASD 驶入大楼 · Phase 1 · 灰盒原型 CC-T8</p>
+  </footer>
+
+  <script>
+    const hero = document.getElementById('hero');
+    const btn = document.getElementById('transformBtn');
+    let isCar = false;
+    btn.addEventListener('click', () => {
+      isCar = !isCar;
+      hero.classList.toggle('car-mode', isCar);
+      btn.textContent = isCar ? '还原 · 站岗态' : '变形 · 巡航态';
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && e.target === document.body) {
+        e.preventDefault();
+        btn.click();
+      }
+    });
+  </script>
+</body>
+</html>

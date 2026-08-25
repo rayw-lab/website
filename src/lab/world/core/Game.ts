@@ -11,17 +11,21 @@ import * as THREE from 'three/webgpu';
 import { Events } from './Events';
 import { Ticker } from './Ticker';
 import { Viewport } from './Viewport';
-import { Quality } from './Quality';
+import { Quality, type QualityLevel } from './Quality';
 import { ResourcesLoader, type ResourceMap } from './ResourcesLoader';
 import { Objects } from './Objects';
 import { Rendering } from '../rendering/Rendering';
 import { Inputs } from '../inputs/Inputs';
 import { Physics, type RapierModule } from '../physics/Physics';
+import { PhysicsVehicle } from '../physics/PhysicsVehicle';
 import { Respawns } from '../world/Respawns';
 import { Zones } from '../world/Zones';
 import { View } from '../view/View';
 import { Player, type PlayerVehicle } from '../player/Player';
+import { KinematicFallback } from '../player/KinematicFallback';
+import { VisualVehicle } from '../player/VisualVehicle';
 import { World, SPAWN } from '../world/World';
+import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
 
 export interface GameOptions {
   /** 舞台容器（Viewport 量它） */
@@ -31,6 +35,28 @@ export interface GameOptions {
   forceWebGL?: boolean;
   /** 移动端 DPR 封顶（SRD §12.4 纪律：1.5） */
   pixelRatioMax?: number;
+  /**
+   * 车辆实现选择（SRD §12.7.5 热切换）：physics = Rapier 主路径（默认）；
+   * kinematic = 运动学回退档（A/B 对照）。Rapier wasm 加载失败时无视此项强制回退。
+   */
+  vehicle?: 'physics' | 'kinematic';
+  /**
+   * [CC-E7/M9] ?quality=0|1|2 深链档位（壳白名单经 opts.params 转发注入）；
+   * 缺省 = Quality 按 UA 分档（桌面 0 / 移动 1）。
+   */
+  quality?: QualityLevel;
+  /**
+   * [CC-E7] 相机取景（SRD §12.7.2 首幕相机行）：city = 城市首幕（FOV 42° /
+   * 静止机位距 18m / 俯角 22°，配 9m 级机器人）；greybox = 灰盒试车道原框（默认，
+   * 零回归）。挂城路径（ritual/city/poi/robot）由 world 入口置 city。
+   */
+  cameraFraming?: 'greybox' | 'city';
+  /**
+   * [CC-E6] false = init 后不自动 intro→wandering（灰盒 reveal 极简版让位）：
+   * 首幕剧本模式（?ritual=1）由 world/Reveal + TransformSystem 接管输入上下文
+   * （intro → driving 随 car_ready 热切，SRD §12.7.4 / 终裁 D4）。缺省 true 零回归。
+   */
+  autoReveal?: boolean;
   /** 喂 facade 进度条 */
   onProgress?(loaded: number, total: number): void;
   /** 实际渲染后端徽章 */
@@ -40,6 +66,8 @@ export interface GameOptions {
 export class Game {
   readonly domElement: HTMLElement;
   readonly canvasElement: HTMLCanvasElement;
+  /** 相机取景档（View 消费；构造期落定，不支持运行时切换） */
+  readonly cameraFraming: 'greybox' | 'city';
   readonly events = new Events();
   /** dispose 一键解绑全部 DOM 监听（SRD §9.2 mount 契约） */
   private readonly abortController = new AbortController();
@@ -62,8 +90,19 @@ export class Game {
   physics!: Physics;
   zones!: Zones;
   player!: Player;
-  /** 车辆挂点：PhysicsVehicle（vehicle 分支）就位后赋值，Player/相机即联动 */
+  /**
+   * 车辆挂点（CC-E1 起就位）：PhysicsVehicle（Rapier 主路径）或
+   * KinematicFallback（wasm 失败 / ?vehicle=kinematic），同 PlayerVehicle 契约。
+   */
   physicalVehicle: PlayerVehicle | null = null;
+  /**
+   * 实际启用的车辆档（init 阶段三落定）：速度遥测换算依赖它——
+   * physics 档 forwardSpeed 是 folio 时基（真实 m/s = ×Ticker.scale），
+   * kinematic 档是 SI 真实 m/s（契约「实现本征时基」的消费侧口径）。
+   */
+  vehicleKind: 'physics' | 'kinematic' | null = null;
+  /** 视觉车辆（CarConcept rig）：从 physicalVehicle 契约回读，两档通用 */
+  visualVehicle: VisualVehicle | null = null;
 
   revealed = false;
   private disposed = false;
@@ -72,6 +111,7 @@ export class Game {
     this.options = options;
     this.domElement = options.domElement;
     this.canvasElement = options.canvasElement;
+    this.cameraFraming = options.cameraFraming ?? 'greybox';
   }
 
   async init(): Promise<void> {
@@ -82,7 +122,7 @@ export class Game {
      */
     this.scene = new THREE.Scene();
     this.resourcesLoader = new ResourcesLoader(this);
-    this.quality = new Quality();
+    this.quality = new Quality(this.options.quality); // M9：?quality= 经 GameOptions 注入
     this.ticker = new Ticker();
     this.inputs = new Inputs(this, [], ['intro'], signal); // ★坑①：初始 filter 只有 intro
     this.viewport = new Viewport(this.domElement, {
@@ -108,11 +148,19 @@ export class Game {
     this.world = new World(this); // step(0)：灯光 + 网格地面（无物理依赖）
 
     /**
-     * 阶段二：并行加载（Game.js L129-183 —— wasm 编译与资源下载完全并行）
+     * 阶段二：并行加载（Game.js L129-183 —— wasm 编译与资源下载完全并行）。
+     * Rapier 失败不再致命（SRD §12.7.5「世界永远能开」）：捕获 → null →
+     * 阶段三跳过物理系统，车辆走运动学回退档。
      */
-    const rapierPromise = import('@dimforge/rapier3d');
+    const rapierPromise = import('@dimforge/rapier3d').catch((error: unknown) => {
+      console.error('[world] Rapier wasm 加载失败，切运动学回退档', error);
+      return null;
+    });
+    const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
     const resourcesPromise = this.resourcesLoader.load(
-      [], // 灰盒 Spike 零资产；Phase B 在此接正式资产清单（31 项模式）
+      // CC-E1 首个正式资产：CarConcept（3.5MB 复用豁免，Draco+KTX2）；
+      // Phase B 在此接完整清单（31 项模式）
+      [['carConcept', `${base}/models/car-concept/CarConcept.gltf`, 'gltf']],
       (toLoad, total) => {
         this.options.onProgress?.(total - toLoad, total);
       },
@@ -120,22 +168,39 @@ export class Game {
 
     const [newResources, RAPIER] = await Promise.all([resourcesPromise, rapierPromise]);
     if (this.disposed) return; // 加载期间被卸载：不再构建物理系统
-    this.RAPIER = RAPIER;
     this.resources = { ...newResources, ...this.resources };
 
     /**
-     * 阶段三：物理与玩法系统（Game.js L185-209 —— 全部依赖 RAPIER 就绪）
+     * 阶段三：物理与玩法系统（Game.js L185-209）。
+     * 车辆热切换（SRD §12.7.5）：Rapier 就绪且未显式要求运动学档 → PhysicsVehicle；
+     * 否则 KinematicFallback（同 PlayerVehicle 契约，Player/View/VisualVehicle 零感知）。
+     * 挂点必须先于 Player 构造——Player 构造期做出生点对齐 + 翻车自救注册。
      */
-    this.physics = new Physics(this);
-    this.zones = new Zones(this);
+    if (RAPIER) {
+      this.RAPIER = RAPIER;
+      this.physics = new Physics(this);
+      this.zones = new Zones(this);
+    }
+
+    const useKinematic = this.options.vehicle === 'kinematic' || !RAPIER;
+    this.vehicleKind = useKinematic ? 'kinematic' : 'physics';
+    this.physicalVehicle = useKinematic ? new KinematicFallback(this) : new PhysicsVehicle(this);
     this.player = new Player(this);
-    this.world.step(1); // ★坑③：地面碰撞体 + 锥桶，必须晚于 physics/objects
+    this.visualVehicle = new VisualVehicle(this, this.resources.carConcept as GLTF);
+
+    // ★坑③：地面碰撞体 + 锥桶，必须晚于 physics/objects；无 RAPIER 时跳过
+    //（运动学档 raycast 打视觉地面网格，不需要碰撞体；锥桶无物理域自然缺席）
+    if (RAPIER) this.world.step(1);
     this.options.onProgress?.(1, 1);
 
-    // ★坑④：等 3 帧（shader 编译落地）再 reveal
-    this.ticker.wait(3, () => {
-      this.reveal();
-    });
+    // ★坑④：等 3 帧（shader 编译落地）再 reveal；
+    // autoReveal=false（CC-E6 首幕剧本模式）时跳过——filters 停留 'intro'，
+    // 由 TransformSystem 在 car_ready 帧切 'driving'（加载期按键漏车的坑①防线不变）
+    if (this.options.autoReveal ?? true) {
+      this.ticker.wait(3, () => {
+        this.reveal();
+      });
+    }
   }
 
   /** 开场完成：输入上下文 intro → wandering（Reveal 状态机的 Spike 极简版） */

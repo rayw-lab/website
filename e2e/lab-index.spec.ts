@@ -25,6 +25,14 @@ test.describe('Lab 索引页', () => {
       await expect(card.locator('.card-budget')).toContainText('预算');
       expect(await card.locator('.card-chips i').count()).toBeGreaterThan(0);
     }
+
+    // CC-E7 拆弹契约（A3 §6-3 / E8 激活须知 1）：kind='world' 模块不得渲染
+    // /lab/world 死卡片；其入口 = 通栏专区卡，真实 URL 指向 `/`（Full Entry）
+    await expect(page.locator('.card[href*="/lab/world"]')).toHaveCount(0);
+    const worldEntry = page.locator('.spike');
+    await expect(worldEntry).toBeVisible();
+    await expect(worldEntry).toHaveAttribute('href', u('/'));
+    await expect(worldEntry.locator('.spike-title')).toContainText('智能座舱科技城');
     await shot(page, 'lab_index_cards');
   });
 

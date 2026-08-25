@@ -160,14 +160,20 @@ export class Nipple {
     this.group.add(this.mesh);
   }
 
-  /** 每帧由 Player 写入车位与朝向（环随车走） */
-  setCoordinates(x: number, y: number, z: number, angle: number): void {
+  /**
+   * 每帧由 Player 写入车位与朝向（环随车走）。
+   * rotationY = folio 底盘航向（前向 = (cos r, 0, -sin r)）；内部角运算统一用
+   * 世界 XZ atan2 口径（targetAngle = atan2(dz, dx) 同空间）——车头 XZ 方位角
+   * = atan2(-sin r, cos r) = -r（CC-E2 修正：直接存 rotationY 会镜像转向）。
+   */
+  setCoordinates(x: number, y: number, z: number, rotationY: number): void {
     const clampedY = clamp(y - 0.25, 0.1, 0.65);
     this.position.set(x, clampedY, z);
     this.group.position.copy(this.position);
 
-    this.angle = angle;
-    this.mesh.rotation.y = -angle;
+    this.angle = -rotationY;
+    // 本地 +X（shader forward 扇区中心）→ 世界 (cos r, 0, -sin r) = 车头
+    this.mesh.rotation.y = rotationY;
   }
 
   updateFromPointer(pointer: Pointer, action: InputAction): void {
@@ -190,10 +196,12 @@ export class Nipple {
       if (this.active) {
         // 单指 → 摇杆
         if (pointer.touches.length === 1) {
-          // 射线求交到摇杆平面
+          // 射线求交到摇杆平面。Pointer 给的是 client 视口坐标，NDC 归一化必须
+          // 先减舞台 rect 偏移（CC-E2 修正：壳页舞台非满屏，直接除会整体偏移）
+          const stageRect = this.game.viewport.domElement.getBoundingClientRect();
           const ndcPointer = new THREE.Vector2(
-            (pointer.current.x / this.game.viewport.width) * 2 - 1,
-            -((pointer.current.y / this.game.viewport.height) * 2 - 1),
+            ((pointer.current.x - stageRect.left) / this.game.viewport.width) * 2 - 1,
+            -(((pointer.current.y - stageRect.top) / this.game.viewport.height) * 2 - 1),
           );
           this.raycaster.setFromCamera(ndcPointer, this.game.view.defaultCamera);
 
