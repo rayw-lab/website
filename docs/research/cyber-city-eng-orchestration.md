@@ -2,29 +2,31 @@
 
 | 项 | 内容 |
 |----|------|
-| 编排者 | 父代理（只编排，不写业务代码） |
-| 执行模型 | **`claude-fable-5-thinking-xhigh`**（列表无 max） |
-| 规格基线 | PRD v2.0 + SRD v2.0 + `cyber-city-implementation-plan.md` |
-| 设计基线分支 | `cursor/cyber-city-hero-design-1d6f` |
-| 纪律 | 每 Task 开工前必读 PRD/SRD；文件域互斥；波末强制审计 |
+| 编排者 | 父代理（只编排） |
+| 模型 | `claude-fable-5-thinking-xhigh`（无 max） |
+| 集成 tip | `f514a85`（波 1 四分支 + A1 已合入设计基线） |
+| 审计裁决 | **放行**（`cyber-city-wave1-audit.md`） |
 
-## 波 1 状态 — ✅ 齐套（2026-08-25）
+## 波 1 — ✅ 已合流
 
-| ID | 分支 | PR | 状态 | Agent |
-|----|------|-----|------|-------|
-| CC-E1 | `cursor/cc-e1-physics-vehicle-1d6f` | #16 | ✅ | [E1](bc-30db345e-5bf7-5461-ae70-e3d17156072b) |
-| CC-E3 | `cursor/cc-e3-city-procedural-1d6f` | #14 | ✅ | [E3](bc-22457f98-f1cb-5a4a-ba37-7705aaf339e7) |
-| CC-E5 | `cursor/cc-e5-hero-robot-1d6f` | #17 | ✅ | [E5](bc-6b35dde6-1fee-59f7-b5b8-f093f3b4a82c) |
-| CC-E10 | `cursor/cc-e10-e2e-skeleton-1d6f` | #15 | ✅ | [E10](bc-f4696da3-72d6-5848-883b-275ad65207e6) |
-| CC-A1 | `cursor/cc-a1-wave1-audit-1d6f` | — | ✅ **放行**（报告 `cyber-city-wave1-audit.md`：建议合并顺序 E1→E3→E5→E10；合流执行项 M1–M4；波 2 E2∥E4∥E6 可开工） | — |
+| ID | PR | 状态 |
+|----|-----|------|
+| E1 / E3 / E5 / E10 | #16 / #14 / #17 / #15 | ✅ merged → 设计基线 |
+| A1 | #18 | ✅ 放行 |
 
-## 波次总览
+## 波 2 — 🚀 派发中（A1 前提已满足）
 
-```text
-波 1（并行 ×4）✅ → 审计 A1 🚀
-波 2（并行 ×3）⏳ E2∥E4∥E6（A1 通过后）
-波 3（并行 ×2）⏳ E8∥E9
-波 4（原子）   ⏳ E7 路由切换
-```
+合流执行项写入各 Task（审计 M1–M4）：
+- M1 共享 `index.ts` / notes 按小节维护
+- M2 VisualVehicle 落位以 E1 为准（`player/VisualVehicle.ts`）
+- M3 出生锚点统一到 buildings JSON spawn (0,0)
+- M4 `?vehicle=`/`?city=`/`?robot=` 临时接线转正（E2 壳页白名单）
 
-*更新于波 1 齐套。*
+| ID | 分支 | 状态 | Agent |
+|----|------|------|-------|
+| CC-E2 | `cursor/cc-e2-spike-merge-1d6f` | 🚀 | — |
+| CC-E4 | `cursor/cc-e4-neon-visual-1d6f` | 🚀 | — |
+| CC-E6 | `cursor/cc-e6-transform-reveal-1d6f` | 🚀 | — |
+| CC-A2 | 波 2 齐套后审计 | ⏳ | — |
+
+*波 2 启动于波 1 合流完成后。*
