@@ -31,7 +31,8 @@ CC-E5（机器人）∥ CC-E10（e2e 骨架），文件域互斥并行，各 Tas
 ### 域外挂点（本 Task 文件域之外的最小改动，合流时按此对照）
 
 1. **`src/lab/world/index.ts`**（engine 入口，+~20 行）：`?robot=1` 时动态 import HeroRobot、
-   经 `game.resourcesLoader` 装载、加进 `game.scene`、挂 `ticker` tick 驱动、
+   经 `game.resourcesLoader` 装载、站位取 `respawns.getDefault()`（SRD §12.7.5
+   「机器人站位即出生锚点」，变形后车落地同点）、加进 `game.scene`、挂 `ticker` tick 驱动、
    `ticker.wait(6)` 后起光柱（同 Game 坑④节奏）；`dispose()` 链路已接。
    默认路径（无参数）零机器人字节。
 2. **`src/pages/world-spike/index.astro`**（壳页，+3 行脚本 +1 行说明）：`robot` 参数透传 +

@@ -41,9 +41,15 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   if (opts.params.get('robot') === '1') {
     const { HeroRobot: HeroRobotClass, loadHeroRobotGltf } = await import('./city/HeroRobot');
     const gltf = await loadHeroRobotGltf(game.resourcesLoader);
+    const anchor = game.respawns.getDefault().position;
     heroRobot = new HeroRobotClass({
       gltf,
-      position: { x: 0, z: 0 }, // 环心站位（未来十字路口正中，buildings JSON world.spawn 对齐）
+      // 机器人站位即出生锚点（SRD §12.7.5：变形后车落地同点；相机焦点默认也在此）
+      position: { x: anchor.x, z: anchor.z },
+      headingY: Math.PI * 0.25, // 面向默认相机方位（View spherical theta = π/4）
+      // 灰盒 View（FOV 25° / 半径 ~21m）取景适配：9m 级巨人只会拍到腿。
+      // 城市首幕相机（设计提案 §3.1：FOV 42° / 距 18m / 俯角 22°）时用类默认 9m。
+      targetHeight: 5.2,
       reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
     });
     game.scene.add(heroRobot.group);
