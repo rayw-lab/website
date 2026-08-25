@@ -28,17 +28,17 @@
 | CC-L0-baseline | `cursor/cc-l0-baseline-score-1d6f` | 全套工程检验 + 基线分数矩阵 + 工件 | [L0-baseline](bc-45675d88-0cc5-5b62-bd55-1b18638a43ce) | ✅ 五维基线 87.2 |
 | CC-L0-visual | `cursor/cc-l0-visual-research-1d6f` | 竞品视觉调研 + 85 分 rubric | [L0-visual](bc-d0cbec75-f78f-5a57-b07c-873062fa73b0) | ✅ PR #30 rubric v1.1 / 51 |
 
-## Loop 0 审计 — 运行复现中
+## Loop 0 审计 — ✅ 有条件放行
 
 | ID | 分支 | 任务 | Agent | 状态 |
 |----|------|------|-------|------|
-| CC-AL0 | `cursor/cc-al0-loop0-audit-1d6f` | 复核基线分 + 框架可复现 + rubric 合理性 | gpt-5.6-sol-xhigh-fast | 🔄 预审：有条件放行；待全链复现回填 |
+| CC-AL0 | `cursor/cc-al0-loop0-audit-1d6f` | 复核基线分 + 框架可复现 + rubric 合理性 | gpt-5.6-sol-xhigh-fast | ✅ 有条件放行；复算 87.2，视觉独立复评 49（Δ2）；见 `cyber-city-loop0-audit.md` |
 
-## Loop 1+ — 待 AL0 放行后
+## Loop 1+ — 可由父代理按 AL0 条件启动
 
 | ID | 任务 |
 |----|------|
-| CC-L1-improve | 按 AL0 缺口清单提分（单轮一个聚焦 PR） |
+| CC-L1-improve | 单开视觉 Tier A PR：天空/雾、锥桶撤场、窗色纪律、构图/轮廓光、变形对比度；A1 复评后再做 HUD/poster |
 | CC-AL1 | 复算综合分；<85 继续 Loop 2 |
 
 *父代理只在每轮审计后决定是否开下一轮 improve Task。*

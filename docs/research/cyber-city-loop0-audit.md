@@ -6,9 +6,9 @@
 | 审计树 | `f704664`（test-framework `71e7c59` ⊕ visual `a4d16aa` ⊕ baseline 登记） |
 | 审计分支 | `cursor/cc-al0-loop0-audit-1d6f` |
 | 日期 | 2026-08-25（UTC） |
-| 状态 | 证据/口径预审完成；运行复现待 §7 命令回填 |
+| 状态 | **审计完成 · 有条件放行** |
 
-## 0. 预审裁决
+## 0. 最终裁决
 
 **有条件放行。**
 
@@ -19,13 +19,14 @@
 
 1. PR #30 当前 `mergeStateStatus=DIRTY`；落地主干时须采用已在 baseline 分支验证的合并树，
    `world-visual.spec.ts` 冲突保留 Node ESM 兼容的 `readFileSync` 读取方案。
-2. CI Lighthouse 原始工件只保留至 **2026-11-23**；到期前应把 artifact digest 与逐 URL
-   分类中位摘要固化到长期工件。当前入库的 `quality-score-baseline-l0.json` 是派生快照，
-   不能替代原始 LHR。
+2. CI Lighthouse 原始工件只保留至 **2026-11-23**；本审计已固化 digest 与逐 URL
+   分类中位摘要，但到期前仍应把原始 LHR archive 转存为长期可寻址工件。当前入库的
+   `quality-score-baseline-l0.json` 是派生快照，不能替代原始 LHR。
 3. e2e 原始 JSON 和 `quality-loop-full.log` 未在仓库内长期留存；当前可由同一合并树重跑，
    但后续基线登记应上传可寻址的原始 JSON/日志，而不只登记“agent 工件”。
-4. rubric §4 关于 VIS-01/02 “基线暂未入库”的文字与实际两张入库 PNG 不一致；本审计按
-   文档勘误修正。
+
+另有两项文档勘误已在本审计分支当场修正，不再列为放行条件：rubric §4 已改为
+VIS-01/02 基线已入库；测试框架命令表已明确 `pnpm score` 的工件前置条件与五维覆盖要求。
 
 ## 1. 综合分口径与实现
 
@@ -164,19 +165,28 @@ node scripts/score-loop.mjs --lhci-dir /tmp/ci-lhci
 ```
 
 `pnpm score` 是“读取既有工件”而非 fresh-clone 单命令；未先生成 e2e/LHCI 工件时退出 2
-符合脚本设计。文档已有输入说明，但下一版可在命令表直接标注此前置条件。
+符合脚本设计。本审计已在命令表直接补充此前置条件及 `availableWeight===1` 放行纪律。
 
-## 7. 运行复现计划（待回填）
+## 7. 运行复现结果
 
-为避免把派生快照当作运行证据，本审计将执行：
+2026-08-25 UTC 在审计分支 fresh dependency install 后实跑：
 
-1. `pnpm quality:loop:full`：重建 52 例 e2e JSON、3 个 smoke 结果和本地 LHCI；
-2. `node scripts/score-loop.mjs --lhci-dir /tmp/cc-al0-ci-lhci`：用指定 CI 原始 LHR
-   覆盖本地不稳定的 LHCI 两维；
-3. 核对 `COMPOSITE_SCORE`、`availableWeight`、`missing` 和用例计数；
-4. `pnpm astro check`：验证仅文档变更不引入内容/类型问题。
+| 命令 | 结果 |
+|------|------|
+| `pnpm install --frozen-lockfile` | PASS；锁文件无需更新，372 packages 就位 |
+| `pnpm exec playwright install chromium` | PASS；Chromium 151 + headless shell + FFmpeg 就位 |
+| `pnpm quality:loop:full` | **exit 0**；build 2s；e2e **52/52**，0 failed/skipped/flaky，1024s；本地 LHCI 21 run collect 完成 |
+| VIS-01/02 | 入库截图直接比对 PASS，未更新 snapshot |
+| VIS-03 | PASS；robot_idle 中心采样 **430 色 / 非众数 56.1%** |
+| VIS-04 | PASS；POI 中心采样 **327 色 / 非众数 70.1%**，parkingBay 断言通过 |
+| 本地 `pnpm score`（full 链内） | 79.6，明确显示 LHCI 两维缺失、`availableWeight=0.6`；与已登记 SwiftShader 限制一致，不作为基线 |
+| `pnpm score --lhci-dir /tmp/cc-al0-ci-lhci` | **`COMPOSITE_SCORE=87.2`**；`availableWeight=1`、`missing=[]`、7 URL 各 3 LHR |
+| `pnpm astro check` | exit 0；122 files，**0 errors / 0 warnings / 58 hints** |
 
-运行结果完成后回填本节并转为最终裁决。
+全链生成的 Playwright JSON 复核为 `expected=52`、`unexpected=0`、`skipped=0`、
+`flaky=0`；score 输出的三个 smoke 标题与 VIS-02/03/04 一致且均 `ok=true`。测试产生的
+历史截图字节差异已从审计提交中排除，审计分支仅保留文档变更；preview 服务按测试框架约定
+继续运行。
 
 ## 8. Loop 1 建议聚焦项
 
