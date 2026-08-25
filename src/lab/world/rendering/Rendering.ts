@@ -84,5 +84,10 @@ export class Rendering {
   dispose(): void {
     this.renderer.setAnimationLoop(null);
     this.renderer.dispose();
+
+    // dispose 后原 canvas 的 GL 上下文不可复用：原位克隆置换，保证可重复挂载
+    //（spike engine.ts dispose 纪律迁入；WS-E2E-07 再挂载链路依赖此行为）
+    const canvas = this.game.canvasElement;
+    canvas.replaceWith(canvas.cloneNode(false) as HTMLCanvasElement);
   }
 }
