@@ -64,6 +64,35 @@ const visible = labModules.filter((m) => m.status !== 'archived');
             </li>
           ))}
         </ul>
+
+        <!-- world-spike 试验场入口：独立路由 /world-spike/，未走 manifest（实验性，不计预算分级） -->
+        <a class="spike" href={`${base}/world-spike/`}>
+          <span class="spike-visual">
+            <img
+              src={`${base}/posters/car-configurator-poster.webp`}
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          </span>
+          <span class="spike-body">
+            <span class="spike-code mono">
+              LAB / SPIKE · WORLD
+              <em class="status status-experimental">EXPERIMENTAL</em>
+            </span>
+            <strong class="spike-title">3D 智能座舱试验场</strong>
+            <span class="spike-desc">
+              folio 风格灰盒可驾驶 CarConcept：WASD / 触屏双操控，WebGPU 优先、WebGL 2
+              自动回退。独立试验页，不走 manifest 注册。
+            </span>
+            <span class="card-chips mono" aria-label="技术要点">
+              <i>WebGPU</i>
+              <i>WASD</i>
+              <i>CarConcept</i>
+            </span>
+            <span class="spike-enter mono">进入试验场 →</span>
+          </span>
+        </a>
       </main>
 
       <footer class="foot">
@@ -223,6 +252,74 @@ const visible = labModules.filter((m) => m.status !== 'archived');
     letter-spacing: 0.05em;
     color: var(--muted);
     opacity: 0.85;
+  }
+
+  .spike {
+    display: flex;
+    margin-top: 1.4rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--panel);
+    color: inherit;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .spike:hover {
+    border-color: var(--accent);
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+  .spike-visual {
+    flex: 0 0 42%;
+    min-height: 180px;
+    background: radial-gradient(120% 95% at 50% 18%, #1a1d24 0%, #0e0f13 72%);
+  }
+  .spike-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .spike-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1.15rem 1.25rem 1.25rem;
+  }
+  .spike-code {
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+  }
+  .status-experimental {
+    color: #e6b45a;
+    border-color: #e6b45a66;
+  }
+  .spike-title {
+    font-size: 1.2rem;
+    font-weight: 620;
+    line-height: 1.4;
+  }
+  .spike-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    max-width: 52ch;
+  }
+  .spike-enter {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+  @media (max-width: 720px) {
+    .spike {
+      flex-direction: column;
+    }
+    .spike-visual {
+      aspect-ratio: 16 / 8;
+      min-height: 0;
+    }
   }
   .foot {
     margin-top: 3rem;

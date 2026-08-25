@@ -1,0 +1,133 @@
+---
+// LabCardWorldSpike —— 3D 智能座舱试验场入口卡（bento 第三张，≥960px 通栏横排）。
+// 指向独立试验页 /world-spike/（非 /lab/ 路由）：folio 风格灰盒可驾驶 CarConcept。
+// 选择器叠 .card.lab-card.lab-card-world 以覆盖 LabBento 对 :last-child 的 span 5。
+import TechChip from '../ui/TechChip.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const chips = ['WebGPU', 'WASD', 'CarConcept'];
+---
+
+<a class="card lab-card lab-card-world reveal" href={`${base}/world-spike/`}>
+  <figure class="media">
+    <img
+      src={`${base}/posters/car-configurator-poster.webp`}
+      alt=""
+      width="1280"
+      height="720"
+      loading="lazy"
+      decoding="async"
+    />
+  </figure>
+  <div class="body">
+    <h3>3D 智能座舱试验场 <span class="tag mono">EXPERIMENTAL</span></h3>
+    <p class="desc">
+      folio 风格灰盒场景，可驾驶 CarConcept 概念车：WASD / 触屏双操控，WebGPU
+      优先渲染，WebGL&nbsp;2 自动回退。
+    </p>
+    <p class="chips">
+      {chips.map((c) => <TechChip label={c} />)}
+    </p>
+    <p class="enter">
+      进入试验场 <span class="arrow" aria-hidden="true">→</span>
+    </p>
+  </div>
+</a>
+
+<style>
+  .lab-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* 覆盖 LabBento :last-child 的 span 5，让第三卡通栏 */
+  @media (min-width: 960px) {
+    .card.lab-card.lab-card-world {
+      grid-column: 1 / -1;
+      flex-direction: row;
+    }
+
+    .media {
+      flex: 0 0 46%;
+      border-block-end: none;
+      border-inline-end: 1px solid var(--line);
+    }
+
+    img {
+      block-size: 100%;
+      aspect-ratio: auto;
+    }
+  }
+
+  .media {
+    border-block-end: 1px solid var(--line);
+  }
+
+  img {
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: var(--space-6);
+  }
+
+  h3 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  .tag {
+    display: inline-block;
+    margin-inline-start: var(--space-2);
+    padding: 0.125rem var(--space-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-chip);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+    vertical-align: middle;
+  }
+
+  .desc {
+    margin-block-start: var(--space-3);
+    font-size: var(--text-small);
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-start: auto;
+    padding-block-start: var(--space-5);
+  }
+
+  .enter {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-block-start: var(--space-4);
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .arrow {
+    transition: transform var(--duration-hover) var(--ease-out);
+  }
+
+  .lab-card:hover .arrow {
+    transform: translateX(4px);
+  }
+</style>

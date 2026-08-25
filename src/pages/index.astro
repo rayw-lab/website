@@ -9,6 +9,7 @@ import PillarCard from '../components/home/PillarCard.astro';
 import LabBento from '../components/home/LabBento.astro';
 import LabCardCar from '../components/home/LabCardCar.astro';
 import LabCardTts from '../components/home/LabCardTts.astro';
+import LabCardWorldSpike from '../components/home/LabCardWorldSpike.astro';
 import CaseCard from '../components/home/CaseCard.astro';
 import NowCta from '../components/home/NowCta.astro';
 
@@ -107,11 +108,12 @@ const cases = [
         label="Live Demos"
         title="可交互的能力证据"
         id="live-demos-title"
-        lede="不是录屏，是能上手的东西——两个在浏览器里实时运行的 Demo。"
+        lede="不是录屏，是能上手的东西——三个在浏览器里实时运行的 Demo，包括一座可驾驶的 3D 智能座舱试验场。"
       />
       <LabBento>
         <LabCardCar />
         <LabCardTts />
+        <LabCardWorldSpike />
       </LabBento>
     </div>
   </section>
@@ -158,6 +160,14 @@ const cases = [
   @media (min-width: 640px) {
     .grid-3 {
       grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* LabBento 仅内置双卡 7+5；第三卡（world-spike）自带通栏样式，
+     此处补中间卡（TTS）的 span 5，维持首行 7+5、次行通栏。 */
+  @media (min-width: 960px) {
+    :global(.bento > :nth-child(2)) {
+      grid-column: span 5;
     }
   }
 </style>
