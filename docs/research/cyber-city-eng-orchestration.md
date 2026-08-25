@@ -26,7 +26,7 @@ E1(#16) E3(#14) E5(#17) E10(#15) A1(#18)
 
 | ID | 分支 | PR | Agent |
 |----|------|-----|-------|
-| CC-E8 | `cursor/cc-e8-ci-gates-1d6f` | — | [E8](bc-d91376b0-98e2-5977-9113-2f6f99fb158a) ✅ |
+| CC-E8 | `cursor/cc-e8-ci-gates-1d6f` | #23 | [E8](bc-d91376b0-98e2-5977-9113-2f6f99fb158a) ✅ |
 | CC-E9 | `cursor/cc-e9-poi-areas-1d6f` | — | [E9](bc-a5acf7bd-6424-5c2c-b54e-4ce4ab292ab1) |
 
 文件域互斥：E8=`scripts/`+CI 配置+`manifest`（见任务书过渡纪律）；E9=`world/areas/`+`world-pois.json`+RayCursor。
