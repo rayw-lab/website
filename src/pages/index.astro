@@ -57,7 +57,12 @@ const buildings = cityMap.buildings.map((b) => ({
   en: b.title.en,
   href: `${base}${b.deepLink}`,
   color: b.neonColor,
+  hero: b.lodProfile === 'hero',
 }));
+
+// [CC-L2 A7] 挂载后 mini 楼宇快览：5 栋 hero 楼（lodProfile=hero 单源筛选，
+// 与 streaming.spawnHd 五钉同集）——cover 淡出后世界内常驻的「楼即产品线」DOM 面
+const heroTowers = buildings.filter((b) => b.hero);
 ---
 
 <!doctype html>
@@ -100,14 +105,37 @@ const buildings = cityMap.buildings.map((b) => ({
           aria-label="智能座舱科技城：变形仪式后 W/A/S/D 或方向键驾驶 CarConcept，靠近大楼按 E 进站"
         ></canvas>
 
-        <!-- 驾驶 HUD（DOM，挂载后可见；引擎经 data-ws-* 挂点接线，缺席容忍） -->
-        <div class="hud" aria-hidden="true">
+        <!-- 驾驶 HUD（DOM，挂载后可见；引擎经 data-ws-* 挂点接线，缺席容忍）。
+             [CC-L2 A7] 霓虹面板化（1px 描边 + 8% 填色，设计提案 §5.2）；容器不再
+             aria-hidden——改 visibility 门控（隐藏时不可聚焦、不进 AT），
+             销 L0 观察 aria-hidden-focus（baseline §A.5-2） -->
+        <div class="hud">
           <div class="hud-cell">
             <span class="hud-num" data-ws-speed>0</span>
             <span class="hud-unit">km/h</span>
           </div>
           <button class="hud-respawn" type="button" data-world-respawn>回到路口 (R)</button>
         </div>
+
+        <!-- [CC-L2 A7] mini 楼宇快览：5 栋 hero 楼右下常驻（cover 淡出后世界内的
+             「楼即产品线」DOM 面，真实 URL 直跳；销 A4 观察⑨「挂载后快览随 cover 消失」） -->
+        <nav class="hud-city" aria-label="楼宇快览（5 栋 hero 楼）">
+          <p class="hud-city-title mono">HERO TOWERS · 05</p>
+          <ul>
+            {
+              heroTowers.map((b) => (
+                <li>
+                  <a href={b.href} style={`--neon: ${b.color};`}>
+                    <i class="dot" aria-hidden="true" />
+                    <span class="b-zh">{b.title}</span>
+                    <span class="b-en mono">{b.en}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+
         <p class="hint" data-ws-hint aria-hidden="true">
           W/A/S/D 或方向键驾驶 · Shift 加速 · Space/B 刹车 · R 回到路口 · 靠近大楼按 E 进站 · Esc 菜单
         </p>
@@ -345,8 +373,14 @@ const buildings = cityMap.buildings.map((b) => ({
 
 <style>
   /* 独立最小壳样式（不依赖全站 tokens，系统字体栈——G-A′ HTML+CSS ≤35KB 红线） */
+  /* [CC-L2 A8] 霓虹色单源 token：与引擎侧同源（品牌青 #49c5b6 = Roads ROAD_NEON
+     南北轴 = buildings JSON 品牌楼；品红 #ff2d6f = ROAD_NEON 东西轴）——壳内一切
+     霓虹描边/辉光/填色只取这组 token，逐楼色经 --neon 内联注入（buildings JSON 单源） */
   html {
     color-scheme: dark;
+    --neon-cyan: #49c5b6;
+    --neon-magenta: #ff2d6f;
+    --neon-ink: #eafffb;
   }
   html,
   body {
@@ -383,19 +417,19 @@ const buildings = cityMap.buildings.map((b) => ({
     top: 0.7rem;
     right: 0.9rem;
     z-index: 30;
-    font-size: 0.74rem;
-    letter-spacing: 0.06em;
-    color: #eafffb;
-    background: rgba(10, 16, 22, 0.82);
-    border: 1px solid rgba(73, 197, 182, 0.55);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--neon-ink);
+    background: color-mix(in srgb, var(--neon-cyan) 8%, rgba(10, 16, 22, 0.82));
+    border: 1px solid color-mix(in srgb, var(--neon-cyan) 55%, transparent);
     border-radius: 999px;
     padding: 0.42em 1.1em;
   }
   .skip:hover,
   .skip:focus-visible {
-    border-color: #49c5b6;
+    border-color: var(--neon-cyan);
     text-decoration: none;
-    box-shadow: 0 0 14px rgba(73, 197, 182, 0.4);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--neon-cyan) 40%, transparent);
   }
 
   /* ---------- 全屏世界容器 ---------- */
@@ -417,18 +451,20 @@ const buildings = cityMap.buildings.map((b) => ({
     padding-right: 13rem; /* 让位右上角跳过出口 */
     background: linear-gradient(180deg, rgba(5, 7, 13, 0.88), rgba(5, 7, 13, 0.55) 78%, transparent);
   }
+  /* [CC-L2 A8] 顶栏与霓虹单源一致：brand 辉光、导航悬停青族、backend 徽标霓虹面板化 */
   .brand {
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
-    color: #49c5b6;
+    font-size: 0.75rem;
+    letter-spacing: 0.22em;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--neon-cyan) 60%, transparent);
     white-space: nowrap;
   }
   .nav {
     display: flex;
     flex-wrap: wrap;
     gap: 0.15rem 0.35rem;
-    font-size: 0.74rem;
-    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
   }
   .nav a {
     color: #c3cbd8;
@@ -437,16 +473,18 @@ const buildings = cityMap.buildings.map((b) => ({
   }
   .nav a:hover,
   .nav a:focus-visible {
-    color: #eafffb;
-    background: rgba(158, 203, 255, 0.12);
+    color: var(--neon-ink);
+    background: color-mix(in srgb, var(--neon-cyan) 14%, transparent);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--neon-cyan) 45%, transparent);
     text-decoration: none;
   }
   .backend {
     margin-left: auto;
-    font-size: 0.68rem;
-    letter-spacing: 0.08em;
-    color: #9aa4b2;
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: #bdfff4;
+    background: color-mix(in srgb, var(--neon-cyan) 8%, rgba(6, 10, 16, 0.6));
+    border: 1px solid color-mix(in srgb, var(--neon-cyan) 35%, transparent);
     border-radius: 999px;
     padding: 0.24em 0.8em;
     white-space: nowrap;
@@ -467,7 +505,10 @@ const buildings = cityMap.buildings.map((b) => ({
     display: block;
   }
 
-  /* ---------- 驾驶 HUD ---------- */
+  /* ---------- 驾驶 HUD ----------
+     [CC-L2 A7] 霓虹面板化：1px 霓虹描边 + 8% 填色（设计提案 §5.2 HUD 面板规范）；
+     visibility 门控代替 aria-hidden——隐藏态不可聚焦不进 AT（销 aria-hidden-focus），
+     ready 态成为世界内 HUD（与 3D 同族光效语言，销 A4 观察⑨「挂载后退化素面」） */
   .hud {
     position: absolute;
     left: 0;
@@ -480,41 +521,115 @@ const buildings = cityMap.buildings.map((b) => ({
     padding: 0.8rem 1.1rem;
     background: linear-gradient(180deg, transparent, rgba(4, 6, 10, 0.62));
     opacity: 0;
-    transition: opacity 400ms ease;
+    visibility: hidden;
+    transition:
+      opacity 400ms ease,
+      visibility 0s linear 400ms;
     pointer-events: none;
   }
   .world[data-state='ready'] .hud {
     opacity: 1;
+    visibility: visible;
+    transition: opacity 400ms ease;
   }
   .hud-cell {
     display: flex;
     flex-direction: column;
     line-height: 1.15;
+    padding: 0.4em 0.95em 0.45em;
+    border: 1px solid color-mix(in srgb, var(--neon-cyan) 50%, transparent);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--neon-cyan) 8%, rgba(5, 9, 15, 0.66));
+    backdrop-filter: blur(6px);
+    box-shadow: inset 0 0 14px color-mix(in srgb, var(--neon-cyan) 10%, transparent);
   }
   .hud-num {
     font-family: ui-monospace, Menlo, Consolas, monospace;
     font-size: 1.8rem;
     font-weight: 650;
     color: #eef2f7;
+    text-shadow: 0 0 12px color-mix(in srgb, var(--neon-cyan) 55%, transparent);
   }
   .hud-unit {
-    font-size: 0.64rem;
-    letter-spacing: 0.1em;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    opacity: 0.7;
+    color: color-mix(in srgb, var(--neon-cyan) 65%, #dfe5ec);
   }
   .hud-respawn {
     pointer-events: auto;
     margin-left: auto;
     font: inherit;
-    font-size: 0.76rem;
-    color: #eef2f7;
-    background: rgba(16, 22, 30, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 8px;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--neon-ink);
+    background: color-mix(in srgb, var(--neon-cyan) 8%, rgba(10, 16, 22, 0.78));
+    border: 1px solid color-mix(in srgb, var(--neon-cyan) 45%, transparent);
+    border-radius: 10px;
     padding: 0.45em 1em;
     cursor: pointer;
   }
+  .hud-respawn:hover,
+  .hud-respawn:focus-visible {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--neon-cyan) 35%, transparent);
+  }
+
+  /* [CC-L2 A7] mini 楼宇快览：右下常驻 5 栋 hero 楼（1px 描边 + 8% 填色同族面板；
+     visibility 门控同 .hud——ready 前不可聚焦，ready 后链接键盘可达真实 URL） */
+  .hud-city {
+    position: absolute;
+    right: 1.1rem;
+    bottom: 5rem;
+    z-index: 4;
+    width: 15.5rem;
+    max-width: calc(100vw - 2.2rem);
+    padding: 0.7rem 0.85rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--neon-cyan) 45%, transparent);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--neon-cyan) 8%, rgba(5, 9, 15, 0.66));
+    backdrop-filter: blur(6px);
+    box-shadow: inset 0 0 16px color-mix(in srgb, var(--neon-cyan) 8%, transparent);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 400ms ease,
+      visibility 0s linear 400ms;
+  }
+  .world[data-state='ready'] .hud-city {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 400ms ease;
+  }
+  .hud-city-title {
+    margin: 0 0 0.4rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--neon-cyan) 55%, transparent);
+  }
+  .hud-city ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.05rem;
+  }
+  .hud-city a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55em;
+    padding: 0.24em 0.45em;
+    border-radius: 8px;
+    color: #dbe2ec;
+    font-size: 0.8rem;
+  }
+  .hud-city a:hover,
+  .hud-city a:focus-visible {
+    background: color-mix(in srgb, var(--neon-cyan) 14%, transparent);
+    text-decoration: none;
+  }
+
   .hint {
     position: absolute;
     top: 0.7rem;
@@ -523,9 +638,11 @@ const buildings = cityMap.buildings.map((b) => ({
     z-index: 4;
     margin: 0;
     max-width: 92%;
-    font-size: 0.76rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
     color: #dfe5ec;
-    background: rgba(6, 9, 14, 0.66);
+    background: color-mix(in srgb, var(--neon-cyan) 6%, rgba(6, 9, 14, 0.7));
+    border: 1px solid color-mix(in srgb, var(--neon-cyan) 30%, transparent);
     padding: 0.4em 1.1em;
     border-radius: 999px;
     opacity: 0;
@@ -577,29 +694,37 @@ const buildings = cityMap.buildings.map((b) => ({
     max-width: 44rem;
     padding-bottom: 0.4rem;
   }
+  /* [CC-L2 A8] 排版强化：H1 字距 + 双层辉光（暗投影保可读性 + 青色霓虹晕），
+     chip/pillars 标签统一霓虹单源（1px 描边 + 8% 填色族）；小字号全部 ≥0.75rem
+     （12px 可读线，销 baseline §A.5-3 font-size 审计项）——零 webfont（G-A′ 红线） */
   .chip {
     display: inline-block;
     margin: 0 0 0.7rem;
-    font-size: 0.66rem;
-    letter-spacing: 0.22em;
+    font-size: 0.75rem;
+    letter-spacing: 0.26em;
     color: #bdfff4;
-    border: 1px solid rgba(73, 197, 182, 0.5);
+    border: 1px solid color-mix(in srgb, var(--neon-cyan) 50%, transparent);
     border-radius: 999px;
     padding: 0.32em 1em;
-    text-shadow: 0 0 8px rgba(73, 197, 182, 0.55);
+    background: color-mix(in srgb, var(--neon-cyan) 8%, rgba(6, 10, 16, 0.5));
+    text-shadow: 0 0 8px color-mix(in srgb, var(--neon-cyan) 55%, transparent);
   }
   h1 {
     margin: 0 0 0.45rem;
     font-size: clamp(1.45rem, 3.4vw, 2.3rem);
     line-height: 1.28;
-    letter-spacing: 0.01em;
-    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
+    letter-spacing: 0.06em;
+    text-shadow:
+      0 2px 18px rgba(0, 0, 0, 0.72),
+      0 0 26px color-mix(in srgb, var(--neon-cyan) 34%, transparent);
   }
   .sub {
     margin: 0 0 0.9rem;
     max-width: 56ch;
     font-size: 0.94rem;
+    letter-spacing: 0.02em;
     color: #cfd6df;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6);
   }
   .pillars {
     display: flex;
@@ -608,15 +733,15 @@ const buildings = cityMap.buildings.map((b) => ({
     margin: 0 0 1.2rem;
     padding: 0;
     list-style: none;
-    font-size: 0.7rem;
-    letter-spacing: 0.06em;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
   }
   .pillars li {
-    border: 1px solid rgba(158, 203, 255, 0.35);
+    border: 1px solid color-mix(in srgb, var(--neon-cyan) 38%, transparent);
     border-radius: 6px;
     padding: 0.34em 0.85em;
-    color: #d7e6fb;
-    background: rgba(10, 16, 26, 0.55);
+    color: #d5f3ee;
+    background: color-mix(in srgb, var(--neon-cyan) 8%, rgba(8, 13, 20, 0.6));
     white-space: nowrap;
   }
 
@@ -700,10 +825,11 @@ const buildings = cityMap.buildings.map((b) => ({
   }
   .city-nav-title {
     margin: 0 0 0.55rem;
-    font-size: 0.66rem;
+    font-size: 0.75rem;
     font-weight: 500;
-    letter-spacing: 0.16em;
-    color: #9ecbff;
+    letter-spacing: 0.18em;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--neon-cyan) 45%, transparent);
     text-transform: uppercase;
   }
   .city-nav ul {
@@ -738,7 +864,7 @@ const buildings = cityMap.buildings.map((b) => ({
   }
   .b-en {
     margin-left: auto;
-    font-size: 0.62rem;
+    font-size: 0.75rem;
     letter-spacing: 0.08em;
     color: #8b95a3;
     white-space: nowrap;
@@ -760,9 +886,10 @@ const buildings = cityMap.buildings.map((b) => ({
   }
   .esc-title {
     margin: 0 0 0.8rem;
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     letter-spacing: 0.2em;
-    color: #9ecbff;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--neon-cyan) 45%, transparent);
     text-transform: uppercase;
   }
   .esc-links {
@@ -827,11 +954,16 @@ const buildings = cityMap.buildings.map((b) => ({
       max-width: none;
       max-height: none;
     }
+    /* 窄屏显式进入后画面本就局促：mini 快览让位画布（cover 内 12 楼快览仍在文档流） */
+    .hud-city {
+      display: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .cover,
     .hud,
+    .hud-city,
     .hint,
     .enter,
     .progress i {

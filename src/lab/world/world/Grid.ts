@@ -102,16 +102,20 @@ export class Grid {
       one as FloatNode,
     );
 
+    // [CC-L2 A9] 棋盘格弱化（rubric §6 A9「广场棋盘格弱化」）：线强 0.55/0.8 → 0.3/0.45
+    // ——地面读作湿沥青 + 水洼倒影而非发光棋盘，网格降为底纹参照（bloom 高光让给反射）
     return vec3(0.05, 0.42, 0.36)
       .mul(fine)
-      .mul(0.55)
-      .add(vec3(0.27, 0.1, 0.62).mul(coarse).mul(0.8));
+      .mul(0.3)
+      .add(vec3(0.27, 0.1, 0.62).mul(coarse).mul(0.45));
   }
 
-  /** 水洼掩码：低频价噪声，0 = 干燥 1 = 积水（Q0 反射强度 / Q1 sheen / 湿区粗糙度共用） */
+  /** 水洼掩码：低频价噪声，0 = 干燥 1 = 积水（Q0 反射强度 / Q1 sheen / 湿区粗糙度共用）。
+   *  [CC-L2 A9] 占比上调：阈值 0.42/0.78 → 0.3/0.64——积水覆盖率 ~18% → ~38%，
+   *  首幕主机位（俯角 15° 低斜视，反射入画角有利）帧内可见湿反射（V2 帧优先口径） */
   private puddleMask() {
     const noise = valueNoise(positionWorld.xz.div(19).add(vec2(3.7, 8.1)) as Vec2Node);
-    return smoothstep(0.42, 0.78, noise);
+    return smoothstep(0.3, 0.64, noise);
   }
 
   /**
@@ -126,7 +130,9 @@ export class Grid {
     const grid = this.gridEmissive();
 
     if (level === 0) {
-      // 实时平面反射：低清镜像 + 水洼加权（湿沥青的模糊倒影感来自低分辨率本身）
+      // 实时平面反射：低清镜像 + 水洼加权（湿沥青的模糊倒影感来自低分辨率本身）。
+      // [CC-L2 A9] 强度上调 0.55/0.14 → 0.8/0.18：反射项峰值系数 0.98 仍 <1——
+      // bloom threshold=1 纪律不动，倒影只在光源本身超阈处随源辉光（Orion 水洼观感）
       if (!this.reflection) {
         this.reflection = reflector({ resolutionScale: 0.35, bounces: false });
         this.reflection.target.rotateX(-Math.PI * 0.5);
@@ -134,20 +140,21 @@ export class Grid {
         this.game.scene.add(this.reflection.target);
       }
       const puddle = this.puddleMask();
-      const wet = this.reflection.rgb.mul(puddle.mul(0.55).add(0.14));
+      const wet = this.reflection.rgb.mul(puddle.mul(0.8).add(0.18));
       this.material.emissiveNode = grid.add(wet);
-      // 湿区更光滑：主光在积水里拉出高光条
-      this.material.roughnessNode = mix(float(0.85), float(0.28), puddle);
+      // 湿区更光滑：主光在积水里拉出高光条（[CC-L2 A9] 0.28 → 0.22 略增镜面感）
+      this.material.roughnessNode = mix(float(0.85), float(0.22), puddle);
     } else if (level === 1) {
       // 假反射：城市光晕 sheen 落在水洼里（青/品红按噪声混色，§5.3「emissive 翻转」的等效近似）
+      // [CC-L2 A9] 同步上调：sheen 0.12 → 0.2、湿区粗糙度 0.45 → 0.38（与 Q0 观感衔接）
       const puddle = this.puddleMask();
       const sheenColor = mix(
         vec3(0.06, 0.5, 0.44),
         vec3(0.62, 0.02, 0.14),
         valueNoise(positionWorld.xz.div(47) as Vec2Node),
       );
-      this.material.emissiveNode = grid.add(sheenColor.mul(puddle).mul(0.12));
-      this.material.roughnessNode = mix(float(0.88), float(0.45), puddle);
+      this.material.emissiveNode = grid.add(sheenColor.mul(puddle).mul(0.2));
+      this.material.roughnessNode = mix(float(0.88), float(0.38), puddle);
     } else {
       // 止损档：哑光地面，仅保留网格底纹
       this.material.emissiveNode = grid;
