@@ -40,6 +40,12 @@ export interface GameOptions {
    * kinematic = 运动学回退档（A/B 对照）。Rapier wasm 加载失败时无视此项强制回退。
    */
   vehicle?: 'physics' | 'kinematic';
+  /**
+   * [CC-E6] false = init 后不自动 intro→wandering（灰盒 reveal 极简版让位）：
+   * 首幕剧本模式（?ritual=1）由 world/Reveal + TransformSystem 接管输入上下文
+   * （intro → driving 随 car_ready 热切，SRD §12.7.4 / 终裁 D4）。缺省 true 零回归。
+   */
+  autoReveal?: boolean;
   /** 喂 facade 进度条 */
   onProgress?(loaded: number, total: number): void;
   /** 实际渲染后端徽章 */
@@ -166,10 +172,14 @@ export class Game {
     if (RAPIER) this.world.step(1);
     this.options.onProgress?.(1, 1);
 
-    // ★坑④：等 3 帧（shader 编译落地）再 reveal
-    this.ticker.wait(3, () => {
-      this.reveal();
-    });
+    // ★坑④：等 3 帧（shader 编译落地）再 reveal；
+    // autoReveal=false（CC-E6 首幕剧本模式）时跳过——filters 停留 'intro'，
+    // 由 TransformSystem 在 car_ready 帧切 'driving'（加载期按键漏车的坑①防线不变）
+    if (this.options.autoReveal ?? true) {
+      this.ticker.wait(3, () => {
+        this.reveal();
+      });
+    }
   }
 
   /** 开场完成：输入上下文 intro → wandering（Reveal 状态机的 Spike 极简版） */

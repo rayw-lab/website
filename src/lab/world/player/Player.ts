@@ -120,16 +120,18 @@ export class Player {
   }
 
   private setInputs(): void {
-    // 动作表（Player.js L220-239 的 Spike 子集；Gamepad 键位随模块砍除）
+    // 动作表（Player.js L220-239 的 Spike 子集；Gamepad 键位随模块砍除）。
+    // [CC-E6] 'driving' = 科技城首幕变形后的驾驶上下文（filters intro → driving，
+    // 终裁 D4 变形完即可开）；'wandering' 仍是灰盒 spike 默认上下文，两者并存。
     this.game.inputs.addActions([
-      { name: 'forward',     categories: ['wandering', 'racing', 'cinematic'], keys: ['Keyboard.ArrowUp', 'Keyboard.KeyW'] },
-      { name: 'right',       categories: ['wandering', 'racing', 'cinematic'], keys: ['Keyboard.ArrowRight', 'Keyboard.KeyD'] },
-      { name: 'backward',    categories: ['wandering', 'racing', 'cinematic'], keys: ['Keyboard.ArrowDown', 'Keyboard.KeyS'] },
-      { name: 'left',        categories: ['wandering', 'racing', 'cinematic'], keys: ['Keyboard.ArrowLeft', 'Keyboard.KeyA'] },
-      { name: 'boost',       categories: ['wandering', 'racing'],              keys: ['Keyboard.ShiftLeft', 'Keyboard.ShiftRight'] },
-      { name: 'brake',       categories: ['wandering', 'racing'],              keys: ['Keyboard.KeyB', 'Keyboard.ControlLeft'] },
-      { name: 'respawn',     categories: ['wandering'],                        keys: ['Keyboard.KeyR'] },
-      { name: 'suspensions', categories: ['wandering', 'racing'],              keys: ['Keyboard.Space'] },
+      { name: 'forward',     categories: ['wandering', 'racing', 'cinematic', 'driving'], keys: ['Keyboard.ArrowUp', 'Keyboard.KeyW'] },
+      { name: 'right',       categories: ['wandering', 'racing', 'cinematic', 'driving'], keys: ['Keyboard.ArrowRight', 'Keyboard.KeyD'] },
+      { name: 'backward',    categories: ['wandering', 'racing', 'cinematic', 'driving'], keys: ['Keyboard.ArrowDown', 'Keyboard.KeyS'] },
+      { name: 'left',        categories: ['wandering', 'racing', 'cinematic', 'driving'], keys: ['Keyboard.ArrowLeft', 'Keyboard.KeyA'] },
+      { name: 'boost',       categories: ['wandering', 'racing', 'driving'],              keys: ['Keyboard.ShiftLeft', 'Keyboard.ShiftRight'] },
+      { name: 'brake',       categories: ['wandering', 'racing', 'driving'],              keys: ['Keyboard.KeyB', 'Keyboard.ControlLeft'] },
+      { name: 'respawn',     categories: ['wandering', 'driving'],                        keys: ['Keyboard.KeyR'] },
+      { name: 'suspensions', categories: ['wandering', 'racing', 'driving'],              keys: ['Keyboard.Space'] },
     ]);
 
     // Respawn
