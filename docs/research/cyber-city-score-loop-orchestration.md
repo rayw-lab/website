@@ -46,8 +46,9 @@
 | 阶段 | 分支 | 任务 | Agent | 状态 |
 |------|------|------|-------|------|
 | CC-L2-a-tail | `cursor/cc-l2-visual-a-tail-1d6f` | A7 HUD+mini 快览、A8 排版、A9 湿反射、A10 poster 重拍 | [L2-a-tail](bc-ddb54b1b-f83e-5082-b79e-de513f56ca92) | ✅ 视觉 59→62，综合 89.9 |
-| CC-AL2-a | `cursor/cc-al2-a-tail-audit-1d6f` | A 尾件复评门：视觉 ≥62 + 变形 5–10s 录屏 | gpt-5.6-sol-xhigh-fast | 🚀 已派发 |
-| CC-L2-tier-b | `cursor/cc-l2-visual-tier-b-1d6f` | B1 招牌 + B2 灯箱 + B4 剪影密度（AL2-a 放行后） | — | 待 AL2-a |
+| CC-AL2-a | `cursor/cc-al2-a-tail-audit-1d6f` | A 尾件复评门：视觉 ≥62 + 变形 5–10s 录屏 | gpt-5.6-sol-xhigh-fast | ⚠️ A7-A10 5/5；独立视觉 **60**（Δ2）；**复评门未达**；综合 90.0；见 `cyber-city-loop2-a-audit.md` |
+| CC-L2-a-plus | `cursor/cc-l2-visual-a-plus-1d6f` | AL2-a 补洞：湿反射进主体前景 + HUD/mini 字级留白（目标独立视觉 ≥62） | [L2-a-plus](bc-pending) 🚀 | 🚀 已派发 |
+| CC-L2-tier-b | `cursor/cc-l2-visual-tier-b-1d6f` | B1 招牌 + B2 灯箱 + B4 剪影密度 | — | 待 L2-a-plus 过门 |
 | CC-AL2 | `cursor/cc-al2-loop2-audit-1d6f` | Loop 2 全量复算 | gpt-5.6-sol-xhigh-fast | 待 Tier B |
 
 **进入条件（AL1 §6）：** e2e 52/52、LHCI 两 URL 不降、`availableWeight===1` 作硬条件。B3/B5 后置不进本 Loop。
