@@ -160,12 +160,30 @@ CC-T8（灰盒）── 依赖 T3 线框（可最先给王磊看）
 
 ## 工程 Epic 预告（Gate G3 后，不在本批）
 
+> **已被取代（2026-08-25 CC-IMPL1）**：本节 E1–E3 三行预告升格为下方「工程 Epic（CC-IMPL1 定稿）」，以 `cyber-city-implementation-plan.md` 为唯一施工依据。注意两处口径变化：① `hero-cyber-city` 独立模块**不建**（Premortem P9 双引擎分裂），赛博城落 `src/lab/world/city/` 内容层；② 主题楼由 4 栋扩为 10–20 槽（Phase 1 点亮 12 栋 POI）。
+
 | Epic | 内容 |
 |------|------|
-| E1 | `hero-cyber-city` 模块 + `/` 壳页 |
-| E2 | 机器人 GLB 入库 + TransformRitual |
-| E3 | Phase 1 世界壳：WASD + 四楼停车场 + VT 进 Lab |
+| E1 | ~~`hero-cyber-city` 模块 + `/` 壳页~~ → 见 CC-E3/E4/E7 |
+| E2 | ~~机器人 GLB 入库 + TransformRitual~~ → 见 CC-E5/E6 |
+| E3 | ~~Phase 1 世界壳：WASD + 四楼停车场 + VT 进 Lab~~ → 见 CC-E1/E2/E9 |
 
 ---
 
-*Task 清单 v0.1 — 父代理派发 Fable5 时复制对应 ID + 产出路径即可。*
+## 工程 Epic（CC-IMPL1 定稿，2026-08-25）
+
+| 项 | 值 |
+|----|-----|
+| 施工蓝图 | **`docs/research/cyber-city-implementation-plan.md`**（CC-IMPL1，本清单的工程续篇） |
+| 决策基线 | 设计母稿 §6 D1–D6 全部拍板 + 大楼 10–20 可扩展硬需求 |
+| Gate 制 | Phase 0 首屏炫技可变形可开 → Phase 1 12 楼 POI → Phase 2 进楼展示 → Phase 3 morph 精修 + 音效（实施方案 §2） |
+| Task 拆分 | **CC-E1 ~ CC-E10** 十个可并行施工 Task，含文件域与波次编排（实施方案 §7）：波 1 = E1 车 ∥ E3 城 ∥ E5 机器人 ∥ E10 用例骨架；波 2 = E2 合流 ∥ E4 霓虹 ∥ E6 变形首幕；波 3 = E8 门禁 ∥ E9 POI；波 4 = E7 路由原子切换 |
+| 合体裁决 | 一套引擎：spike 驾驶腿并入 `src/lab/world/` 后退役，`?impl=` 分叉与 `/world-spike/` 归档（实施方案 §3） |
+| 路由 | `/` 世界壳；HTML 五区块迁 `/home/`；`/world/` 不建（实施方案 §4） |
+| 性能 | 桌面 60fps / 首包 ≤5MB / 流式 ≤12MB / Quality 0-1-2 三档移动止损（实施方案 §5） |
+| 红线 | 禁 React/R3F/gsap/howler；运行时依赖维持 three + rapier（实施方案 §6） |
+| 派发纪律 | 分支模板 `cursor/cc-e<N>-<slug>-1deb`；commit 前缀含 Task ID；文件域重叠的 Task 不得同波并行；子代理首行自报 model slug |
+
+---
+
+*Task 清单 v0.1（设计批）+ 工程 Epic 定稿（CC-IMPL1）— 父代理派发时复制对应 ID + 产出路径即可。*
