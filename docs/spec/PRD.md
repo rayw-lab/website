@@ -12,8 +12,8 @@
 | 起草日期 | 2026-08-24 |
 | 产品负责人 | 王磊 |
 | 目标读者 | 站点所有者（王磊）、开发执行代理（Cloud Agent）、内容生产协作者、后续迭代的任何贡献者 |
-| 关联文档 | **`docs/spec/SRD.md`**（系统需求文档，描述本 PRD 的技术实现方案与非功能约束；**v2.0 注记：SRD 尚为 Hybrid 口径，需按本版同步升级，同步前以本 PRD 为准**） |
-| 上游输入 | `docs/website-plan/master-plan.md`（建站总纲）、`docs/website-plan/mvp-checklist.md`、`docs/website-plan/positioning-onepager.md`、`docs/website-plan/case-outlines.md`、`docs/website-plan/material-security-grading.md`、`docs/research/homepage-redesign-spec.md`、`docs/research/portfolio-inspiration-community.md`、`docs/research/portfolio-inspiration-index.md`；v1.1 起新增：`docs/research/bruno-simon-teardown-adaptation.md`（Hybrid 路线决策来源）、`docs/research/bruno-simon-teardown-index.md`；**v2.0 起新增：`docs/research/cyber-city-hero-design-proposal.md`（Full Entry 科技城设计提案 + 王磊 D1–D6 终裁，本版核心决策来源）、`docs/research/cyber-city-implementation-plan.md`（科技城实施计划——尚未合入仓库，待合入后生效）、`docs/research/cyber-city-competitive-research.md`、`docs/research/cyber-city-hero-fable5-tasks.md`** |
+| 关联文档 | **`docs/spec/SRD.md`**（系统需求文档；**v2.0 已同步升级为 Full Entry 科技城口径**） |
+| 上游输入 | `docs/website-plan/master-plan.md`（建站总纲）、`docs/website-plan/mvp-checklist.md`、`docs/website-plan/positioning-onepager.md`、`docs/website-plan/case-outlines.md`、`docs/website-plan/material-security-grading.md`、`docs/research/homepage-redesign-spec.md`、`docs/research/portfolio-inspiration-community.md`、`docs/research/portfolio-inspiration-index.md`；v1.1 起新增：`docs/research/bruno-simon-teardown-adaptation.md`（Hybrid 路线决策来源）、`docs/research/bruno-simon-teardown-index.md`；**v2.0 起新增：`docs/research/cyber-city-hero-design-proposal.md`（Full Entry 科技城设计提案 + 王磊 D1–D6 终裁，本版核心决策来源）、`docs/research/cyber-city-implementation-plan.md`（科技城实施计划，CC-IMPL1 已合入）、`docs/research/cyber-city-competitive-research.md`、`docs/research/cyber-city-hero-fable5-tasks.md`** |
 | 冲突裁决 | 定位与红线以 `master-plan.md` 为准；本 PRD 负责产品范围、功能清单与路线图。范围冲突时先修订本 PRD 再动工。**v2.0 起：凡涉及 3D 世界/首页形态/炫技边界的条款，与本文旧表述或任何上游文档冲突时，一律以 §2.6「Full Entry 决策与新三层承诺」为准（王磊终裁 D1–D6）；v1.1「Hybrid 三层承诺」中与 Full Entry 冲突的字面条款（否决 Full Bruno Clone、进入永远 opt-in 独立路由）自本版起废止，其精神内核（信息可达、猎头路径、内容永不只在 3D）由新三层承诺继承** |
 
 **版本修订记录**
