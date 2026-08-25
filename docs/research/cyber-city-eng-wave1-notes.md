@@ -207,43 +207,16 @@ pnpm test:e2e  # 独立 worktree 全量验证（E2E_PORT=4620，避开共享 VM 
 
 ---
 
-
-
 ## CC-E2 — spike 合流退役（单实现）（2026-08-25，波 2）
 
 分支 `cursor/cc-e2-spike-merge-1d6f`（base：`cursor/cyber-city-hero-design-1d6f` 波 1 合流 tip）。
 完整退役决策记录（七文件去向表 / M2-M4 裁决 / engine.ts 纪律迁入清单 / 合流期修复）见
 **`world-spike-log.md` §10**，此处只记交付面与交接点。
 
-## CC-E4 — 霓虹视觉系统（D3 品质线，2026-08-25）
-
-| 项 | 内容 |
-|----|------|
-| 分支 | `cursor/cc-e4-neon-visual-1d6f`（base = `cursor/cyber-city-hero-design-1d6f`，波 2 与 E2∥E6 并行） |
-| 文件域 | `rendering/NeonMaterials.ts`（新）· `rendering/MeshGridMaterial.ts`（folio 搬）· `rendering/PreRenderer.ts`（folio 搬）· `world/Grid.ts`（folio 改造）· `core/Quality.ts` 扩三档 · `rendering/Rendering.ts` 回补 bloom · `city/NeonFacade.ts` 转薄壳 · `city/CitySilhouette.ts`/`city/index.ts` 品质接线 |
-| 外部资产 | **0 字节**（全 TSL 程序化；可选窗格 atlas ≤300KB 槽位本波未用——程序化已达关键帧，槽位留给 CC-P1 M 档） |
-
 ### 交付物
 
 | 文件 | 内容 |
 |------|------|
-| `src/lab/modules/world/spike/`（七文件） | **删除**。参数表留档 `world-spike-log.md` §2（§10.1 有逐文件去向） |
-| `src/lab/modules/world/index.ts` | 薄入口唯一指向引擎 `src/lab/world/index.ts`（facade 分包映射位不变） |
-| `src/lab/world/index.ts` | mount 入口重写：HUD 接线（tick 999 / 0.25s 节流 / 提示消隐）、`__worldSpike` 遥测（+`vehicle`、nipple 双字段）、`?city=1`/`?robot=1` 动态挂载、respawn→`Objects.resetAll()`、ready 等 `revealed` 事件（输入放行后才 resolve）、`#debug` 句柄 |
-| `src/lab/world/world/World.ts` | **M3**：`SPAWN` 切 `cyber-city-buildings.json` `world.spawn` (0,0)（heading→rotationY 换算 `r=π/2−h·π/180`）；spike 三组锥桶阵按 10m 环缩尺重排（16 只 Rapier 动态体 + 出生正前锚点桩），`knockedConeCount()` 物理真值判定 |
-| `src/lab/world/player/Player.ts` | 键位合流：**Space=刹车**（spike 口径裁决，folio 悬挂跳挪 KeyF）；brake 组 = Space/B/ControlLeft |
-| `src/lab/world/inputs/Keyboard.ts` | 驾驶键 preventDefault（keydown+keyup 双向，Space keyup 防误触聚焦按钮） |
-| `src/lab/world/inputs/Nipple.ts` | 修引擎既有缺陷两枚：NDC 未减舞台 rect 偏移、angle 口径镜像（详见 log §10.4） |
-| `src/lab/world/view/View.ts` | spike 速度变焦换算：`zoom.speedEdge` {5,40}→{4,24}（物理车真实速度域重标定） |
-| `src/lab/world/rendering/Rendering.ts` | dispose 时 canvas 原位克隆置换（可重复挂载，WS-E2E-07 依赖） |
-| `src/lab/world/core/Game.ts` | 新增 `vehicleKind`（physics\|kinematic，init 落定）——速度遥测两档换算依据 |
-| `src/lab/world/utils/FpsMeter.ts` | 新增。spike FpsMeter 摘出（墙钟口径 + 暂停边界 reset，log §10.3-3） |
-| `src/pages/world-spike/index.astro` | `?impl=` 分叉退役；**M4** 白名单 = gl/vehicle/city/robot；DOM 摇杆退役（引擎 3D Nipple 接管）；文案/注记随单实现更新；复位按钮 keydown+keyup 成对派发 |
-| `e2e/world-spike.spec.ts` | 重标定（出生 (0,0)/速度阈值/锥桶直线锚点桩/摇杆走遥测/WS-E2E-11 改守 kinematic 回退腿），用例数不变；perf 与 mobile 两文件零改动 |
-| `docs/research/cyber-city-implementation-plan.md` | **M2**：§3.1/§3.2 VisualVehicle 落位文字修订为 `player/`（E1 实况，不搬文件） |
-
-#
-
 | `src/lab/modules/world/spike/`（七文件） | **删除**。参数表留档 `world-spike-log.md` §2（§10.1 有逐文件去向） |
 | `src/lab/modules/world/index.ts` | 薄入口唯一指向引擎 `src/lab/world/index.ts`（facade 分包映射位不变） |
 | `src/lab/world/index.ts` | mount 入口重写：HUD 接线（tick 999 / 0.25s 节流 / 提示消隐）、`__worldSpike` 遥测（+`vehicle`、nipple 双字段）、`?city=1`/`?robot=1` 动态挂载、respawn→`Objects.resetAll()`、ready 等 `revealed` 事件（输入放行后才 resolve）、`#debug` 句柄 |
@@ -285,6 +258,18 @@ pnpm test:e2e  # 独立 worktree 全量验证（E2E_PORT=4620，避开共享 VM 
 - **速度口径红线**：physics 档 `forwardSpeed` 是 folio 时基（真实 m/s = ×Ticker.scale），kinematic 档本征 SI——任何新消费方（音效/UI/成就）走 `Game.vehicleKind` 分派，勿直读 forwardSpeed 当真实速度。
 - E1 遗留「CarConcept 车宽略窄于物理盒」维持现状（正式资产波次解决）；运动学档锥桶无物理互动维持（域不同，log §9.3）。
 
+## CC-E4 — 霓虹视觉系统（D3 品质线，2026-08-25）
+
+| 项 | 内容 |
+|----|------|
+| 分支 | `cursor/cc-e4-neon-visual-1d6f`（base = `cursor/cyber-city-hero-design-1d6f`，波 2 与 E2∥E6 并行） |
+| 文件域 | `rendering/NeonMaterials.ts`（新）· `rendering/MeshGridMaterial.ts`（folio 搬）· `rendering/PreRenderer.ts`（folio 搬）· `world/Grid.ts`（folio 改造）· `core/Quality.ts` 扩三档 · `rendering/Rendering.ts` 回补 bloom · `city/NeonFacade.ts` 转薄壳 · `city/CitySilhouette.ts`/`city/index.ts` 品质接线 |
+| 外部资产 | **0 字节**（全 TSL 程序化；可选窗格 atlas ≤300KB 槽位本波未用——程序化已达关键帧，槽位留给 CC-P1 M 档） |
+
+### 交付物
+
+| 文件 | 内容 |
+|------|------|
 | `core/Quality.ts` | 0\|1\|2 三档（0 桌面全效 / 1 移动中端 / 2 止损）；`?quality=0\|1\|2` URL 覆写（location.search 兜底读取，同 `?city=`/`?vehicle=` 临时接线纪律）+ `#debug` 句柄 `__worldSpikeGame.quality.changeLevel(n)` 热切；changeLevel 语义与 folio 原版一致（events 'change'） |
 | `rendering/NeonMaterials.ts` | **全城唯一霓虹材质工厂**（E3 `NeonFacade` 实现体整体迁入，工厂签名零改动）。新增模块级共享 uniform 三件套（timeScale/flickerScale/phaseSpread）：Q0 逐窗随机相位闪烁 / Q1 全局统一相位 / Q2 时间轴冻结+振幅归零——切档 = 3 个 uniform 写入，**零材质重建零重编译**（风险表 R1 缓解落地）。D3 质感件：~7% 亮窗升格 1.9× 强度「亮屏窗」（bloom 下的立面高光锚点） |
 | `city/NeonFacade.ts` | 转薄壳 re-export（E3 头注预留的「品质升级挂载点」兑现）：city/ 四消费方 import 路径零改动，全城单套材质系统（Premortem P9 双材质禁令守住） |
@@ -319,3 +304,117 @@ pnpm test:e2e  # 独立 worktree 全量验证（E2E_PORT=4620，避开共享 VM 
 - `?quality=` 走 location.search 兜底属临时接线，CC-E2 壳白名单转正时并入（同 `?city=`/`?vehicle=`）。
 - 窗格 atlas ≤300KB 槽位未用（见资产行）；bloom 参数（0.55/0.3、threshold 1、smoothWidth 1）与水洼噪声频率（÷19）为首版手调值，真机走查后可在 `#debug` 句柄上直调 `rendering.bloomPass.strength.value` 复核。
 - Q0 阴影切换触发全场材质重编译（事件级成本）；若真机切档卡顿明显，后续可给 shadow 材质变体做预热（PreRenderer 二次调用即可）。
+
+## E6 · TransformSystem + Reveal 首幕（CC-E6，波 2，2026-08-25）
+
+分支 `cursor/cc-e6-transform-reveal-1d6f`（base：`cursor/cyber-city-hero-design-1d6f`）。
+上位条款：PRD CITY-04/05/06 + 终裁 D4；SRD §12.7.4；实施方案 §1 六幕（本 Task 交付幕②③④）。
+
+### 交付物
+
+| 文件 | 内容 |
+|------|------|
+| `src/lab/world/player/TransformSystem.ts` | 新增。状态机 robot_idle→transforming→car_ready→driving；V1 遮蔽式变形时间轴（见下）；仪式视觉件全程序化 TSL（充能环 CircleGeometry + 环带/刻度扫掠/中心微光、光幕 billboard 竖幕 + 扫描线/中腰亮带，additive、零外部资产）；物理插入点（E1 交底的 `activate/deactivate`，duck-typing 兼容运动学档）；`transform(to)` 幂等返回 Promise、`onStateChange` 退订式订阅、`waitFor` 资产进度钩子（环多转语义，CC-E7 两阶段清单接线位）；reduced-motion instant swap |
+| `src/lab/world/world/Reveal.ts` | 新增。Intro+Reveal 合并移植（folio 剧本思路，gsap→Ticker.wait/delay + 手写缓动，第 6 章依赖红线）：机器人光柱开演节奏（ticker.wait(6) 防 shader 编译吃动画 → reveal() → 1.15s 后 robot_idle）、自建 DOM 覆盖层（CTA「变形 · 巡航态」+ role="status" aria-live 文字状态 + 键位提示浮现 4s 淡出）、`data-world-state` 状态镜像到传入 host、热交换后停 HeroRobot update 驱动（释放 CITY-03 循环动画配额，E5 交接约定）、Space 触发经 inputs 动作 `transform`（categories: ['intro']——driving 后 Space 归还刹车；悬挂跳 KeyF，A2 M7/M8） |
+| `src/lab/world/index.ts` | `?ritual=1` 首幕全流程接线（城市 + 机器人 + TransformSystem + Reveal 四分包 Promise.all 并行动态 import）；M3 出生锚点统一（见下）；`#debug` 追加 `__worldTransform` 句柄（控制台可验 `transform('robot')` 回变，CC-P1 预演）；`?city=1`/`?robot=1` 独立演示挂点原样保留（ritual 隐含装配时跳过重复挂载） |
+| `src/lab/world/inputs/Inputs.ts` | `nipplePointer` categories 追加 `'driving'`（触屏摇杆在变形后可用）+ filters 语义 JSDoc（intro/driving 上下文） |
+| `e2e/cyber-city.spec.ts` | 仅注释更新（不解 skip，属绿灯 PR）：SEL 契约区标注 CC-E6 已实装项与辅助信号（`[data-world-status]`/`[data-world-hint]`）；CITY-E2E-03/04/06 skip 原因改写为「E6 已交付、余 CC-E7 壳依赖」 |
+
+### 状态机与时间轴（验收窗 1.0–1.2s；真实秒随 Ticker.delta，暂停即冻结）
+
+```text
+robot_idle ──transform('car')──▶ transforming ──1.05s──▶ car_ready ──首个驾驶输入──▶ driving
+  0    →0.35   地面充能环半径 0→4m（easeOutCubic 展开 + 刻度扫掠；兼资产进度：
+               waitFor 未 resolve 则峰值处环多转，时钟不进光幕段）
+  0.35 →0.60   光幕淡入 0→1（billboard 面向相机，任何机位遮住热交换截面）
+  0.60         ★ 峰值热交换：robot.setVisible(false) + car.visible=true——同锚点
+               （防「PPT 切页」，Premortem P4/R8）；车从 +2m 起落
+  0.60 →1.05   easeOutBack 落地 0.45s（光幕 0.3s 淡出、充能环随落地消散）；
+               落定帧：moveTo(锚点) + activate() + filters intro→driving + car_ready
+driving = car_ready 后首个驾驶动作（forward/backward/left/right/nipplePointer）接管，
+不是变形的一部分——D4「变形→可开零等待」的机器保证在 car_ready 同帧完成。
+reduced-motion：instant swap（零动画窗直落 car_ready）+ 文字状态提示（Reveal aria-live）。
+```
+
+- v0.1 提案的 car_idle/car_ready 两态已按终裁 D4 合并；回变 car→robot 共用同一遮蔽序列
+  （无落地拍，机器人原地重现，filters driving→intro）——CC-P1 双向可逆的地基已在。
+- 按住 W 穿越变形窗的边缘：Keyboard 不滤 `event.repeat`，OS 连发会在 car_ready 后
+  自动接管 driving（实测通过）；Playwright 合成键无连发，e2e 需在 car_ready 后压键。
+
+### 契约（后续波次接口）
+
+- **事件**（`game.events`，SRD §9.5 命名）：`world-reveal`（光柱起）/ `world-transform` [to]
+  （变形完成）/ `world-drive-start`（首个驾驶输入）——埋点/音效/成就订阅即可。
+- **DOM**（Reveal 生成，e2e SEL 契约对齐）：host `data-world-state` 四态镜像、
+  `button[data-world-transform]`（transforming 期 disabled + CSS 进度条）、
+  `[data-world-status]`（role="status" aria-live）、`[data-world-hint]`。
+  CC-E7 壳把 `[data-world-host]` 作为 host 传入即与 e2e 契约无缝对齐。
+- **TransformSystem 选项**：`anchor`/`rotationY`（落点姿态）、`waitFor`（车资产 Promise，
+  环多转语义）、`reducedMotion`；`events` 上另有 `'swap'` [to]（Reveal 消费停/起机器人驱动）。
+
+### 域外挂点（本 Task 文件域之外的最小改动，合流时按此对照）
+
+1. **`src/lab/world/core/Game.ts`**（+1 选项）：`GameOptions.autoReveal`（缺省 true = 灰盒
+   原行为 intro→wandering 不变；ritual 传 false 让 Reveal/TransformSystem 接管 filters）。
+   E1/E2 同波竞写该文件，改动收敛为一个布尔开关以最小化合流冲突面。
+2. **`src/lab/world/player/Player.ts`**（+8 处 categories）：`forward/right/backward/left/
+   boost/brake/respawn/suspensions` 动作追加 `'driving'` 类别——否则 filters 切到 driving 后
+   全部驾驶动作被闸门拦截。语义映射：`wandering`（灰盒）≈ `driving`（首幕后），两者并存。
+
+### M3 执行（出生锚点统一 JSON spawn）
+
+- `?ritual=1` 装配段：`respawns.getDefault()` 位置/朝向改写为 buildings JSON
+  `world.spawn`(0,0) heading 0（十字路口正中朝北），heading→rotationY 换算
+  `π/2 − heading·π/180`（PlayerVehicle 前向 = (cos r, 0, −sin r)）。
+- 机器人站位 = 变形锚点 = 车落点 = R 键 respawn 复位点，四点同源（SRD §12.7.5）。
+- E3 遗留的「spike 灰盒 respawn 仍在环形道 (10,0,0)」在 ritual 路径已消解；
+  默认灰盒路径不动（零回归），全局切换随 CC-E2/E7 合流。
+
+### 验证记录（全部通过）
+
+- `pnpm astro check` 0 errors / `pnpm build` 18 页全绿；分包核算：world 引擎包
+  61.4KB raw（基线 60.6KB，+0.8KB = autoReveal/categories 最小面）；TransformSystem
+  5.9KB / Reveal 6.5KB raw 独立懒分包——默认路径零字节（网络请求实测零 ritual 分包）。
+- 浏览器实测（headless Chromium + SwiftShader WebGL2，独立 worktree preview :4620）
+  四场景 24 断言全 PASS，日志工件 `cc-e6-browser-test.log`：
+  ① 首幕全流程：robot_idle→transforming（CTA disabled+进度）→car_ready→driving；
+    M3 落点实测 (−0.00, 0.94, −0.00)；W 朝北行驶（z 减小）；R 复位回 (0,0)；
+    world-reveal / world-transform:car / world-drive-start 三埋点日志齐；零异常。
+  ② reduced-motion：终态直出（无光柱窗）+ 点击即 car_ready + aria-live 文字提示可见。
+  ③ `?gl=1`：WebGL 2 回退腿变形可播（TSL 双后端），零异常。
+  ④ 默认路径零回归：零 ritual/city 请求、零 [reveal]/[transform]/[city] 日志、
+    灰盒 W 直行照常（首测 FAIL 为 SwiftShader ~2s/帧下合成键时序假象，
+    以 `revealed===true` 门控复测位移 1.11m PASS，留档防后人误判）。
+- 计时口径：1.05s 设计窗在软渲染下等比放大为 ~53s 墙钟（Ticker.delta 累计），
+  状态序与同帧语义不受影响；真机 1.0–1.2s 判定归 human-gate-checklist §5.1。
+
+### 遗留与交接（CC-E7+）
+
+- **两阶段清单正式接线**：本波演示路径车随 `Game.init` 就绪、机器人顺序加载
+  （`loadHeroRobotGltf` 缓存感知 + R4 回退），未把 `HERO_ROBOT_RESOURCES` 拼进
+  Game.init 批量清单——批量失败即整批 reject，与 R4「GLB 缺失回退程序化机甲」冲突；
+  CC-E7 做两阶段编排时请保留该 try/catch 回退路由，`TransformSystem.waitFor` 已留好
+  车资产进度接线位（环多转语义）。
+- **`?ritual=1` 转正/退役**：CC-E7 `/` 壳条件自动挂载接管后，ritual 参数与
+  `?robot=1` 挂点、壳页 `[data-ws-hint]` 预隐藏 hack（index.ts 内注释已标）一并退役；
+  Reveal 覆盖层样式（`injectStyles`）可平移进壳页样式表。
+- **首幕相机**：灰盒 View（FOV 25°）下机器人 targetHeight 压到 5.2m 取景；
+  CC-E7 城市首幕相机（设计提案 §3.1：FOV 42° / 距 18m / 俯角 22°）就位后回 9m 级。
+- **回变 car→robot**：序列已实现（`transform('robot')`，#debug 控制台可验），
+  但无 CTA 入口/驾驶态触发键——归 CC-P1 双向可逆需求排期。
+- **运动学档边界**：KinematicFallback 无 activate/deactivate（duck-typing 跳过），
+  落地拍为 moveTo 驱动的纯视觉弹跳、无物理微弹；悬挂落定观感差异可接受，
+  若 CC-P1 要对齐请给运动学档补 freeze 面。
+- **仪式视觉件材质族**：充能环/光幕为 TransformSystem 私有 TSL 材质；若 CC-E4/E9
+  需要同族光效（泊车圈、POI 触发圈），建议提炼进 NeonFacade 材质族统一 palette——
+  本波按「禁大改 NeonFacade」红线未动。
+- **e2e 解 skip**：CITY-E2E-03/04/06 的 E6 侧依赖已清（spec 注释已改写），
+  解 skip + 串行 project 编排 + SwiftShader 计时系数标定归 CC-E7 绿灯 PR。
+
+### 合流织合附注（CC-A2 M5–M8，父代理合流期落地）
+
+- **M5**：`index.ts` ritual 模式 `autoReveal=false` 时跳过 `await 'revealed'`（`!ritualRequested` 短路），避免 ready 死锁。
+- **M6**：壳页 `PARAM_ALLOWLIST` 增补 `ritual`（及建议转正的 `quality`）。
+- **M7**：`Player.setInputs` 保留 E2 键位（Space=刹车 / KeyF=悬挂）并并入 E6 `driving` categories。
+- **M8**：`Reveal` 键位提示文案 =「Space/B 刹车 · F 悬挂跳」。
+- 合并顺序权威：E2 → E4 → E6（见 `cyber-city-wave2-audit.md`）。

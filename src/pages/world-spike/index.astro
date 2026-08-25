@@ -127,7 +127,7 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
   import type { LabInstance } from '../../lab/contracts';
 
   /** 深链参数白名单（M4）：仅这四项透传给 mount，其余一律忽略且不回写 URL */
-  const PARAM_ALLOWLIST = ['gl', 'vehicle', 'city', 'robot'] as const;
+  const PARAM_ALLOWLIST = ['gl', 'vehicle', 'city', 'robot', 'ritual', 'quality'] as const;
 
   const host = document.querySelector<HTMLElement>('[data-ws-host]');
   if (host) {
