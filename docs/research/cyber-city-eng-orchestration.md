@@ -22,8 +22,17 @@ E1(#16) E3(#14) E5(#17) E10(#15) A1(#18)
 
 合流硬条件（A2 M5–M8）已在 E6 织合 commit 落地：ritual 跳过 `await revealed`、白名单 `ritual`/`quality`、Player Space=刹车∪`driving`、Reveal「Space/B 刹车 · F 悬挂跳」。
 
+## 波 3 — 🚀 派发中
+
+| ID | 分支 | PR | Agent |
+|----|------|-----|-------|
+| CC-E8 | `cursor/cc-e8-ci-gates-1d6f` | — | 🚀 |
+| CC-E9 | `cursor/cc-e9-poi-areas-1d6f` | — | 🚀 |
+
+文件域互斥：E8=`scripts/`+CI 配置+`manifest`（见任务书过渡纪律）；E9=`world/areas/`+`world-pois.json`+RayCursor。
+
 ## 下一拍
 
-派波 3：CC-E8（CI / `audit-budget` / lighthouserc / world manifest）∥ CC-E9（POI；硬依赖 E2 已合入）→ A3 → 波 4 CC-E7（`/` 世界壳 + `/home/` 平移）。
+波 3 齐套 → CC-A3 审计 → 按序合流 → 波 4 CC-E7（`/` 世界壳 + `/home/` 平移；携带 M9 / targetHeight 回 9m）。
 
-*更新于波2合流完成。*
+*更新于波3派发。*
