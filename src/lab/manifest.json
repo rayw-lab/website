@@ -38,5 +38,23 @@
     "techChips": ["WebGPU", "WebGL 2 回退", "KTX2", "Draco", "HDRI IBL"],
     "relatedWork": ["edge-cloud-llm-arch-case"],
     "relatedArticles": []
+  },
+  {
+    "slug": "world",
+    "code": "RW-01",
+    "title": "智能座舱科技城",
+    "description": "Full Entry 旗舰：全屏赛博科技城 + 座舱 AI 机器人↔CarConcept 变形 + 十字路口 WASD 驾驶，12 栋主题大楼即全站导航。",
+    "status": "live",
+    "kind": "world",
+    "entry": "modules/world/index.ts",
+    "poster": "posters/cyber-city-poster.webp",
+    "budgetClass": "world",
+    "budget": { "lazyJsKbGzip": 500, "assetsMb": 12 },
+    "capabilities": { "webgpu": "preferred", "webgl2": "fallback", "audio": false, "pointerFine": true },
+    "deepLinkParams": ["gl", "vehicle", "city", "robot", "ritual", "quality", "poi"],
+    "viewTransitionName": "world-entry",
+    "techChips": ["WebGPU", "Rapier", "TSL", "变形仪式", "12 楼 POI"],
+    "relatedWork": ["llm-capability-layering"],
+    "relatedArticles": []
   }
 ]
