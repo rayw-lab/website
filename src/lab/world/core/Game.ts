@@ -17,11 +17,15 @@ import { Objects } from './Objects';
 import { Rendering } from '../rendering/Rendering';
 import { Inputs } from '../inputs/Inputs';
 import { Physics, type RapierModule } from '../physics/Physics';
+import { PhysicsVehicle } from '../physics/PhysicsVehicle';
 import { Respawns } from '../world/Respawns';
 import { Zones } from '../world/Zones';
 import { View } from '../view/View';
 import { Player, type PlayerVehicle } from '../player/Player';
+import { KinematicFallback } from '../player/KinematicFallback';
+import { VisualVehicle } from '../player/VisualVehicle';
 import { World, SPAWN } from '../world/World';
+import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
 
 export interface GameOptions {
   /** 舞台容器（Viewport 量它） */
@@ -31,6 +35,11 @@ export interface GameOptions {
   forceWebGL?: boolean;
   /** 移动端 DPR 封顶（SRD §12.4 纪律：1.5） */
   pixelRatioMax?: number;
+  /**
+   * 车辆实现选择（SRD §12.7.5 热切换）：physics = Rapier 主路径（默认）；
+   * kinematic = 运动学回退档（A/B 对照）。Rapier wasm 加载失败时无视此项强制回退。
+   */
+  vehicle?: 'physics' | 'kinematic';
   /** 喂 facade 进度条 */
   onProgress?(loaded: number, total: number): void;
   /** 实际渲染后端徽章 */
@@ -62,8 +71,13 @@ export class Game {
   physics!: Physics;
   zones!: Zones;
   player!: Player;
-  /** 车辆挂点：PhysicsVehicle（vehicle 分支）就位后赋值，Player/相机即联动 */
+  /**
+   * 车辆挂点（CC-E1 起就位）：PhysicsVehicle（Rapier 主路径）或
+   * KinematicFallback（wasm 失败 / ?vehicle=kinematic），同 PlayerVehicle 契约。
+   */
   physicalVehicle: PlayerVehicle | null = null;
+  /** 视觉车辆（CarConcept rig）：从 physicalVehicle 契约回读，两档通用 */
+  visualVehicle: VisualVehicle | null = null;
 
   revealed = false;
   private disposed = false;
@@ -108,11 +122,19 @@ export class Game {
     this.world = new World(this); // step(0)：灯光 + 网格地面（无物理依赖）
 
     /**
-     * 阶段二：并行加载（Game.js L129-183 —— wasm 编译与资源下载完全并行）
+     * 阶段二：并行加载（Game.js L129-183 —— wasm 编译与资源下载完全并行）。
+     * Rapier 失败不再致命（SRD §12.7.5「世界永远能开」）：捕获 → null →
+     * 阶段三跳过物理系统，车辆走运动学回退档。
      */
-    const rapierPromise = import('@dimforge/rapier3d');
+    const rapierPromise = import('@dimforge/rapier3d').catch((error: unknown) => {
+      console.error('[world] Rapier wasm 加载失败，切运动学回退档', error);
+      return null;
+    });
+    const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
     const resourcesPromise = this.resourcesLoader.load(
-      [], // 灰盒 Spike 零资产；Phase B 在此接正式资产清单（31 项模式）
+      // CC-E1 首个正式资产：CarConcept（3.5MB 复用豁免，Draco+KTX2）；
+      // Phase B 在此接完整清单（31 项模式）
+      [['carConcept', `${base}/models/car-concept/CarConcept.gltf`, 'gltf']],
       (toLoad, total) => {
         this.options.onProgress?.(total - toLoad, total);
       },
@@ -120,16 +142,28 @@ export class Game {
 
     const [newResources, RAPIER] = await Promise.all([resourcesPromise, rapierPromise]);
     if (this.disposed) return; // 加载期间被卸载：不再构建物理系统
-    this.RAPIER = RAPIER;
     this.resources = { ...newResources, ...this.resources };
 
     /**
-     * 阶段三：物理与玩法系统（Game.js L185-209 —— 全部依赖 RAPIER 就绪）
+     * 阶段三：物理与玩法系统（Game.js L185-209）。
+     * 车辆热切换（SRD §12.7.5）：Rapier 就绪且未显式要求运动学档 → PhysicsVehicle；
+     * 否则 KinematicFallback（同 PlayerVehicle 契约，Player/View/VisualVehicle 零感知）。
+     * 挂点必须先于 Player 构造——Player 构造期做出生点对齐 + 翻车自救注册。
      */
-    this.physics = new Physics(this);
-    this.zones = new Zones(this);
+    if (RAPIER) {
+      this.RAPIER = RAPIER;
+      this.physics = new Physics(this);
+      this.zones = new Zones(this);
+    }
+
+    const useKinematic = this.options.vehicle === 'kinematic' || !RAPIER;
+    this.physicalVehicle = useKinematic ? new KinematicFallback(this) : new PhysicsVehicle(this);
     this.player = new Player(this);
-    this.world.step(1); // ★坑③：地面碰撞体 + 锥桶，必须晚于 physics/objects
+    this.visualVehicle = new VisualVehicle(this, this.resources.carConcept as GLTF);
+
+    // ★坑③：地面碰撞体 + 锥桶，必须晚于 physics/objects；无 RAPIER 时跳过
+    //（运动学档 raycast 打视觉地面网格，不需要碰撞体；锥桶无物理域自然缺席）
+    if (RAPIER) this.world.step(1);
     this.options.onProgress?.(1, 1);
 
     // ★坑④：等 3 帧（shader 编译落地）再 reveal
