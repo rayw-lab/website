@@ -20,15 +20,17 @@ import type { Game } from '../core/Game';
 export type SuspensionState = 'low' | 'mid' | 'high';
 
 /**
- * 底盘参考系离地净高 m = folio 悬挂 low 静息 0.88 + 物理轮半径 0.4（teardown §5.2）。
- * 接口约定：PlayerVehicle.position = 底盘原点，静息时高于地面接触点该值；
+ * 底盘参考系离地净高 m（静态平衡口径）= low 档 restLength 0.88 + 物理轮半径 0.4
+ * − 静态下沉 0.36（弹簧平衡：底盘 2.5 质量 ÷ 4 轮 ÷ 刚度 20 ≈ 0.31 理论 +
+ * 阻尼余项，Rapier 实测悬停 0.92——E1 浏览器实测反推，teardown §5.2 参数推论）。
+ * 接口约定：PlayerVehicle.position = 底盘原点，静态平衡时高于地面接触点该值；
  * 本站重生点存「地面坐标」（folio 的 respawn GLB 自带高程），各实现的 moveTo 自行抬升。
  */
-export const VEHICLE_GROUND_CLEARANCE = 1.28;
+export const VEHICLE_GROUND_CLEARANCE = 0.92;
 
 /** 每轮视觉状态（VisualVehicle 悬挂同步消费） */
 export interface PlayerVehicleWheelState {
-  /** 悬挂行程差 m（相对 low 档静息；正 = 压缩上抬，负 = 伸长下垂；运动学档恒 0） */
+  /** 悬挂行程差 m（相对 low 档静态平衡姿态；正 = 压缩上抬，负 = 伸长下垂；运动学档恒 0） */
   suspensionOffset: number;
   inContact: boolean;
 }
@@ -290,6 +292,10 @@ export class Player {
       this.position.copy(vehicle.position);
       // 反解 moveTo 口径：forward = (cos r, 0, -sin r) → r = atan2(-f.z, f.x)
       this.rotationY = Math.atan2(-vehicle.forward.z, vehicle.forward.x);
+
+      // 掉出世界兜底（folio 水面重生语义的折叠版）：底盘不进 Objects 注册表
+      //（防 resetAll 覆盖重生位），低于 killElevation 由这里就近重生
+      if (this.position.y < this.game.world.killElevation) this.respawn();
     }
     this.position2 = new THREE.Vector2(this.position.x, this.position.z);
 

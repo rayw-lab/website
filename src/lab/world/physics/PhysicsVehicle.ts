@@ -174,9 +174,15 @@ export class PhysicsVehicle implements PlayerVehicle {
     return this.upsideDown.active;
   }
 
-  /** 底盘三 collider（folio L87-109；分组语义见 Physics.categories） */
+  /**
+   * 底盘三 collider（folio L87-109；分组语义见 Physics.categories）。
+   * ★ 直连 physics.getPhysical、不进 Objects 注册表：注册表的 resetAll /
+   * 掉出世界重置会把底盘拽回「创建时初始位」，覆盖 moveTo 的重生位
+   * （E1 浏览器实测踩坑：R 重生被 resetAll 拉回 (0,4,0)）。底盘的视觉同步由
+   * VisualVehicle 走契约回读，掉出世界由 Player 的 killElevation 守卫兜底。
+   */
   private setChassis(): void {
-    const object = this.game.objects.add(null, {
+    const physical = this.game.physics.getPhysical({
       type: 'dynamic',
       position: this.position,
       friction: 0.4,
@@ -203,8 +209,7 @@ export class PhysicsVehicle implements PlayerVehicle {
       canSleep: false, // 玩家的车永不休眠
     });
 
-    if (!object.physical) throw new Error('[world/physics-vehicle] 底盘刚体创建失败');
-    this.chassis = { physical: object.physical, mass: object.physical.body.mass() };
+    this.chassis = { physical, mass: physical.body.mass() };
   }
 
   /** 四轮注册 + 参数写入（folio L111-201 setWheels/updateSettings） */
@@ -394,13 +399,16 @@ export class PhysicsVehicle implements PlayerVehicle {
     this.wheelsPhysics.inContactCount = inContactCount;
     this.wheelsPhysics.justTouchedCount = justTouchedCount;
 
-    // 接口面：视觉序四轮状态（悬挂行程差；上抬按 folio wheelY ≤ -0.5 语义封顶 0.38）
-    const restLow = this.suspensionsHeights.low;
+    // 接口面：视觉序四轮状态。行程差基线 = 静态平衡长度（low rest 0.88 − 静态下沉
+    // 0.36，与 VEHICLE_GROUND_CLEARANCE 同口径）——平衡态 offset=0 即设计姿态，
+    // 车身/轮拱关系与建模一致；上抬按 folio wheelY ≤ -0.5 语义封顶 0.38。
+    // 净高 0.92 = 平衡长度 + 轮半径 0.4 → 平衡长度 0.52（low rest 0.88 − 下沉 0.36）
+    const equilibriumLength = VEHICLE_GROUND_CLEARANCE - this.wheelsPhysics.settings.radius;
     for (let s = 0; s < 4; s++) {
       const wheel = this.wheelsPhysics.items[SITE_TO_FOLIO[s]];
-      const suspensionLength = wheel.suspensionLength ?? restLow;
+      const suspensionLength = wheel.suspensionLength ?? equilibriumLength;
       this.wheels[s].inContact = wheel.inContact;
-      this.wheels[s].suspensionOffset = clamp(restLow - suspensionLength, -1.0, 0.38);
+      this.wheels[s].suspensionOffset = clamp(equilibriumLength - suspensionLength, -1.0, 0.38);
     }
 
     this.testStop();
