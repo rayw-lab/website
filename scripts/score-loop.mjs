@@ -104,7 +104,13 @@ function readE2e(file) {
   const passRate = total > 0 ? (passed / total) * 100 : null;
 
   const specs = collectSpecs(report.suites);
-  const smoke = specs.filter((s) => s.title.includes('@smoke3d'));
+  // 仅统计实际执行过的 @smoke3d 用例：全 skipped 的 spec 也带 ok:true
+  //（如 --list / test.skip 产物），不剔除会虚报满分
+  const smoke = specs
+    .filter((s) => s.title.includes('@smoke3d'))
+    .filter((s) =>
+      (s.tests ?? []).some((t) => (t.results ?? []).some((r) => r.status && r.status !== 'skipped')),
+    );
   const smokePassed = smoke.filter((s) => s.ok).length;
   const smoke3d = smoke.length > 0 ? (smokePassed / smoke.length) * 100 : null;
   return {

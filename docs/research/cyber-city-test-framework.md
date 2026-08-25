@@ -1,0 +1,65 @@
+# 科技城测试框架 · 本 VM 跑法（CC-L0-setup）
+
+供提分 Loop（`cyber-city-score-loop-orchestration.md`）各轮复用的端到端测试/取证/计分设施。
+一切命令在仓库根目录执行；计分口径单源在编排文档「综合分口径」表，实现在 `scripts/score-loop.mjs`。
+
+## 一次性安装（新 VM 只做一遍）
+
+```bash
+pnpm install                        # 含 @playwright/test 与 @lhci/cli（devDependencies）
+pnpm exec playwright install chromium   # Chromium + headless shell（~230MB，1 分钟内）
+```
+
+LHCI 无需另装 Chrome：`run-quality-loop.mjs` 自动把 Playwright Chromium 路径注入 `CHROME_PATH`。
+
+## 端口与渲染环境
+
+| 项 | 值 |
+|----|-----|
+| 靶站 | `astro preview` 伺服 `dist/`（生产构建产物，与 Pages 同构；不测 dev server） |
+| 端口 | `4321`（`E2E_PORT` 环境变量可覆盖），路径带 base：`http://127.0.0.1:4321/website/` |
+| 服务器纪律 | Playwright `webServer` 与 `run-quality-loop.mjs` 都「有则复用、无则拉起」；loop 拉起的 preview 退出后保持运行，后续轮直接复用 |
+| WebGL | 无 GPU，SwiftShader 软渲染（~1-5fps 慢动作）：Playwright 启动参数 `--enable-unsafe-swiftshader`（`playwright.config.ts` launchOptions）；LHCI 侧 chromeFlags = `--headless=new --no-sandbox --enable-unsafe-swiftshader` |
+| 计时口径 | SwiftShader 下挂载→robot_idle 实测 ~75-110s（等待上限 210s，校准记录见 `e2e/cyber-city.spec.ts` 文件头⑤）；真机计时门禁另走 human-gate |
+
+## 命令表（耗时为本 VM 实测，2026-08-25）
+
+| 命令 | 内容 | 实测耗时 |
+|------|------|----------|
+| `pnpm build` | astro build → `dist/` | ~10s |
+| `pnpm test:visual` | build + 视觉/3D 冒烟 4 例（`e2e/visual/`，`--no-deps` 单跑） | ~3 min |
+| `pnpm quality:loop` | **一键链 quick 档**：build → 视觉冒烟 e2e → LHCI（`/`+`/home/` 各 1 轮）→ 综合分 | ~3.5 min |
+| `pnpm lhci:local` | build + LHCI 全七 URL × 3 轮中位 + 门禁断言（CI ci.yml 同口径） | ~4 min |
+| `pnpm quality:loop:full` | 一键链 full 档：全 e2e 五 project 链 + 全量 LHCI + 综合分（基线登记/审计复算用） | 估 40-70 min（全 e2e 链未在本任务实测，归 CC-L0-baseline 首跑登记） |
+| `pnpm test:e2e` | 既有全量 e2e（build + 五 project 链） | 同上估算的 e2e 段 |
+| `pnpm score` | 只读既有工件重算综合分（不跑任何测试） | <1s |
+
+常用旗标（`run-quality-loop.mjs`）：`--skip-build/--skip-e2e/--skip-lhci/--skip-score`、
+`--lhci-runs N`、`--visual-score N`（透传）、`--min N`（综合分门槛，低于则退出 1）。
+退出码语义：测试失败/门禁缺口 = 数据（压低综合分），退出码仍为 0；仅基础设施故障退出 1。
+
+## 综合分
+
+权重（编排文档口径）：LHCI `/` 25% + LHCI `/home/` 15% + e2e 通过率 20% + 视觉 rubric 25% + 3D 交互冒烟 15%。
+输入：`.lighthouseci/lhr-*.json`（每 URL 多轮取分类中位）、`test-results/e2e-results.json`
+（json reporter 常开；`@smoke3d` 标签用例 = 冒烟维度，未执行的 spec 不计入）、视觉 rubric 登记在
+`docs/research/cyber-city-visual-rubric-score.json`（`{"score": 0-100}`，CC-L0-visual 交付后落位）或 `--visual-score N`。
+缺失维度按可用权重归一化并明示覆盖率，不计 0 分。示例输出（末行机读）：
+
+```
+  综合分 90.5/100（按可用权重 100% 归一化；五维齐套)
+COMPOSITE_SCORE=90.5
+```
+
+## 视觉取证与基线图纪律
+
+- **canvas 非空取证**（`e2e/helpers/visual.ts`）：Playwright 合成器截图 → 浏览器端 2D canvas 像素统计
+  （规避 three `preserveDrawingBuffer=false` 页内读空假阴性）。断言中心区量化颜色数 ≥8 且非众数色占比 ≥3%
+  （空画布≈1 色/0%；城市场景实测 300+ 色 / 50%+）。
+- **取证截图**：`test-results/visual/*.png`（gitignore，固定文件名每轮覆盖写，跨轮同名对比）。
+- **`toHaveScreenshot` 基线**：入库 `e2e/visual/__screenshots__/<spec>/<project>/<名>.png`
+  （`snapshotPathTemplate`），容差 `maxDiffPixelRatio: 0.02`。基线只在本 VM（SwiftShader+固定系统字体）生成/更新：
+  `pnpm exec playwright test --project=visual-chromium --no-deps --update-snapshots`。
+  仅对确定性画面（静态壳、DOM 弹层）建基线；3D 帧走像素统计取证，不建像素基线。
+- 用例清单（`e2e/visual/world-visual.spec.ts`，`visual-chromium` project 殿后、单 worker 顺序执行）：
+  VIS-01 壳静态基线 ·VIS-02 ESC 菜单 ·VIS-03 首幕 robot_idle canvas 取证 ·VIS-04 `?poi=` 深链取证（后三者 = `@smoke3d`）。

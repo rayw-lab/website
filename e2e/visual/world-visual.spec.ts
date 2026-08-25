@@ -17,10 +17,15 @@
 //   基线入库 e2e/visual/__screenshots__/<spec>/<project>/<name>.png（snapshotPathTemplate）；
 //   基线只在本 VM（SwiftShader/系统字体一致）生成与更新：
 //   pnpm exec playwright test --project=visual-chromium --no-deps --update-snapshots
+import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { u } from '../helpers';
 import { captureEvidence, expectCanvasPainted } from '../helpers/visual';
-import cityMap from '../../src/data/cyber-city-buildings.json';
+
+/** buildings JSON 单源（VIS-04 parkingBay 断言用；Node ESM 下 JSON 用 fs 读避免 import attribute 分歧） */
+const cityMap = JSON.parse(
+  readFileSync(new URL('../../src/data/cyber-city-buildings.json', import.meta.url), 'utf8'),
+) as { buildings: { id: string; parkingBay?: { x: number; z: number; radius: number } }[] };
 
 const PAGE_URL = u('/');
 
