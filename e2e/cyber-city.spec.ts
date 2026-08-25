@@ -23,6 +23,12 @@
 //   ① CC-E6 合流：TransformSystem 状态机 + Reveal 首幕可测（变形/终态/计时用例解锁）——
 //      ✔ 已交付（波 2，隐藏路径 `/lab/world-spike/?impl=engine&ritual=1` 全流程可测，
 //      DOM 契约见下方 SEL 区注释；正式解锁仍等 ② 的 `/` 壳落地把仪式接到根路由）；
+//   ①′ CC-E9 合流（波 3）：POI 十二楼触发圈 + `?poi=<slug>` 深链 + `world-poi:<id>` 埋点
+//      ✔ 已交付——隐藏路径 `/lab/world-spike/?poi=lingua-tower` 可测（深链出生泊位、
+//      光圈提亮、圈内 E/Enter/点按 → world-poi 事件 + 进站 URL 直跳；slug 字典与进站
+//      URL 字段契约见 `src/data/world-pois.json` deepLink 块 + eng-wave1-notes CC-E9 节）。
+//      POI 专项用例（触发圈进出/深链/无效 slug）待 ② `/` 壳落地随绿灯 PR 一并起草，
+//      届时 `/` 壳 PARAM_ALLOWLIST 需增补 `poi`（CC-E7 待办）；
 //   ② CC-E7 合流：`/` 世界壳 + `/home/` 上线（零字节冒烟/跳过出口/回退用例解锁）；
 //   ③ 选择器契约核对：下方 SEL 常量区与实装 DOM 对齐（约定为唯一改动点，禁止散改用例体）；
 //   ④ 项目编排：世界挂载用例移入串行 project（参照 playwright.config.ts world-chromium
