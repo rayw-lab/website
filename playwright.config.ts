@@ -21,8 +21,22 @@ export default defineConfig({
   // 避免多个 3D 上下文互相挤兑导致超时假阴性（首轮实测 4 worker 时 5/7 车配置器用例超时）
   workers: 2,
   timeout: 60_000,
-  expect: { timeout: 15_000 },
-  reporter: [['list'], ['html', { open: 'never' }]],
+  // toHaveScreenshot 基线图目录纪律（CC-L0-setup）：基线随 spec 入库，按
+  // e2e/visual/__screenshots__/<spec 文件名>/<project>/<截图名>.png 归档；
+  // 基线只在 Cloud Agent VM（SwiftShader + 固定系统字体）生成/更新：
+  //   pnpm exec playwright test --project=visual-chromium --no-deps --update-snapshots
+  snapshotPathTemplate: 'e2e/visual/__screenshots__/{testFileName}/{projectName}/{arg}{ext}',
+  expect: {
+    timeout: 15_000,
+    // 视觉基线容差：同 VM 复跑仅存在亚像素级抖动，2% 像素配额吸收字体平滑差异
+    toHaveScreenshot: { maxDiffPixelRatio: 0.02, animations: 'disabled' },
+  },
+  // json 报告供 scripts/score-loop.mjs 计算综合分（e2e 通过率 + @smoke3d 维度）
+  reporter: [
+    ['list'],
+    ['html', { open: 'never' }],
+    ['json', { outputFile: 'test-results/e2e-results.json' }],
+  ],
 
   use: {
     baseURL: ORIGIN,
@@ -37,9 +51,10 @@ export default defineConfig({
   projects: [
     {
       // 桌面基线：1440×900（homepage-redesign-spec 桌面栅格）
-      // cyber-city（`/` 世界剧本）随 CC-E7 绿灯移入 world-chromium 串行 project
+      // cyber-city（`/` 世界剧本）随 CC-E7 绿灯移入 world-chromium 串行 project；
+      // e2e/visual/（视觉取证）归 visual-chromium 殿后 project
       name: 'desktop-chromium',
-      testIgnore: /mobile\.spec\.ts|world-spike.*\.spec\.ts|cyber-city\.spec\.ts/,
+      testIgnore: /mobile\.spec\.ts|world-spike.*\.spec\.ts|cyber-city\.spec\.ts|visual[\\/].*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
     {
@@ -69,6 +84,18 @@ export default defineConfig({
       name: 'world-perf-chromium',
       testMatch: /world-spike-perf\.spec\.ts/,
       dependencies: ['world-chromium'],
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+    },
+    {
+      // 视觉/3D 冒烟取证（CC-L0-setup，e2e/visual/）：canvas 像素取证 + toHaveScreenshot
+      // 基线 + @smoke3d 计分维度。含完整 3D 挂载 → 依赖链殿后（全量跑时整机独占）；
+      // fullyParallel=false 钉死单 worker 顺序执行且用例相互独立（非 serial——
+      // 一例失败不连坐，score-loop 按 @smoke3d 逐项计分）。
+      // 快速单跑（提分 Loop 常规轮）：pnpm test:visual（--no-deps 跳过前置链）。
+      name: 'visual-chromium',
+      testMatch: /visual[\\/].*\.spec\.ts/,
+      fullyParallel: false,
+      dependencies: ['world-perf-chromium'],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
   ],
