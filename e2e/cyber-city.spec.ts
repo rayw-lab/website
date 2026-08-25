@@ -20,7 +20,9 @@
 //   （「既有 42 用例仍绿，新用例默认 skip 直到选择器就位」），全部用例以 test.skip 声明。
 //
 // ✅ 绿灯条件（逐条满足后把 test.skip 改回 test）：
-//   ① CC-E6 合流：TransformSystem 状态机 + Reveal 首幕可测（变形/终态/计时用例解锁）；
+//   ① CC-E6 合流：TransformSystem 状态机 + Reveal 首幕可测（变形/终态/计时用例解锁）——
+//      ✔ 已交付（波 2，隐藏路径 `/lab/world-spike/?impl=engine&ritual=1` 全流程可测，
+//      DOM 契约见下方 SEL 区注释；正式解锁仍等 ② 的 `/` 壳落地把仪式接到根路由）；
 //   ② CC-E7 合流：`/` 世界壳 + `/home/` 上线（零字节冒烟/跳过出口/回退用例解锁）；
 //   ③ 选择器契约核对：下方 SEL 常量区与实装 DOM 对齐（约定为唯一改动点，禁止散改用例体）；
 //   ④ 项目编排：世界挂载用例移入串行 project（参照 playwright.config.ts world-chromium
@@ -47,10 +49,18 @@ const WORLD_BYTES_RE = /\/_astro\/world|\/models\/|\/hdri\/|\/textures\/city\//;
  *   host        壳宿主：复用 facade 状态机（SRD §12.7.9「同一状态机」），
  *               `data-state`: idle|observing|loading|ready|error、`data-blocked` 拦截原因；
  *   worldState  TransformSystem 状态镜像（实施方案 §4.2「状态机驱动 data-world-state」）：
- *               robot_idle|transforming|car_ready（驾驶接管后 driving，§1.1 幕④）；
+ *               robot_idle|transforming|car_ready|driving 四态（幕④ driving = car_ready 后
+ *               首个驾驶输入接管）——✔ CC-E6 已实装：`world/Reveal.ts` 把状态镜像到传入
+ *               host 的 `data-world-state`（隐藏路径演示中 = 壳页 `[data-ws-host]`；
+ *               CC-E7 把 `[data-world-host]` 传给 Reveal 即与本契约对齐，用例体零改动）；
  *   skip        「跳过 3D」出口（CITY-02：DOM 首个可聚焦元素、第 0 秒可点 → /home/）；
- *   transform   唯一主 CTA「变形 · 巡航态」（CITY-05：点击或 Space 触发，变形期间 disabled）；
+ *   transform   唯一主 CTA「变形 · 巡航态」（CITY-05：点击或 Space 触发，变形期间
+ *               disabled + 进度条可见）——✔ CC-E6 已实装：Reveal 生成
+ *               `button[data-world-transform]`，选择器与此处一字不差；
  *   backend     后端徽标（WebGPU / WebGL 2，降级链 §12.7.8；spike 先例 data-ws-backend）。
+ * CC-E6 附带交付的辅助信号（用例体注释引用，正式收紧归绿灯 PR）：
+ *   [data-world-status]  role="status" aria-live 文字状态（CITY-E2E-04 文字提示断言落点）；
+ *   [data-world-hint]    键位提示（car_ready 浮现、driving/超时淡出）。
  */
 const SEL = {
   host: '[data-world-host]',
@@ -138,8 +148,13 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
   //       PRD CITY-06 / 终裁 D4（变形后 ≤1s 提示可见、输入可响应——「变形→可开零等待」，
   //       实施方案 §5.2 预算行「变形 → 可开：0 等待」）；SRD §12.7.2（变形动画 1.0–1.2s、
   //       加载→可驾驶 ≤8s @Fast 4G 为 e2e 计时断言）；SRD §12.7.4 状态机三态。
-  // skip 原因：TransformSystem/Reveal 未交付（CC-E6 波 2）；墙钟阈值待 SwiftShader
-  //       慢动作系数标定（文件头⑤），当前仅落计时采集与状态序骨架。
+  // skip 原因（CC-E6 交付后更新）：TransformSystem/Reveal ✔ 已交付（波 2）——状态序
+  //       robot_idle→transforming（CTA disabled + 进度条）→car_ready→driving 与
+  //       「car_ready 同帧 filters intro→driving」（D4 零等待）已在隐藏路径
+  //       `/lab/world-spike/?impl=engine&ritual=1` 全流程实测通过（含按住 W 穿越变形窗、
+  //       依赖系统连发在 car_ready 后自动接管的边缘）。仍 skip：`/` 壳 + 自动挂载
+  //       （data-state=ready）归 CC-E7；墙钟阈值待 SwiftShader 慢动作系数标定（文件头⑤，
+  //       实测参考：1.05s 设计窗在 ~1fps 软渲染下走 ~40s 墙钟）。
   // ---------------------------------------------------------------------------
   test.skip('CITY-E2E-03 变形仪式：robot_idle → transforming（CTA disabled）→ car_ready，落地即刻 WASD 可开', async ({ page }) => {
     await page.goto(PAGE_URL);
@@ -182,7 +197,11 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
   //       PRD CITY-09⑤（reduced-motion 直达降级路径）；实施方案 §1.2（不自动挂载，
   //       facade 既有拦截 data-blocked="reduced-motion"；显式进入后跳过全部动画——
   //       静态城市 + 机器人终态直接呈现，变形为 instant swap）；SRD §12.7.2 保 a11y 段。
-  // skip 原因：世界壳与 TransformSystem 均未交付（CC-E6/E7）。
+  // skip 原因（CC-E6 交付后更新）：TransformSystem instant swap ✔ 已交付——
+  //       reduced-motion 下零动画窗直落 car_ready + `[data-world-status]`
+  //       （role="status" aria-live）文字状态提示已实测（隐藏路径 &ritual=1 +
+  //       emulateMedia reducedMotion）。仍 skip：不自动挂载（data-blocked）与显式
+  //       `[data-world-enter]` 按钮属 `/` 壳（CC-E7）。
   // ---------------------------------------------------------------------------
   test.skip('CITY-E2E-04 reduced-motion：不自动挂载零 world 字节；显式进入 → 终态直出；变形为即时切换 + 文字状态提示', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -205,7 +224,9 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
     // 变形 = instant swap + 文字状态提示（无 1.0–1.2s 动画窗；直接落 car_ready）
     await page.locator(SEL.transform).click();
     await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 15_000 });
-    // 文字状态提示占位断言（提示文案与选择器待 CC-E6 定稿后收紧为精确匹配）
+    // 文字状态提示（CC-E6 定稿：`[data-world-status]` role="status" aria-live，
+    // car_ready 文案「巡航态 · CarConcept 已落地十字路口——WASD 即刻可开」；
+    // 绿灯 PR 可收紧为精确选择器 + 文案匹配）
     await expect(host.locator('[role="status"], [aria-live]').first()).toBeVisible();
   });
 
@@ -239,8 +260,11 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
   // 条款：PRD CITY-04 验收（机器人可见 ≤2.5s Fast 4G 桌面）；SRD §12.7.2 预算行
   //       （机器人可见 ≤2.5s，poster 先显、LCP 不等 GLB——考核方式「e2e 冒烟计时」）；
   //       实施方案 §5.2（机器人可见 ≤3s @Fast 4G，首批 1.3MB 就绪即开演）。
-  // skip 原因：HeroRobot / Reveal 未交付（CC-E5/E6）；「机器人可见」的可测信号
-  //       （world-reveal 事件或 data-world-reveal 属性）待实装后在 SEL 契约区补齐。
+  // skip 原因（CC-E5/E6 交付后更新）：HeroRobot（E5）与 Reveal（E6）✔ 已交付——
+  //       「机器人可见」可测信号已定契约：Reveal 起光柱时 trigger('world-reveal')，
+  //       DOM 侧信号 = host `data-world-state` 落 'robot_idle'（光柱落定 ≈1.15s 后，
+  //       本用例既有断言即此契约，无需改动）。仍 skip：`img[data-world-poster]` 与
+  //       `/` 壳自动挂载归 CC-E7。
   // ---------------------------------------------------------------------------
   test.skip('CITY-E2E-06 机器人可见计时：poster 先显（LCP 不等 GLB），world-reveal 计时采集留档', async ({ page }) => {
     const t0 = Date.now();
@@ -249,7 +273,8 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
     // poster 先显：机器人 GLB 就绪前 LCP 元素已可见（预算表「poster 先显」行）
     await expect(page.locator('img[data-world-poster]')).toBeVisible();
 
-    // 首幕开演信号：world-reveal（实施方案 §1.1 幕②埋点；DOM 侧信号契约待 CC-E6 对齐）
+    // 首幕开演信号：world-reveal（实施方案 §1.1 幕②埋点；DOM 侧信号契约已随 CC-E6
+    // 对齐 = host `data-world-state` 落 'robot_idle'，光柱落定后由 Reveal 镜像）
     await expect(page.locator(SEL.host)).toHaveAttribute('data-world-state', 'robot_idle', {
       timeout: MOUNT_TIMEOUT,
     });
