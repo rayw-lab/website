@@ -1,20 +1,22 @@
 ---
-// /world-spike/ —— 3D 智能座舱试验场（公开路由：index,follow · 已入站点地图）。
-// 原 Phase A Spike 隐藏路由转公开：GitHub Pages 访客可直达试驾，验证纪律不变。
-// 独立最小壳（不挂 BaseLayout/站点导航）：壳 = poster + 进入按钮 + noscript
-// 说明（roadmap §7.1 Step 2），不引入全站页眉页脚（避免对未建成路由的链接依赖）。
+// /world-spike/ —— 灰盒工程验证场（CC-E7 路由原子切换后归档为验证入口：
+// noindex,follow + canonical → `/` + 剔出 sitemap，实施方案 §4.1 归档行）。
+// 归档评估（CC-E7）：暂不改静态占位页——既有驾驶/物理 e2e 契约
+// （e2e/world-spike*.spec.ts 全量用例）仍以本页为被测面，且 `/` 默认剧本为首幕
+// 变形仪式、无「直接开车」的显式路径；待驾驶 e2e 迁移到 `/?...` 参数路径后再降
+// 为 ≤1KB 占位页（一个版本周期，归 Phase 1 排期）。正式体验入口 = `/`（Full Entry）。
+// 独立最小壳（不挂 BaseLayout/站点导航）：壳 = poster + 进入按钮 + noscript 说明。
 // 静态壳纪律：点击「进入试验场」前零 world 字节（three/模型/wasm/HDRI 全部在
 // 点击后才拉取）；壳本身只有本页 HTML/CSS + ~21KB poster 复用图 + <1KB 引导脚本。
 //
 // ★ CC-E2 合流后单实现：唯一挂载 = 引擎层（src/lab/world/，folio 架构 Game loop +
 //   Rapier 物理车 + CarConcept rig），经 src/lab/modules/world/index.ts 薄入口进入；
 //   原 ?impl= 分叉与 Phase A spike 装配器已退役（决策记录 world-spike-log.md §10）。
-// 深链参数白名单（M4 转正，全部透传给 mount）：
-//   gl（强制 WebGL 2 复测）· vehicle（=kinematic 运动学回退档 A/B）·
-//   city（=1 程序化科技城预览，CC-E3）· robot（=1 机器人英雄演示，CC-E5）。
-// 性质声明：本页仍为验证场（Phase B 转正 /world/ 时归档），全部验证结论 +
-// 参数留档见 docs/research/world-spike-log.md。
+// 深链参数白名单（M4/M6/M9 转正，与 `/` 壳同表，全部透传给 mount）：
+//   gl · vehicle · city · robot · ritual · quality · poi（见下方脚本注释）。
+// 性质声明：本页为验证场，全部验证结论 + 参数留档见 docs/research/world-spike-log.md。
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const canonical = new URL(`${base}/`, Astro.site).href;
 ---
 
 <!doctype html>
@@ -22,11 +24,12 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="index, follow" />
-    <title>3D 智能座舱试验场 · 概念车在线试驾</title>
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href={canonical} />
+    <title>灰盒工程验证场（已归档）· 正式入口见科技城首页</title>
     <meta
       name="description"
-      content="3D 智能座舱试验场：在浏览器里驾驶 CarConcept 概念车——WebGPU/WebGL 2 实时渲染、键盘与触屏摇杆操控、灰盒物理试车道。"
+      content="灰盒工程验证场（已归档为验证入口）：Rapier 物理车 + CarConcept 驾驶验证。正式 3D 体验请访问科技城首页。"
     />
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
     <meta name="theme-color" content="#0c0d0f" />
@@ -34,13 +37,15 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
   <body>
     <section class="ws">
     <header class="ws-head">
-      <p class="ws-chip">WORLD · 3D 试验场（实验性 DEMO）</p>
-      <h1>3D 智能座舱试验场 —— 概念车在线试驾</h1>
+      <p class="ws-chip">WORLD · 灰盒验证场（已归档）</p>
+      <h1>灰盒工程验证场 —— 概念车驾驶验证</h1>
       <p class="ws-lede">
-        欢迎试驾：W/A/S/D 或方向键驾驶 CarConcept 概念车（触屏为虚拟摇杆），
+        本页为工程验证入口（驾驶/物理 e2e 契约被测面），正式 3D 体验请访问
+        <a href={`${base}/`}>科技城首页 /（Full Entry）→</a>。
+        验证口径不变：W/A/S/D 或方向键驾驶 CarConcept 概念车（触屏为虚拟摇杆），
         WebGPU 优先、WebGL 2 自动回退，点击进入后才开始加载 3D 资源。
-        技术验证记录见 <code>docs/research/world-spike-log.md</code>。
-        <a href={`${base}/`}>跳过 3D，返回首页 →</a>
+        技术验证记录见 <code>docs/research/world-spike-log.md</code>；
+        内容首页 <a href={`${base}/home/`}>/home/ →</a>
       </p>
     </header>
 

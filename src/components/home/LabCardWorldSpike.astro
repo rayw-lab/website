@@ -1,17 +1,18 @@
 ---
-// LabCardWorldSpike —— 3D 智能座舱试验场入口卡（bento 第三张，≥960px 通栏横排）。
-// 指向独立试验页 /world-spike/（非 /lab/ 路由）：folio 风格灰盒可驾驶 CarConcept。
+// LabCardWorldSpike —— 智能座舱科技城入口卡（bento 第三张，≥960px 通栏横排）。
+// CC-E7 路由原子切换后指向 `/`（Full Entry 科技城，PRD 终裁 D1）；原 /world-spike/
+// 试验场已归档为工程验证入口（noindex）。卡片零 world 字节：纯 <a> + 静态 poster。
 // 选择器叠 .card.lab-card.lab-card-world 以覆盖 LabBento 对 :last-child 的 span 5。
 import TechChip from '../ui/TechChip.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
-const chips = ['WebGPU', 'WASD', 'CarConcept'];
+const chips = ['WebGPU', '变形仪式', '12 楼 POI'];
 ---
 
-<a class="card lab-card lab-card-world reveal" href={`${base}/world-spike/`}>
+<a class="card lab-card lab-card-world reveal" href={`${base}/`}>
   <figure class="media">
     <img
-      src={`${base}/posters/car-configurator-poster.webp`}
+      src={`${base}/posters/cyber-city-poster.webp`}
       alt=""
       width="1280"
       height="720"
@@ -20,16 +21,16 @@ const chips = ['WebGPU', 'WASD', 'CarConcept'];
     />
   </figure>
   <div class="body">
-    <h3>3D 智能座舱试验场 <span class="tag mono">EXPERIMENTAL</span></h3>
+    <h3>智能座舱科技城 <span class="tag mono">FULL ENTRY</span></h3>
     <p class="desc">
-      folio 风格灰盒场景，可驾驶 CarConcept 概念车：WASD / 触屏双操控，WebGPU
-      优先渲染，WebGL&nbsp;2 自动回退。
+      全屏赛博科技城：座舱 AI 机器人 ↔ CarConcept 一键变形、十字路口 WASD 驾驶，12
+      栋主题大楼即全站导航。WebGPU 优先渲染，WebGL&nbsp;2 自动回退。
     </p>
     <p class="chips">
       {chips.map((c) => <TechChip label={c} />)}
     </p>
     <p class="enter">
-      进入试验场 <span class="arrow" aria-hidden="true">→</span>
+      进入科技城 <span class="arrow" aria-hidden="true">→</span>
     </p>
   </div>
 </a>

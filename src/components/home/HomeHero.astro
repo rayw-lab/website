@@ -1,10 +1,8 @@
 ---
 // HomeHero —— 区块 1：定位首屏（PRD HOME-01；spec §2 / §4.1）。
 // 文案 3 秒可读完，永不做入场延迟（LCP 红线）；文字取 master-plan §3 区块 1。
-// Start here 入口：产品决策（用户拍板）在 Phase B /world/ 转正（LAB-16）之前，
-// 提前对外公开 /world-spike/ 试验场——覆盖原 HOME-10 门控隐藏口径，改为 stage-col
-// 内直出「进入 3D 试验场」文本链接。实现为纯 <a>+CSS（零 JS，守 G2 预算），
-// 首页不加载 world chunk，仅链接；/world/ 上线后把 href 切回正式路由即可。
+// Start here 入口：CC-E7 路由原子切换后指向 `/`（Full Entry 科技城，PRD 终裁 D1）。
+// 实现为纯 <a>+CSS（零 JS，守 G2 预算），本页不加载 world chunk，仅链接。
 import CtaButton from '../ui/CtaButton.astro';
 import HeroCarStage from './HeroCarStage.astro';
 
@@ -48,8 +46,8 @@ const domains = ['汽车', '座舱', '多语种', '大模型', 'AI 工作流', '
 
     <div class="stage-col">
       <HeroCarStage />
-      {/* Start here 入口（见文件头注）：纯 <a>+CSS，不在首页加载 world chunk */}
-      <a class="stage-link" href={`${base}/world-spike/`}>进入 3D 试验场 →</a>
+      {/* Start here 入口（见文件头注）：纯 <a>+CSS，不在本页加载 world chunk */}
+      <a class="stage-link" href={`${base}/`}>进入 3D 科技城 →</a>
     </div>
   </div>
 </section>

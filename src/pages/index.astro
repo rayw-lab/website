@@ -1,173 +1,754 @@
 ---
-// 首页 —— 五区块骨架（Track A Phase 1）。
-// 信任递进：定位 → 能力 → 证据 → 观点（P3 填充，空态隐藏）→ 近况。
-// 规格：homepage-redesign-spec §2 / §7 Phase 1；PRD HOME-01~04/06。
-import BaseLayout from '../layouts/BaseLayout.astro';
-import SectionHeading from '../components/SectionHeading.astro';
-import HomeHero from '../components/home/HomeHero.astro';
-import PillarCard from '../components/home/PillarCard.astro';
-import LabBento from '../components/home/LabBento.astro';
-import LabCardCar from '../components/home/LabCardCar.astro';
-import LabCardTts from '../components/home/LabCardTts.astro';
-import LabCardWorldSpike from '../components/home/LabCardWorldSpike.astro';
-import CaseCard from '../components/home/CaseCard.astro';
-import NowCta from '../components/home/NowCta.astro';
+// `/` —— Full Entry 科技城入口壳（CC-E7 路由原子切换；PRD 终裁 D1 / CITY-01/02/09；
+// SRD §12.7.1 路由表 v2.0）。原五区块宪法首页整体平移 /home/（零回归）。
+//
+// 预算红线（SRD §12.7.2 G-A′，audit-budget 硬阻断）：壳静态段 HTML+CSS ≤35KB /
+// 引导 JS ≤15KB / poster ≤40KB / 合计 ≤90KB gzip；world 分包零静态标签——
+// 只允许引导脚本动态 import（本页 HTML 中无任何 three/GLB/HDRI/world chunk 的
+// <script src> / <link rel=preload>）。
+//
+// 壳结构（实施方案 §4.2「静态壳即加载屏即速览页」）：
+//   poster（LCP 元素，实景压缩关键帧）+ H1 定位语 + 三支柱硬数字 + 六导航 <a>
+//   + 楼宇快览（DOM 版 12 楼列表 → 真实 URL，爬虫可读、挂载前可点）+ noscript 全导航；
+//   「跳过 3D」= DOM 首个可聚焦元素，第 0 秒可点直达 /home/（新承诺二 / CITY-02）。
+//
+// 挂载策略（§4.3 四条件，任一不满足 → 静态壳 + 显式「进入科技城」按钮）：
+//   window.load 后 ①非 prefers-reduced-motion ②非 Save-Data ③视口宽 ≥768px
+//   ④WebGPU 或 WebGL 2 可用——全过才自动挂载（再静置一拍，给「秒点跳过」的
+//   访客让路：跳过路径全程零 world 字节，SRD §12.7.8 出口①）。
+//
+// SEO：canonical 自指；WebSite + Person JSON-LD 留在 `/`（§4.1）；index,follow。
+// 深链契约（SRD §12.7.8 出口⑧）：?poi=<id>（id = buildings JSON slug）出生于对应楼
+// parkingBay；PARAM_ALLOWLIST 七参数见引导脚本（M4/M6/M9 全部转正，无 location.search 旁路）。
+import cityMap from '../data/cyber-city-buildings.json';
+import { personJsonLd, webSiteJsonLd } from '../data/jsonld';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
-const title = '王磊｜汽车智能座舱与 AI 解决方案经理';
+const title = '王磊｜汽车智能座舱与 AI 解决方案经理 · 智能座舱科技城';
 const description =
-  '把复杂技术转化为可决策、可交付、可复用的解决方案——聚焦汽车 × 座舱 × 多语种 × 大模型 × AI 工作流的交叉地带。';
+  '全屏赛博科技城 Full Entry：座舱 AI 机器人 ↔ CarConcept 一键变形、十字路口 WASD 驾驶，12 栋主题大楼即全站导航；可随时跳过 3D 直达内容首页。';
 
-// JSON-LD：全站 Person + WebSite 由 BaseLayout 自动注入（SRD §9.4 单点），首页无页型增量
+const homeUrl = new URL(`${base}/`, Astro.site).href;
+const jsonLdAll = [personJsonLd(homeUrl), webSiteJsonLd(homeUrl)];
 
-// 区块 2：能力三支柱（文案源 master-plan §3 区块 2；锚点均可被现有资产佐证）
+// 六导航（品牌区 Home=/home/ 内容首页 + 五栏目，与 SiteHeader 清单同源；noscript 复用）
+const nav = [
+  { href: `${base}/home/`, label: 'Home' },
+  { href: `${base}/work/`, label: 'Work' },
+  { href: `${base}/insights/`, label: 'Insights' },
+  { href: `${base}/ai-lab/`, label: 'AI Lab' },
+  { href: `${base}/about/`, label: 'About' },
+  { href: `${base}/contact/`, label: 'Contact' },
+];
+
+// 三支柱硬数字（与 /home/ 区块 2 同源锚点，master-plan §3）
 const pillars = [
-  {
-    title: '智能座舱多语种',
-    desc: '多语种座舱产品从需求定义到量产交付的全链路把控。',
-    anchor: '16 语种 · RTL/CJK 全覆盖',
-    caseHref: `${base}/work/multilingual-cockpit/`,
-    caseLabel: '旗舰案例 A · 多语种座舱能力地图',
-  },
-  {
-    title: '端云大模型',
-    desc: '车端/云端大模型分层架构设计与场景化选型落地。',
-    anchor: '端 × 云 · 2 层选型框架',
-    caseHref: `${base}/work/llm-capability-layering/`,
-    caseLabel: '旗舰案例 B · 端云大模型分层',
-  },
-  {
-    title: 'AI 原生工作流',
-    desc: '用 AI 重构需求、开发、测试、复盘全流程的提效体系。',
-    anchor: '需求 → 复盘 · 4 阶段覆盖',
-    caseHref: `${base}/work/ai-native-workflow/`,
-    caseLabel: '旗舰案例 C · AI 原生工作流',
-  },
+  '16 语种 · RTL/CJK 全覆盖',
+  '端 × 云 · 2 层选型框架',
+  '需求 → 复盘 · 4 阶段覆盖',
 ];
 
-// 区块 4：旗舰案例预览（P1 占位文案，按「问题→动作→结果」写实；P3 接真数据）
-const cases = [
-  {
-    title: '多语种座舱能力地图',
-    level: 'L2' as const,
-    problem: '多市场车型的语音与显示需同时覆盖十余个语种，需求口径与验收标准分散。',
-    action: '建立「语种 × 功能」能力地图与分级验收标准，打通需求到交付的单一口径。',
-    result: '多语种交付口径统一，验证与回归周期显著压缩（脱敏图表见案例正文）。',
-    href: `${base}/work/multilingual-cockpit/`,
-    demoHref: `${base}/lab/tts-cockpit/`,
-    demoLabel: '配套 Demo · TTS 座舱',
-  },
-  {
-    title: '端云大模型分层',
-    level: 'L3' as const,
-    problem: '车端算力与云端能力边界不清，场景选型反复摇摆、评审难以收敛。',
-    action: '制定端云能力分层框架与场景化选型决策表，明确每类场景的归属与降级路径。',
-    result: '选型决策有据可依，方案评审收敛效率明显提升（量化口径见案例正文）。',
-    href: `${base}/work/llm-capability-layering/`,
-  },
-  {
-    title: 'AI 原生工作流',
-    level: 'L3' as const,
-    problem: '需求、测试与复盘环节存在大量重复人工劳动，产出质量依赖个人经验。',
-    action: '以节点契约与风险分级人审重构关键流程，在四个工作阶段引入 AI 工位。',
-    result: '关键环节提效可量化、产出质量可审计（数据口径见案例正文）。',
-    href: `${base}/work/ai-native-workflow/`,
-  },
-];
+// 楼宇快览（数据单源 buildings JSON：12 栋在册楼 → deepLink 真实 URL，
+// 「楼即产品线」的 DOM 面——挂载前可点、爬虫可读；进站纪律 = 真实 URL 直跳）
+const buildings = cityMap.buildings.map((b) => ({
+  id: b.id,
+  title: b.title.zh,
+  en: b.title.en,
+  href: `${base}${b.deepLink}`,
+  color: b.neonColor,
+}));
 ---
 
-<BaseLayout title={title} description={description}>
-  <!-- 区块 1：Hero（定位） -->
-  <HomeHero />
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index, follow" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={homeUrl} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <link rel="sitemap" href={`${base}/sitemap-index.xml`} />
+    <meta name="theme-color" content="#05070d" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={homeUrl} />
+    <meta property="og:locale" content="zh_CN" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdAll)} />
+  </head>
+  <body>
+    <!-- 跳过出口：DOM 首个可聚焦元素，第 0 秒可点（CITY-02 / Persona 2 猎头 30 秒路径） -->
+    <a class="skip mono" data-world-skip href={`${base}/home/`}>跳过 3D，直达内容首页 →</a>
 
-  <!-- 区块 2：能力三支柱 -->
-  <section class="section" aria-labelledby="capabilities-title">
-    <div class="container">
-      <SectionHeading
-        index="01"
-        label="Capabilities"
-        title="能力三支柱"
-        id="capabilities-title"
-      />
-      <div class="grid-3">
-        {
-          pillars.map((p, i) => (
-            <PillarCard {...p} style={`--reveal-delay: ${i * 6}%`} />
-          ))
-        }
+    <div class="world" data-world-host data-state="idle">
+      <!-- 顶栏：六导航 <a>（挂载前后恒在，全键盘可达） -->
+      <header class="topbar">
+        <span class="brand mono" aria-hidden="true">W.L. · CYBER CITY</span>
+        <nav class="nav mono" aria-label="全站导航">
+          {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+        </nav>
+        <span class="backend mono" data-world-backend>—</span>
+      </header>
+
+      <div class="stage" data-lab-stage>
+        <canvas
+          class="canvas"
+          data-world-canvas
+          aria-label="智能座舱科技城：变形仪式后 W/A/S/D 或方向键驾驶 CarConcept，靠近大楼按 E 进站"
+        ></canvas>
+
+        <!-- 驾驶 HUD（DOM，挂载后可见；引擎经 data-ws-* 挂点接线，缺席容忍） -->
+        <div class="hud" aria-hidden="true">
+          <div class="hud-cell">
+            <span class="hud-num" data-ws-speed>0</span>
+            <span class="hud-unit">km/h</span>
+          </div>
+          <button class="hud-respawn" type="button" data-world-respawn>回到路口 (R)</button>
+        </div>
+        <p class="hint" data-ws-hint aria-hidden="true">
+          W/A/S/D 或方向键驾驶 · Shift 加速 · Space/B 刹车 · R 回到路口 · 靠近大楼按 E 进站
+        </p>
+
+        <!-- 静态壳覆盖层：poster（LCP）+ 定位语 + 三支柱 + 楼宇快览 + 显式进入（挂载前零 world 字节） -->
+        <div class="cover" data-world-cover>
+          <img
+            class="poster"
+            data-world-poster
+            src={`${base}/posters/cyber-city-poster.webp`}
+            alt=""
+            width="1280"
+            height="720"
+            fetchpriority="high"
+            decoding="async"
+          />
+          <div class="scrim" aria-hidden="true"></div>
+
+          <div class="intro">
+            <p class="chip mono">CYBER CITY · FULL ENTRY</p>
+            <h1>王磊｜汽车智能座舱与 AI 解决方案经理</h1>
+            <p class="sub">
+              把复杂技术转化为可决策、可交付、可复用的解决方案——这座科技城里的每栋楼，都是一条真实产品线。
+            </p>
+            <ul class="pillars mono" aria-label="能力三支柱">
+              {pillars.map((p) => <li>{p}</li>)}
+            </ul>
+
+            <div class="actions">
+              <button class="enter" type="button" data-world-enter>进入科技城</button>
+              <p class="note" data-world-note>
+                变形仪式 + WASD 驾驶 · WebGPU 优先，WebGL 2 自动回退 · 3D 资产点击后才加载
+              </p>
+            </div>
+            <div class="progress" role="progressbar" aria-label="世界加载进度">
+              <i data-world-progress-bar></i>
+            </div>
+            <p class="error" data-world-error hidden>
+              3D 引擎初始化失败：当前浏览器可能不支持 WebGPU / WebGL 2。全部内容可经上方导航直达。
+            </p>
+            <noscript>
+              <p class="error">
+                本页 3D 体验需要 JavaScript；以下导航直达全部内容：
+                {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+              </p>
+            </noscript>
+          </div>
+
+          <!-- 楼宇快览：12 栋在册楼 = 全站导航的 DOM 面（挂载前可点，真实 URL） -->
+          <nav class="city-nav" aria-label="楼宇快览（12 栋主题大楼）">
+            <h2 class="city-nav-title mono">楼即产品线 · 12 栋在册</h2>
+            <ul>
+              {
+                buildings.map((b) => (
+                  <li>
+                    <a href={b.href} style={`--neon: ${b.color};`}>
+                      <i class="dot" aria-hidden="true" />
+                      <span class="b-zh">{b.title}</span>
+                      <span class="b-en mono">{b.en}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+        </div>
       </div>
     </div>
-  </section>
+  </body>
+</html>
 
-  <!-- 区块 3：AI Lab 入口（证据前置） -->
-  <section class="section" aria-labelledby="live-demos-title">
-    <div class="container">
-      <SectionHeading
-        index="02"
-        label="Live Demos"
-        title="可交互的能力证据"
-        id="live-demos-title"
-        lede="不是录屏，是能上手的东西——三个在浏览器里实时运行的 Demo，包括一座可驾驶的 3D 智能座舱试验场。"
-      />
-      <LabBento>
-        <LabCardCar />
-        <LabCardTts />
-        <LabCardWorldSpike />
-      </LabBento>
-    </div>
-  </section>
+<script>
+  // 引导脚本（≤15KB gzip 红线，实测 ~2KB）：只做条件判定 + 动态 import 触发。
+  // world 分包与资产零静态标签——挂载前唯一网络开销 = 本脚本 + poster（G-A′）。
+  import type { LabInstance } from '../lab/contracts';
 
-  <!-- 区块 4：旗舰案例预览（精选观点 P3 填充，空态整块隐藏） -->
-  <section class="section" aria-labelledby="selected-work-title">
-    <div class="container">
-      <SectionHeading
-        index="03"
-        label="Selected Work"
-        title="旗舰案例"
-        id="selected-work-title"
-      />
-      <div class="grid-3">
-        {
-          cases.map((c, i) => (
-            <CaseCard {...c} style={`--reveal-delay: ${i * 6}%`} />
-          ))
-        }
-      </div>
-    </div>
-  </section>
+  /** 深链参数白名单（M4/M6/M9 全部转正，SRD §12.7.8 出口⑧）：仅名单内参数经
+   *  opts.params 透传给 mount，其余一律忽略且不回写 URL。
+   *  gl=1 强制 WebGL 2 · vehicle=kinematic 运动学回退档 · city=1 灰盒挂城 ·
+   *  robot=1 机器人演示 · ritual=1 首幕全流程 · quality=0|1|2 画质档（M9，
+   *  引擎侧 Quality 不再兜底 location.search）· poi=<id> 楼宇深链（id=buildings JSON slug） */
+  const PARAM_ALLOWLIST = ['gl', 'vehicle', 'city', 'robot', 'ritual', 'quality', 'poi'] as const;
 
-  <!-- 区块 5：Now + CTA -->
-  <section class="section" aria-labelledby="now-title">
-    <div class="container">
-      <SectionHeading index="04" label="Now" title="正在进行" id="now-title" />
-      <NowCta />
-    </div>
-  </section>
-</BaseLayout>
+  /** 自动挂载静置一拍（ms）：load 后给「秒点跳过」的访客让路——跳过路径
+   *  全程零 world 字节（SRD §12.7.8 出口①，CITY-E2E-02 断言口径） */
+  const AUTO_MOUNT_DELAY = 1800;
+
+  const host = document.querySelector<HTMLElement>('[data-world-host]');
+  if (host) {
+    const enterBtn = host.querySelector<HTMLButtonElement>('[data-world-enter]');
+    const progressBar = host.querySelector<HTMLElement>('[data-world-progress-bar]');
+    const errorEl = host.querySelector<HTMLElement>('[data-world-error]');
+    const backendEl = host.querySelector<HTMLElement>('[data-world-backend]');
+    const noteEl = host.querySelector<HTMLElement>('[data-world-note]');
+    const respawnBtn = host.querySelector<HTMLButtonElement>('[data-world-respawn]');
+    let instance: LabInstance | null = null;
+    let starting = false;
+
+    const incoming = new URLSearchParams(location.search);
+    const params = new URLSearchParams();
+    for (const key of PARAM_ALLOWLIST) {
+      const value = incoming.get(key);
+      if (value !== null) params.set(key, value);
+    }
+    // 默认剧本 = 首幕变形仪式（终裁 D4）：显式场景参数（poi 深链 / city / robot
+    // 灰盒验证参数）或显式 ritual 时让位，不叠加
+    if (!params.has('ritual') && !params.has('poi') && !params.has('city') && !params.has('robot')) {
+      params.set('ritual', '1');
+    }
+
+    const setState = (s: string) => {
+      host.dataset.state = s;
+    };
+
+    const mount = async (): Promise<void> => {
+      if (starting) return;
+      starting = true;
+      setState('loading');
+      if (progressBar) progressBar.style.width = '4%';
+      try {
+        // 懒分包：确认进入后才拉取（G-A′ 恒硬两条之一）
+        const { default: mountWorld } = await import('../lab/modules/world/index');
+        instance = await mountWorld({
+          host,
+          mode: 'full',
+          params,
+          onProgress: (loaded, total) => {
+            if (progressBar) {
+              progressBar.style.width = `${Math.round(4 + (loaded / Math.max(total, 1)) * 96)}%`;
+            }
+          },
+          onBackend: (backend) => {
+            if (backendEl) backendEl.textContent = backend === 'webgpu' ? 'WebGPU' : 'WebGL 2';
+          },
+        });
+        setState('ready');
+      } catch (err) {
+        console.error('[world] mount 失败：', err);
+        setState('error');
+        if (errorEl) errorEl.hidden = false;
+      }
+    };
+
+    /** §4.3 四条件检查：返回 null = 可自动挂载，否则为拦截原因（记入 data-blocked） */
+    const blockReason = (): string | null => {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return 'reduced-motion';
+      const conn = (navigator as { connection?: { saveData?: boolean } }).connection;
+      if (conn?.saveData) return 'save-data';
+      if (window.innerWidth < 768) return 'viewport';
+      if (!('gpu' in navigator)) {
+        const probe = document.createElement('canvas');
+        if (!probe.getContext('webgl2')) return 'webgl';
+      }
+      return null;
+    };
+
+    const BLOCK_NOTES: Record<string, string> = {
+      'reduced-motion': '检测到系统减少动态偏好：不自动加载 3D。点击「进入科技城」为终态直出（无动画序列）。',
+      'save-data': '检测到省流量模式：不自动加载 3D（约 5.5MB）。点击「进入科技城」可显式进入。',
+      viewport: '窄屏设备默认不自动加载 3D。点击「进入科技城」可显式进入（触屏为虚拟摇杆）。',
+      webgl: '当前浏览器不支持 WebGPU / WebGL 2，无法进入 3D。全部内容可经导航直达。',
+    };
+
+    // 显式进入：跳过条件拦截（reduced-motion 由引擎侧终态直出，§12.4 语义沿用）
+    enterBtn?.addEventListener('click', () => {
+      void mount();
+    });
+
+    // 条件自动挂载：window.load 后评估（关键路径已清空，实施方案 §4.3）
+    const evaluate = () => {
+      const reason = blockReason();
+      if (reason) {
+        host.dataset.blocked = reason;
+        if (noteEl && BLOCK_NOTES[reason]) noteEl.textContent = BLOCK_NOTES[reason];
+        return;
+      }
+      window.setTimeout(() => void mount(), AUTO_MOUNT_DELAY);
+    };
+    if (document.readyState === 'complete') evaluate();
+    else window.addEventListener('load', evaluate, { once: true });
+
+    // 复位按钮（触屏）：复用键盘 R 语义（down+up 成对，Inputs toggle 语义）
+    respawnBtn?.addEventListener('click', () => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyR', key: 'r' }));
+      window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyR', key: 'r' }));
+    });
+
+    // 生命周期（SRD §9.2 契约）：标签页隐藏暂停 RAF；离页释放 GPU
+    document.addEventListener('visibilitychange', () => {
+      if (!instance) return;
+      if (document.visibilityState === 'hidden') instance.pause();
+      else instance.resume();
+    });
+    window.addEventListener('pagehide', (e) => {
+      if (!e.persisted && instance) {
+        instance.dispose();
+        instance = null;
+      }
+    });
+  }
+</script>
 
 <style>
-  .section {
-    padding-block: var(--section-pad);
-    border-block-start: 1px solid var(--line);
+  /* 独立最小壳样式（不依赖全站 tokens，系统字体栈——G-A′ HTML+CSS ≤35KB 红线） */
+  html {
+    color-scheme: dark;
+  }
+  html,
+  body {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    background: #05070d;
+    color: #e8ecf2;
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      'PingFang SC',
+      'Noto Sans CJK SC',
+      sans-serif;
+    line-height: 1.6;
+    overflow: hidden;
+  }
+  .mono {
+    font-family: ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace;
+  }
+  a {
+    color: #9ecbff;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
   }
 
-  .grid-3 {
+  /* ---------- 跳过出口（DOM 首个可聚焦元素，恒在最上层） ---------- */
+  .skip {
+    position: fixed;
+    top: 0.7rem;
+    right: 0.9rem;
+    z-index: 30;
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    color: #eafffb;
+    background: rgba(10, 16, 22, 0.82);
+    border: 1px solid rgba(73, 197, 182, 0.55);
+    border-radius: 999px;
+    padding: 0.42em 1.1em;
+  }
+  .skip:hover,
+  .skip:focus-visible {
+    border-color: #49c5b6;
+    text-decoration: none;
+    box-shadow: 0 0 14px rgba(73, 197, 182, 0.4);
+  }
+
+  /* ---------- 全屏世界容器 ---------- */
+  .world {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- 顶栏六导航 ---------- */
+  .topbar {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 1rem;
+    padding-right: 13rem; /* 让位右上角跳过出口 */
+    background: linear-gradient(180deg, rgba(5, 7, 13, 0.88), rgba(5, 7, 13, 0.55) 78%, transparent);
+  }
+  .brand {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: #49c5b6;
+    white-space: nowrap;
+  }
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem 0.35rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+  }
+  .nav a {
+    color: #c3cbd8;
+    padding: 0.3em 0.55em;
+    border-radius: 6px;
+  }
+  .nav a:hover,
+  .nav a:focus-visible {
+    color: #eafffb;
+    background: rgba(158, 203, 255, 0.12);
+    text-decoration: none;
+  }
+  .backend {
+    margin-left: auto;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: #9aa4b2;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    padding: 0.24em 0.8em;
+    white-space: nowrap;
+  }
+
+  /* ---------- 舞台与画布 ---------- */
+  .stage {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    touch-action: none; /* 摇杆手势独占 */
+  }
+  .canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* ---------- 驾驶 HUD ---------- */
+  .hud {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+    display: flex;
+    align-items: flex-end;
+    gap: 1.1rem;
+    padding: 0.8rem 1.1rem;
+    background: linear-gradient(180deg, transparent, rgba(4, 6, 10, 0.62));
+    opacity: 0;
+    transition: opacity 400ms ease;
+    pointer-events: none;
+  }
+  .world[data-state='ready'] .hud {
+    opacity: 1;
+  }
+  .hud-cell {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+  .hud-num {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 1.8rem;
+    font-weight: 650;
+    color: #eef2f7;
+  }
+  .hud-unit {
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .hud-respawn {
+    pointer-events: auto;
+    margin-left: auto;
+    font: inherit;
+    font-size: 0.76rem;
+    color: #eef2f7;
+    background: rgba(16, 22, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    padding: 0.45em 1em;
+    cursor: pointer;
+  }
+  .hint {
+    position: absolute;
+    top: 0.7rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    margin: 0;
+    max-width: 92%;
+    font-size: 0.76rem;
+    color: #dfe5ec;
+    background: rgba(6, 9, 14, 0.66);
+    padding: 0.4em 1.1em;
+    border-radius: 999px;
+    opacity: 0;
+    transition: opacity 400ms ease;
+    pointer-events: none;
+    text-align: center;
+  }
+  .world[data-state='ready'] .hint {
+    opacity: 1;
+  }
+  .world[data-state='ready'] .hint[data-dismissed='true'] {
+    opacity: 0;
+  }
+
+  /* ---------- 静态壳覆盖层（poster + 速览 + 楼宇快览） ---------- */
+  .cover {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
     display: grid;
-    gap: var(--grid-gutter);
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 1rem;
+    padding: 1.1rem 1.2rem 1.4rem;
+    overflow: auto;
+    transition: opacity 500ms ease;
+  }
+  .world[data-state='ready'] .cover {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+  }
+  .scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(5, 7, 13, 0.62), rgba(5, 7, 13, 0.28) 40%, rgba(5, 7, 13, 0.88));
   }
 
-  @media (min-width: 640px) {
-    .grid-3 {
-      grid-template-columns: repeat(3, 1fr);
+  .intro {
+    max-width: 44rem;
+    padding-bottom: 0.4rem;
+  }
+  .chip {
+    display: inline-block;
+    margin: 0 0 0.7rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.22em;
+    color: #bdfff4;
+    border: 1px solid rgba(73, 197, 182, 0.5);
+    border-radius: 999px;
+    padding: 0.32em 1em;
+    text-shadow: 0 0 8px rgba(73, 197, 182, 0.55);
+  }
+  h1 {
+    margin: 0 0 0.45rem;
+    font-size: clamp(1.45rem, 3.4vw, 2.3rem);
+    line-height: 1.28;
+    letter-spacing: 0.01em;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
+  }
+  .sub {
+    margin: 0 0 0.9rem;
+    max-width: 56ch;
+    font-size: 0.94rem;
+    color: #cfd6df;
+  }
+  .pillars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0 0 1.2rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+  }
+  .pillars li {
+    border: 1px solid rgba(158, 203, 255, 0.35);
+    border-radius: 6px;
+    padding: 0.34em 0.85em;
+    color: #d7e6fb;
+    background: rgba(10, 16, 26, 0.55);
+    white-space: nowrap;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+  }
+  .enter {
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: #eafffb;
+    cursor: pointer;
+    padding: 0.78em 2.1em;
+    border-radius: 999px;
+    border: 1px solid rgba(73, 197, 182, 0.85);
+    background: linear-gradient(180deg, rgba(18, 46, 52, 0.92), rgba(10, 22, 30, 0.92));
+    box-shadow: 0 0 22px rgba(73, 197, 182, 0.35), inset 0 0 12px rgba(73, 197, 182, 0.25);
+    text-shadow: 0 0 10px rgba(73, 197, 182, 0.8);
+    transition: box-shadow 0.25s, transform 0.25s;
+  }
+  .enter:hover {
+    box-shadow: 0 0 36px rgba(73, 197, 182, 0.6), inset 0 0 16px rgba(73, 197, 182, 0.36);
+    transform: translateY(-1px);
+  }
+  .world[data-state='loading'] .enter,
+  .world[data-state='error'] .enter {
+    display: none;
+  }
+  .note {
+    margin: 0;
+    max-width: 40ch;
+    font-size: 0.76rem;
+    color: #aeb7c4;
+  }
+  .world[data-state='loading'] .note {
+    visibility: hidden;
+  }
+  .progress {
+    display: none;
+    width: min(300px, 62vw);
+    height: 3px;
+    margin-top: 1rem;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.16);
+    overflow: hidden;
+  }
+  .world[data-state='loading'] .progress {
+    display: block;
+  }
+  .progress i {
+    display: block;
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #49c5b6, #bdfff4);
+    transition: width 0.25s ease;
+  }
+  .error {
+    margin-top: 0.9rem;
+    font-size: 0.84rem;
+    color: #f2b8b5;
+  }
+  .error a {
+    margin-inline: 0.3em;
+  }
+
+  /* ---------- 楼宇快览侧栏 ---------- */
+  .city-nav {
+    position: relative;
+    max-width: 21rem;
+    max-height: min(58vh, 30rem);
+    overflow: auto;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(158, 203, 255, 0.22);
+    border-radius: 14px;
+    background: rgba(7, 10, 17, 0.72);
+    backdrop-filter: blur(6px);
+  }
+  .city-nav-title {
+    margin: 0 0 0.55rem;
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    color: #9ecbff;
+    text-transform: uppercase;
+  }
+  .city-nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.1rem;
+  }
+  .city-nav a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55em;
+    padding: 0.3em 0.5em;
+    border-radius: 8px;
+    color: #dbe2ec;
+    font-size: 0.82rem;
+  }
+  .city-nav a:hover,
+  .city-nav a:focus-visible {
+    background: rgba(158, 203, 255, 0.1);
+    text-decoration: none;
+  }
+  .dot {
+    flex-shrink: 0;
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 2px;
+    background: var(--neon, #9ecbff);
+    box-shadow: 0 0 8px var(--neon, #9ecbff);
+    transform: translateY(-0.05em);
+  }
+  .b-en {
+    margin-left: auto;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: #8b95a3;
+    white-space: nowrap;
+  }
+
+  /* ---------- 窄屏（<768px：不自动挂载，纵排速览） ---------- */
+  @media (max-width: 767.98px) {
+    body {
+      overflow: auto;
+    }
+    .world {
+      position: static;
+      min-height: 100svh;
+    }
+    .stage {
+      min-height: 100svh;
+    }
+    .cover {
+      grid-template-columns: 1fr;
+      align-items: start;
+      align-content: start;
+      padding-top: 3.4rem;
+    }
+    .topbar {
+      padding-right: 1rem;
+      flex-wrap: wrap;
+    }
+    .backend {
+      display: none;
+    }
+    .city-nav {
+      max-width: none;
+      max-height: none;
     }
   }
 
-  /* LabBento 仅内置双卡 7+5；第三卡（world-spike）自带通栏样式，
-     此处补中间卡（TTS）的 span 5，维持首行 7+5、次行通栏。 */
-  @media (min-width: 960px) {
-    :global(.bento > :nth-child(2)) {
-      grid-column: span 5;
+  @media (prefers-reduced-motion: reduce) {
+    .cover,
+    .hud,
+    .hint,
+    .enter,
+    .progress i {
+      transition-duration: 0.01ms;
     }
   }
 </style>
