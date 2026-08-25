@@ -26,7 +26,7 @@
 | ID | 分支 | 文件域 | 状态 | Agent |
 |----|------|--------|------|-------|
 | CC-E1 | `cursor/cc-e1-physics-vehicle-1d6f` | physics/VisualVehicle/Player/KinematicFallback | 🚀 running | [E1](bc-30db345e-5bf7-5461-ae70-e3d17156072b) |
-| CC-E3 | `cursor/cc-e3-city-procedural-1d6f` | `city/*` + buildings JSON | 🚀 running | [E3](bc-22457f98-f1cb-5a4a-ba37-7705aaf339e7) |
+| CC-E3 | `cursor/cc-e3-city-procedural-1d6f` | `city/*` + buildings JSON | ✅ done | [E3](bc-22457f98-f1cb-5a4a-ba37-7705aaf339e7) |
 | CC-E5 | `cursor/cc-e5-hero-robot-1d6f` | `public/models/hero-robot/` + HeroRobot.ts | 🚀 running | [E5](bc-6b35dde6-1fee-59f7-b5b8-f093f3b4a82c) |
 | CC-E10 | `cursor/cc-e10-e2e-skeleton-1d6f` | e2e 世界剧本骨架 + checklist | 🚀 running | [E10](bc-f4696da3-72d6-5848-883b-275ad65207e6) |
 | CC-A1 | （波 1 齐套后） | 只读审计四分支 diff vs PRD/SRD | ⏳ 待波 1 | — |
