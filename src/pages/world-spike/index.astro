@@ -1,6 +1,7 @@
 ---
-// /world-spike/ —— Phase A Spike 隐藏路由（roadmap §7 · noindex，不入导航/站点地图）。
-// 独立最小壳（不挂 BaseLayout/站点导航）：Spike 壳 = poster + 进入按钮 + noscript
+// /world-spike/ —— 3D 智能座舱试验场（公开路由：index,follow · 已入站点地图）。
+// 原 Phase A Spike 隐藏路由转公开：GitHub Pages 访客可直达试驾，验证纪律不变。
+// 独立最小壳（不挂 BaseLayout/站点导航）：壳 = poster + 进入按钮 + noscript
 // 说明（roadmap §7.1 Step 2），不引入全站页眉页脚（避免对未建成路由的链接依赖）。
 // 静态壳纪律：点击「进入试验场」前零 world 字节（three/模型/HDRI 全部在点击后才拉取）；
 // 壳本身只有本页 HTML/CSS + ~21KB poster 复用图 + <1KB 引导脚本。
@@ -23,11 +24,11 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex, nofollow" />
-    <title>world Spike · 车辆驾驶验证（内部）</title>
+    <meta name="robots" content="index, follow" />
+    <title>3D 智能座舱试验场 · 概念车在线试驾</title>
     <meta
       name="description"
-      content="Phase A Spike：灰盒试验场 + CarConcept 可驾驶验证。内部隐藏路由，产出默认可丢弃。"
+      content="3D 智能座舱试验场：在浏览器里驾驶 CarConcept 概念车——WebGPU/WebGL 2 实时渲染、键盘与触屏摇杆操控、灰盒物理试车道。"
     />
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
     <meta name="theme-color" content="#0c0d0f" />
@@ -35,11 +36,12 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
   <body>
     <section class="ws">
     <header class="ws-head">
-      <p class="ws-chip">WORLD · PHASE A SPIKE（内部验证，noindex）</p>
-      <h1>灰盒试验场 —— CarConcept 可驾驶验证</h1>
+      <p class="ws-chip">WORLD · 3D 试验场（实验性 DEMO）</p>
+      <h1>3D 智能座舱试验场 —— 概念车在线试驾</h1>
       <p class="ws-lede">
-        验证目标：操控手感 / 物理选型（手写运动学 vs Rapier）/ 双后端帧率 / 移动端摇杆。
-        一切美术为灰盒纪律；结论与参数记录见 <code>docs/research/world-spike-log.md</code>。
+        欢迎试驾：W/A/S/D 或方向键驾驶 CarConcept 概念车（触屏为虚拟摇杆），
+        WebGPU 优先、WebGL 2 自动回退，点击进入后才开始加载 3D 资源。
+        技术验证记录见 <code>docs/research/world-spike-log.md</code>。
         <a href={`${base}/`}>跳过 3D，返回首页 →</a>
       </p>
     </header>

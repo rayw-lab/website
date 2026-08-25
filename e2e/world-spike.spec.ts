@@ -1,4 +1,4 @@
-// /world-spike/ —— Phase A Spike 隐藏路由的完整交互回归（integration 批次）。
+// /world-spike/ —— 3D 智能座舱试验场（公开路由）的完整交互回归（integration 批次）。
 // 覆盖：e2e-test-plan §5.7（WS-E2E-01 ~ 10）。
 //
 // 与 lab facade 页的关键差异（断言口径随之不同）：
@@ -95,12 +95,12 @@ function logMetrics(label: string, data: Record<string, unknown>): void {
 }
 
 test.describe('world Spike 灰盒试验场', () => {
-  test('WS-E2E-01 壳页静态合同：noindex、标题、逃生链接、poster、点击前零 world 字节', async ({ page, request }) => {
-    // SSR 合同（不受客户端时序影响）
+  test('WS-E2E-01 壳页静态合同：index,follow、标题、逃生链接、poster、点击前零 world 字节', async ({ page, request }) => {
+    // SSR 合同（不受客户端时序影响）；路由已转公开：robots 必须允许收录
     const res = await request.get(PAGE_URL);
     expect(res.status(), 'world-spike 路由必须已交付（integration 合流后不允许 404）').toBe(200);
     const html = await res.text();
-    expect(html).toMatch(/<meta name="robots" content="noindex, nofollow"\s*\/?>/);
+    expect(html).toMatch(/<meta name="robots" content="index, follow"\s*\/?>/);
     expect(html).toContain('data-ws-host');
     expect(html).toContain('data-state="idle"');
     expect(html).toContain('进入试验场');
@@ -114,8 +114,8 @@ test.describe('world Spike 灰盒试验场', () => {
     });
 
     await page.goto(PAGE_URL);
-    await expect(page).toHaveTitle(/world Spike/);
-    await expect(page.locator('h1')).toHaveText(/灰盒试验场/);
+    await expect(page).toHaveTitle(/3D 智能座舱试验场/);
+    await expect(page.locator('h1')).toHaveText(/3D 智能座舱试验场/);
 
     // 逃生链接（降级链的静态壳级出口）：跳过 3D 返回首页，href 带 base
     await expect(page.locator('.ws-lede a')).toHaveAttribute('href', `${u('/')}`);

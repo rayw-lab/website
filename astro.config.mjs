@@ -11,9 +11,8 @@ export default defineConfig({
   base: '/website',
   integrations: [
     mdx(),
-    // /world-spike/ 是 noindex 隐藏路由（roadmap §7.1 Step 2），不进 sitemap
-    // （engine 与 vehicle 两分支同一过滤条件，合并取一）
-    sitemap({ filter: (page) => !page.includes('/world-spike/') }),
+    // /world-spike/ 已转公开路由（index,follow），全站页面进 sitemap 无需过滤
+    sitemap(),
   ],
   vite: {
     // @dimforge/rapier3d 的 wasm ES 模块导入必需（source-teardown §9.3，

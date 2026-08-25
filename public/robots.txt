@@ -1,5 +1,5 @@
 # robots.txt（GLB-04 / SRD §5.6）：允许全站抓取 + sitemap 指针。
-# noindex 隐藏路由（/world-spike/）由页面 meta robots 控制，不在此重复屏蔽。
+# /world-spike/ 已转公开路由（页面 meta robots = index,follow，随 sitemap 收录）。
 User-agent: *
 Allow: /
 
