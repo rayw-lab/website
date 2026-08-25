@@ -22,6 +22,8 @@ import { Roads } from './Roads';
 import { ThemeTowers } from './ThemeTowers';
 import { CityBlocks } from './CityBlocks';
 import { CitySilhouette } from './CitySilhouette';
+import { Sky, SKY_FOG_COLOR, SKY_ZENITH_COLOR } from './Sky';
+import { StreetProps } from './StreetProps';
 import { applyNeonQuality } from './NeonFacade';
 
 export interface City {
@@ -33,6 +35,10 @@ export interface City {
   silhouette: CitySilhouette;
   /** 霓虹网格地面（CC-E4） */
   grid: Grid;
+  /** 天空穹顶 + 地平线辉光（CC-L1 A1） */
+  sky: Sky;
+  /** 街角霓虹隔离墩（CC-L1 A2：城市道具层，替换 spike 锥桶） */
+  streetProps: StreetProps;
 }
 
 /**
@@ -47,6 +53,8 @@ export function mountCity(game: Game): City {
   const themeTowers = new ThemeTowers(game, map);
   const cityBlocks = new CityBlocks(game, map);
   const silhouette = new CitySilhouette(game, map);
+  const sky = new Sky(game);
+  const streetProps = new StreetProps(game, map);
 
   // CC-E4 地表升级：霓虹网格地面（湿地反射三档）接管 plaza 的地表职责——
   // plaza 对象保留（隐藏，回退开关），高度层 0.02 由 Grid 顶替（路面 0.1 仍在其上）
@@ -63,12 +71,15 @@ export function mountCity(game: Game): City {
   applyCityQuality(game.quality.level);
   game.quality.events.on('change', applyCityQuality);
 
-  // 灰盒相机远裁剪面 200m 只够试车道；城市尺度放宽 + 距离雾衔接天际线渐隐
+  // 灰盒相机远裁剪面 200m 只够试车道；城市尺度放宽 + 距离雾衔接天际线渐隐。
+  // [CC-L1 A1] 雾色与天空地平线辉光带同源（SKY_FOG_COLOR）：远景楼宇渐隐进
+  // 「城市光污染」而非纯黑；背景兜底同天顶色，穹顶边角零黑缝。
   for (const camera of [game.view.camera, game.view.defaultCamera]) {
     camera.far = 1000;
     camera.updateProjectionMatrix();
   }
-  game.scene.fog = new THREE.Fog('#0d0c11', 160, 900);
+  game.scene.fog = new THREE.Fog(SKY_FOG_COLOR, 140, 850);
+  game.scene.background = new THREE.Color(SKY_ZENITH_COLOR);
 
   // 挂载末拍 shader 预热（§12.7.2「shader 预热」行）：离屏 CubeCamera 逼全部
   // 城市 TSL 材质完成管线编译，防首帧/首次入画卡顿。folio 同门：仅桌面全效档 +
@@ -88,10 +99,11 @@ export function mountCity(game: Game): City {
       `；出生点 (${spawn.x}, ${spawn.z}) heading ${map.world.spawn.heading}（十字路口正中，车头朝北）` +
       `；外部资产 0 字节（全程序化）` +
       `；[CC-E4] 霓虹视觉系统就位：Quality ${game.quality.level} 档` +
-      `（bloom/湿地反射/剪影密度/窗格动画四联动，?quality=0|1|2 或 #debug 句柄切档）`,
+      `（bloom/湿地反射/剪影密度/窗格动画四联动，?quality=0|1|2 或 #debug 句柄切档）` +
+      `；[CC-L1] 天空穹顶+地平线辉光 · 窗色三族纪律 · 街角隔离墩 ${streetProps.spots.length} 只（锥桶已撤场）`,
   );
 
-  return { map, roads, themeTowers, cityBlocks, silhouette, grid };
+  return { map, roads, themeTowers, cityBlocks, silhouette, grid, sky, streetProps };
 }
 
 export { loadCityMap, headingToRotationY, hashStringToSeed, createSeededRandom } from './CityMap';
@@ -110,6 +122,8 @@ export { Roads } from './Roads';
 export { ThemeTowers } from './ThemeTowers';
 export { CityBlocks } from './CityBlocks';
 export { CitySilhouette } from './CitySilhouette';
+export { Sky, SKY_FOG_COLOR, SKY_ZENITH_COLOR } from './Sky';
+export { StreetProps } from './StreetProps';
 export {
   applyNeonQuality,
   createFacadeMaterial,
