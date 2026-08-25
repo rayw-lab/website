@@ -26,7 +26,7 @@ E1(#16) E3(#14) E5(#17) E10(#15) A1(#18)
 |----|------|-----|-------|
 | CC-E8 | `cursor/cc-e8-ci-gates-1d6f` | #23 | [E8](bc-d91376b0-98e2-5977-9113-2f6f99fb158a) |
 | CC-E9 | `cursor/cc-e9-poi-areas-1d6f` | #24 | [E9](bc-a5acf7bd-6424-5c2c-b54e-4ce4ab292ab1) |
-| CC-A3 | `cursor/cc-a3-wave3-audit-1d6f` | #25 | [A3](bc-5eebc75c-9bee-5d3b-82fa-dd139040faeb) |
+| CC-A3 | `cursor/cc-a3-wave3-audit-1d6f` | #25 | [A3](bc-5eebc75c-9bee-5d3b-82fa-dd139040faeb) ✅ |
 
 M10（notes E8→E9 小节拼接）已在合流兑现。
 
@@ -34,7 +34,7 @@ M10（notes E8→E9 小节拼接）已在合流兑现。
 
 | ID | 分支 | PR | Agent |
 |----|------|-----|-------|
-| CC-E7 | `cursor/cc-e7-world-shell-1d6f` | — | 🚀 |
+| CC-E7 | `cursor/cc-e7-world-shell-1d6f` | — | [E7](bc-69e911ff-b5b7-5d08-93f6-93b420629131) |
 
 ## 下一拍
 
