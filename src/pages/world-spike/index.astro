@@ -39,13 +39,13 @@ const canonical = new URL(`${base}/`, Astro.site).href;
     <header class="ws-head">
       <p class="ws-chip">WORLD · 灰盒验证场（已归档）</p>
       <h1>灰盒工程验证场 —— 概念车驾驶验证</h1>
+      <!-- e2e 契约（WS-E2E-01/07）：.ws-lede 内有且仅有一个 <a>，指向 `/`（出口链接） -->
       <p class="ws-lede">
-        本页为工程验证入口（驾驶/物理 e2e 契约被测面），正式 3D 体验请访问
+        本页为工程验证入口（驾驶/物理 e2e 契约被测面），正式 3D 体验与内容导航请访问
         <a href={`${base}/`}>科技城首页 /（Full Entry）→</a>。
         验证口径不变：W/A/S/D 或方向键驾驶 CarConcept 概念车（触屏为虚拟摇杆），
         WebGPU 优先、WebGL 2 自动回退，点击进入后才开始加载 3D 资源。
-        技术验证记录见 <code>docs/research/world-spike-log.md</code>；
-        内容首页 <a href={`${base}/home/`}>/home/ →</a>
+        技术验证记录见 <code>docs/research/world-spike-log.md</code>。
       </p>
     </header>
 

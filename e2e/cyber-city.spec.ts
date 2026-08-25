@@ -12,29 +12,24 @@
 //     world-skip / world-reveal / world-transform / world-drive-start / world-poi:<id> /
 //     world-exit-to:<route>）、§4.2 壳结构、§4.3 四条件自动挂载、§7 CC-E10 任务行
 //
-// ⛔ 红灯态说明（为何全部 test.skip）：
-//   本文件先于实现落地（波 1 与 CC-E1/E3/E5 并行）。当前 `/` 仍是宪法 HTML 首页，
-//   世界壳（CC-E7，波 4）、TransformSystem + Reveal 首幕（CC-E6，波 2）、`/home/` 平移
-//   均未交付——下方选择器契约尚无宿主 DOM，任何用例现在执行都必然失败且不构成回归信号。
-//   按实施方案波次表（§7「CC-E10 用例骨架先写，红灯态」）与本 Task 验收口径
-//   （「既有 42 用例仍绿，新用例默认 skip 直到选择器就位」），全部用例以 test.skip 声明。
-//
-// ✅ 绿灯条件（逐条满足后把 test.skip 改回 test）：
-//   ① CC-E6 合流：TransformSystem 状态机 + Reveal 首幕可测（变形/终态/计时用例解锁）——
-//      ✔ 已交付（波 2，隐藏路径 `/lab/world-spike/?impl=engine&ritual=1` 全流程可测，
-//      DOM 契约见下方 SEL 区注释；正式解锁仍等 ② 的 `/` 壳落地把仪式接到根路由）；
-//   ①′ CC-E9 合流（波 3）：POI 十二楼触发圈 + `?poi=<slug>` 深链 + `world-poi:<id>` 埋点
-//      ✔ 已交付——隐藏路径 `/lab/world-spike/?poi=lingua-tower` 可测（深链出生泊位、
-//      光圈提亮、圈内 E/Enter/点按 → world-poi 事件 + 进站 URL 直跳；slug 字典与进站
-//      URL 字段契约见 `src/data/world-pois.json` deepLink 块 + eng-wave1-notes CC-E9 节）。
-//      POI 专项用例（触发圈进出/深链/无效 slug）待 ② `/` 壳落地随绿灯 PR 一并起草，
-//      届时 `/` 壳 PARAM_ALLOWLIST 需增补 `poi`（CC-E7 待办）；
-//   ② CC-E7 合流：`/` 世界壳 + `/home/` 上线（零字节冒烟/跳过出口/回退用例解锁）；
-//   ③ 选择器契约核对：下方 SEL 常量区与实装 DOM 对齐（约定为唯一改动点，禁止散改用例体）；
-//   ④ 项目编排：世界挂载用例移入串行 project（参照 playwright.config.ts world-chromium
-//      注释——SwiftShader 下并发 3D 上下文互相挤兑；本次不动配置，那是绿灯时的一并调整）；
-//   ⑤ 计时断言校准：SwiftShader ~1fps 慢动作环境下墙钟阈值按 world-spike 先例
-//      （e2e-test-plan §5.7 环境口径）标定；真机计时门禁走 human-gate-checklist §5 走查表。
+// ✅ 绿灯记录（CC-E7 路由原子切换 PR 解 skip；原红灯条件逐条销账）：
+//   ① CC-E6 合流 ✔（波 2）：TransformSystem 状态机 + Reveal 首幕，隐藏路径
+//      `/world-spike/?ritual=1` 全流程实测（原注释 `/lab/world-spike/` 为笔误，
+//      正确路径 = `/world-spike/`，A3 §6-8 更正）；
+//   ①′ CC-E9 合流 ✔（波 3）：POI 十二楼 + `?poi=<slug>` 深链（`/world-spike/?poi=…`）；
+//      `/` 壳 PARAM_ALLOWLIST 已含 poi（CC-E7 落账）。POI 专项用例（触发圈进出/
+//      无效 slug）另起草，归 Phase 1 首个 e2e 批次；
+//   ② CC-E7 合流 ✔（本 PR）：`/` 世界壳 + `/home/` 上线——全部用例解 skip；
+//   ③ 选择器契约核对 ✔：SEL 常量区与实装 DOM 一字不差（host=[data-world-host]、
+//      skip=[data-world-skip]、transform=[data-world-transform]、
+//      backend=[data-world-backend]；辅助 [data-world-enter]/[data-world-poster]/
+//      [data-world-status] 同步就位），用例体零散改；
+//   ④ 项目编排 ✔：本文件移入 world-chromium 串行 project（playwright.config.ts
+//      testMatch 同 PR 调整——SwiftShader 下并发 3D 上下文互相挤兑）；
+//   ⑤ 计时断言校准 ✔：SwiftShader ~1-5fps 慢动作（Ticker maxDelta=1/30 → 设计秒
+//      按 ~30-40× 墙钟放大）：挂载→robot_idle 实测 ~75-110s（poster 生成脚本留档）
+//      → MOUNT_TIMEOUT 210s；变形窗 1.05s 设计 → car_ready 等待 120s；真机计时
+//      门禁（≤8s/≤2.5s）仍走 human-gate-checklist §5 走查表，CI 读数仅采集留档。
 import { test, expect, type Page } from '@playwright/test';
 import { u } from './helpers';
 
@@ -75,8 +70,9 @@ const SEL = {
   backend: '[data-world-backend]',
 } as const;
 
-/** 状态机等待（含 SwiftShader 放宽；绿灯时按 world-spike MOUNT_TIMEOUT 先例校准） */
-const MOUNT_TIMEOUT = 150_000;
+/** 状态机等待（SwiftShader 校准，文件头⑤）：自动挂载静置 1.8s + 资产加载 + 引擎
+ *  初始化 + Reveal 光柱落定（设计 ≈1.15s → 慢动作 ~40s 墙钟），实测全链 ~75-110s */
+const MOUNT_TIMEOUT = 210_000;
 
 /** 监听 world 字节请求（零字节断言的公共探针） */
 function trackWorldBytes(page: Page): string[] {
@@ -87,9 +83,10 @@ function trackWorldBytes(page: Page): string[] {
   return hits;
 }
 
-test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC-E6/E7）', () => {
-  // 世界挂载单例互斥 + 计时用例需独占（绿灯时移入串行 project，见文件头④）
-  test.describe.configure({ mode: 'serial', timeout: 300_000 });
+test.describe('科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium 串行 project）', () => {
+  // 世界挂载单例互斥 + 计时用例需独占（已移入串行 project，见文件头④；
+  // 单例全链 = 挂载 + 首幕 + 变形 + 驾驶 ≈ 200s 墙钟，文件级超时给足余量）
+  test.describe.configure({ mode: 'serial', timeout: 420_000 });
 
   // ---------------------------------------------------------------------------
   // CITY-E2E-01 壳交互前零 world 字节冒烟
@@ -98,9 +95,9 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
   //       字节额度归 CC-E8 门禁，本用例只守「零 world 请求」运行时语义）；
   //       PRD CITY-01（3D 资产全部异步懒加载、不阻塞信息层）；实施方案 §4.2
   //       （world 分包在 HTML 中零 <script src>/<link preload>）。
-  // skip 原因：`/` 世界壳未交付（CC-E7 波 4），当前根路由为宪法 HTML 首页。
+  // ✅ CC-E7 绿灯：`/` 世界壳已交付（本 PR 路由原子切换）。
   // ---------------------------------------------------------------------------
-  test.skip('CITY-E2E-01 壳静态段合同：load 事件前零 world 字节 + HTML 零 world 静态标签 + 定位语/poster/noscript 就位', async ({ page, request }) => {
+  test('CITY-E2E-01 壳静态段合同：load 事件前零 world 字节 + HTML 零 world 静态标签 + 定位语/poster/noscript 就位', async ({ page, request }) => {
     // SSR 合同：壳预渲染完整文案（SRD §12.7.2 保 SEO 段——定位语 + 楼宇导航 + JSON-LD）
     const res = await request.get(PAGE_URL);
     expect(res.status()).toBe(200);
@@ -125,9 +122,10 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
   // 条款：PRD §2.6 新承诺二（跳过出口第 0 秒可用，Tab 第一焦点，直达 /home/ 或 /work/）；
   //       PRD CITY-02/09①；PRD §7.4 Persona 2 门禁（相对纯 HTML 首页唯一允许的增量
   //       = 一次跳过点击）；SRD §12.7.8 出口①（`/home/` 对 world 零字节依赖）。
-  // skip 原因：`/home/` 路由与壳上「跳过 3D」出口均未交付（CC-E7 波 4）。
+  // ✅ CC-E7 绿灯：`/home/` 平移 + 壳跳过出口已交付。时序护栏：壳自动挂载在
+  //       load 后静置 1.8s（AUTO_MOUNT_DELAY）才触发——「秒点跳过」窗口内恒零字节。
   // ---------------------------------------------------------------------------
-  test.skip('CITY-E2E-02 跳过出口：domcontentloaded 即可点 + Tab 第一焦点 → /home/ 落地零 world 字节', async ({ page }) => {
+  test('CITY-E2E-02 跳过出口：domcontentloaded 即可点 + Tab 第一焦点 → /home/ 落地零 world 字节', async ({ page }) => {
     const hits = trackWorldBytes(page);
 
     // 「第 0 秒」口径：不等 load/挂载，DOM 就绪即断言出口存在且可点（新承诺二）
@@ -154,22 +152,20 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
   //       PRD CITY-06 / 终裁 D4（变形后 ≤1s 提示可见、输入可响应——「变形→可开零等待」，
   //       实施方案 §5.2 预算行「变形 → 可开：0 等待」）；SRD §12.7.2（变形动画 1.0–1.2s、
   //       加载→可驾驶 ≤8s @Fast 4G 为 e2e 计时断言）；SRD §12.7.4 状态机三态。
-  // skip 原因（CC-E6 交付后更新）：TransformSystem/Reveal ✔ 已交付（波 2）——状态序
-  //       robot_idle→transforming（CTA disabled + 进度条）→car_ready→driving 与
-  //       「car_ready 同帧 filters intro→driving」（D4 零等待）已在隐藏路径
-  //       `/lab/world-spike/?impl=engine&ritual=1` 全流程实测通过（含按住 W 穿越变形窗、
-  //       依赖系统连发在 car_ready 后自动接管的边缘）。仍 skip：`/` 壳 + 自动挂载
-  //       （data-state=ready）归 CC-E7；墙钟阈值待 SwiftShader 慢动作系数标定（文件头⑤，
-  //       实测参考：1.05s 设计窗在 ~1fps 软渲染下走 ~40s 墙钟）。
+  // ✅ CC-E7 绿灯（原 CC-E6 后仍 skip 的两残项销账）：`/` 壳 + 自动挂载已交付；
+  //       墙钟阈值已按文件头⑤标定（1.05s 设计窗 → ~40s 墙钟；robot_idle/car_ready
+  //       等待均给 120s）。状态序全流程曾在 `/world-spike/?ritual=1` 实测通过
+  //       （原注释 `/lab/world-spike/?impl=engine&…` 为路径笔误 + 已退役参数）。
   // ---------------------------------------------------------------------------
-  test.skip('CITY-E2E-03 变形仪式：robot_idle → transforming（CTA disabled）→ car_ready，落地即刻 WASD 可开', async ({ page }) => {
+  test('CITY-E2E-03 变形仪式：robot_idle → transforming（CTA disabled）→ car_ready，落地即刻 WASD 可开', async ({ page }) => {
     await page.goto(PAGE_URL);
     const host = page.locator(SEL.host);
 
     // 自动挂载（§4.3 四条件在桌面 headless 全过）→ 首幕就绪；计时点 t0 = 导航发起
     const t0 = Date.now();
     await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
-    await expect(host).toHaveAttribute('data-world-state', 'robot_idle');
+    // ready（mount resolve）→ robot_idle（Reveal 光柱落定）在慢动作下另有 ~40s 窗
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 120_000 });
     const mountMs = Date.now() - t0;
     // 占位：真机门禁「加载→可变形 ≤8s @Fast 4G」（SRD §12.7.2）；CI 软渲染仅采集留档，
     // 阈值断言待绿灯校准（walkthrough 表 human-gate-checklist §5 承接真机判定）
@@ -182,7 +178,7 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
     await cta.click();
     await expect(host).toHaveAttribute('data-world-state', 'transforming');
     await expect(cta).toBeDisabled();
-    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 60_000 });
+    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 120_000 });
     const transformMs = Date.now() - t1;
     test.info().annotations.push({ type: 'metric', description: `transform ${transformMs}ms（设计窗 1.0–1.2s，软渲染慢动作下按系数换算后断言，待校准）` });
 
@@ -203,13 +199,10 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
   //       PRD CITY-09⑤（reduced-motion 直达降级路径）；实施方案 §1.2（不自动挂载，
   //       facade 既有拦截 data-blocked="reduced-motion"；显式进入后跳过全部动画——
   //       静态城市 + 机器人终态直接呈现，变形为 instant swap）；SRD §12.7.2 保 a11y 段。
-  // skip 原因（CC-E6 交付后更新）：TransformSystem instant swap ✔ 已交付——
-  //       reduced-motion 下零动画窗直落 car_ready + `[data-world-status]`
-  //       （role="status" aria-live）文字状态提示已实测（隐藏路径 &ritual=1 +
-  //       emulateMedia reducedMotion）。仍 skip：不自动挂载（data-blocked）与显式
-  //       `[data-world-enter]` 按钮属 `/` 壳（CC-E7）。
+  // ✅ CC-E7 绿灯：壳 data-blocked 拦截 + 显式 [data-world-enter] 已交付
+  //       （instant swap 契约在 `/world-spike/?ritual=1` + emulateMedia 已实测）。
   // ---------------------------------------------------------------------------
-  test.skip('CITY-E2E-04 reduced-motion：不自动挂载零 world 字节；显式进入 → 终态直出；变形为即时切换 + 文字状态提示', async ({ page }) => {
+  test('CITY-E2E-04 reduced-motion：不自动挂载零 world 字节；显式进入 → 终态直出；变形为即时切换 + 文字状态提示', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const hits = trackWorldBytes(page);
 
@@ -222,9 +215,10 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
     expect(hits, 'reduced-motion 下未显式进入不得拉取 world 字节').toEqual([]);
 
     // 显式逃生门（§12.4 语义沿用）：进入后终态直出，无 Reveal 动画序列
-    await host.locator('[data-world-enter]').click(); // 显式「进入科技城」按钮（契约待 CC-E7 对齐）
+    await host.locator('[data-world-enter]').click(); // 显式「进入科技城」按钮（CC-E7 壳契约已对齐）
     await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
-    await expect(host).toHaveAttribute('data-world-state', 'robot_idle');
+    // reduced-motion 零动画窗：ready 后 robot_idle 应速落（慢动作下仍留帧级余量）
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 30_000 });
     expect(hits.length, '显式进入后才允许拉取 world 字节').toBeGreaterThan(0);
 
     // 变形 = instant swap + 文字状态提示（无 1.0–1.2s 动画窗；直接落 car_ready）
@@ -241,9 +235,9 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
   // 条款：SRD §12.7.8 降级链第二档（WebGL 2 科技城 = 同一世界）；PRD LAB-17 迁移条款
   //       （变形在 WebGL 2 回退路径同样可播——TSL 双后端）；spike 先例 WS-E2E-05
   //       （`?gl=1` 契约结转，e2e-test-plan §5.7）。
-  // skip 原因：世界壳未交付；`?gl=` 读参逻辑随 CC-E7 壳引导脚本落地。
+  // ✅ CC-E7 绿灯：壳引导脚本 PARAM_ALLOWLIST 含 gl，经 opts.params 透传引擎。
   // ---------------------------------------------------------------------------
-  test.skip('CITY-E2E-05 ?gl=1 回退：后端徽标 WebGL 2，变形仪式在回退腿同样可播，零未捕获异常', async ({ page }) => {
+  test('CITY-E2E-05 ?gl=1 回退：后端徽标 WebGL 2，变形仪式在回退腿同样可播，零未捕获异常', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
 
@@ -256,8 +250,10 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
     await expect(page.locator(SEL.backend)).toHaveText('WebGL 2');
 
     // 变形在回退腿可播（TSL 双后端承诺）：状态序完整走通
+    // （CTA 可点前先等光柱落定 robot_idle——慢动作校准同 CITY-E2E-03）
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 120_000 });
     await page.locator(SEL.transform).click();
-    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 60_000 });
+    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 120_000 });
     expect(errors, '?gl=1 回退腿全程零未捕获异常').toEqual([]);
   });
 
@@ -266,13 +262,10 @@ test.describe('科技城 @phase0 世界剧本（CC-E10 骨架 · 红灯态待 CC
   // 条款：PRD CITY-04 验收（机器人可见 ≤2.5s Fast 4G 桌面）；SRD §12.7.2 预算行
   //       （机器人可见 ≤2.5s，poster 先显、LCP 不等 GLB——考核方式「e2e 冒烟计时」）；
   //       实施方案 §5.2（机器人可见 ≤3s @Fast 4G，首批 1.3MB 就绪即开演）。
-  // skip 原因（CC-E5/E6 交付后更新）：HeroRobot（E5）与 Reveal（E6）✔ 已交付——
-  //       「机器人可见」可测信号已定契约：Reveal 起光柱时 trigger('world-reveal')，
-  //       DOM 侧信号 = host `data-world-state` 落 'robot_idle'（光柱落定 ≈1.15s 后，
-  //       本用例既有断言即此契约，无需改动）。仍 skip：`img[data-world-poster]` 与
-  //       `/` 壳自动挂载归 CC-E7。
+  // ✅ CC-E7 绿灯：`img[data-world-poster]` 与 `/` 壳自动挂载已交付；「机器人可见」
+  //       DOM 信号 = host `data-world-state` 落 'robot_idle'（CC-E5/E6 契约不变）。
   // ---------------------------------------------------------------------------
-  test.skip('CITY-E2E-06 机器人可见计时：poster 先显（LCP 不等 GLB），world-reveal 计时采集留档', async ({ page }) => {
+  test('CITY-E2E-06 机器人可见计时：poster 先显（LCP 不等 GLB），world-reveal 计时采集留档', async ({ page }) => {
     const t0 = Date.now();
     await page.goto(PAGE_URL);
 

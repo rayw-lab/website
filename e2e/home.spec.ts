@@ -1,11 +1,16 @@
-// 首页（/）—— 骨架、导航、主题切换、Lab 入口、无 JS 退化。
-// 覆盖：e2e-test-plan §5.1（HOME-E2E-01 ~ 05）。
+// 宪法首页（/home/，CC-E7 路由原子切换后原 `/` 内容整体平移）——
+// 骨架、导航、主题切换、Lab 入口、无 JS 退化。
+// 覆盖：e2e-test-plan §5.1（HOME-E2E-01 ~ 05，考核对象改述为 /home/——PRD 迁移纪律：
+// 平移后本套用例必须原样全绿，唯二口径差 = 被测 URL 与 canonical 尾段）。
 import { test, expect } from '@playwright/test';
 import { u, shot, expectImageLoaded } from './helpers';
 
-test.describe('首页', () => {
+/** 被测路由：宪法首页新址（SRD §12.7.1 路由表 v2.0） */
+const HOME = '/home/';
+
+test.describe('宪法首页 /home/', () => {
   test('HOME-E2E-01 骨架与 SEO 基础：title / h1 / skip-link / canonical', async ({ page }) => {
-    const res = await page.goto(u('/'));
+    const res = await page.goto(u(HOME));
     expect(res?.status()).toBe(200);
 
     await expect(page).toHaveTitle(/王磊/);
@@ -18,9 +23,9 @@ test.describe('首页', () => {
     await page.keyboard.press('Tab');
     await expect(skip).toBeFocused();
 
-    // canonical 必须带 GitHub Pages base（部署为项目页 /website/）
+    // canonical 必须带 GitHub Pages base（部署为项目页 /website/home/）
     const canonical = page.locator('link[rel="canonical"]');
-    await expect(canonical).toHaveAttribute('href', /\/website\/$/);
+    await expect(canonical).toHaveAttribute('href', /\/website\/home\/$/);
 
     // 首页五区块标题锚点齐全
     for (const id of ['capabilities-title', 'live-demos-title', 'selected-work-title', 'now-title']) {
@@ -29,8 +34,9 @@ test.describe('首页', () => {
   });
 
   test('HOME-E2E-02 顶部导航：品牌 + 五栏目链接均带 base 前缀', async ({ page }) => {
-    await page.goto(u('/'));
+    await page.goto(u(HOME));
 
+    // 品牌链恒指 `/`（CC-E7 后 = 科技城入口，「回到城市」语义）
     const brand = page.locator('.site-header .brand');
     await expect(brand).toHaveAttribute('href', `${u('/')}`);
 
@@ -47,13 +53,13 @@ test.describe('首页', () => {
       const link = links.filter({ hasText: label });
       await expect(link).toHaveAttribute('href', href);
     }
-    // 首页不属于任何栏目：不应有 aria-current=page
+    // /home/ 不属于任何栏目：不应有 aria-current=page
     await expect(page.locator('.site-nav a[aria-current="page"]')).toHaveCount(0);
   });
 
   test('HOME-E2E-03 主题切换：html.dark 写入 + localStorage 持久化 + 刷新不回退', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' });
-    await page.goto(u('/'));
+    await page.goto(u(HOME));
 
     const html = page.locator('html');
     const toggle = page.locator('[data-theme-toggle]').first();
@@ -82,7 +88,7 @@ test.describe('首页', () => {
   });
 
   test('HOME-E2E-04 Lab 证据区：两张 Demo 卡指向 /lab/ 详情页且海报可加载', async ({ page }) => {
-    await page.goto(u('/'));
+    await page.goto(u(HOME));
     const bento = page.locator('section:has(#live-demos-title)');
 
     const carLink = bento.locator(`a[href*="${u('/lab/car-configurator')}"]`).first();
@@ -101,11 +107,11 @@ test.describe('首页', () => {
   });
 });
 
-test.describe('首页（无 JS）', () => {
+test.describe('宪法首页 /home/（无 JS）', () => {
   test.use({ javaScriptEnabled: false });
 
   test('HOME-E2E-05 禁用 JS：内容完整可读，导航与 Lab 入口不依赖脚本', async ({ page }) => {
-    await page.goto(u('/'));
+    await page.goto(u(HOME));
     await expect(page.locator('h1')).toBeVisible();
     await expect(page.locator('.site-nav a')).toHaveCount(5);
     await expect(

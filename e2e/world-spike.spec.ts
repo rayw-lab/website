@@ -1,5 +1,11 @@
-// /world-spike/ —— 3D 智能座舱试验场（公开路由）的完整交互回归（integration 批次）。
+// /world-spike/ —— 灰盒工程验证场的完整交互回归（integration 批次）。
 // 覆盖：e2e-test-plan §5.7（WS-E2E-01 ~ 11）。
+//
+// CC-E7 归档重标定：路由原子切换后本页归档为工程验证入口（noindex,follow +
+// canonical → `/` + 剔出 sitemap），正式体验入口 = `/`（Full Entry 科技城壳）。
+// 驾驶/物理契约与被测面不变（引擎层单实现）；仅 WS-E2E-01 的静态壳合同
+// （robots/标题/H1 文案）随归档改述。待驾驶用例迁往 `/?...` 参数路径后本页降占位
+// （Phase 1 排期，见页面头注）。
 //
 // CC-E2 合流重标定：被测对象 = 引擎层单实现（folio Game loop + Rapier 物理车），
 // spike 装配器与 ?impl= 分叉已退役。随之重标定的断言口径：
@@ -109,12 +115,13 @@ function logMetrics(label: string, data: Record<string, unknown>): void {
 }
 
 test.describe('world Spike 灰盒试验场', () => {
-  test('WS-E2E-01 壳页静态合同：index,follow、标题、逃生链接、poster、点击前零 world 字节', async ({ page, request }) => {
-    // SSR 合同（不受客户端时序影响）；路由已转公开：robots 必须允许收录
+  test('WS-E2E-01 壳页静态合同：noindex+canonical→/、标题、逃生链接、poster、点击前零 world 字节', async ({ page, request }) => {
+    // SSR 合同（不受客户端时序影响）；CC-E7 归档：noindex,follow + canonical 指向 `/`
     const res = await request.get(PAGE_URL);
     expect(res.status(), 'world-spike 路由必须已交付（integration 合流后不允许 404）').toBe(200);
     const html = await res.text();
-    expect(html).toMatch(/<meta name="robots" content="index, follow"\s*\/?>/);
+    expect(html).toMatch(/<meta name="robots" content="noindex, follow"\s*\/?>/);
+    expect(html).toMatch(/<link rel="canonical" href="[^"]*\/website\/"\s*\/?>/);
     expect(html).toContain('data-ws-host');
     expect(html).toContain('data-state="idle"');
     expect(html).toContain('进入试验场');
@@ -128,10 +135,10 @@ test.describe('world Spike 灰盒试验场', () => {
     });
 
     await page.goto(PAGE_URL);
-    await expect(page).toHaveTitle(/3D 智能座舱试验场/);
-    await expect(page.locator('h1')).toHaveText(/3D 智能座舱试验场/);
+    await expect(page).toHaveTitle(/灰盒工程验证场/);
+    await expect(page.locator('h1')).toHaveText(/灰盒工程验证场/);
 
-    // 逃生链接（降级链的静态壳级出口）：跳过 3D 返回首页，href 带 base
+    // 逃生链接（降级链的静态壳级出口）：指向 `/` 科技城正式入口，href 带 base
     await expect(page.locator('.ws-lede a')).toHaveAttribute('href', `${u('/')}`);
 
     // 覆盖层合同：poster 实际解码、启动按钮可见、HUD 淡出隐藏（opacity 0）

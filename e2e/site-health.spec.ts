@@ -3,9 +3,12 @@
 import { test, expect } from '@playwright/test';
 import { BASE, u, PENDING_ROUTES } from './helpers';
 
-/** 爬取起点：当前已交付的全部路由（A4 批次追加 About / Now / Contact） */
+/** 爬取起点：当前已交付的全部路由（A4 批次追加 About / Now / Contact；
+ *  CC-E7 路由原子切换追加 `/home/`——`/` 现为世界壳，其 12 楼快览 + 六导航
+ *  静态 <a> 一并入爬，深链目标全部真实 URL 必须 200） */
 const CRAWL_PAGES = [
   '/',
+  '/home/',
   '/lab/',
   '/lab/tts-cockpit/',
   '/lab/car-configurator/',
@@ -70,7 +73,7 @@ test.describe('全站健康度', () => {
     }
   });
 
-  test('SITE-E2E-03 sitemap：索引可达，包含 lab 路由与 world-spike（已转公开路由）', async ({ request }) => {
+  test('SITE-E2E-03 sitemap：索引可达，含 `/`+`/home/`+lab 路由；world-spike（已归档 noindex）必须剔除', async ({ request }) => {
     const index = await request.get(u('/sitemap-index.xml'));
     expect(index.status()).toBe(200);
 
@@ -79,8 +82,12 @@ test.describe('全站健康度', () => {
     const xml = await sitemap.text();
     expect(xml).toContain(`${BASE}/lab/tts-cockpit/`);
     expect(xml).toContain(`${BASE}/lab/car-configurator/`);
-    // world-spike 已转公开路由（页面 meta robots = index,follow），必须进 sitemap
-    expect(xml, 'world-spike 为公开路由，必须进 sitemap').toContain(`${BASE}/world-spike/`);
+    // CC-E7 路由原子切换：`/`（世界壳，canonical 自指）与 `/home/`（宪法首页）都进 sitemap
+    expect(xml, '`/` 世界壳必须进 sitemap').toContain(`${BASE}/</loc>`);
+    expect(xml, '`/home/` 宪法首页必须进 sitemap').toContain(`${BASE}/home/`);
+    // world-spike 已归档（页面 meta robots = noindex,follow + canonical → `/`），
+    // 必须从 sitemap 剔除（astro.config sitemap filter）——断言随 CC-E7 反转
+    expect(xml, 'world-spike 已归档 noindex，不得进 sitemap').not.toContain(`${BASE}/world-spike/`);
 
     // favicon 与自托管字体可达（BaseLayout 预加载引用）
     for (const asset of ['/favicon.svg', '/fonts/inter-var-latin.woff2']) {
@@ -88,7 +95,7 @@ test.describe('全站健康度', () => {
     }
   });
 
-  test('SITE-E2E-04 world-spike 隐藏路由（若存在）：烟测可加载且无未捕获异常', async ({ page, request }) => {
+  test('SITE-E2E-04 world-spike 归档验证入口：烟测可加载且无未捕获异常', async ({ page, request }) => {
     const status = (await request.get(u('/world-spike/'))).status();
     test.skip(
       status === 404,
