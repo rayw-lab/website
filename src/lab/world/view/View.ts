@@ -90,16 +90,17 @@ export class View {
 
   constructor(game: Game, idealRatio = 1920 / 1080) {
     this.game = game;
-    this.lookAtHeight = game.cameraFraming === 'city' ? 2.5 : 0;
+    // [CC-L1 A4] 城市视线上抬 2.5→3.4：配合俯角 15°，主体头部让出上 1/3 天际线带
+    this.lookAtHeight = game.cameraFraming === 'city' ? 3.4 : 0;
 
-    // [CC-L1 A4] 城市首幕：右向平移 3.4m ≈ 1/3 竖线（FOV 42°/斜距 18m 下画面半宽
-    // ≈12m）；慢 yaw ±1.1°（周期 ~50s 设计秒，远低于可察觉眩晕阈）。
+    // [CC-L1 A4] 城市首幕：右向平移 4.2m ≈ 1/3 竖线（FOV 42°/斜距 20m 下画面半宽
+    // ≈13.7m）；慢 yaw ±1.1°（周期 ~50s 设计秒，远低于可察觉眩晕阈）。
     // reduced-motion 关微动（构图平移是静态取景，不属动画，保留）。
     const reducedMotion =
       typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.framing =
       game.cameraFraming === 'city'
-        ? { lateral: 3.4, thetaDrift: reducedMotion ? 0 : 0.019 }
+        ? { lateral: 4.2, thetaDrift: reducedMotion ? 0 : 0.019 }
         : { lateral: 0, thetaDrift: 0 };
 
     this.idealRatio = idealRatio;
@@ -176,8 +177,10 @@ export class View {
     this.spherical = {
       // 城市首幕：俯角 22°（极角 68°，设计口径）；灰盒：folio 按 quality 分档
       // （桌面俯角更平 0.31π，移动端更俯视 0.27π）
+      // [CC-L1 A4] 城市俯角 22°→15°（极角 75°）：地平线辉光带与远景剪影入画
+      // （原 22° 俯角下天空被楼群顶出画框，A1 天空件首幕不可见）
       phi: city
-        ? Math.PI * (68 / 180)
+        ? Math.PI * (75 / 180)
         : Math.PI * (this.game.quality.level === 0 ? 0.31 : 0.27),
       // [CC-L1 A4] 城市首幕 theta 45°→25°（偏轴 20°，rubric §6 Tier A4）：机位南偏东、
       // 视线朝北压中轴大道——峡谷对景（西 agent-nexus 96m / 东 autodrive-lab 60m 夹持
@@ -185,8 +188,9 @@ export class View {
       // 灰盒保持 folio 原值 45°（零回归）。
       theta: city ? Math.PI * (25 / 180) : Math.PI * 0.25,
       radius: {
-        // 城市首幕：静止机位斜距 = min + (max-min)×(1-baseRatio) = 14+10×0.4 = 18m
-        edges: city ? { min: 14, max: 24 } : { min: 15, max: 30 },
+        // 城市首幕：静止机位斜距 = min + (max-min)×(1-baseRatio) = 16+10×0.4 = 20m
+        // （[CC-L1 A4] 18→20m：满幅主体退半步，给峡谷/天际线留层次位）
+        edges: city ? { min: 16, max: 26 } : { min: 15, max: 30 },
         current: 0,
         nonIdealRatioOffset: 9,
       },

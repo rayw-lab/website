@@ -49,9 +49,10 @@ export class Sky {
       const glowCyan = vec3(0.10, 0.33, 0.33);
       const glowMagenta = vec3(0.30, 0.08, 0.22);
       const horizonGlow = mix(glowCyan, glowMagenta, smoothstep(-0.55, 0.55, direction.x));
-      const band = exp(elevation.abs().mul(-5.5));
+      const band = exp(elevation.abs().mul(-4.2));
 
-      return base.add(horizonGlow.mul(band).mul(0.85));
+      // 峰值 ≈0.45 线性（bloom threshold=1 之下，纪律见文件头）
+      return base.add(horizonGlow.mul(band).mul(1.05));
     })();
 
     this.mesh = new THREE.Mesh(geometry, material);

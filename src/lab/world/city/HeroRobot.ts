@@ -68,6 +68,9 @@ const easeOutBack = (t: number): number => {
   return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
 };
 
+/** 世界上向（rim 灯位反旋校正用） */
+const UP = new THREE.Vector3(0, 1, 0);
+
 export class HeroRobot {
   /** 场景挂载根 = 变形锚点（加进 scene 即可见光柱/机器人） */
   readonly group = new THREE.Group();
@@ -320,13 +323,19 @@ export class HeroRobot {
 
   /**
    * [CC-L1 A5] 轮廓背光（rubric §6 Tier A5「机器人 rim light」）：品红聚光从
-   * 后上方勾轮廓——对手色 = 胸口青呼吸灯（品牌双色轴），主体从暗底里剥离。
-   * SpotLight 锥角/距离双限位，只打机器人邻域不污染全城；常亮不占循环动画配额，
-   * 不投影（阴影预算留给主方向光）。挂 group：随 setVisible 与机器人同显同隐。
+   * 后上方（对置首幕机位 SSE → 灯位 NNW）勾轮廓——对手色 = 胸口青呼吸灯
+   * （品牌双色轴），主体从暗底里剥离。SpotLight 锥角/距离双限位只打机器人邻域，
+   * 不污染全城；常亮不占循环动画配额，不投影（阴影预算留给主方向光）。
+   * 挂 group：随 setVisible 与机器人同显同隐；世界方位经 -headingY 反旋校正，
+   * 不随机器人朝向漂移。
    */
   private setRimLight(targetHeight: number): void {
-    const rim = new THREE.SpotLight(0xff2d6f, 60, targetHeight * 4.5, 0.5, 0.7, 1.2);
-    rim.position.set(-targetHeight * 0.9, targetHeight * 1.5, -targetHeight * 0.8);
+    const rim = new THREE.SpotLight(0xff2d6f, 190, targetHeight * 4.5, 0.55, 0.75, 1.2);
+    // 期望世界方位：机器人后上方偏西北（首幕机位 theta≈25° 的对置象限）
+    rim.position
+      .set(-0.35, 1.45, -1.05)
+      .multiplyScalar(targetHeight)
+      .applyAxisAngle(UP, -this.group.rotation.y);
     rim.target.position.set(0, targetHeight * 0.55, 0);
     this.group.add(rim, rim.target);
   }
