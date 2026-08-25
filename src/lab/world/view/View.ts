@@ -5,6 +5,11 @@
 // 砍除：free 相机（camera-controls 依赖，G5 红线）、cinematic、speedLines、
 // mapControls、gamepad 摇杆平移、debug 面板。
 // 改动：去 Game 单例耦合；gsap 补间路径均不在保留面内，无需替代。
+// [CC-E7] 城市首幕取景（game.cameraFraming='city'，SRD §12.7.2 首幕相机行）：
+// FOV 42° / 静止机位斜距 18m（radius edges {14,24} × baseRatio 0.6 → 静止 18）/
+// 俯角 22°（phi = 68° 极角，机位高 ≈6.7m）+ 视线上抬 2.5m——配 9m 级机器人满幅
+// 入画；灰盒试车道（greybox，默认）保持 folio 原框（FOV 25 / phi 按 quality 分档），
+// world-spike 驾驶验证零回归。
 import * as THREE from 'three/webgpu';
 import { clamp, lerp, remap, smoothstep } from '../utils/maths';
 import type { Game } from '../core/Game';
@@ -16,6 +21,9 @@ export class View {
   delta = new THREE.Vector3();
   readonly idealRatio: number;
   ratioOverflow: number;
+  /** 视线目标离地高（米）：城市首幕上抬 2.5（9m 机器人构图）；灰盒 0（folio 原样） */
+  private readonly lookAtHeight: number;
+  private readonly lookAtTarget = new THREE.Vector3();
 
   /** 输出相机（Rendering 渲染它） */
   camera!: THREE.PerspectiveCamera;
@@ -74,6 +82,7 @@ export class View {
 
   constructor(game: Game, idealRatio = 1920 / 1080) {
     this.game = game;
+    this.lookAtHeight = game.cameraFraming === 'city' ? 2.5 : 0;
 
     this.idealRatio = idealRatio;
     this.ratioOverflow = Math.max(1, this.idealRatio / this.game.viewport.ratio) - 1;
@@ -145,12 +154,17 @@ export class View {
   }
 
   private setSpherical(): void {
+    const city = this.game.cameraFraming === 'city';
     this.spherical = {
-      // 桌面俯角更平（0.31π），移动端更俯视（0.27π）——folio 按 quality 分档
-      phi: Math.PI * (this.game.quality.level === 0 ? 0.31 : 0.27),
+      // 城市首幕：俯角 22°（极角 68°，设计口径）；灰盒：folio 按 quality 分档
+      // （桌面俯角更平 0.31π，移动端更俯视 0.27π）
+      phi: city
+        ? Math.PI * (68 / 180)
+        : Math.PI * (this.game.quality.level === 0 ? 0.31 : 0.27),
       theta: Math.PI * 0.25,
       radius: {
-        edges: { min: 15, max: 30 },
+        // 城市首幕：静止机位斜距 = min + (max-min)×(1-baseRatio) = 14+10×0.4 = 18m
+        edges: city ? { min: 14, max: 24 } : { min: 15, max: 30 },
         current: 0,
         nonIdealRatioOffset: 9,
       },
@@ -183,7 +197,9 @@ export class View {
   }
 
   private setCameras(): void {
-    this.camera = new THREE.PerspectiveCamera(25, this.game.viewport.ratio, 0.1, 200);
+    // 城市首幕 FOV 42°（沉浸广角）；灰盒 25°（folio 等距望远原样）
+    const fov = this.game.cameraFraming === 'city' ? 42 : 25;
+    this.camera = new THREE.PerspectiveCamera(fov, this.game.viewport.ratio, 0.1, 200);
     this.camera.position.setFromSphericalCoords(
       this.spherical.radius.current,
       this.spherical.phi,
@@ -334,9 +350,11 @@ export class View {
     this.delta = this.position.clone().sub(this.defaultCamera.position);
     this.defaultCamera.position.copy(this.position);
 
-    // 朝向 + roll（弹簧-阻尼镜头晃动，碰撞时 kick）
+    // 朝向 + roll（弹簧-阻尼镜头晃动，碰撞时 kick）；城市首幕视线上抬 lookAtHeight
     this.defaultCamera.rotation.set(0, 0, 0);
-    this.defaultCamera.lookAt(this.focusPoint.smoothedPosition);
+    this.lookAtTarget.copy(this.focusPoint.smoothedPosition);
+    this.lookAtTarget.y += this.lookAtHeight;
+    this.defaultCamera.lookAt(this.lookAtTarget);
 
     this.roll.velocity = -this.roll.value * this.roll.pullStrength * this.game.ticker.deltaScaled;
     this.roll.speed += this.roll.velocity;

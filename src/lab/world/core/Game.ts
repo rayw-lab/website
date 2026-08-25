@@ -11,7 +11,7 @@ import * as THREE from 'three/webgpu';
 import { Events } from './Events';
 import { Ticker } from './Ticker';
 import { Viewport } from './Viewport';
-import { Quality } from './Quality';
+import { Quality, type QualityLevel } from './Quality';
 import { ResourcesLoader, type ResourceMap } from './ResourcesLoader';
 import { Objects } from './Objects';
 import { Rendering } from '../rendering/Rendering';
@@ -41,6 +41,17 @@ export interface GameOptions {
    */
   vehicle?: 'physics' | 'kinematic';
   /**
+   * [CC-E7/M9] ?quality=0|1|2 深链档位（壳白名单经 opts.params 转发注入）；
+   * 缺省 = Quality 按 UA 分档（桌面 0 / 移动 1）。
+   */
+  quality?: QualityLevel;
+  /**
+   * [CC-E7] 相机取景（SRD §12.7.2 首幕相机行）：city = 城市首幕（FOV 42° /
+   * 静止机位距 18m / 俯角 22°，配 9m 级机器人）；greybox = 灰盒试车道原框（默认，
+   * 零回归）。挂城路径（ritual/city/poi/robot）由 world 入口置 city。
+   */
+  cameraFraming?: 'greybox' | 'city';
+  /**
    * [CC-E6] false = init 后不自动 intro→wandering（灰盒 reveal 极简版让位）：
    * 首幕剧本模式（?ritual=1）由 world/Reveal + TransformSystem 接管输入上下文
    * （intro → driving 随 car_ready 热切，SRD §12.7.4 / 终裁 D4）。缺省 true 零回归。
@@ -55,6 +66,8 @@ export interface GameOptions {
 export class Game {
   readonly domElement: HTMLElement;
   readonly canvasElement: HTMLCanvasElement;
+  /** 相机取景档（View 消费；构造期落定，不支持运行时切换） */
+  readonly cameraFraming: 'greybox' | 'city';
   readonly events = new Events();
   /** dispose 一键解绑全部 DOM 监听（SRD §9.2 mount 契约） */
   private readonly abortController = new AbortController();
@@ -98,6 +111,7 @@ export class Game {
     this.options = options;
     this.domElement = options.domElement;
     this.canvasElement = options.canvasElement;
+    this.cameraFraming = options.cameraFraming ?? 'greybox';
   }
 
   async init(): Promise<void> {
@@ -108,7 +122,7 @@ export class Game {
      */
     this.scene = new THREE.Scene();
     this.resourcesLoader = new ResourcesLoader(this);
-    this.quality = new Quality();
+    this.quality = new Quality(this.options.quality); // M9：?quality= 经 GameOptions 注入
     this.ticker = new Ticker();
     this.inputs = new Inputs(this, [], ['intro'], signal); // ★坑①：初始 filter 只有 intro
     this.viewport = new Viewport(this.domElement, {
