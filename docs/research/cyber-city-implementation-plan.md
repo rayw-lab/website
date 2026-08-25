@@ -18,7 +18,7 @@
 
 1. **一套引擎、一个世界、一个入口**：不新建 `hero-cyber-city` 独立模块（Premortem P9 双引擎分裂），赛博城作为**内容层** `src/lab/world/city/` 长在 folio 架构引擎腿上；spike 驾驶腿按既定约定并入后退役；facade 唯一入口 `src/lab/modules/world/index.ts` 保留。
 2. **首幕即三拍**：Phase 0 交付「城市夜景亮起 → 机器人英雄 → 变形落十字路口 → WASD 可开」完整闭环（D4），不是静态海报——变形充能环兼作车资产加载进度，两阶段加载让机器人 ≤3s 可见、变形时车已就绪。
-3. **楼即导航**：大楼地图单源 `src/data/world-city-map.json`（20 槽位 schema），Phase 0 可见 ≥10 栋地标，Phase 1 点亮 12 栋 POI 楼（触发圈 + 招牌 + 深链），Phase 2 停车进楼直达 `/lab/*`、`/work/*` 展示页。
+3. **楼即导航**：大楼地图单源 `src/data/cyber-city-buildings.json`（20 槽位 schema），Phase 0 可见 ≥10 栋地标，Phase 1 点亮 12 栋 POI 楼（触发圈 + 招牌 + 深链），Phase 2 停车进楼直达 `/lab/*`、`/work/*` 展示页。
 4. **路由原子切换**：`/` 重写为世界壳（90KB 静态壳 + 条件自动挂载），HTML 五区块整体平移 `/home/`，`/world-spike/` 归档——全部在一个 PR 内完成，切换前所有工程在隐藏路径迭代、可整体回滚。
 5. **高端不降级 ≠ 无止损**：D3 指视觉品质目标不打折（Quality 0 桌面档 bloom/湿地反射/体积雾/雨全开、60fps），但 Quality 分档扩为 0/1/2 三档，移动端与低能力设备按档收敛，永远有「能开」的底。
 6. **红线不动**：React/R3F/gsap/howler 永不引入，运行时依赖维持 three + rapier 两个；Lighthouse 按 D6 分层（`/` Perf ≥90 目标 / ≥80 阻断，`/home/` 与内容页四项 ≥95 不变）。
@@ -76,7 +76,7 @@ T+驾驶    追尾相机接管（View focusPoint），可绕城自由行驶，R 
 **交付物**：
 
 1. 两腿合体转正：PhysicsVehicle 上车 + spike 四模块并入 + `?impl=` 退役（§3.3 施工顺序 ①–②）；
-2. 赛博城内容层：`world-city-map.json`（20 槽 schema）+ 可见 ≥10 栋地标楼 + 天际线剪影层 + 主十字路口路网 + 湿地面 + 霓虹材质系统（§3.2 city/ 目录）;
+2. 赛博城内容层：`cyber-city-buildings.json`（20 槽 schema）+ 可见 ≥10 栋地标楼 + 天际线剪影层 + 主十字路口路网 + 湿地面 + 霓虹材质系统（§3.2 city/ 目录）;
 3. 机器人英雄：hero-robot GLB（≤800KB，D2 资产决议产出）+ idle 动画 + 光柱显现；
 4. TransformSystem 遮蔽式变形（充能环 / 光幕 / 热交换 / 落地弹跳，1.0–1.2s）+ `robot_idle → transforming → car_ready → driving` 状态机；
 5. 路由原子切换：`/` 世界壳 + `/home/` 平移 + `/world-spike/` 归档 + CI 门禁改造（§4）；
@@ -100,7 +100,7 @@ pnpm test:e2e                          # 既有 42 用例零回归 + 新增世�
 
 **使命**：城市从「布景」变「地图」——12 栋楼挂 POI（4 主题楼 + 8 扩展槽点亮），驾驶可达、招牌可读、触发圈可用，2D 地图与深链就位。
 
-**交付物**：POI 五件套补齐（引擎腿已有 Zones/References/Respawns，补 `Area/Areas/InteractivePoints/TextCanvas` 移植）；POI 数据单源 `src/data/world-pois.json`（与 `world-city-map.json` 以楼 id 外键关联）；12 栋 POI 楼触发圈 + 楼前停车区地贴 + 键位提示；2D 等距地图 overlay（`Map.ts` 中改）；`?poi=` 深链恢复；移动端屏上「进入」按钮（InteractiveButtons）。
+**交付物**：POI 五件套补齐（引擎腿已有 Zones/References/Respawns，补 `Area/Areas/InteractivePoints/TextCanvas` 移植）；POI 数据单源 `src/data/world-pois.json`（与 `cyber-city-buildings.json` 以楼 id 外键关联）；12 栋 POI 楼触发圈 + 楼前停车区地贴 + 键位提示；2D 等距地图 overlay（`Map.ts` 中改）；`?poi=` 深链恢复；移动端屏上「进入」按钮（InteractiveButtons）。
 
 **Gate P1 验收**：12/12 楼触发圈进出事件走查表留档；`?poi=` 全部深链零断链（check-links 扩展）；流式资产合计 ≤12MB（G-G）；帧率零回归（POI 全亮时 1% low 不低于 Phase 0 读数的 90%）。
 
@@ -141,7 +141,7 @@ pnpm test:e2e                          # 既有 42 用例零回归 + 新增世�
 | `hero-cyber-city/index.ts`（mount） | `src/lab/modules/world/index.ts`（既有薄入口） | 不新建；manifest 注册走它 |
 | `CyberCityScene.ts`（场景图） | `src/lab/world/world/World.ts` step 编排 + `city/` 内容件 | 场景图职责归 World，不另立编排器 |
 | `CitySilhouette.ts`（远景程序化） | `src/lab/world/city/CitySilhouette.ts` | 保留原设想 |
-| `ThemeTowers.ts`（主题楼） | `src/lab/world/city/ThemeTowers.ts` | 改为数据驱动（读 `world-city-map.json`，10–20 槽） |
+| `ThemeTowers.ts`（主题楼） | `src/lab/world/city/ThemeTowers.ts` | 改为数据驱动（读 `cyber-city-buildings.json`，10–20 槽） |
 | `HeroRobot.ts` | `src/lab/world/city/HeroRobot.ts` | GLB 经 ResourcesLoader 两阶段清单首批加载 |
 | `HeroCar.ts`（CarConcept 薄封装） | `src/lab/world/world/VisualVehicle.ts` | 与 spike carRig 合并，不另建封装 |
 | `TransformRitual.ts` | `src/lab/world/player/TransformSystem.ts` | 直接落正式位置，免去「未来迁入」二次搬家 |
@@ -164,7 +164,7 @@ src/lab/world/                      ← 唯一引擎 + 世界内容（folio 架�
   city/      CityBlocks(程序化楼体) / CitySilhouette(远景剪影) / ThemeTowers(数据驱动地标)
              / Roads(路网 + 主十字路口) / HeroRobot / NeonRain(可选粒子)
   utils/     maths(补函数) / ObservableSet / FpsMeter(spike 遗产摘出)
-src/data/world-city-map.json        ← 楼宇单源（20 槽 schema：id/主题/坐标/体量/招牌/色标/POI 外键/lod/槽位状态）
+src/data/cyber-city-buildings.json        ← 楼宇单源（20 槽 schema：id/主题/坐标/体量/招牌/色标/POI 外键/lod/槽位状态）
 src/data/world-pois.json            ← POI 单源（Phase 1）
 src/lab/modules/world/index.ts      ← mount() 薄入口（唯一 facade 入口，不变）
 src/pages/index.astro               ← 世界壳（重写）
@@ -302,7 +302,7 @@ window.load 后（关键路径已清空）满足全部四条件才自动挂载�
 |---|---|---|---|---|
 | **CC-E1** | PhysicsVehicle 上车 + VisualVehicle 合体 | `src/lab/world/physics/PhysicsVehicle.ts`（新）、`world/VisualVehicle.ts`（新，并入 spike carRig）、`player/Player.ts`（挂点）、`player/KinematicFallback.ts`（spike vehicle 迁入） | 无（首波） | `/world-spike/?impl=engine` 可开、轮转、翻车自救；folio 参数表原封起步；A/B 对照运动学档留档 |
 | **CC-E2** | spike 合流退役（单实现） | `src/lab/world/inputs/Inputs.ts`、`view/View.ts`、`world/World.ts`、`utils/FpsMeter.ts`（新）、`src/lab/modules/world/index.ts`、删除 `spike/` 七文件、`src/pages/world-spike/index.astro`（去 `?impl=`） | CC-E1 | 整圈/锥桶/复位/摇杆四行为零回归；spike 参数留档 `world-spike-log.md` |
-| **CC-E3** | 城市地图 schema + 程序化城区 | `src/data/world-city-map.json`（新，20 槽 schema）、`src/lab/world/city/CityBlocks.ts`、`city/CitySilhouette.ts`、`city/Roads.ts`（主十字路口）、`city/ThemeTowers.ts` | 无（首波，可与 CC-E1 并行） | ≥10 栋可见地标 + 4 主题楼数据驱动；十字路口路网碰撞体（Objects 命名约定）；schema 文档注释齐全 |
+| **CC-E3** | 城市地图 schema + 程序化城区 | `src/data/cyber-city-buildings.json`（新，20 槽 schema）、`src/lab/world/city/CityBlocks.ts`、`city/CitySilhouette.ts`、`city/Roads.ts`（主十字路口）、`city/ThemeTowers.ts` | 无（首波，可与 CC-E1 并行） | ≥10 栋可见地标 + 4 主题楼数据驱动；十字路口路网碰撞体（Objects 命名约定）；schema 文档注释齐全 |
 | **CC-E4** | 霓虹视觉系统（D3 品质线） | `src/lab/world/rendering/NeonMaterials.ts`（新）、`rendering/MeshGridMaterial.ts`（搬）、`rendering/PreRenderer.ts`（搬）、`world/Grid.ts`（搬）、`core/Quality.ts`（扩 0/1/2 三档） | CC-E3（材质挂到楼体） | 窗格 atlas ≤300KB；关键帧对照 CC-T2 情绪板；三档切换实测截图；TSL 对照 three 0.185 迁移核对记录 |
 | **CC-E5** | 机器人英雄接入 | `public/models/hero-robot/`（新）、`src/lab/world/city/HeroRobot.ts`（新）、`core/ResourcesLoader` 两阶段清单 | D2 资产决议（阻塞时用程序化占位机甲先行，接口不变） | ≤800KB Draco GLB；idle ≤2 循环动画；光柱显现；台账登记许可 |
 | **CC-E6** | TransformSystem + Reveal 首幕剧本 | `src/lab/world/player/TransformSystem.ts`（新）、`world/Reveal.ts`（新，Intro+Reveal 合并移植）、`inputs/Inputs.ts`（filters `intro/driving` 切换段） | CC-E1 + CC-E5（占位可先行） | 状态机四态齐全；变形 1.0–1.2s；变形→WASD 零等待（D4）；充能环兼车资产进度；reduced-motion instant swap |

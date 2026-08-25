@@ -714,4 +714,4 @@ graph TD
 
 ---
 
-*本 PRD 是产品范围与路线图的单一事实来源。定位与红线冲突时以 `master-plan.md` 为准；技术实现与非功能需求详见配套 `docs/spec/SRD.md`（v2.0 注记：SRD 尚为 Hybrid 口径，待按本版同步，届时以本 PRD §2.6/§6.1/§7.4 为准绳）。任何 P2 功能提前、范围变更或新楼/新 Lab 立项，先修订本文档相应章节并登记版本，再进入开发。科技城设计与实施细节以 `cyber-city-hero-design-proposal.md` 与 `cyber-city-implementation-plan.md`（待合入）为上游输入。*
+*本 PRD 是产品范围与路线图的单一事实来源。定位与红线冲突时以 `master-plan.md` 为准；技术实现与非功能需求详见配套 `docs/spec/SRD.md`（v2.0 Full Entry，与本版同步）。任何 P2 功能提前、范围变更或新楼/新 Lab 立项，先修订本文档相应章节并登记版本，再进入开发。科技城设计与实施细节以 `cyber-city-hero-design-proposal.md`、`cyber-city-implementation-plan.md`、`cyber-city-buildings-map.md` 为上游输入。*
