@@ -110,6 +110,7 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
         <li><strong>场地</strong>：环形试车道（半径 55 m）+ 慢弯桩 8 桶 + 出弯门 6 桶 + 内场坡道（贴地/腾空验证）+ 轮胎墙边界。</li>
         <li><strong>帧率读数</strong>：HUD 实时显示均值与 1% low；控制台 <code>__worldSpike.fps()</code> 可取数。双后端验证加 <code>?gl=1</code> 强制 WebGL 2。</li>
         <li><strong>引擎层灰盒</strong>：加 <code>?impl=engine</code> 挂载 folio 架构引擎层（完整 Game loop · Ticker.scale=2 · Rapier 物理锥桶 · 零资产），R 重置试验场；<code>#debug</code> 暴露 <code>__worldSpikeGame</code> 句柄。Phase B 按决策记录 §8 与引擎层合体转正。</li>
+        <li><strong>机器人英雄（CC-E5）</strong>：加 <code>?impl=engine&robot=1</code> 于出生锚点实例化座舱 AI 机器人（Quaternius CC0 机甲换装钛灰/青/橙，Draco 338KB）：光柱显现 + Idle 呼吸灯 + 头部环顾；GLB 加载失败自动回退程序化块面机甲。</li>
         <li><strong>门禁</strong>：Spike 新增资产（public/world/）= 0（全程序化灰盒）≤ 1 MB；CarConcept 3.5 MB 复用显式豁免（审计 P0-2）。</li>
       </ul>
       <p class="ws-credit">
@@ -171,6 +172,9 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
         const params = new URLSearchParams();
         const gl = incoming.get('gl');
         if (gl !== null) params.set('gl', gl);
+        // CC-E5：?robot=1 机器人英雄演示（engine 腿消费；spike 腿忽略）
+        const robot = incoming.get('robot');
+        if (robot !== null) params.set('robot', robot);
         instance = await mount({
           host,
           mode: 'full',
