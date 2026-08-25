@@ -5,7 +5,7 @@
 | 编排者 | 父代理（只编排，不实现） |
 | 实现模型 | `claude-fable-5-thinking-xhigh` |
 | 审计模型 | `gpt-5.6-sol-xhigh-fast` |
-| 生产 tip | `main` @ `6e2ad63`（Loop 0 齐套：框架 + 基线 87.2 + AL0） |
+| 生产 tip | `main` @ Loop 1 合入后（综合 **89.2**，视觉 **59**） |
 | 目标 | **综合分 ≥ 85**（见下方计分口径） |
 
 ## 综合分口径（Loop 统一）
@@ -34,29 +34,21 @@
 |----|------|------|-------|------|
 | CC-AL0 | `cursor/cc-al0-loop0-audit-1d6f` | 复核基线分 + 框架可复现 + rubric 合理性 | gpt-5.6-sol-xhigh-fast | ✅ 有条件放行；复算 87.2，视觉独立复评 49（Δ2）；见 `cyber-city-loop0-audit.md` |
 
-<<<<<<< HEAD
-## Loop 1 — 🚀 视觉 Tier A 提分
+## Loop 1 — ✅ Tier A 五项 + AL1 放行
 
 | ID | 分支 | 任务 | Agent | 状态 |
 |----|------|------|-------|------|
-| CC-L1-improve | `cursor/cc-l1-visual-tier-a-1d6f` | AL0 §6 Tier A：天空/雾辉光、锥桶撤场、窗色纪律、首幕构图/轮廓光、变形白爆抑制 | [L1-improve](bc-c6cee121-d50f-5491-b19d-aeb9d608c4ab) | ✅ 视觉 51→59，综合 89.2 |
-| CC-AL1 | `cursor/cc-al1-loop1-audit-1d6f` | 复算综合分 + 视觉复评；<85 继续 Loop 2 | gpt-5.6-sol-xhigh-fast | 待 L1 |
-=======
-## Loop 1 — ✅ Tier A 五项 + AL1 审计
+| CC-L1-improve | `cursor/cc-l1-visual-tier-a-1d6f` · [PR #32](https://github.com/rayw-lab/website/pull/32) | AL0 §6 Tier A：天空/雾辉光、锥桶撤场、窗色纪律、首幕构图/轮廓光、变形白爆抑制 | [L1-improve](bc-c6cee121-d50f-5491-b19d-aeb9d608c4ab) | ✅ `1f0d19e`；视觉 51→59；e2e 52/52；综合 89.2 |
+| CC-AL1 | `cursor/cc-al1-loop1-audit-1d6f` | 复算综合分 + 视觉复评 | gpt-5.6-sol-xhigh-fast | ✅ 放行；独立视觉 57（Δ2）；保守综合 88.7；见 `cyber-city-loop1-audit.md` |
 
-| ID | 分支 | 任务 | 状态 |
-|----|------|------|------|
-| CC-L1-improve | `cursor/cc-l1-visual-tier-a-1d6f` · [PR #32](https://github.com/rayw-lab/website/pull/32) | 天空/雾、锥桶撤场、窗色纪律、偏轴构图+rim/接地环、变形白爆抑制 | ✅ `1f0d19e`；视觉自评 51→59；e2e 52/52；CI/LHCI 全绿 |
-| CC-AL1 | `cursor/cc-al1-loop1-audit-1d6f` | 五项代码+帧核验、独立视觉复评、e2e/LHCI 与综合分复算 | ✅ 放行；视觉独立 57（Δ2）；登记综合 89.2 / 审计保守 88.7；见 `cyber-city-loop1-audit.md` |
->>>>>>> origin/cursor/cc-al1-loop1-audit-1d6f
+## Loop 2 — 🚀 A 尾件（A7–A10）
 
-## Loop 2 — 建议受控启动
+| 阶段 | 分支 | 任务 | Agent | 状态 |
+|------|------|------|-------|------|
+| CC-L2-a-tail | `cursor/cc-l2-visual-a-tail-1d6f` | A7 HUD+mini 快览、A8 排版、A9 湿反射、A10 poster 重拍 | [L2-a-tail](bc-pending) 🚀 | 🚀 已派发 |
+| CC-AL2-a | `cursor/cc-al2-a-tail-audit-1d6f` | A 尾件复评门：视觉 ≥62 + 变形 5–10s 录屏 | gpt-5.6-sol-xhigh-fast | 待 L2-a-tail |
+| CC-L2-tier-b | `cursor/cc-l2-visual-tier-b-1d6f` | B1 招牌 + B2 灯箱 + B4 剪影密度（AL2-a 放行后） | — | 待 AL2-a |
+| CC-AL2 | `cursor/cc-al2-loop2-audit-1d6f` | Loop 2 全量复算 | gpt-5.6-sol-xhigh-fast | 待 Tier B |
 
-| 阶段 | 范围 | 进入/退出条件 |
-|------|------|---------------|
-| A 尾件 | A7 HUD+mini 快览、A8 排版、A9 湿反射、A10 最后重拍 poster | 完成后独立视觉复评 ≥62，并补 robot→veil→car 的 5–10 秒固定脚本录屏 |
-| Tier B 主批 | B1 五栋 hero 招牌、B2 街道灯箱/灯杆、B4 剪影密度/高度方差 | V4 场景密度优先；e2e 52/52、LHCI 两维不降、`availableWeight===1` |
-| 后置裁决 | B3 飞行光轨、B5 变形运镜 | 先裁 CITY-03 动画配额、GPU 预算和 reduced-motion；不得与 B1/B2 同批 |
+**进入条件（AL1 §6）：** e2e 52/52、LHCI 两 URL 不降、`availableWeight===1` 作硬条件。B3/B5 后置不进本 Loop。
 
-Tier C 与 Blender 实模管线不进 Loop 2。父代理仍只在每轮审计后决定是否启动下一轮
-improve Task。
