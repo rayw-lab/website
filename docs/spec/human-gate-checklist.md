@@ -4,6 +4,32 @@
 > **执行人**：王磊（§1 被试可另邀，提问、判定与签字不可委托）。
 > **回填纪律**：两项完成后按 §4 清单回填本文件与 `goal-progress-status.md`，「目标整体」方可翻绿为完整 Go。
 
+## 0. 快速链接
+
+| 项 | 链接 |
+|---|---|
+| 本清单（GitHub） | https://github.com/rayw-lab/website/blob/cursor/bruno-implementation-plan-1d6f/docs/spec/human-gate-checklist.md |
+| 签署档 `mvp-gate-signoff.md` | https://github.com/rayw-lab/website/blob/cursor/bruno-implementation-plan-1d6f/docs/spec/mvp-gate-signoff.md |
+| 进度看板 | https://github.com/rayw-lab/website/blob/cursor/bruno-implementation-plan-1d6f/docs/spec/goal-progress-status.md |
+| 证据归档目录说明 | https://github.com/rayw-lab/website/blob/cursor/bruno-implementation-plan-1d6f/docs/spec/assets/human-gate/README.md |
+| 集成 PR #12 | https://github.com/rayw-lab/website/pull/12 |
+
+### 测试 URL
+
+| 环境 | 首页（H1） | world-spike（H2/H3） | WebGL 2 腿 |
+|---|---|---|---|
+| **生产（合并 `main` 后）** | https://rayw-lab.github.io/website/ | https://rayw-lab.github.io/website/world-spike/ | 加 `?gl=1` |
+| **合并前（本机 preview）** | `pnpm human-gate:preview` 终端打印的局域网 URL | 同上路径 `/world-spike/` | 加 `?gl=1` |
+
+> **注意**：当前 GitHub Pages 仍部署 **`main` 旧版**；PR #12 未合并前，生产 URL **不是**新版 MVP。合并前请用 `pnpm human-gate:preview`；正式签署以合并后生产环境轮次为准（预览轮次在记录表「环境」列注明）。
+
+### 本地命令
+
+```bash
+pnpm human-gate:preview   # build + 局域网 preview，打印手机可访问 URL
+pnpm human-gate:verify    # 回填签署档与证据后校验是否可签署
+```
+
 ## 1. 10 秒定位测试（门禁：通过率 ≥ 80%）
 
 **依据**：PRD §10.2 指标 1（10 秒定位达成率）、PRD 旅程 1 量化验收、HOME-01 验收标准；master-plan §1.2 作用 1。
