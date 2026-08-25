@@ -543,4 +543,6 @@ e2e 冒烟准备说明（§4.4 第 5 项落地口径）：SRD §11.2 ⑥ 要求�
   + world 静态标签），G-D 不误报（根已排除、内容页仍 0 命中）,exit 1；
   ③ 过渡态（无 home/）同样注入 → G-D 抓到（受保护页命中 1 处 FAIL）+ G-B JS 超硬阻断
   + G-A′ 零 world 恒硬阻断 + 体积分项仅 WARN，exit 1——三态行为与设计口径逐条一致。
-- e2e 全量回归：见下（跑毕回填）。
+- `pnpm test:e2e` 全量回归 → **48 = 42 passed + 6 skipped，exit 0**（10.1 分钟，
+  Chrome Headless Shell 151）——既有 42 绿路径零破坏，CITY-E2E-01~06 维持 skip
+  （本 Task 红线「不解禁 CITY skip」遵守），与 A2 合流树口径一致。
