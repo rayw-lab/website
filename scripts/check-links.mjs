@@ -15,6 +15,16 @@
  *   4. 待交付路由白名单（PENDING_ROUTES）：Batch 1 首页/导航（Track A）先于
  *      内容页（Track B/C）合入产生的预期缺页，精确枚举、只收缩不增长——
  *      条目对应路由一旦真实存在于 dist，本脚本反而报错，强制删除过期条目。
+ *   5. 科技城大楼 deepLink 与 ?poi= 深链（CC-E8 预留，SRD §11.2 ③ v2.0 / §12.7.3 守则①，
+ *      feature-detect：src/data/cyber-city-buildings.json 存在才生效）：
+ *      - 每栋在册大楼的 deepLink 必须解析到 dist 内真实页面；deepLinkStatus='fallback'
+ *        条目（目标详情页未建、暂落上级索引）打印登记行不阻断（须在 PR 登记转正计划）；
+ *        deepLink 解析失败在 E7 切换前（dist/home/index.html 不存在）降为警告——
+ *        过渡期不因缺链变红（实施方案 §4.4 过渡纪律），E7 切换后转阻断级。
+ *      - dist 内全部 `?poi={id}` 深链引用的 id 必须在 buildings JSON 在册（阻断级；
+ *        当前 dist 无 ?poi= 链接，空集自然通过——CC-E7/E9 落地深链后自动生效）。
+ *      - 壳六导航（`/` 科技城壳指向 /home/ /work/ /insights/ /ai-lab/ /about/ /contact/
+ *        的 <a> 导航）无需专项入口：它们是普通内部链接，CC-E7 壳上线即被检查 1 自动覆盖。
  *
  * 零依赖（Node 内建模块 + 正则提取），适配 Astro 静态产物。
  */
@@ -183,10 +193,12 @@ const PENDING_ROUTES = new Map([]);
 /* ---------- 主检查循环 ---------- */
 
 const errors = [];
+const cityWarnings = []; // 检查 5 过渡期警告（E7 前不阻断，见文件头）
 let checkedLinks = 0;
 let pendingSkipped = 0;
 const pendingRoutesHit = new Set();
 const labSlugsLinked = new Set();
+const poiRefs = []; // 检查 5：dist 内全部 ?poi= 深链引用（{ page, url, id }）
 
 for (const htmlPath of htmlFiles) {
   const rel = posix.relative(DIST, htmlPath);
@@ -194,6 +206,10 @@ for (const htmlPath of htmlFiles) {
   for (const url of extractRefs(html)) {
     if (!isInternal(url)) continue;
     checkedLinks++;
+
+    // 检查 5：收集 ?poi= 深链（值合法性在尾段对照 buildings JSON 在册清单）
+    const poiMatch = url.match(/[?&]poi=([^&#]*)/);
+    if (poiMatch) poiRefs.push({ page: rel, url, id: decodeURIComponent(poiMatch[1]) });
 
     // 纯锚点：检查本页 id
     if (url.startsWith('#')) {
@@ -257,6 +273,9 @@ if (existsSync(manifestPath)) {
       }
     }
     for (const mod of modules) {
+      // world 单例模块（kind='world'）路由 = `/` 入口壳而非 /lab/{slug}/（SRD §12.7.1）——
+      // CC-E7 同 PR 激活 manifest 注册补丁（eng-wave1-notes CC-E8 小节）时本豁免直接生效。
+      if (mod.kind === 'world') continue;
       if (mod.status === 'live' && !resolveToFile(`/lab/${mod.slug}/`)) {
         errors.push(`DemoLink 一致性：manifest 注册的 live 模块「${mod.slug}」在 dist 中没有路由页 /lab/${mod.slug}/`);
       }
@@ -265,6 +284,55 @@ if (existsSync(manifestPath)) {
   }
 } else {
   manifestNote = 'manifest 一致性：src/lab/manifest.json 尚未建立（Track C · C2 未交付），跳过——C2 合并后本检查自动生效';
+}
+
+/* ---------- 科技城大楼 deepLink 与 ?poi= 深链（检查 5，CC-E8 预留，feature-detect） ---------- */
+
+const buildingsPath = join(ROOT, 'src/data/cyber-city-buildings.json');
+let cityNote;
+const cityFallbackRows = [];
+if (existsSync(buildingsPath)) {
+  let cityMap = null;
+  try {
+    cityMap = JSON.parse(readFileSync(buildingsPath, 'utf8'));
+  } catch (e) {
+    errors.push(`src/data/cyber-city-buildings.json 不是合法 JSON：${e.message}`);
+  }
+  if (cityMap) {
+    const buildings = cityMap.buildings ?? [];
+    const buildingIds = new Set(buildings.map((b) => b.id));
+    // E7 切换探测器（与 audit-budget.mjs 同款）：/home/ 产物存在 = 路由已切，deepLink 缺链转阻断级
+    const e7Switched = !!resolveToFile('/home/');
+
+    for (const b of buildings) {
+      if (!b.deepLink) continue;
+      const ok = !!resolveToFile(b.deepLink);
+      if (b.deepLinkStatus === 'fallback') {
+        // fallback = 目标详情页未建、暂落上级索引（SRD §12.7.3 守则①：CI 放行但须登记）
+        cityFallbackRows.push(`${b.id} → ${b.deepLink}${ok ? '' : '（⚠️ 连上级索引也不存在）'}`);
+        if (!ok) {
+          const msg = `buildings deepLink（fallback）：「${b.id}」→ ${b.deepLink} 在 dist 无对应页面（fallback 应至少落在已存在的上级索引）`;
+          if (e7Switched) errors.push(msg);
+          else cityWarnings.push(msg);
+        }
+        continue;
+      }
+      if (!ok) {
+        const msg = `buildings deepLink：「${b.id}」→ ${b.deepLink} 在 dist 无对应页面（§12.7.3 守则①）`;
+        if (e7Switched) errors.push(msg);
+        else cityWarnings.push(`${msg}——E7 切换前降为警告，切换后阻断`);
+      }
+    }
+    // ?poi= 深链合法性：引用 id 必须在册（阻断级；空集自然通过）
+    for (const ref of poiRefs) {
+      if (!buildingIds.has(ref.id)) {
+        errors.push(`?poi= 深链失配：${ref.page} → "${ref.url}"：poi「${ref.id}」不在 buildings JSON 在册清单（12 栋）`);
+      }
+    }
+    cityNote = `科技城深链：核对 ${buildings.length} 栋在册大楼 deepLink × dist 内 ${poiRefs.length} 条 ?poi= 引用（E7 ${e7Switched ? '已切换，缺链为阻断级' : '未切换，缺链降为警告'}）`;
+  }
+} else {
+  cityNote = '科技城深链：src/data/cyber-city-buildings.json 不存在，跳过（落库后本检查自动生效）';
 }
 
 /* ---------- 白名单过期检查：路由已交付则强制清退条目 ---------- */
@@ -281,6 +349,11 @@ for (const [route, owner] of PENDING_ROUTES) {
 
 console.log(`check-links：扫描 ${htmlFiles.length} 个 HTML 页面，核对 ${checkedLinks} 条内部引用（base=${BASE || '/'}）`);
 console.log(`  ${manifestNote}`);
+console.log(`  ${cityNote}`);
+if (cityFallbackRows.length > 0) {
+  console.log(`  deepLinkStatus=fallback 登记 ${cityFallbackRows.length} 条（暂落上级索引，转正计划须在 PR 登记——§12.7.3 守则①）：`);
+  for (const row of cityFallbackRows) console.log(`    · ${row}`);
+}
 if (pendingSkipped > 0) {
   console.log(
     `  待交付路由白名单：放行 ${pendingSkipped} 条链接（${pendingRoutesHit.size} 个路由；页面交付后条目自动过期并阻断 CI）：`,
@@ -288,6 +361,10 @@ if (pendingSkipped > 0) {
   for (const route of [...pendingRoutesHit].sort()) {
     console.log(`    · ${route}（${PENDING_ROUTES.get(route)}）`);
   }
+}
+if (cityWarnings.length > 0) {
+  console.log(`\n⚠ 科技城深链过渡期警告 ${cityWarnings.length} 条（E7 切换后转阻断级）：`);
+  for (const w of cityWarnings) console.log(`  - ${w}`);
 }
 
 if (errors.length > 0) {
