@@ -748,3 +748,27 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
 - 核心结论：工程系统（bloom/湿反射/变形仪式/色彩单源/降级链）全部帧证成立；欠账在帧内美术——黑天空、spike 锥桶滞留首幕、窗色五彩纸屑、零招牌文字零街道层。综合分敏感度 ≈74.75+0.25×视觉分（当前 ≈87.5，视觉仍是唯一 <60 的轴）。
 - 域外最小改动一处：`e2e/visual/world-visual.spec.ts` JSON import 补 `with { type: 'json' }`——Node 22 ESM 硬性要求，原样在本 VM 报「No tests found」（astro check 0 err 复验，非 3D 代码）。
 - 交接：VIS-01/02 截图基线未入库（全新 VM 首跑 `--update-snapshots`，入库裁决归 CC-L0-setup/baseline）；`node scripts/score-loop.mjs` 已验维度④由「缺失」转 51.0；Loop 1 建议从 rubric §6 Tier A（十件低成本 →~62）起步，A10 poster 重拍永远排批次最后。
+
+## CC-L0-baseline — 全链检验 + 基线分数矩阵（Loop 0，2026-08-25）
+
+- 分支 `cursor/cc-l0-baseline-score-1d6f`（base：`cursor/cc-l0-test-framework-1d6f` ⊕ 合并
+  `cursor/cc-l0-visual-research-1d6f`——score-loop + 视觉 rubric JSON 齐套后的首个五维基线）。
+  合并冲突仅 `e2e/visual/world-visual.spec.ts` 的 buildings JSON 读取方式（visual 分支
+  `with { type: 'json' }` vs test-framework 后继修的 fs 读），保留 fs 读方案；
+  `cyber-city.spec.ts` 复核无 JSON import，Node 22 下 52 用例 `--list` 全量可发现。
+- **基线登记：`COMPOSITE_SCORE=87.2`（五维齐套，≥85 门槛达成）**——
+  LHCI `/` 97.75×25% + `/home/` 100×15% + e2e 100×20%（**52/52**，18.4 min）+
+  视觉 rubric 51×25% + 3D 冒烟 100×15%（VIS-02/03/04 三 `@smoke3d` 全过）。
+  单源登记 `cyber-city-baseline-score.md` §A（§B 保留早前 main@1b8d051 四维口径 75 分首跑）；
+  机读明细 `test-results/quality-score.json`（快照入库 `docs/spec/assets/quality-score-baseline-l0.json`）。
+- 检验链 `pnpm quality:loop:full` 单命令跑通（`LOOP_EXIT=0`，全链 ~23 min 实测），
+  VIS-01/02 入库基线图首跑即匹配（0.02 容差内零 diff，基线图跨 VM 可复现性首证）。
+- **LHCI 已知限制实证**：本地 collect 21 run 的 performance/best-practices 全为 null
+  （SwiftShader 追踪不产值），①②维改用 CI artifact 复算——**LHCI 来源：CI artifact @
+  `71e7c59`**（Actions run 32878074874，最近 green）。跑法与登记纪律固化进
+  `cyber-city-test-framework.md`「SwiftShader VM 下 LHCI 已知限制」一节。
+- 缺口观察（非阻断）：视觉维 51 仍是唯一 <60 的轴（综合分敏感度 ≈74.7+0.25×视觉分，
+  Tier A 落地 →~90）；`/` A11y 95（`aria-hidden-focus`：挂载后 `.hud` 在 aria-hidden 容器内
+  含可聚焦元素）；`/` BP 96（`font-size`：移动 formFactor 下壳上 <12px 小字）——
+  三项修法已写进 baseline 文档 §A.5，归 Loop 1。
+- 测试运行重写的 `docs/spec/assets/e2e-*` 历史截图已按「不提交无关 png」纪律全部还原。

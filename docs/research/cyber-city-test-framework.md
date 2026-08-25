@@ -30,13 +30,30 @@ LHCI 无需另装 Chrome：`run-quality-loop.mjs` 自动把 Playwright Chromium 
 | `pnpm test:visual` | build + 视觉/3D 冒烟 4 例（`e2e/visual/`，`--no-deps` 单跑） | ~3 min |
 | `pnpm quality:loop` | **一键链 quick 档**：build → 视觉冒烟 e2e → LHCI（`/`+`/home/` 各 1 轮）→ 综合分 | ~3.5 min |
 | `pnpm lhci:local` | build + LHCI 全七 URL × 3 轮中位 + 门禁断言（CI ci.yml 同口径） | ~4 min |
-| `pnpm quality:loop:full` | 一键链 full 档：全 e2e 五 project 链 + 全量 LHCI + 综合分（基线登记/审计复算用） | 估 40-70 min（全 e2e 链未在本任务实测，归 CC-L0-baseline 首跑登记） |
-| `pnpm test:e2e` | 既有全量 e2e（build + 五 project 链） | 同上估算的 e2e 段 |
+| `pnpm quality:loop:full` | 一键链 full 档：全 e2e 五 project 链 + 全量 LHCI + 综合分（基线登记/审计复算用） | **~23 min 实测**（CC-L0-baseline 首跑登记：build 3s + e2e 52 例 1105s + LHCI 21 run 227s + assert/score ~1s） |
+| `pnpm test:e2e` | 既有全量 e2e（build + 五 project 链） | **~18.5 min 实测**（52 例；CITY/VIS 长挂载用例集中在 world/visual 串行 project） |
 | `pnpm score` | 只读既有工件重算综合分（不跑任何测试） | <1s |
 
 常用旗标（`run-quality-loop.mjs`）：`--skip-build/--skip-e2e/--skip-lhci/--skip-score`、
 `--lhci-runs N`、`--visual-score N`（透传）、`--min N`（综合分门槛，低于则退出 1）。
 退出码语义：测试失败/门禁缺口 = 数据（压低综合分），退出码仍为 0；仅基础设施故障退出 1。
+
+## SwiftShader VM 下 LHCI 已知限制与 CI 工件回填（CC-L0-baseline 实证）
+
+本 VM（无 GPU 软渲染）跑 `lhci collect` 时 **performance 与 best-practices 分类可能全轮为
+null**（Lighthouse 性能追踪不产值，`lhci assert` 报「Audit did not produce a value at all」；
+accessibility/seo 不受影响）。此时 score-loop 的①②维按缺维归一化——基线/审计登记需五维
+齐套时，改用 GitHub Actions 最近 green run 的 LHCI 工件复算：
+
+```bash
+gh run list --limit 5                                   # 找最近 green CI run
+gh run download <run-id> -n lighthouse-results -D /tmp/ci-lhci
+node scripts/score-loop.mjs --lhci-dir /tmp/ci-lhci     # ①②维改读 CI 工件
+```
+
+登记纪律：文档必须注明「LHCI 来源：CI artifact @ commit <sha>」（先例见
+`cyber-city-baseline-score.md` §A.3）。注意该现象非确定性（§B 首跑轮本地曾产出 perf 数值），
+每轮以实际 lhr JSON 里 `categories.performance.score` 是否为 null 判定。
 
 ## 综合分
 

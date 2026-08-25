@@ -1,0 +1,64 @@
+{
+  "computedAt": "2026-08-25T18:22:11.674Z",
+  "composite": 87.19,
+  "availableWeight": 1,
+  "missing": [],
+  "dimensions": {
+    "lhciRoot": {
+      "label": "LHCI `/` 四项均值",
+      "weight": 0.25,
+      "score": 97.75
+    },
+    "lhciHome": {
+      "label": "LHCI `/home/` 四项均值",
+      "weight": 0.15,
+      "score": 100
+    },
+    "e2e": {
+      "label": "e2e 通过率",
+      "weight": 0.2,
+      "score": 100
+    },
+    "visual": {
+      "label": "视觉 rubric（竞品对标）",
+      "weight": 0.25,
+      "score": 51
+    },
+    "smoke3d": {
+      "label": "3D 交互冒烟（首幕+POI+ESC）",
+      "weight": 0.15,
+      "score": 100
+    }
+  },
+  "inputs": {
+    "lhciRuns": {
+      "/website/": 3,
+      "/website/home/": 3,
+      "/website/work/": 3,
+      "/website/work/multilingual-cockpit/": 3,
+      "/website/about/": 3,
+      "/website/lab/car-configurator/": 3,
+      "/website/lab/tts-cockpit/": 3
+    },
+    "e2e": {
+      "passed": 52,
+      "failed": 0,
+      "skipped": 0,
+      "smoke3d": [
+        {
+          "title": "VIS-02 @smoke3d ESC 菜单：Escape 开 → 双出口链接可见 → 截图基线 → Escape 关",
+          "ok": true
+        },
+        {
+          "title": "VIS-03 @smoke3d 首幕取证：挂载 ready + robot_idle 后 canvas 非空（像素统计）+ 取证图落盘",
+          "ok": true
+        },
+        {
+          "title": "VIS-04 @smoke3d POI 深链取证：?poi= 挂载 ready + canvas 非空 + 出生点落 parkingBay",
+          "ok": true
+        }
+      ]
+    },
+    "visualSource": "docs/research/cyber-city-visual-rubric-score.json"
+  }
+}
