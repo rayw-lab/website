@@ -20,7 +20,7 @@
 import { test, expect } from '@playwright/test';
 import { u } from '../helpers';
 import { captureEvidence, expectCanvasPainted } from '../helpers/visual';
-import cityMap from '../../src/data/cyber-city-buildings.json';
+import cityMap from '../../src/data/cyber-city-buildings.json' with { type: 'json' };
 
 const PAGE_URL = u('/');
 
