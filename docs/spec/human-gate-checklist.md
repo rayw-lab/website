@@ -18,10 +18,10 @@
 
 | 环境 | 首页（H1） | world-spike（H2/H3） | WebGL 2 腿 |
 |---|---|---|---|
-| **生产（合并 `main` 后）** | https://rayw-lab.github.io/website/ | https://rayw-lab.github.io/website/world-spike/ | 加 `?gl=1` |
+| **生产（合并 `main` 后）✅ 已上线**（PR #12 已合并，Pages 部署生效中） | https://rayw-lab.github.io/website/ | https://rayw-lab.github.io/website/world-spike/ | 加 `?gl=1` |
 | **合并前（本机 preview）** | `pnpm human-gate:preview` 终端打印的局域网 URL | 同上路径 `/world-spike/` | 加 `?gl=1` |
 
-> **注意**：当前 GitHub Pages 仍部署 **`main` 旧版**；PR #12 未合并前，生产 URL **不是**新版 MVP。合并前请用 `pnpm human-gate:preview`；正式签署以合并后生产环境轮次为准（预览轮次在记录表「环境」列注明）。
+> **注意**：PR #12 **已合并 `main`**，生产 URL 即为新版 MVP（Pages 部署生效中，若短暂看到旧版稍候刷新即可）。正式签署以生产环境轮次为准（预览轮次在记录表「环境」列注明）。
 
 ### 本地命令
 

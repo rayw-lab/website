@@ -27,7 +27,8 @@
 | 项 | 状态 |
 |----|------|
 | tip | `ef15715` · `cursor/bruno-implementation-plan-1d6f` |
-| PR | [#12](https://github.com/rayw-lab/website/pull/12) |
+| PR | [#12](https://github.com/rayw-lab/website/pull/12) **已合并 `main`** |
+| 部署 | 生产部署进行中 → https://rayw-lab.github.io/website/ |
 | CI | ✅ [#32782338457](https://github.com/rayw-lab/website/actions/runs/32782338457)（`ef15715`） |
 | E2E | ✅ 42/42（`9200112` 复跑） |
 
