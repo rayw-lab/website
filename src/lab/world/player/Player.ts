@@ -2,23 +2,66 @@
 // 保留：动作表（forward/backward/left/right/boost/brake/respawn/suspensions，
 // 照抄 Player.js L220-239 模式）、每帧意图结算（accelerating/steering/boosting/braking，
 // tick order 1 pre-physics）、respawn、nipple 摇杆 → 意图映射（progress³ 油门 +
-// 角差转向 + 倒车反转，L572-598 原算法）、post-physics 位置回读喂相机/摇杆（order 6）。
-// 砍除：音效注册、成就、里程/游玩时长、honk、逐轮 numpad 悬挂动作。
-// 车辆挂点：game.physicalVehicle（vehicle 分支交付 PhysicsVehicle 后即插即用）；
-// 未挂车时玩家驻留重生点——意图照常结算，供调试面板/后续系统消费。
+// 角差转向 + 倒车反转，L572-598 原算法）、post-physics 位置回读喂相机/摇杆（order 6）、
+// setUnstuck 翻车自救（L345-393：upsideDown → 3s 延时 → 仍翻着就 flip.jump，递归重试；
+// gsap.delayedCall → Ticker.delay，依赖红线 G5）。
+// 砍除：音效注册、成就、里程/游玩时长、honk、逐轮 numpad 悬挂动作；
+// stuck →「unstuck」屏上按钮依赖 InteractiveButtons（未移植）——vehicle.events 的
+// stuck/unstuck 事件保留为接口，键盘 R respawn 兜底。
+// 车辆挂点：game.physicalVehicle——CC-E1 起由 PhysicsVehicle（Rapier 主路径）或
+// KinematicFallback（运动学回退档）实现同一 PlayerVehicle 契约热切换（SRD §12.7.5）。
 import * as THREE from 'three/webgpu';
 import { Events } from '../core/Events';
 import { Inputs } from '../inputs/Inputs';
+import type { Ticker } from '../core/Ticker';
 import type { Game } from '../core/Game';
 
 /** 悬挂档位：low = 常态；mid = 低趴；high = 跳跃冲量档 */
 export type SuspensionState = 'low' | 'mid' | 'high';
 
-/** 车辆侧最小契约（PhysicsVehicle 分支按此对接） */
+/**
+ * 底盘参考系离地净高 m（静态平衡口径）= low 档 restLength 0.88 + 物理轮半径 0.4
+ * − 静态下沉 0.36（弹簧平衡：底盘 2.5 质量 ÷ 4 轮 ÷ 刚度 20 ≈ 0.31 理论 +
+ * 阻尼余项，Rapier 实测悬停 0.92——E1 浏览器实测反推，teardown §5.2 参数推论）。
+ * 接口约定：PlayerVehicle.position = 底盘原点，静态平衡时高于地面接触点该值；
+ * 本站重生点存「地面坐标」（folio 的 respawn GLB 自带高程），各实现的 moveTo 自行抬升。
+ */
+export const VEHICLE_GROUND_CLEARANCE = 0.92;
+
+/** 每轮视觉状态（VisualVehicle 悬挂同步消费） */
+export interface PlayerVehicleWheelState {
+  /** 悬挂行程差 m（相对 low 档静态平衡姿态；正 = 压缩上抬，负 = 伸长下垂；运动学档恒 0） */
+  suspensionOffset: number;
+  inContact: boolean;
+}
+
+/**
+ * 车辆侧契约：PhysicsVehicle（Rapier 主路径）与 KinematicFallback（运动学回退档）
+ * 同接口热切换——「世界永远能开」（SRD §12.7.5）。
+ * 姿态统一为 folio 底盘约定：局部 +X = 车头、+Y = 上、+Z = 右侧；
+ * moveTo 的 rotationY 语义 = 绕 Y 旋转量 r，世界前向 = (cos r, 0, -sin r)
+ * （Respawns/SPAWN 数据口径沿用，SPAWN.rotation = -π/2 → 车头朝 +Z）。
+ */
 export interface PlayerVehicle {
-  position: THREE.Vector3;
-  forward: THREE.Vector3;
+  readonly position: THREE.Vector3;
+  readonly quaternion: THREE.Quaternion;
+  readonly forward: THREE.Vector3;
+  readonly upward: THREE.Vector3;
+  /** 有符号前向速度（实现本征时基——两实现单位不同，仅供方向/观感消费） */
+  readonly forwardSpeed: number;
+  /** 视觉轮累计滚转 rad（两实现统一按 folio 物理轮半径 0.4m 积分；视觉层按实测半径换算） */
+  readonly wheelSpin: number;
+  /** 前轮转角目标 rad（正 = 左转；视觉层再做阻尼平滑） */
+  readonly steeringTarget: number;
+  /** 四轮状态，索引 = 视觉序：0 前左 / 1 前右 / 2 后左 / 3 后右 */
+  readonly wheels: readonly PlayerVehicleWheelState[];
+  /** 车辆状态事件：stop / start / upsideDown / rightSideUp / stuck / unstuck / flip */
+  readonly events: Events;
+  /** 是否处于翻覆姿态（Player 自救循环消费；运动学档恒 false） */
+  readonly upsideDownActive: boolean;
   moveTo(position: THREE.Vector3, rotationY: number): void;
+  /** 翻车自救：向上冲量 + 姿态扭矩（folio flip.jump；运动学档 no-op，不会翻车） */
+  flipJump(): void;
 }
 
 export class Player {
@@ -55,8 +98,9 @@ export class Player {
 
     this.setInputs();
 
-    // 车辆已挂载时：出生点对齐（folio L39-42 模式）
+    // 车辆已挂载时：出生点对齐（folio L39-42 模式）+ 翻车自救循环
     this.game.physicalVehicle?.moveTo(respawn.position, respawn.rotation);
+    this.setUnstuck();
 
     this.game.ticker.events.on(
       'tick',
@@ -117,6 +161,43 @@ export class Player {
       this.nippleJumpTimeout = setTimeout(() => {
         for (let i = 0; i < 4; i++) this.suspensions[i] = 'low';
       }, 200);
+    });
+  }
+
+  /**
+   * 翻车自救（folio Player.js L345-393）：upsideDown → 3s 延时（Ticker.delay，
+   * 暂停即冻结）→ 仍翻着就 flip.jump 把车拧回正面，没成功递归重试；
+   * rightSideUp 到达即取消。stuck 事件的屏上「unstuck」按钮依赖
+   * InteractiveButtons（未移植）——事件面保留，键盘 R respawn 兜底。
+   */
+  private setUnstuck(): void {
+    const vehicle = this.game.physicalVehicle;
+    if (!vehicle) return;
+
+    let delay: ReturnType<Ticker['delay']> | null = null;
+
+    const waitAndTest = (): void => {
+      delay = this.game.ticker.delay(3, () => {
+        delay = null;
+
+        if (this.state !== Player.STATE_DEFAULT) return;
+
+        // 仍是四脚朝天/侧翻 → 拧回来；再等一轮防一次没成功
+        if (vehicle.upsideDownActive) {
+          vehicle.flipJump();
+          waitAndTest();
+        }
+      });
+    };
+
+    vehicle.events.on('rightSideUp', () => {
+      delay?.kill();
+      delay = null;
+    });
+
+    vehicle.events.on('upsideDown', () => {
+      delay?.kill();
+      waitAndTest();
     });
   }
 
@@ -209,7 +290,12 @@ export class Player {
     const vehicle = this.game.physicalVehicle;
     if (vehicle) {
       this.position.copy(vehicle.position);
-      this.rotationY = Math.atan2(vehicle.forward.z, vehicle.forward.x);
+      // 反解 moveTo 口径：forward = (cos r, 0, -sin r) → r = atan2(-f.z, f.x)
+      this.rotationY = Math.atan2(-vehicle.forward.z, vehicle.forward.x);
+
+      // 掉出世界兜底（folio 水面重生语义的折叠版）：底盘不进 Objects 注册表
+      //（防 resetAll 覆盖重生位），低于 killElevation 由这里就近重生
+      if (this.position.y < this.game.world.killElevation) this.respawn();
     }
     this.position2 = new THREE.Vector2(this.position.x, this.position.z);
 

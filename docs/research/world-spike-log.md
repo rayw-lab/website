@@ -113,3 +113,36 @@ dt 纪律照抄 folio §5.3：车辆积分用 **30 帧滑动平均 dt**（与渲
 ## 8. 结论（Step 10 ⑤）
 
 **通过。** Phase B（最小可玩）可排期：本 Spike 的 vehicle/carRig/inputs/camera 四模块按 `engine.ts` 头注的 tick 契约插进正式 Game 循环即可转正。条件项：**真机帧率录测（桌面 + 中端安卓）须在 Phase B 合并前补齐**——本记录的帧率证据链是「软件渲染下界（§3 + §3.1 常驻采样）+ 场景复杂度预算」，非真机读数；执行脚本与签字回填表已就位：`docs/spec/human-gate-checklist.md` §2（自动化采样为辅助证据，不替代真机）。若中端安卓实测持续 <24fps 且三板斧无效，仍按 roadmap 止损路径执行（Spike 归档为 ai-lab 实验记录，世界降级 HOME-07/08 保守方案）。
+
+## 9. CC-E1 参数留档：PhysicsVehicle 上车 + 双档车辆合流（2026-08-25）
+
+§8 预告的「四模块插进正式 Game 循环」已执行（Task CC-E1，分支 `cursor/cc-e1-physics-vehicle-1d6f`）：`src/lab/world/` 引擎层新增 `physics/PhysicsVehicle.ts`（folio `DynamicRayCastVehicleController` 全参数移植）、`player/KinematicFallback.ts`（本 Spike `vehicle.ts` 迁入，同接口）、`player/VisualVehicle.ts`（本 Spike `carRig.ts` 并入 + folio 轮同步段）。`spike/` 目录原样保留，退役归 CC-E2。
+
+### 9.1 folio 物理参数表（Rapier 主路径，原封起步——roadmap §7.2 决策点 2）
+
+全部数值依赖 **Ticker.scale = 2**（teardown §5.4 隐藏参数）；车辆控制器 dt = min(1/60, 30 帧滑动平均)，与 `world.step` 的瞬时 deltaScaled 分离（§5.3 纪律，两处独立时基）。
+
+| 组 | 参数 | 值 | 语义 |
+|----|------|-----|------|
+| 驱动 | engineForceAmplitude / boostMultiplier | 300 / ×(1+2) | 引擎力 = 油门 × 300 / (1+超速量) × deltaScaled，无硬限速 |
+| 驱动 | topSpeed / topSpeedBoost | 5 / 40 | folio 时基速度标量（位置差分 ÷ deltaScaled 口径） |
+| 制动 | brakeAmplitude / idleBrake / reverseBrake | 35 / 0.06 / 0.4 | 三分支：主动 / 怠速滑停 / 换向先刹停 |
+| 转向 | steeringAmplitude | 0.5 | 前两轮直写无插值（视觉平滑在 VisualVehicle 层） |
+| 底盘 | 主体 cuboid 1.3×0.4×0.85 | mass 2.5，centerOfMass y=-0.5 | 压质心 = 防翻车第一要素 |
+| 底盘 | 车顶 / 推土铲 cuboid | mass 0 | 铲斗走 bumper 分组：只推 object、不碰 floor |
+| 轮 | offset ±0.9 / ±0.75，radius 0.4 | — | 物理脚印轴距 1.8m / 轮距 1.5m |
+| 轮 | frictionSlip / sideFrictionStiffness | 0.9 / 3 | 漂移手感核心旋钮 |
+| 悬挂 | restLength 三档 | low 0.88 / mid 1.23 / high 1.63 | high = 空格跳跃冲量来源（弹簧瞬间加长） |
+| 悬挂 | stiffness 三档 | 20 / 30 / 40 | 配合 maxForce 150 / travel 2 / compression 10 / relaxation 2.7 |
+| 自救 | flipForce | 5 | 翻覆 3s 后向上冲量 ×mass + 姿态分支扭矩（Player.setUnstuck 循环） |
+
+### 9.2 E1 实测新发现（folio 文档未载，浏览器定量测得）
+
+- **静态下沉 0.36m**：low 档刚度 20 扛底盘质量 2.5，四轮平衡压缩 ≈ mg/(4k) ≈ 0.31 + 阻尼余项 → 悬停高度实测 0.92~0.98m（≠ 名义 rest 0.88+0.4=1.28）。接口净高常量 `VEHICLE_GROUND_CLEARANCE` 与悬挂视觉行程差基线均按**静态平衡口径**（0.92 / 平衡长度 0.52）取值，否则车身相对轮子低 0.36m（视觉半埋）。
+- **底盘不得进 Objects 注册表**：注册表的 `resetAll` / 掉出世界重置会把底盘拽回「创建时初始位」，覆盖 `moveTo` 的重生位（实测 R 重生被拉回 (0,4,0)）。底盘直连 `physics.getPhysical`；掉出世界由 Player 的 killElevation 守卫兜底。
+- **轮序映射**：接口视觉序（前左/前右/后左/后右）↔ folio 物理序（前右/前左/后右/后左），`SITE_TO_FOLIO = [1,0,3,2]`。
+- **姿态约定统一**：底盘局部 +X 车头（folio），CarConcept 对齐旋转从 Spike 的「车头 +Z」改为「车头 +X」，模型按物理脚印轴距 1.8m 统一缩放（轮位对齐物理接触点优先，车宽随缩 <1.7m 物理盒，灰盒期可接受）；`wheelSpin` 统一按物理轮半径 0.4m 积分，视觉层按实测半径换算真实滚转。
+
+### 9.3 运动学回退档（SRD §12.7.5「世界永远能开」）
+
+本 Spike `vehicle.ts` 的 SI 参数表（§«params.ts»）**原值拷贝**进 `KinematicFallback.ts`（拷贝而非 import——spike/ 目录 CC-E2 退役，引擎层不得依赖）；dt 用 `ticker.deltaAverage` 真实秒，**不乘 Ticker.scale**（两套参数不可混搭红线）。触发：Rapier wasm 加载失败自动切换，或 `?vehicle=kinematic` 显式 A/B。运动学档下锥桶无物理互动（域不同），贴地 raycast 打视觉地面网格。
