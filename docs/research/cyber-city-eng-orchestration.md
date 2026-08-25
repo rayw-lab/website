@@ -4,8 +4,8 @@
 |----|------|
 | 编排者 | 父代理（只编排） |
 | 模型 | `claude-fable-5-thinking-xhigh` |
-| 设计基线 tip | `9f0a923`（波2 已合流；M5–M8 冒烟绿） |
-| 审计 | 波1 A1 **放行**；波2 A2 **有条件放行**（条件已在合流织合兑现） |
+| 设计基线 tip | 波 2 已合流；波 3 齐套待 A3 |
+| 审计 | 波1 A1 **放行**；波2 A2 **有条件放行**（已兑现）；波3 A3 **派发中** |
 
 ## 波 1 — ✅ 已合流
 
@@ -20,19 +20,18 @@ E1(#16) E3(#14) E5(#17) E10(#15) A1(#18)
 | CC-E6 | `cursor/cc-e6-transform-reveal-1d6f` | #19 | [E6](bc-8f8aa756-44ba-5809-a6b1-b0cdeaabe150) |
 | CC-A2 | `cursor/cc-a2-wave2-audit-1d6f` | #22 | [A2](bc-29b1f726-d13f-504e-a6b7-99c49fea7927) |
 
-合流硬条件（A2 M5–M8）已在 E6 织合 commit 落地：ritual 跳过 `await revealed`、白名单 `ritual`/`quality`、Player Space=刹车∪`driving`、Reveal「Space/B 刹车 · F 悬挂跳」。
-
-## 波 3 — 🟡 E8 完成 · 等 E9
+## 波 3 — ✅ 齐套 · 审计中
 
 | ID | 分支 | PR | Agent |
 |----|------|-----|-------|
 | CC-E8 | `cursor/cc-e8-ci-gates-1d6f` | #23 | [E8](bc-d91376b0-98e2-5977-9113-2f6f99fb158a) ✅ |
-| CC-E9 | `cursor/cc-e9-poi-areas-1d6f` | — | [E9](bc-a5acf7bd-6424-5c2c-b54e-4ce4ab292ab1) |
+| CC-E9 | `cursor/cc-e9-poi-areas-1d6f` | #24 | [E9](bc-a5acf7bd-6424-5c2c-b54e-4ce4ab292ab1) ✅ |
+| CC-A3 | `cursor/cc-a3-wave3-audit-1d6f` | — | [A3](bc-5eebc75c-9bee-5d3b-82fa-dd139040faeb) |
 
-文件域互斥：E8=`scripts/`+CI 配置+`manifest`（见任务书过渡纪律）；E9=`world/areas/`+`world-pois.json`+RayCursor。
+文件域互斥成立：E8=CI/scripts；E9=areas/POI。合流建议 **E8 → E9**（几乎无文本冲突；notes 按小节拼接）。
 
 ## 下一拍
 
-波 3 齐套 → CC-A3 审计 → 按序合流 → 波 4 CC-E7（`/` 世界壳 + `/home/` 平移；携带 M9 / targetHeight 回 9m）。
+A3 放行后合流波 3 → 波 4 CC-E7（`/` 壳 + `/home/`；携带 M9、targetHeight 回 9m、voice-pod 裙房观察、manifest 激活拆弹）。
 
-*更新于波3派发。*
+*更新于波3齐套·派 A3。*
