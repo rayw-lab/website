@@ -1,25 +1,44 @@
 #!/usr/bin/env node
 /**
- * audit-budget.mjs —— 产物体积预算审计（SRD §11.2 ④，Track D · D2 + D4）
+ * audit-budget.mjs —— 产物体积预算审计（SRD §11.2 ④，Track D · D2 + D4；
+ *                     v2.0 Full Entry 改造：CC-E8，SRD §12.7.2 / 实施方案 §4.4）
  *
  * 用法：node scripts/audit-budget.mjs [dist/]
  *
  * 门禁（★ = CI 阻断级，SRD/roadmap 原文阈值，不降级）：
- *   ★ G-A 首页首屏传输 < 200KB gzip（不含字体，C-3/NFR-P2）；> 120KB 仅警告（常态目标）
- *   ★ G-B 首页分项预算（NFR-P2 核算表）：HTML+CSS ≤ 35KB、Hero poster ≤ 40KB、
+ *   ★ G-A 宪法首页首屏传输 < 200KB gzip（不含字体，C-3/NFR-P2）；> 120KB 仅警告（常态目标）。
+ *          v2.0 考核对象：dist/home/index.html（CC-E7 路由切换后）；切换前继续考核 dist/index.html
+ *          ——切换探测器 = dist/home/index.html 是否存在（E7_SWITCHED），日志明示当前口径。
+ *   ★ G-B 宪法首页分项预算（NFR-P2 核算表）：HTML+CSS ≤ 35KB、Hero poster ≤ 40KB、
  *          JS ≤ 15KB（GSAP 专项审批通过后放宽至 80KB——修改 JS_CAP_KB 需附审批记录）、图标 ≤ 30KB
- *   ★ G-C 首页关键路径零重资产：three chunk / 模型(.glb/.gltf) / HDRI(.hdr) / KTX2 = 0（NFR-P2）
- *   ★ G-D 首页与全部内容页对 world 零字节依赖（NFR-P6/AP-9，D4 断言预埋；
- *          <a href> 导航链接豁免——Start here 按钮 = 一个 <a> + 一段 CSS）
+ *   ★ G-C 宪法首页关键路径零重资产：three chunk / 模型(.glb/.gltf) / HDRI(.hdr) / KTX2 = 0（NFR-P2）
+ *   ☆ G-A′ `/` 科技城入口壳专项（SRD §12.7.2 / NFR-P6，CC-E8 新增）：
+ *          壳静态段（交互/自动挂载前）HTML+CSS ≤ 35KB / 引导 JS ≤ 15KB / poster ≤ 40KB /
+ *          合计 ≤ 90KB gzip；壳 HTML 静态标签零重资产 + 零 world 字节——world 分包只许经
+ *          引导脚本动态 import，禁止 three/GLB/HDRI/world chunk 的 <script src>/<link rel=preload>。
+ *          过渡纪律（实施方案 §4.4 / A2 §6）：E7 切换前 `/` 仍是宪法 HTML 首页，体积分项按
+ *          SOFT 档执行（超限仅 WARN 分类打印，不阻断）；零重资产/零 world 静态标签恒为硬断言
+ *          （现行首页天然满足，不构成误伤）。E7 切换后（E7_SWITCHED=true）体积分项转硬阻断。
+ *   ★ G-D 宪法首页与全部内容页对 world 零字节依赖（NFR-P6/AP-9，D4 断言预埋；
+ *          <a href> 导航链接豁免——Start here 按钮 = 一个 <a> + 一段 CSS）。
+ *          v2.0 排除表：E7 切换后根 index.html（`/` 科技城壳）移出保护表——壳引导脚本
+ *          合法引用 world 分包，由 G-A′ 接管考核；切换前根 index.html 仍受 G-D 全额保护
+ *          （SRD §12.7.2「排除表只加根 index.html 一行」，条件生效防过渡期裸奔）。
  *   ★ G-E public/ 总量 ≤ 40MB（SRD §12.6，v1.1 上调，含 world 12MB 预留）
  *   ★ G-F 资产格式黑名单：public/ 与 dist/ 中禁止 .wav / .blend / .band / *encoder*
  *          （folio-2025 的 129MB wav 母带教训，roadmap §8.2 纪律 1）
  *     G-G Lab 模块预算对照 manifest budget 声明（NFR-P4）：实测超声明 +10% 告警；
- *          超预算级上限（S≤50KB/1MB、M≤300KB/6MB、world 见 §12.7.2）阻断。
+ *          超预算级上限（S≤50KB/1MB、M≤300KB/6MB、world≤900KB/12MB，§12.7.2）阻断。
  *          流式豁免（SRD §10.1 预算表注*）：模块声明 budget.streaming{dir,singleFetchKbMax}
  *          时，磁盘资产不按全量一刀切，改为实测 public/{dir} 内每个文件 ≤ 单次拉取上限——
  *          实测不达标则豁免不成立、照常阻断（豁免声明本身不构成放行）。
  *          manifest 未建（C2 未交付）时跳过并明示。
+ *   ★ G-G(world) world 预算直测（CC-E8，A2 审计 §6 过渡纪律 (b)）：对 dist/_astro/ 内
+ *          world 命名 chunk 直接量测 gzip 合计 ≤ 900KB（JS 全量上限），对 world 资产池
+ *          （public/models + public/hdri + public/textures/city）量测合计 ≤ 12MB（流式总额）
+ *          ——不依赖 manifest 注册（避免 manifest 先行在 Lab 索引渲染死卡片），world 模块
+ *          注册块作为占位补丁留档于 eng-wave1-notes CC-E8 小节，与 CC-E7 同 PR 激活；
+ *          激活后本直测与 manifest 声明校验双轨并行、互为对照。
  *
  * 预算表输出到 stdout；CI 中同时写入 $GITHUB_STEP_SUMMARY（PR 可见，SRD「预算表进 PR 注释」的落地形式）。
  * 零依赖（Node 内建 zlib/fs）。KB = 1024 字节；gzip 用 zlib 默认压缩级（贴近托管端实际传输）。
@@ -45,12 +64,18 @@ const POSTER_CAP_KB = 40;    // NFR-P2
 const JS_CAP_KB = 15;        // NFR-P2（GSAP 专项审批后放宽至 80——见文件头注释）
 const ICON_CAP_KB = 30;      // NFR-P2
 const PUBLIC_CAP_MB = 40;    // SRD §12.6
+const SHELL_TOTAL_CAP_KB = 90;   // SRD §12.7.2：`/` 壳静态段 ≤ 90KB gzip（G-A′）
+const SHELL_HTMLCSS_CAP_KB = 35; // SRD §12.7.2：壳 HTML+CSS ≤ 35KB
+const SHELL_JS_CAP_KB = 15;      // SRD §12.7.2：壳引导 JS ≤ 15KB
+const SHELL_POSTER_CAP_KB = 40;  // SRD §12.7.2：壳 poster ≤ 40KB
 const BLACKLIST = [/\.wav$/i, /\.blend\d*$/i, /\.band$/i, /encoder/i]; // roadmap §8.2
 const BUDGET_CLASS_CAPS = {  // SRD §12.6 / §12.7.2
   S: { jsKb: 50, assetsMb: 1 },
   M: { jsKb: 300, assetsMb: 6 },
   world: { jsKb: 900, assetsMb: 12 }, // JS 全量 ≤900KB gzip；分区流式合计 ≤12MB
 };
+/** world 资产池目录（相对 public/；G-G(world) 直测口径，SRD §12.7.2 流式 12MB 总额） */
+const WORLD_ASSET_DIRS = ['models', 'hdri', 'textures/city'];
 
 if (!existsSync(DIST) || !statSync(DIST).isDirectory()) {
   console.error(`✖ 产物目录不存在：${DIST}（先执行 pnpm build）`);
@@ -157,28 +182,43 @@ const warnings = [];
 const summaryLines = [];
 const say = (line) => { console.log(line); summaryLines.push(line); };
 
-/* ═══════ G-A/G-B/G-C 首页首屏核算 ═══════ */
+/* ---------- v2.0 路由切换探测器（CC-E8 过渡纪律，实施方案 §4.4） ---------- */
+// dist/home/index.html 存在 = CC-E7 路由原子切换已发生（`/` = 科技城壳，`/home/` = 宪法首页）。
+// 切换前后考核对象自动跟随，无需二次改脚本——G-A/B/C 重定向、G-A′ 定档、G-D 排除表共用本探测器。
+const HOME_HTML = join(DIST, 'home', 'index.html');
+const E7_SWITCHED = existsSync(HOME_HTML);
+
+/* ═══════ G-A/G-B/G-C 宪法首页首屏核算 ═══════ */
 
 const FONT_RE = /\.(woff2?|ttf|otf|eot)$/i;
 const HEAVY_RE = /\.(glb|gltf|hdr|ktx2|bin|draco)$/i;
+// 「world」作为完整词段（以路径分隔符 / . _ - 或串首尾为界）即命中：
+// 覆盖 /world/ 目录、world.HASH.js chunk、world-spike、*-world-* 资产命名。
+const WORLD_RE = /(^|[/._-])world([/._-]|$)/i;
 
-const homePath = join(DIST, 'index.html');
-if (!existsSync(homePath)) {
-  failures.push('dist/index.html 不存在——无首页可审计');
-} else {
-  const html = readFileSync(homePath, 'utf8');
+/**
+ * 单页首屏资源核算（G-A/B/C 与 G-A′ 共用）：
+ * 返回逐资源行、分类小计、合计、外部域清单与重资产/world 静态标签命中。
+ */
+function collectFirstView(htmlPath) {
+  const html = readFileSync(htmlPath, 'utf8');
   const htmlKb = gzipSync(Buffer.from(html)).length / KB;
+  const relSelf = posix.relative(DIST, htmlPath);
 
-  const rows = [{ res: 'index.html（含内联 CSS/JS）', cat: 'html+css', kb: htmlKb }];
+  const rows = [{ res: `${relSelf}（含内联 CSS/JS）`, cat: 'html+css', kb: htmlKb }];
   const externals = [];
+  const heavyHits = [];
+  const worldHits = [];
   const seen = new Set();
 
   for (const r of extractResources(html)) {
     if (EXTERNAL_RE.test(r.url)) { externals.push(r.url); continue; }
-    const file = toDistFile(r.url, homePath);
+    const file = toDistFile(r.url, htmlPath);
     const relName = file ? posix.relative(DIST, file) : r.url;
     if (seen.has(relName)) continue;
     seen.add(relName);
+    // world 静态标签命中不依赖文件存在与否（引导前禁止任何 world 资源标签）
+    if (WORLD_RE.test(relName) || WORLD_RE.test(r.url)) worldHits.push(r.url);
     if (!file) continue; // 断链由 check-links 阻断，此处不重复报
 
     // 字体不计入（C-3「不含字体」）
@@ -198,10 +238,8 @@ if (!existsSync(homePath)) {
 
     rows.push({ res: relName, cat, kb: gzipKb(file) });
 
-    // G-C 零重资产断言
-    if (HEAVY_RE.test(file) || /^(models|hdri)\//.test(relName)) {
-      failures.push(`G-C 首页关键路径出现重资产：${relName}（NFR-P2 要求 three chunk/模型/HDRI = 0）`);
-    }
+    // 零重资产命中（G-C / G-A′ 共用）
+    if (HEAVY_RE.test(file) || /^(models|hdri)\//.test(relName)) heavyHits.push(relName);
   }
 
   const sum = (cat) => rows.filter((x) => x.cat === cat).reduce((a, x) => a + x.kb, 0);
@@ -214,9 +252,27 @@ if (!existsSync(homePath)) {
     other: sum('other'),
   };
   const total = Object.values(catTotals).reduce((a, b) => a + b, 0);
+  return { rows, catTotals, total, externals, heavyHits, worldHits };
+}
+
+// v2.0 考核对象重定向（SRD NFR-P2 / §11.2 ④）：E7 切换后 = dist/home/index.html；切换前 = dist/index.html
+const constitutionPath = E7_SWITCHED ? HOME_HTML : join(DIST, 'index.html');
+const constitutionRel = posix.relative(DIST, constitutionPath);
+
+say('');
+if (E7_SWITCHED) {
+  say('> 口径：CC-E7 路由已切换（dist/home/index.html 存在）——G-A/B/C 考核对象 = `dist/home/index.html`（宪法首页，NFR-P2 v2.0）；`/` 科技城壳由 G-A′ 专项考核。');
+} else {
+  say('> 口径：过渡期（dist/home/index.html 不存在，CC-E7 未切换）——G-A/B/C 继续考核现行首页 `dist/index.html`；**E7 路由切换后本审计自动改盯 `dist/home/index.html`**（探测器 = home 产物存在性，无需改脚本）。');
+}
+
+if (!existsSync(constitutionPath)) {
+  failures.push(`${constitutionRel} 不存在——无宪法首页可审计`);
+} else {
+  const { rows, catTotals, total, externals, heavyHits } = collectFirstView(constitutionPath);
 
   say('');
-  say('## 首页首屏传输核算（gzip，不含字体，NFR-P2/C-3）');
+  say(`## 宪法首页首屏传输核算（\`${constitutionRel}\`，gzip，不含字体，NFR-P2/C-3）`);
   say('');
   say('| 资源 | 分类 | gzip |');
   say('|------|------|------|');
@@ -238,9 +294,12 @@ if (!existsSync(homePath)) {
 
   const totalPass = total < TOTAL_CAP_KB;
   say(`| **首屏合计（硬门禁）** | **${fmtKb(total)}** | < ${TOTAL_CAP_KB}KB | ${totalPass ? '✅' : '❌'} |`);
-  if (!totalPass) failures.push(`G-A 首页首屏合计 ${fmtKb(total)} ≥ ${TOTAL_CAP_KB}KB（C-3 硬门禁）`);
+  if (!totalPass) failures.push(`G-A 宪法首页首屏合计 ${fmtKb(total)} ≥ ${TOTAL_CAP_KB}KB（C-3 硬门禁，考核对象 ${constitutionRel}）`);
   if (totalPass && total > TOTAL_NORM_KB) {
-    warnings.push(`首页首屏合计 ${fmtKb(total)} 超过常态目标 ${TOTAL_NORM_KB}KB（C-3 常态口径，未到 ${TOTAL_CAP_KB}KB 阻断线）`);
+    warnings.push(`宪法首页首屏合计 ${fmtKb(total)} 超过常态目标 ${TOTAL_NORM_KB}KB（C-3 常态口径，未到 ${TOTAL_CAP_KB}KB 阻断线）`);
+  }
+  for (const h of heavyHits) {
+    failures.push(`G-C 宪法首页关键路径出现重资产：${h}（NFR-P2 要求 three chunk/模型/HDRI = 0，考核对象 ${constitutionRel}）`);
   }
   if (externals.length > 0) {
     say('');
@@ -248,15 +307,59 @@ if (!existsSync(homePath)) {
   }
 }
 
-/* ═══════ G-D 首页/内容页零 world 字节断言（D4 预埋，NFR-P6/AP-9） ═══════ */
+/* ═══════ G-A′ `/` 科技城入口壳专项（SRD §12.7.2，CC-E8 新增） ═══════ */
 
-// 「world」作为完整词段（以路径分隔符 / . _ - 或串首尾为界）即命中：
-// 覆盖 /world/ 目录、world.HASH.js chunk、world-spike、*-world-* 资产命名。
-const WORLD_RE = /(^|[/._-])world([/._-]|$)/i;
+const shellPath = join(DIST, 'index.html');
+say('');
+say('## `/` 入口壳专项 G-A′（SRD §12.7.2：HTML+CSS ≤35 / 引导 JS ≤15 / poster ≤40 / 合计 ≤90KB gzip）');
+say('');
+if (!existsSync(shellPath)) {
+  failures.push('G-A′ dist/index.html 不存在——`/` 无壳可审计');
+} else {
+  // 过渡定档（实施方案 §4.4 / A2 §6）：E7 前 `/` = 宪法 HTML 首页，壳体积分项走 SOFT 档
+  // （超限仅 WARN，壳预算在 E7 才硬阻断）；E7 后转硬。零重资产/零 world 静态标签两条恒硬。
+  const shellHard = E7_SWITCHED;
+  say(shellHard
+    ? '> 定档：E7 已切换——壳体积分项为**阻断级**；零重资产/零 world 静态标签恒为阻断级。'
+    : '> 定档：过渡期 SOFT 档（E7 前 `/` 仍是宪法 HTML 首页，同页已受 G-A/B/C 全额考核）——壳体积分项超限仅 WARN 分类打印，**E7 路由切换后自动转阻断级**；零重资产/零 world 静态标签两条恒为阻断级。');
+  say('');
+
+  const shell = collectFirstView(shellPath);
+  say(`| 预算项 | 实测 | 上限 | 判定 |`);
+  say(`|--------|------|------|------|`);
+  const shellGate = (label, actual, cap) => {
+    const pass = actual <= cap;
+    say(`| ${label} | ${fmtKb(actual)} | ≤ ${cap}KB | ${pass ? '✅' : shellHard ? '❌' : '⚠️ SOFT'} |`);
+    if (!pass) {
+      if (shellHard) failures.push(`G-A′ 壳${label} 超预算：${fmtKb(actual)} > ${cap}KB（SRD §12.7.2）`);
+      else warnings.push(`G-A′[SOFT] 壳${label} ${fmtKb(actual)} > ${cap}KB（过渡期不阻断；E7 切换后转硬）`);
+    }
+  };
+  shellGate('HTML+CSS', shell.catTotals['html+css'], SHELL_HTMLCSS_CAP_KB);
+  shellGate('引导 JS', shell.catTotals.js, SHELL_JS_CAP_KB);
+  shellGate('poster', shell.catTotals.poster, SHELL_POSTER_CAP_KB);
+  shellGate('壳静态段合计', shell.total, SHELL_TOTAL_CAP_KB);
+
+  // 恒硬两条：壳 HTML 静态标签零重资产 + 零 world 字节（world 分包只许经引导脚本动态 import）
+  for (const h of shell.heavyHits) {
+    failures.push(`G-A′ 壳 HTML 静态标签出现重资产：${h}（SRD §11.2 ④——禁止 three/GLB/HDRI 的 <script src>/<link rel=preload>）`);
+  }
+  for (const h of shell.worldHits) {
+    failures.push(`G-A′ 壳 HTML 静态标签引用 world 字节：${h}（world 分包只允许经引导脚本动态 import，SRD §11.2 ④）`);
+  }
+  say(`| 静态标签零重资产/零 world | 命中 ${shell.heavyHits.length + shell.worldHits.length} 处 | = 0 | ${shell.heavyHits.length + shell.worldHits.length === 0 ? '✅' : '❌'} |`);
+}
+
+/* ═══════ G-D 宪法首页/内容页零 world 字节断言（D4 预埋，NFR-P6/AP-9） ═══════ */
+
 const allHtml = walk(DIST).filter((f) => f.endsWith('.html'));
 const protectedPages = allHtml.filter((f) => {
   const rel = posix.relative(DIST, f);
-  return !rel.startsWith('lab/') && !rel.startsWith('world/') && !rel.startsWith('world-spike/');
+  if (rel.startsWith('lab/') || rel.startsWith('world/') || rel.startsWith('world-spike/')) return false;
+  // v2.0 排除表（SRD §12.7.2「排除表只加根 index.html 一行」）：E7 切换后 `/` 为科技城壳，
+  // 壳引导脚本合法引用 world 分包，改由 G-A′ 接管；切换前根 index.html 仍是宪法首页、继续受保护。
+  if (E7_SWITCHED && rel === 'index.html') return false;
+  return true;
 });
 
 let worldHits = 0;
@@ -275,7 +378,10 @@ for (const page of protectedPages) {
 say('');
 say(`## 零 world 字节断言（NFR-P6/AP-9）`);
 say('');
-say(`首页 + 内容页共 ${protectedPages.length} 页，world chunk/资产命中 ${worldHits} 处 —— ${worldHits === 0 ? '✅ PASS' : '❌ FAIL'}`);
+say(E7_SWITCHED
+  ? `排除表：lab/、world/、world-spike/ + 根 index.html（E7 已切换，\`/\` 科技城壳由 G-A′ 接管）；\`/home/\` 与全部内容页继续受保护。`
+  : `排除表：lab/、world/、world-spike/（过渡期根 index.html 仍受保护——E7 切换后自动移入排除表）。`);
+say(`受保护页共 ${protectedPages.length} 页，world chunk/资产命中 ${worldHits} 处 —— ${worldHits === 0 ? '✅ PASS' : '❌ FAIL'}`);
 
 /* ═══════ G-E public/ 总量配额 ═══════ */
 
@@ -314,6 +420,9 @@ say('');
 say('## Lab 模块预算对照（NFR-P4）');
 say('');
 const manifestPath = join(ROOT, 'src/lab/manifest.json');
+const astroDir = join(DIST, '_astro');
+const chunks = existsSync(astroDir) ? readdirSync(astroDir).filter((f) => /\.(js|mjs)$/.test(f)) : [];
+let manifestHasWorld = false;
 if (existsSync(manifestPath)) {
   let modules = [];
   try {
@@ -322,8 +431,7 @@ if (existsSync(manifestPath)) {
   } catch (e) {
     failures.push(`G-G src/lab/manifest.json 不是合法 JSON：${e.message}`);
   }
-  const astroDir = join(DIST, '_astro');
-  const chunks = existsSync(astroDir) ? readdirSync(astroDir).filter((f) => /\.(js|mjs)$/.test(f)) : [];
+  manifestHasWorld = modules.some((m) => m.budgetClass === 'world');
   for (const mod of modules) {
     const caps = BUDGET_CLASS_CAPS[mod.budgetClass];
     const declared = mod.budget ?? {};
@@ -372,6 +480,45 @@ if (existsSync(manifestPath)) {
 } else {
   say('src/lab/manifest.json 尚未建立（Track C · C2 未交付），跳过——C2 合并后本检查自动生效。');
 }
+
+/* ═══════ G-G(world) world 预算直测（CC-E8，A2 §6 过渡纪律 (b)） ═══════ */
+// 不依赖 manifest 注册：直接量测 dist/_astro/ 内 world 命名 chunk 的 gzip 合计（JS 全量 ≤900KB）
+// 与 world 资产池（public/models + public/hdri + public/textures/city）合计（流式总额 ≤12MB）。
+// world 模块的 manifest 注册块与 CC-E7 同 PR 激活（占位补丁见 eng-wave1-notes CC-E8 小节）——
+// 激活前本直测是 world 预算的唯一考核通道；激活后与 manifest 声明校验双轨并行、互为对照。
+
+say('');
+say('## world 预算直测 G-G(world)（SRD §12.7.2，不依赖 manifest 注册）');
+say('');
+if (manifestHasWorld) {
+  say('> manifest 已注册 budgetClass=world 模块——本直测与上方声明校验双轨并行、互为对照。');
+} else {
+  say('> manifest 未注册 world 模块（A2 §6 过渡纪律 (b)：注册块与 CC-E7 同 PR 激活，防 Lab 索引死卡片）——本直测为 world 预算唯一考核通道。');
+}
+say('');
+const worldCaps = BUDGET_CLASS_CAPS.world;
+const worldChunks = chunks.filter((c) => WORLD_RE.test(c));
+if (worldChunks.length > 0) {
+  const perChunk = worldChunks.map((c) => ({ name: c, kb: gzipKb(join(astroDir, c)) }));
+  const worldJsKb = perChunk.reduce((a, x) => a + x.kb, 0);
+  const jsPass = worldJsKb <= worldCaps.jsKb;
+  say(`- world chunk ×${worldChunks.length}（${perChunk.map((x) => `\`${x.name}\` ${fmtKb(x.kb)}`).join('、')}）`);
+  say(`- JS 全量合计 ${fmtKb(worldJsKb)} / 上限 ${worldCaps.jsKb}KB gzip —— ${jsPass ? '✅ PASS' : '❌ FAIL'}`);
+  if (!jsPass) failures.push(`G-G(world) world chunk JS 全量 ${fmtKb(worldJsKb)} 超上限 ${worldCaps.jsKb}KB（SRD §12.7.2）`);
+} else {
+  say('- 未在 dist/_astro/ 定位到 world 命名 chunk——chunk 按 slug 命名后本直测自动生效（当前不阻断）。');
+}
+let worldAssetsMb = 0;
+const presentDirs = [];
+for (const d of WORLD_ASSET_DIRS) {
+  const dir = join(PUBLIC_DIR, d);
+  if (!existsSync(dir)) continue;
+  presentDirs.push(d);
+  worldAssetsMb += walk(dir).reduce((a, f) => a + statSync(f).size, 0) / MB;
+}
+const worldAssetsPass = worldAssetsMb <= worldCaps.assetsMb;
+say(`- world 资产池（${presentDirs.length > 0 ? presentDirs.map((d) => `public/${d}`).join(' + ') : '目录均未建立'}）合计 ${worldAssetsMb.toFixed(1)}MB / 流式总额 ${worldCaps.assetsMb}MB —— ${worldAssetsPass ? '✅ PASS' : '❌ FAIL'}`);
+if (!worldAssetsPass) failures.push(`G-G(world) world 资产池合计 ${worldAssetsMb.toFixed(1)}MB 超流式总额 ${worldCaps.assetsMb}MB（SRD §12.7.2）`);
 
 /* ═══════ 汇总与出口 ═══════ */
 
