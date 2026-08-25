@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "0.1.0",
+  "task": "CC-E9",
+  "updatedAt": "2026-08-25",
+  "docs": "docs/research/cyber-city-eng-wave1-notes.md（CC-E9 小节：schema 字典与扩展规则）",
+  "buildingsSource": "src/data/cyber-city-buildings.json",
+  "deepLink": {
+    "param": "poi",
+    "slugField": "buildingId",
+    "entryUrlField": "deepLink"
+  },
+  "interaction": {
+    "keys": ["Keyboard.KeyE", "Keyboard.Enter"],
+    "keyLabel": "E",
+    "prompt": { "zh": "进站", "en": "Enter" }
+  },
+  "point": {
+    "hoverHeight": 4.2
+  },
+  "pois": [
+    { "id": "lingua-tower", "buildingId": "lingua-tower", "kind": "building-entry", "action": "navigate" },
+    { "id": "voice-pod", "buildingId": "voice-pod", "kind": "building-entry", "action": "navigate" },
+    { "id": "agent-nexus", "buildingId": "agent-nexus", "kind": "building-entry", "action": "navigate" },
+    { "id": "autodrive-lab", "buildingId": "autodrive-lab", "kind": "building-entry", "action": "navigate" },
+    { "id": "concept-garage", "buildingId": "concept-garage", "kind": "building-entry", "action": "navigate" },
+    { "id": "work-gallery", "buildingId": "work-gallery", "kind": "building-entry", "action": "navigate" },
+    { "id": "insights-archive", "buildingId": "insights-archive", "kind": "building-entry", "action": "navigate" },
+    { "id": "about-pavilion", "buildingId": "about-pavilion", "kind": "building-entry", "action": "navigate" },
+    { "id": "contact-beacon", "buildingId": "contact-beacon", "kind": "building-entry", "action": "navigate" },
+    { "id": "edge-cloud-hub", "buildingId": "edge-cloud-hub", "kind": "building-entry", "action": "navigate" },
+    { "id": "workflow-foundry", "buildingId": "workflow-foundry", "kind": "building-entry", "action": "navigate" },
+    { "id": "now-signal", "buildingId": "now-signal", "kind": "building-entry", "action": "navigate" }
+  ]
+}
