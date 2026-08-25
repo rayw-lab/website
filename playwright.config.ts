@@ -37,8 +37,9 @@ export default defineConfig({
   projects: [
     {
       // 桌面基线：1440×900（homepage-redesign-spec 桌面栅格）
+      // cyber-city（`/` 世界剧本）随 CC-E7 绿灯移入 world-chromium 串行 project
       name: 'desktop-chromium',
-      testIgnore: /mobile\.spec\.ts|world-spike.*\.spec\.ts/,
+      testIgnore: /mobile\.spec\.ts|world-spike.*\.spec\.ts|cyber-city\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
     {
@@ -52,11 +53,12 @@ export default defineConfig({
       },
     },
     {
-      // world-spike 驾驶用例：每例完整挂载 3D + 长时驾驶积分（SwiftShader 下 ~1fps），
+      // world-spike 驾驶用例 + cyber-city 世界剧本（CC-E7 绿灯移入，文件头④）：
+      // 每例完整挂载 3D + 长时驾驶/变形积分（SwiftShader 下 ~1fps），
       // 依赖前两个 project 跑完后独占机器执行——4 核 CPU 上任何并发 3D 上下文
       // 都会把驾驶腿饿死（batch 1 已实测并发挤兑结论，此处更甚）。
       name: 'world-chromium',
-      testMatch: /world-spike\.spec\.ts/,
+      testMatch: /world-spike\.spec\.ts|cyber-city\.spec\.ts/,
       dependencies: ['desktop-chromium', 'mobile-375'],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },

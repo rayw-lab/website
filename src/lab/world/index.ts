@@ -5,12 +5,13 @@
 // 遥测钩子 / FpsMeter / canvas 置换纪律全部迁入本文件与引擎系统（决策记录
 // docs/research/world-spike-log.md §10）。
 //
-// 深链参数白名单（M4/M6 转正：全部经壳页白名单转发，本入口不再兜底 location.search）：
+// 深链参数白名单（M4/M6/M9 转正：全部经壳页白名单转发，本入口不再兜底 location.search）：
 //   gl=1      强制 WebGL 2 复测（roadmap §7.1 检查点）；
 //   vehicle=kinematic 运动学回退档 A/B（SRD §12.7.5「世界永远能开」显式腿）；
 //   city=1    挂载 CC-E3 程序化科技城（动态 import 独立分包，默认零城市字节）；
 //   robot=1   机器人英雄演示挂点（CC-E5）；
 //   ritual=1  首幕全流程（CC-E6：城市+机器人+TransformSystem+Reveal——D4 变形后即开）；
+//   quality=0|1|2 画质档（M9 转正，CC-E7）：经 GameOptions.quality 注入 Quality 构造器；
 //   poi=slug  POI 深链（CC-E9 / SRD §12.7.8 出口⑧）：隐含挂城 + 挂 POI 系统，
 //             出生点改写到对应楼 parkingBay（ritual 模式仅挂 POI，出生锚点归首幕）；
 //             无 ?poi/?city 时 areas 分包零字节（与 city 同纪律）。
@@ -23,6 +24,7 @@ import type { City } from './city';
 import type { HeroRobot } from './city/HeroRobot';
 import type { TransformSystem } from './player/TransformSystem';
 import type { Reveal } from './world/Reveal';
+import type { QualityLevel } from './core/Quality';
 import { Game } from './core/Game';
 import { FpsMeter } from './utils/FpsMeter';
 
@@ -73,12 +75,27 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   const ritualRequested = opts.params.get('ritual') === '1';
   // CC-E9：?poi= 深链 slug（buildings JSON id）——存在即隐含挂城
   const poiSlug = opts.params.get('poi');
+  // M9（CC-E7 转正）：?quality=0|1|2 显式档位，非法值忽略、走 UA 分档
+  const qualityParam = opts.params.get('quality');
+  const quality =
+    qualityParam === '0' || qualityParam === '1' || qualityParam === '2'
+      ? (Number(qualityParam) as QualityLevel)
+      : undefined;
+  // CC-E7：挂城路径（首幕/城市/POI/机器人）用城市首幕取景（FOV 42°/距 18m/俯角 22°），
+  // 纯灰盒试车道保持原框（零回归）
+  const cityScene =
+    ritualRequested ||
+    poiSlug !== null ||
+    opts.params.get('city') === '1' ||
+    opts.params.get('robot') === '1';
 
   const game = new Game({
     domElement: stage,
     canvasElement: canvas,
     forceWebGL: opts.params.get('gl') === '1',
     vehicle: opts.params.get('vehicle') === 'kinematic' ? 'kinematic' : 'physics',
+    quality,
+    cameraFraming: cityScene ? 'city' : 'greybox',
     autoReveal: !ritualRequested,
     onProgress: opts.onProgress,
     onBackend: opts.onBackend,
@@ -118,7 +135,9 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       gltf,
       position: spawn.position,
       headingY: Math.PI * 0.25,
-      targetHeight: 5.2,
+      // CC-E7：城市首幕相机（FOV 42°/距 18m/俯角 22°）就位，回 9m 级设计口径
+      // （CITY-04；灰盒适配值 5.2 归档于 A2 观察③）
+      targetHeight: 9,
       reducedMotion,
     });
     game.scene.add(heroRobot.group);
@@ -167,7 +186,7 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       gltf,
       position: { x: anchor.x, z: anchor.z },
       headingY: Math.PI * 0.25,
-      targetHeight: 5.2,
+      targetHeight: 9, // 同首幕口径（CC-E7 回 9m，城市相机已就位）
       reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
     });
     game.scene.add(heroRobot.group);

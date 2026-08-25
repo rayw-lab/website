@@ -1,14 +1,18 @@
 ---
 // Lab 索引页（SRD §12.2 第 5 步：索引卡自动从 manifest 生成，新模块接入零改动）。
 // 零 JS 静态页；卡片海报与详情页舞台共享 view-transition-name（§9.3 morph 注册表）。
+// [CC-E7 拆弹（A3 §6 第 3 项 / E8 激活须知 1）] kind='world' 单例模块路由 = `/`
+// 入口壳而非 /lab/{slug}/（SRD §12.7.1）——必须从 manifest 卡片流过滤，否则渲染
+// 指向 /lab/world（404）的死卡片；其入口由下方专区卡（真实 URL `/`）承载。
 import { labModules } from '../../lab/manifest';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const title = 'Lab 实验室｜王磊';
 const description =
-  '可交互工程演示索引：多语言 TTS 座舱可视化、WebGPU 3D 车辆配置器——manifest 注册、统一 facade 懒加载、四级降级链。';
+  '可交互工程演示索引：多语言 TTS 座舱可视化、WebGPU 3D 车辆配置器、Full Entry 智能座舱科技城——manifest 注册、统一 facade 懒加载、四级降级链。';
 const statusLabel = { live: 'LIVE', wip: 'WIP', archived: 'ARCHIVED' } as const;
-const visible = labModules.filter((m) => m.status !== 'archived');
+const visible = labModules.filter((m) => m.status !== 'archived' && m.kind !== 'world');
+const world = labModules.find((m) => m.kind === 'world');
 ---
 
 <!doctype html>
@@ -65,34 +69,32 @@ const visible = labModules.filter((m) => m.status !== 'archived');
           ))}
         </ul>
 
-        <!-- world-spike 试验场入口：独立路由 /world-spike/，未走 manifest（实验性，不计预算分级） -->
-        <a class="spike" href={`${base}/world-spike/`}>
-          <span class="spike-visual">
-            <img
-              src={`${base}/posters/car-configurator-poster.webp`}
-              alt=""
-              loading="lazy"
-              decoding="async"
-            />
-          </span>
-          <span class="spike-body">
-            <span class="spike-code mono">
-              LAB / SPIKE · WORLD
-              <em class="status status-experimental">EXPERIMENTAL</em>
+        <!-- 科技城专区卡（E8 激活须知 1 推荐形态）：world 模块的真实入口 = `/`
+             （Full Entry，SRD §12.7.1），复用原 spike 专区卡样式做通栏入口 -->
+        {world && (
+          <a class="spike" href={`${base}/`}>
+            <span class="spike-visual">
+              <img
+                src={`${base}/${world.poster}`}
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
             </span>
-            <strong class="spike-title">3D 智能座舱试验场</strong>
-            <span class="spike-desc">
-              folio 风格灰盒可驾驶 CarConcept：WASD / 触屏双操控，WebGPU 优先、WebGL 2
-              自动回退。独立试验页，不走 manifest 注册。
+            <span class="spike-body">
+              <span class="spike-code mono">
+                LAB / {world.code} · {world.kind.toUpperCase()}
+                <em class="status status-experimental">FULL ENTRY</em>
+              </span>
+              <strong class="spike-title">{world.title}</strong>
+              <span class="spike-desc">{world.description}</span>
+              <span class="card-chips mono" aria-label="技术要点">
+                {world.techChips.map((chip) => <i>{chip}</i>)}
+              </span>
+              <span class="spike-enter mono">进入科技城 →</span>
             </span>
-            <span class="card-chips mono" aria-label="技术要点">
-              <i>WebGPU</i>
-              <i>WASD</i>
-              <i>CarConcept</i>
-            </span>
-            <span class="spike-enter mono">进入试验场 →</span>
-          </span>
-        </a>
+          </a>
+        )}
       </main>
 
       <footer class="foot">

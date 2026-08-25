@@ -634,3 +634,82 @@ e2e 冒烟准备说明（§4.4 第 5 项落地口径）：SRD §11.2 ⑥ 要求�
   归 E4 Phase B/CC-P1。
 - **触屏键帽**：MODE_TOUCH 下键帽隐藏、点按标点即交互（RayCursor onClick 等价键）；
   DOM 侧「进站」按钮提示归 E7 壳 HUD。
+
+## CC-E7 — `/` 世界壳 + `/home/` 平移 · 路由原子切换（波 4，2026-08-25）
+
+分支 `cursor/cc-e7-world-shell-1d6f`（base：`cursor/cyber-city-hero-design-1d6f`）。
+Phase 0 终波、唯一动用户可见面的原子 PR。上位条款：PRD 终裁 D1/D6 + CITY-01/02/09 +
+`/home/` 迁移纪律；SRD §12.7.1 路由表 v2.0、§12.7.2 预算 G-A′/G-D/G-G、§12.7.8 八出口；
+实施方案 §4（壳）§5.2（预算）§7 CC-E7 行；A3 审计 §6 八项必带全量照做。
+
+### 路由表变更（v2.0 生效）
+
+| 路由 | 切换前 | 切换后 |
+|------|--------|--------|
+| `/` | 宪法 HTML 首页（五区块） | **Full Entry 科技城壳**：poster LCP + H1 + 三支柱 + 六导航 + 12 楼 DOM 快览 + noscript 全导航；四条件自动挂载（load 后静置 1.8s），跳过出口 = DOM 首焦点 |
+| `/home/` | 404 | **宪法首页新址**：原五区块像素级平移（仅 import 深一级 + 科技城卡指 `/`）；LHCI 四项 ≥95 严格档考核对象 |
+| `/world-spike/` | 公开路由（index,follow，进 sitemap） | **归档验证入口**：noindex,follow + canonical → `/` + 剔出 sitemap；功能保留（驾驶/物理 e2e 契约被测面） |
+
+### 交付物
+
+| 文件 | 内容 |
+|------|------|
+| `src/pages/index.astro` | 重写为世界壳。静态段（G-A′ 实测）：HTML+CSS 5.1KB / 引导 JS 1.4KB / poster 31.9KB / 合计 38.4KB gzip（红线 90KB）。`PARAM_ALLOWLIST` 七参数 gl/vehicle/city/robot/ritual/quality/poi 经 `opts.params` 透传（M4/M6/M9 全部转正，引擎零 location.search 旁路）；默认剧本 ritual=1（显式场景参数让位）；四条件拦截（reduced-motion/saveData/<768px/无 WebGL2·WebGPU）→ data-blocked + 显式「进入科技城」按钮 + 分因文案 |
+| `src/pages/home/index.astro` | 新增：原首页整体平移，零内容改动（唯二接线差：import 路径深一级；LabCardWorldSpike 卡指 `/`） |
+| `src/pages/world-spike/index.astro` | 归档处置（评估记录见下）；`.ws-lede` 保持单链接守 WS-E2E-01/07 严格模式契约 |
+| `src/lab/manifest.json` | world 注册并与本 PR 同激活（E8 须知 1）：kind=world、budgetClass=world、deepLinkParams 与壳白名单同表 |
+| `src/pages/lab/index.astro` | `kind !== 'world'` 过滤拆弹（防 /lab/world 死卡）+ 科技城通栏专区卡（真实 URL `/`） |
+| `src/lab/world/core/Quality.ts` | M9 转正：档位改经构造参数（`GameOptions.quality` ← `opts.params`），删 location.search 解析 |
+| `src/lab/world/core/Game.ts` / `index.ts` | `GameOptions` 增 `quality` + `cameraFraming: 'greybox'\|'city'`；index.ts 读参装配（ritual/poi → city 档，city/robot 灰盒验证参数 → greybox 档） |
+| `src/lab/world/view/View.ts` | 城市首幕相机（A2 观察③）：city 档 FOV 42°/距 18m/俯角 22°/lookAt +2.5m；greybox 档参数原封不动（既有驾驶 e2e 全绿佐证） |
+| `src/lab/world/index.ts` | HeroRobot targetHeight 5.2 → 9m（设计稿 9m 级立像，城市相机就位后成立） |
+| `src/data/cyber-city-buildings.json` | voice-pod parkingBay x 28 → 12（黑菱形三选一之泊位改址，见下） |
+| `lighthouserc.json` | E8 draft ci 块整体日切（collect 七 URL 含 `/home/`；`/` 分档断言）；`lighthouserc.e7-draft.json` 删除 |
+| `astro.config.mjs` | ① sitemap filter 剔 `/world-spike/`；② G-G chunk 命名：`environments.client.build.rolldownOptions.output.chunkFileNames`——world 域谓词（`src/lab/world/**`、`src/lab/modules/world/`、`@dimforge/rapier3d`、buildings/pois JSON）命中 → `_astro/world.<hash>.js`，其余复刻 Astro 默认 cleanChunkName。**必须写在 client 环境级**：Astro 7 client 构建用自有 chunkFileNames 覆盖顶层 `rollupOptions.output`（见 astro/dist/core/build/vite-build-config.js 展开顺序），顶层写法静默失效——踩坑留档 |
+| `public/posters/cyber-city-poster.webp` | 首幕实景截图（Playwright + SwiftShader 实渲 robot_idle 帧，Chromium canvas 编码 1280×720 q=0.74）31.9KB ≤40KB |
+| `e2e/*` + `playwright.config.ts` | CITY 六用例解 skip + 全套件重定向（详见 §6-8 行） |
+| `.github/workflows/ci.yml` | 注释同步（七 URL + `/` 分档断言口径） |
+
+### A3 §6 八项必带逐条销账
+
+1. **M9 `?quality=` 转正** ✔ — Quality 构造参数化 + 壳白名单 + index.ts 读参，全链 `opts.params`。
+2. **targetHeight 回 9m** ✔ — 城市相机（FOV42°/18m/22°）就位同 PR 落账。
+3. **manifest world 注册 + Lab 过滤拆弹** ✔ — 同 PR 激活，无裸激活窗口；LAB-E2E-01 增拆弹断言。
+4. **LHCI 日切** ✔ — draft→正式 + 删 draft；collect 含 `/website/home/`；实测 `/` P100/A100/BP96/SEO100、`/home/` 四项全 100。
+5. **壳 PARAM_ALLOWLIST 七参数** ✔ — gl/vehicle/city/robot/ritual/quality/poi，与 manifest deepLinkParams 同表。
+6. **voice-pod 黑菱形三选一** ✔ — 选「泊位挪出对角线」（bay (28,28)→(12,28)，纯数据改动零代码风险；相机落点脱离楼体积，实测画面干净）。两条 fallback 楼（agent-nexus→/ai-lab/、autodrive-lab→/work/）详情页 Phase 0 无排期 → deepLinkStatus 维持 fallback 上级索引，check-links 登记通过；转正计划归 Phase 1 内容批次。
+7. **G-G chunk 按 slug 命名** ✔ — world 域 12 chunk 全部 `world.<hash>.js`，直测 JS 全量 78.0KB/900KB；共享库（three/KTX2/Draco 与 car-configurator 共用）不计入，与既有核算口径一致。
+8. **e2e 笔误 + 解 skip + 串行 + 计时** ✔ — `/lab/world-spike/` 注释笔误更正；CITY 六用例解 skip 全绿；cyber-city 移入 world-chromium 串行 project；SwiftShader 校准 MOUNT_TIMEOUT 210s / robot_idle·car_ready 120s。
+
+### world-spike 归档评估（为何不降占位页）
+
+既有 `e2e/world-spike*.spec.ts` 13 用例（驾驶/物理/触屏/dispose/快切/帧率证据包）
+全部以本页为被测面，且 `/` 默认剧本 = 首幕变形仪式、无「直接开车」显式路径——
+现在降占位 = 一次性重写 13 用例的被测路由与计时锚点，超出原子 PR 边界。
+处置：功能保留 + noindex,follow + canonical → `/` + 剔出 sitemap（SEO 面已归档）；
+WS-E2E-01 静态合同随归档改述（noindex/标题/H1）。降 ≤1KB 占位页 = 驾驶用例迁往
+`/?...` 参数路径后执行，归 Phase 1 e2e 批次排期。
+
+### 门禁数字（全绿留档）
+
+- `pnpm astro check`：0 errors / 0 warnings；`pnpm build` 19 页（+/home/）。
+- `audit-budget`：**零 ❌**（E7 探测器已识别切换，G-A′ 转硬阻断）——壳专项 HTML+CSS 5.1/35KB、
+  引导 JS 1.4/15KB、poster 31.9/40KB、合计 38.4/90KB；零 world 静态标签命中 0；
+  零 world 字节受保护 14 页命中 0；G-G(world) JS 78.0/900KB、资产 5.2/12MB；首页（现 /home/
+  口径）首屏合计 33.9KB。
+- `check-links`：345 条内部引用全部有效；12 楼 deepLink 全 200；fallback 登记 2 条。
+- LHCI（7 URL × 3 轮中位）：`/` P100 A100 **BP96** SEO100（分档断言过）；`/home/` 与其余
+  五页四项全部 ≥99（/home/ 全 100）。
+- e2e：desktop+mobile 30 通过（home/mobile/site-health/lab-index 重定向后全绿）；
+  CITY 六用例解 skip 后全绿（6.4m）；world-spike 11 用例全绿（5.8m，归档合同改述后）。
+
+### 遗留与交接（A4/Phase 1）
+
+- **`/` BP 96 的 4 分**：Lighthouse「Browser errors logged to console」——自动挂载后
+  SwiftShader/headless 环境 WebGPU 探测降级告警落 console；真机不复现，阈值 0.95 内安全余量 1 分，
+  Phase 1 可静默该探测日志再收口。
+- **世界内 HUD 接线**：壳 `data-ws-speed`/`data-world-respawn` 挂点已就位（引擎缺席容忍），
+  速度表数据源接线归 Phase 1。
+- **POI 专项 e2e**（触发圈进出/无效 slug/`/?poi=` 深链用例）：归 Phase 1 首个 e2e 批次
+  （契约已可测：`/?poi=lingua-tower` 实测出生泊位正确）。
+- **驾驶 e2e 迁移 → world-spike 降占位**：一个版本周期后执行（见归档评估）。

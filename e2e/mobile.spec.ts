@@ -7,14 +7,16 @@ import { u, shot, waitLabReady } from './helpers';
 test.describe.configure({ timeout: 150_000 });
 
 test.describe('移动端 375px', () => {
-  test('MOB-E2E-01 首页：无水平溢出、导航横滚可用、主题切换触控目标 ≥ 44px', async ({ page }) => {
-    await page.goto(u('/'));
+  test('MOB-E2E-01 宪法首页 /home/：无水平溢出、导航横滚可用、主题切换触控目标 ≥ 44px', async ({ page }) => {
+    // CC-E7 路由原子切换：宪法首页移动端基线随内容平移改测 /home/
+    //（`/` 世界壳窄屏 <768px 不自动挂载，其降级契约归 cyber-city.spec.ts）
+    await page.goto(u('/home/'));
 
     // 页面本体不得横向溢出（导航条内部横滚是设计内行为，不算页面溢出）
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
-    expect(overflow, '首页在 375px 下不得出现页面级水平滚动').toBeLessThanOrEqual(0);
+    expect(overflow, '/home/ 在 375px 下不得出现页面级水平滚动').toBeLessThanOrEqual(0);
 
     // 五个导航项均可见/可达（第二行横滚容器内）
     await expect(page.locator('.site-nav a')).toHaveCount(5);
