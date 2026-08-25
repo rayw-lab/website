@@ -207,16 +207,43 @@ pnpm test:e2e  # 独立 worktree 全量验证（E2E_PORT=4620，避开共享 VM 
 
 ---
 
+
+
 ## CC-E2 — spike 合流退役（单实现）（2026-08-25，波 2）
 
 分支 `cursor/cc-e2-spike-merge-1d6f`（base：`cursor/cyber-city-hero-design-1d6f` 波 1 合流 tip）。
 完整退役决策记录（七文件去向表 / M2-M4 裁决 / engine.ts 纪律迁入清单 / 合流期修复）见
 **`world-spike-log.md` §10**，此处只记交付面与交接点。
 
+## CC-E4 — 霓虹视觉系统（D3 品质线，2026-08-25）
+
+| 项 | 内容 |
+|----|------|
+| 分支 | `cursor/cc-e4-neon-visual-1d6f`（base = `cursor/cyber-city-hero-design-1d6f`，波 2 与 E2∥E6 并行） |
+| 文件域 | `rendering/NeonMaterials.ts`（新）· `rendering/MeshGridMaterial.ts`（folio 搬）· `rendering/PreRenderer.ts`（folio 搬）· `world/Grid.ts`（folio 改造）· `core/Quality.ts` 扩三档 · `rendering/Rendering.ts` 回补 bloom · `city/NeonFacade.ts` 转薄壳 · `city/CitySilhouette.ts`/`city/index.ts` 品质接线 |
+| 外部资产 | **0 字节**（全 TSL 程序化；可选窗格 atlas ≤300KB 槽位本波未用——程序化已达关键帧，槽位留给 CC-P1 M 档） |
+
 ### 交付物
 
 | 文件 | 内容 |
 |------|------|
+| `src/lab/modules/world/spike/`（七文件） | **删除**。参数表留档 `world-spike-log.md` §2（§10.1 有逐文件去向） |
+| `src/lab/modules/world/index.ts` | 薄入口唯一指向引擎 `src/lab/world/index.ts`（facade 分包映射位不变） |
+| `src/lab/world/index.ts` | mount 入口重写：HUD 接线（tick 999 / 0.25s 节流 / 提示消隐）、`__worldSpike` 遥测（+`vehicle`、nipple 双字段）、`?city=1`/`?robot=1` 动态挂载、respawn→`Objects.resetAll()`、ready 等 `revealed` 事件（输入放行后才 resolve）、`#debug` 句柄 |
+| `src/lab/world/world/World.ts` | **M3**：`SPAWN` 切 `cyber-city-buildings.json` `world.spawn` (0,0)（heading→rotationY 换算 `r=π/2−h·π/180`）；spike 三组锥桶阵按 10m 环缩尺重排（16 只 Rapier 动态体 + 出生正前锚点桩），`knockedConeCount()` 物理真值判定 |
+| `src/lab/world/player/Player.ts` | 键位合流：**Space=刹车**（spike 口径裁决，folio 悬挂跳挪 KeyF）；brake 组 = Space/B/ControlLeft |
+| `src/lab/world/inputs/Keyboard.ts` | 驾驶键 preventDefault（keydown+keyup 双向，Space keyup 防误触聚焦按钮） |
+| `src/lab/world/inputs/Nipple.ts` | 修引擎既有缺陷两枚：NDC 未减舞台 rect 偏移、angle 口径镜像（详见 log §10.4） |
+| `src/lab/world/view/View.ts` | spike 速度变焦换算：`zoom.speedEdge` {5,40}→{4,24}（物理车真实速度域重标定） |
+| `src/lab/world/rendering/Rendering.ts` | dispose 时 canvas 原位克隆置换（可重复挂载，WS-E2E-07 依赖） |
+| `src/lab/world/core/Game.ts` | 新增 `vehicleKind`（physics\|kinematic，init 落定）——速度遥测两档换算依据 |
+| `src/lab/world/utils/FpsMeter.ts` | 新增。spike FpsMeter 摘出（墙钟口径 + 暂停边界 reset，log §10.3-3） |
+| `src/pages/world-spike/index.astro` | `?impl=` 分叉退役；**M4** 白名单 = gl/vehicle/city/robot；DOM 摇杆退役（引擎 3D Nipple 接管）；文案/注记随单实现更新；复位按钮 keydown+keyup 成对派发 |
+| `e2e/world-spike.spec.ts` | 重标定（出生 (0,0)/速度阈值/锥桶直线锚点桩/摇杆走遥测/WS-E2E-11 改守 kinematic 回退腿），用例数不变；perf 与 mobile 两文件零改动 |
+| `docs/research/cyber-city-implementation-plan.md` | **M2**：§3.1/§3.2 VisualVehicle 落位文字修订为 `player/`（E1 实况，不搬文件） |
+
+#
+
 | `src/lab/modules/world/spike/`（七文件） | **删除**。参数表留档 `world-spike-log.md` §2（§10.1 有逐文件去向） |
 | `src/lab/modules/world/index.ts` | 薄入口唯一指向引擎 `src/lab/world/index.ts`（facade 分包映射位不变） |
 | `src/lab/world/index.ts` | mount 入口重写：HUD 接线（tick 999 / 0.25s 节流 / 提示消隐）、`__worldSpike` 遥测（+`vehicle`、nipple 双字段）、`?city=1`/`?robot=1` 动态挂载、respawn→`Objects.resetAll()`、ready 等 `revealed` 事件（输入放行后才 resolve）、`#debug` 句柄 |
@@ -257,3 +284,38 @@ pnpm test:e2e  # 独立 worktree 全量验证（E2E_PORT=4620，避开共享 VM 
 - **给 CC-E7（壳）**：壳页白名单模式已转正（`PARAM_ALLOWLIST` 四项透传 mount，引擎不读 location.search）——`/` 世界壳复用该模式即可；`__worldSpike` 遥测为 e2e 公共契约，壳重写时保留挂点 data-ws-* 命名。
 - **速度口径红线**：physics 档 `forwardSpeed` 是 folio 时基（真实 m/s = ×Ticker.scale），kinematic 档本征 SI——任何新消费方（音效/UI/成就）走 `Game.vehicleKind` 分派，勿直读 forwardSpeed 当真实速度。
 - E1 遗留「CarConcept 车宽略窄于物理盒」维持现状（正式资产波次解决）；运动学档锥桶无物理互动维持（域不同，log §9.3）。
+
+| `core/Quality.ts` | 0\|1\|2 三档（0 桌面全效 / 1 移动中端 / 2 止损）；`?quality=0\|1\|2` URL 覆写（location.search 兜底读取，同 `?city=`/`?vehicle=` 临时接线纪律）+ `#debug` 句柄 `__worldSpikeGame.quality.changeLevel(n)` 热切；changeLevel 语义与 folio 原版一致（events 'change'） |
+| `rendering/NeonMaterials.ts` | **全城唯一霓虹材质工厂**（E3 `NeonFacade` 实现体整体迁入，工厂签名零改动）。新增模块级共享 uniform 三件套（timeScale/flickerScale/phaseSpread）：Q0 逐窗随机相位闪烁 / Q1 全局统一相位 / Q2 时间轴冻结+振幅归零——切档 = 3 个 uniform 写入，**零材质重建零重编译**（风险表 R1 缓解落地）。D3 质感件：~7% 亮窗升格 1.9× 强度「亮屏窗」（bloom 下的立面高光锚点） |
+| `city/NeonFacade.ts` | 转薄壳 re-export（E3 头注预留的「品质升级挂载点」兑现）：city/ 四消费方 import 路径零改动，全城单套材质系统（Premortem P9 双材质禁令守住） |
+| `rendering/MeshGridMaterial.ts` | folio `Materials/MeshGridMaterial.js`（156 行）TS 移植：Ben Golus 抗锯齿网格算法 TSL 函数四件（toMask/toTriplanarUv/toGrid/toAntialiasedGrid）+ MeshGridMaterial 类全 API |
+| `world/Grid.ts` | folio `World/Grid.js`（101 行）改造为城市地面：MeshStandardNodeMaterial 壳（吃光照/阴影/雾）+ toAntialiasedGrid 组 emissive（8m 青细格 cross 十字 + 40m 紫粗格）；**湿地反射三档**：Q0 TSL `reflector`（r185 webgpu_reflection 例同款，resolutionScale 0.35 + bounces:false）× 价噪声水洼掩码，Q1 假反射（噪声水洼 × 青/品红 sheen，零二次渲染），Q2 哑光。接管 Roads.plaza 地表职责（plaza 隐藏保留作回退开关） |
+| `rendering/PreRenderer.ts` | folio `PreRenderer.js`（34 行）移植：32px CubeCamera 逼全场景管线预编译（§12.7.2 shader 预热行）；调用门 = Quality 0 + WebGPU 后端（folio Game.js L203 同门）；补渲染后清场（folio 原文 cubeCamera 遗留在场景） |
+| `rendering/Rendering.ts` | 回补 folio setPostprocessing 主干：`THREE.RenderPipeline` + BloomNode 全彩通路（threshold 1 = 只有 emissive>1 的霓虹件起辉）。三档响应：Q0 bloom 0.55+阴影+DPR≤2 / Q1 bloom 0.3+无阴影+DPR≤1.5 / Q2 **后处理整段旁路**（直连 renderer.render）+DPR≤1 |
+| `city/CitySilhouette.ts` | 天际线填充按档收缩 `mesh.count`（48/24/12）；实例缓冲区槽位在前填充在后，8 个预留槽位（带碰撞体）任何档位可见——视觉物理永远对齐。§5.3 原文 Q2「静态天空盒纹理」以最低密度程序化剪影等效替代（贴图违背默认路径零重资产纪律） |
+| `city/index.ts` | 品质联动装配：`applyCityQuality`（霓虹 uniform + 地面反射档 + 剪影密度）挂 quality.events；挂载末拍 PreRenderer 预热（守门）；相机 far 1000 + 距离雾不变 |
+
+### TSL / three 0.185 迁移核对记录（供后续搬运参考）
+
+- `THREE.RenderPipeline` 为 r183 起正名（`PostProcessing` 保留为弃用别名）；bloom 仍自 `three/addons/tsl/display/BloomNode.js` 具名导出——folio 用法零改名直迁。
+- NodeMaterial 已无 `this.normals` 布尔开关（normalNode 体系取代）——unlit 语义由 `lights=false` + outputNode 直出承担。
+- @types/three 0.185 泛型收紧三处：TSL 节点句柄用 `Node<'float'>` 制式；folio 的 float→vec2 隐式广播需显式 `vec2(thickness)`；`mix(vec2, vec2, vec2)` 重载缺失，展开为等价 `mul().add()` 方法链（产物 shader 等价）。
+- folio `MeshGridMaterial` 原文引用未导入的 `positionLocal`（local* 分支潜在 bug），移植补齐；`toMask` 的 mask 显式 `.toVar()`（WGSL assign 目标须为变量）。
+- TSL `reflector`：`{ resolutionScale: 0.35, bounces: false }`，target 面片进场景、`dispose()` 收 RT——reflector 节点不在当前节点图中时其 updateBefore 不触发，Q1/Q2 天然零镜像渲染开销。
+
+### 验证记录（build + 运行时冒烟全过）
+
+- `pnpm astro check` 0 errors 0 warnings / `pnpm build` 通过；city 分包 gzip 后仍在预算内，默认路径零城市字节。
+- 运行时冒烟（Chromium + SwiftShader 软渲染，WebGL 2 回退腿，`?impl=engine&city=1&robot=1#debug`）：
+  - 冷启动 Q0（桌面缺省）：bloom 0.55 + 阴影开 + 实时反射 + DPR≤2；控制台 0 错误。
+  - `?quality=1` URL 覆写冷启动：level 1 / DPR 封顶 1.5 / 阴影关 / bloom 0.3 / 剪影 32 实例——全部命中。
+  - `#debug` 句柄热切 0→1→2→0：剪影 count 48/32/20（=8 槽位 + 48/24/12 填充）、阴影随档开关、Q2 `postEnabled=false`（后处理旁路确认）、回 Q0 反射节点复用零重建。
+  - 默认路径（无 `?city`）回归：灰盒正常渲染（bloom 管线下无视觉回归）、city 分包未加载、E4 新增网络资产 0（资源清单里的 CarConcept/KTX2/wasm/HDR 全部为 E0 既有基线，审计 P0-2 豁免项）。
+- **FpsMeter 读数（如实登记）**：本环境为 SwiftShader 软光栅，三档均被填充成本压平——Q0 0.93 / Q1 0.91 / Q2 0.97 fps（1024×620 视口，4s 窗口，含切档重编译拍）。绝对值无档位区分度（同 WS-PERF-01 软门禁口径：SwiftShader ~1fps 下界），**真机 60fps 判定移交 human-gate-checklist §5.4 走查表回填**；三档降载的正确性以上述状态断言（DPR/阴影/旁路/实例数/uniform）为准。
+
+### 遗留与交接
+
+- 自动降档（连续 2s <30fps → Quality 2 + toast，§5.3 触发条件行）：`Quality.changeLevel` 即调用面，FpsMeter 接线归 CC-E7 壳装配段。
+- `?quality=` 走 location.search 兜底属临时接线，CC-E2 壳白名单转正时并入（同 `?city=`/`?vehicle=`）。
+- 窗格 atlas ≤300KB 槽位未用（见资产行）；bloom 参数（0.55/0.3、threshold 1、smoothWidth 1）与水洼噪声频率（÷19）为首版手调值，真机走查后可在 `#debug` 句柄上直调 `rendering.bloomPass.strength.value` 复核。
+- Q0 阴影切换触发全场材质重编译（事件级成本）；若真机切档卡顿明显，后续可给 shadow 材质变体做预热（PreRenderer 二次调用即可）。

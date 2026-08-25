@@ -7,11 +7,12 @@
 import * as THREE from 'three/webgpu';
 import type { Game } from '../core/Game';
 import type { WorldObject } from '../core/Objects';
+import type { QualityLevel } from '../core/Quality';
 import type { CyberCityMap } from './CityMap';
 import { createSeededRandom, hashStringToSeed } from './CityMap';
 import { createSilhouetteMaterial } from './NeonFacade';
 
-/** 天际线填充块数量（低配档减半的降档开关归 CC-E4 Quality 扩档） */
+/** 天际线填充块数量（CC-E4：低配档按 Quality 减档，见 applyQuality） */
 const SKYLINE_FILLER_COUNT = 48;
 
 /** 填充带（米）：道路 range(±260) 与雾衰减(900) 之间 */
@@ -105,5 +106,22 @@ export class CitySilhouette {
 
     this.mesh.instanceMatrix.needsUpdate = true;
     this.game.scene.add(this.mesh);
+  }
+
+  /**
+   * CC-E4 品质分档（实施方案 §5.3「天际线剪影层楼数」行）：实例缓冲区槽位在前、
+   * 填充在后，收缩 mesh.count 只裁填充尾段——预留槽位（带碰撞体）任何档位都可见，
+   * 视觉与物理永远对齐。Quality 0 全量 / 1 填充减半 / 2 填充四分之一
+   * （§5.3 原文 Q2 为「静态天空盒纹理」，其贴图资产违背默认路径零重资产纪律，
+   * 以最低密度程序化剪影等效替代——零资产且更省：窗格动画在 Q2 已整体冻结）。
+   */
+  applyQuality(level: QualityLevel): void {
+    const fillers =
+      level === 0
+        ? SKYLINE_FILLER_COUNT
+        : level === 1
+          ? SKYLINE_FILLER_COUNT / 2
+          : SKYLINE_FILLER_COUNT / 4;
+    this.mesh.count = this.instanceCount - SKYLINE_FILLER_COUNT + fillers;
   }
 }
