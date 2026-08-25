@@ -1,0 +1,134 @@
+---
+// NowCta —— 区块 5：Now 摘要 + 等宽「最后更新」时间戳 + 收尾 CTA 带
+// （PRD HOME-06；spec §5.3）。数据单源：src/content/now/entries.json 最新一条
+// （SRD §8.1「最新一条驱动 /now/ 与首页区块 5」，ABT-03 首页自动同步摘要）。
+import { getCollection } from 'astro:content';
+import CtaButton from '../ui/CtaButton.astro';
+import { OPEN_TO_LABELS } from '../../data/site';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+const entries = (await getCollection('now')).map((e) => e.data);
+const latest = entries.sort((a, b) => b.updated.getTime() - a.updated.getTime())[0];
+if (!latest) throw new Error('[NowCta] src/content/now/entries.json 至少需要一条近况条目');
+
+const lines = [
+  { key: 'RESEARCH', text: `正在研究：${latest.researching.join(' · ')}` },
+  ...(latest.writing.length > 0
+    ? [{ key: 'WRITING', text: `正在写：${latest.writing.join(' · ')}` }]
+    : []),
+  {
+    key: 'OPEN TO',
+    text: `开放合作：${latest.openTo.map((k) => OPEN_TO_LABELS[k]).join(' · ')}`,
+  },
+];
+
+const lastUpdate = latest.id;
+---
+
+<div class="now reveal">
+  <dl class="lines">
+    {
+      lines.map((line) => (
+        <div class="line">
+          <dt class="data">{line.key}</dt>
+          <dd>{line.text}</dd>
+        </div>
+      ))
+    }
+  </dl>
+  <p class="stamp data">
+    LAST UPDATE · {lastUpdate} · <a class="stamp-link" href={`${base}/now/`}>完整近况 →</a>
+  </p>
+</div>
+
+<div class="card band reveal" style="--reveal-delay: 6%">
+  <p class="ask">有类似问题要解决？</p>
+  <div class="actions">
+    <CtaButton href={`${base}/contact/`}>邮件联系 →</CtaButton>
+    <CtaButton href={`${base}/contact/`} variant="secondary">LinkedIn</CtaButton>
+    <CtaButton href="https://github.com/rayw-lab" variant="secondary">
+      GitHub
+    </CtaButton>
+  </div>
+</div>
+
+<style>
+  .now {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-5) var(--space-7);
+  }
+
+  .lines {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .line {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: var(--space-3);
+    align-items: baseline;
+  }
+
+  dt {
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+
+  dd {
+    font-size: var(--text-body);
+    line-height: var(--leading-small);
+    color: var(--ink-2);
+    max-inline-size: var(--measure);
+  }
+
+  .stamp {
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+
+  /* 混排在时间戳文字里的链接：下划线区分（axe link-in-text-block，不能只靠颜色） */
+  .stamp-link {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    text-underline-offset: 0.2em;
+  }
+
+  .stamp-link:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  .band {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4) var(--space-6);
+    margin-block-start: var(--space-7);
+    padding: var(--space-6) var(--space-6);
+  }
+
+  .ask {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  @media (max-width: 639.98px) {
+    .line {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+    }
+  }
+</style>

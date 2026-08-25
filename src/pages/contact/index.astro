@@ -1,0 +1,319 @@
+---
+// Contact —— 联系页（PRD ABT-04 / mvp-checklist §5）。
+// 四要件：①意愿说明模板置顶（含「暂不接受」清单与回复时限承诺）；
+// ②四交流方向（技术交流/合作机会/演讲写作/职业机会），mailto 预填主题与四要素正文
+// （PRD §5：不做表单，降低摩擦）；③邮箱防爬混淆渲染（JS 组装 + noscript 文字还原）；
+// ④contact-click 事件（[data-track="contact"] 容器 → BaseLayout 事件委托，SRD §9.5）。
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { CONTACT_EMAIL, PERSON, REPLY_SLA_DAYS, TITLE_SUFFIX } from '../../data/site';
+import { breadcrumbJsonLd } from '../../data/jsonld';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const title = `联系${TITLE_SUFFIX}`;
+const description =
+  '与王磊建立联系：技术交流、合作机会、演讲与写作、职业机会四类来信的意愿说明与来信模板，信息完整的来信承诺回复时限。';
+
+const homeUrl = new URL(`${base}/`, Astro.site).href;
+const contactUrl = new URL(`${base}/contact/`, Astro.site).href;
+const jsonLd = breadcrumbJsonLd([
+  { name: '首页', url: homeUrl },
+  { name: '联系', url: contactUrl },
+]);
+
+// 四交流方向（mvp-checklist §5.1 原文口径）
+const directions = [
+  {
+    key: '01',
+    name: '技术交流',
+    desc: '围绕已发布文章/案例主题的深度讨论、勘误与补充。',
+    subject: '[技术交流] 关于你站内的〈○○〉',
+  },
+  {
+    key: '02',
+    name: '合作机会',
+    desc: '项目合作、咨询、顾问类邀约——说明领域与大致范围即可。',
+    subject: '[合作机会] ○○领域的合作意向',
+  },
+  {
+    key: '03',
+    name: '演讲与写作',
+    desc: '会议演讲、播客访谈、约稿、联合内容创作（署名与近况见 /now/）。',
+    subject: '[演讲与写作] ○○活动/栏目邀约',
+  },
+  {
+    key: '04',
+    name: '职业机会',
+    desc: '符合个人方向的全职/兼职机会——当前是否开放以 /now/ 页 OPEN TO 为准。',
+    subject: '[职业机会] ○○方向的机会沟通',
+  },
+];
+
+// mailto 正文模板（四要素：你是谁 / 来意类别 / 想讨论什么 / 期望下一步）
+const mailBody = [
+  '你是谁：',
+  '来意属于哪一类（技术交流 / 合作机会 / 演讲与写作 / 职业机会）：',
+  '具体想讨论什么：',
+  '期望的下一步：',
+].join('\n');
+
+// 防爬渲染件：页面源码不出现完整地址，JS 运行时组装（PRD ABT-04 验收）
+const mailUser = CONTACT_EMAIL.user;
+const mailDomain = CONTACT_EMAIL.domain;
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <header class="page-hero">
+    <div class="container">
+      <nav class="crumb data" aria-label="面包屑">
+        <a href={`${base}/`}>首页</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">联系</span>
+      </nav>
+      <h1>联系我</h1>
+      <p class="lede">
+        不做表单——一封说清来意的邮件，比十次寒暄更高效。先读下面的意愿说明，再选一个方向直接来信。
+      </p>
+    </div>
+  </header>
+
+  <!-- ① 意愿说明模板（mvp-checklist §5.2，置顶） -->
+  <section class="section" aria-labelledby="intent-title">
+    <div class="container">
+      <h2 class="visually-hidden" id="intent-title">意愿说明</h2>
+      <blockquote class="card intent">
+        <p>
+          我欢迎以下四类来信：<strong>技术交流、合作机会、演讲与写作、职业机会</strong>。
+        </p>
+        <p>
+          为了让交流高效，请在来信中说明：<strong>你是谁、来意属于哪一类、具体想讨论什么、期望的下一步</strong>。
+        </p>
+        <p>
+          我会在 <strong>{REPLY_SLA_DAYS} 个工作日</strong>内回复上述四类中信息完整的来信；
+          与保密项目相关的细节请勿在初次邮件中发送——涉及敏感内容的深度案例仅通过一对一私密方式沟通，不在公网提供。
+        </p>
+        <p class="reject">
+          <span class="data reject-tag">暂不接受</span>
+          推销、代发外链、与上述方向无关的群发信息。
+        </p>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ② 四交流方向（mailto 预填主题 + 四要素正文模板） -->
+  <section class="section" aria-labelledby="directions-title" data-track="contact">
+    <div class="container">
+      <h2 id="directions-title">四个交流方向</h2>
+      <div class="direction-grid">
+        {
+          directions.map((d, i) => (
+            <article class="card direction reveal" style={`--reveal-delay: ${i * 5}%`}>
+              <p class="dir-index data">{d.key}</p>
+              <h3>{d.name}</h3>
+              <p class="dir-desc">{d.desc}</p>
+              <a
+                class="dir-mail"
+                data-mail
+                data-mail-subject={d.subject}
+                href="#mail-fallback"
+              >
+                按此方向来信 →
+              </a>
+            </article>
+          ))
+        }
+      </div>
+
+      <!-- ③ 邮箱防爬混淆渲染：JS 组装完整地址；无 JS 回退为文字还原 -->
+      <div class="mail-line" id="mail-fallback">
+        <span class="data mail-label">EMAIL</span>
+        <span class="mail-addr data" data-mail-text aria-live="polite">
+          {mailUser}<span aria-hidden="true"> [at] </span>{mailDomain.replace('.', ' [dot] ')}
+        </span>
+        <noscript>
+          <span class="mail-noscript">（防爬处理：请把 [at] 还原为 @、[dot] 还原为 .）</span>
+        </noscript>
+      </div>
+
+      <p class="alt-line">
+        其他公开渠道：<a href={PERSON.sameAs[0]} rel="me noopener">GitHub</a> ·
+        近况与开放合作见 <a href={`${base}/now/`}>/now/</a> ·
+        专业背景见 <a href={`${base}/about/`}>About</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<!-- 防爬邮箱组装（PRD ABT-04）：源码只含拆分片段，运行时拼 mailto 与展示文本 -->
+<script is:inline define:vars={{ mailUser, mailDomain, mailBody }}>
+  var addr = mailUser + '@' + mailDomain;
+  document.querySelectorAll('[data-mail]').forEach(function (a) {
+    var subject = a.getAttribute('data-mail-subject') || '';
+    a.href =
+      'mailto:' +
+      addr +
+      '?subject=' +
+      encodeURIComponent(subject) +
+      '&body=' +
+      encodeURIComponent(mailBody);
+  });
+  document.querySelectorAll('[data-mail-text]').forEach(function (el) {
+    el.textContent = addr;
+  });
+</script>
+
+<style>
+  .page-hero {
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .crumb {
+    display: flex;
+    gap: var(--space-2);
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .crumb a:hover {
+    color: var(--accent);
+  }
+
+  .page-hero h1 {
+    margin-block-start: var(--space-5);
+    font-size: var(--text-display);
+    font-weight: 650;
+    line-height: var(--leading-display);
+    letter-spacing: -0.01em;
+  }
+
+  .lede {
+    margin-block-start: var(--space-5);
+    max-inline-size: var(--measure);
+    color: var(--ink-2);
+  }
+
+  .section {
+    padding-block: var(--section-pad);
+    border-block-start: 1px solid var(--line);
+  }
+
+  /* ① 意愿说明 */
+  .intent {
+    padding: var(--space-6);
+    max-inline-size: 48rem;
+    border-inline-start: 3px solid var(--accent-strong);
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .intent p {
+    max-inline-size: var(--measure);
+    color: var(--ink-2);
+  }
+
+  .intent strong {
+    color: var(--ink);
+  }
+
+  .reject-tag {
+    display: inline-block;
+    margin-inline-end: var(--space-2);
+    padding: 0.1em 0.7em;
+    border: 1px solid var(--accent-strong);
+    border-radius: var(--radius-chip);
+    color: var(--accent);
+    letter-spacing: 0.06em;
+  }
+
+  /* ② 四方向 */
+  #directions-title {
+    font-size: var(--text-h2);
+    font-weight: 600;
+    line-height: var(--leading-h2);
+    margin-block-end: var(--heading-gap);
+  }
+
+  .direction-grid {
+    display: grid;
+    gap: var(--grid-gutter);
+  }
+
+  @media (min-width: 640px) {
+    .direction-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .direction {
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .dir-index {
+    color: var(--accent);
+  }
+
+  .direction h3 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  .dir-desc {
+    color: var(--ink-2);
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    flex: 1;
+  }
+
+  .dir-mail {
+    display: inline-block;
+    margin-block-start: var(--space-2);
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .dir-mail:hover {
+    text-decoration: underline;
+  }
+
+  /* ③ 邮箱行 */
+  .mail-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-block-start: var(--space-7);
+    padding: var(--space-5) var(--space-6);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-card);
+  }
+
+  .mail-label {
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+  }
+
+  .mail-addr {
+    font-size: var(--text-body);
+    color: var(--ink);
+  }
+
+  .mail-noscript {
+    font-size: var(--text-small);
+    color: var(--ink-3);
+  }
+
+  .alt-line {
+    margin-block-start: var(--space-5);
+    font-size: var(--text-small);
+    color: var(--ink-2);
+  }
+
+  .alt-line a {
+    color: var(--accent);
+  }
+</style>

@@ -1,0 +1,174 @@
+---
+// BaseLayout —— HTML 骨架：SEO meta / canonical / JSON-LD、字体子集预加载、
+// 主题防闪烁内联脚本、Header/Footer 组装、GoatCounter 统计（SRD §5.5 / §9.5）。
+// 规格来源：homepage-redesign-spec §5.1；master-plan §8；SRD §9.4。
+// JSON-LD：全站 Person + WebSite 由本布局自动拼装（SRD §9.4 注入点），
+// 页型增量（Article / ProfilePage / BreadcrumbList）由页面经 jsonLd prop 传入。
+import '../styles/tokens.css';
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { GOATCOUNTER_ENDPOINT, SITE_NAME } from '../data/site';
+import { personJsonLd, webSiteJsonLd, type JsonLd } from '../data/jsonld';
+
+interface Props {
+  title: string;
+  description: string;
+  /** OG 类型，内容页可传 'article' */
+  ogType?: string;
+  /** 页型增量 JSON-LD（对象或数组）；Person + WebSite 无需传入，布局自动注入 */
+  jsonLd?: JsonLd | JsonLd[];
+  /** 内容详情页开启：滚动 75% 一次性上报 scroll-75:{path}（SRD §9.5） */
+  trackScroll?: boolean;
+}
+
+const { title, description, ogType = 'website', jsonLd, trackScroll = false } = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const homeUrl = new URL(`${base}/`, Astro.site).href;
+
+// SRD §9.4：BaseLayout 尾部单个 <script type="application/ld+json">，
+// 内容 = 全站 Person + WebSite + 页面传入的页型增量。
+const jsonLdAll: JsonLd[] = [
+  personJsonLd(homeUrl),
+  webSiteJsonLd(homeUrl),
+  ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []),
+];
+
+// @font-face 内联：字体在 public/fonts/（手放子集模式，master-plan §6），
+// URL 必须拼 BASE_URL —— Vite 不改写 CSS 文件内指向 public/ 的绝对路径。
+const fontFaceCss = `
+@font-face{font-family:'Inter Variable';font-style:normal;font-weight:100 900;font-display:swap;src:url('${base}/fonts/inter-var-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212;}
+@font-face{font-family:'JetBrains Mono Variable';font-style:normal;font-weight:100 800;font-display:swap;src:url('${base}/fonts/jetbrains-mono-var-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+2212;}
+`;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <!-- 主题防闪烁：首帧前应用持久化的手动主题（≤ 0.2KB，spec §3.1） -->
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || t === 'light')
+            document.documentElement.classList.add(t);
+        } catch (e) {
+          /* localStorage 不可用时跟随系统 */
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <link rel="sitemap" href={`${base}/sitemap-index.xml`} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE_NAME}
+      href={`${base}/rss.xml`}
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#FAFAF8"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#0C0D0F"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="zh_CN" />
+
+    <!-- 字体子集预加载（latin 可变字体，woff2，不计入 200KB 预算） -->
+    <link
+      rel="preload"
+      href={`${base}/fonts/inter-var-latin.woff2`}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={`${base}/fonts/jetbrains-mono-var-latin.woff2`}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <style set:html={fontFaceCss}></style>
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdAll)} />
+    <slot name="head" />
+  </head>
+  <body data-track-scroll={trackScroll ? '' : undefined}>
+    <a class="skip-link" href="#main">跳到主内容</a>
+    <SiteHeader />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter />
+
+    {
+      /* GoatCounter（GLB-07 / SRD §5.5）：无 Cookie 匿名计数，仅生产构建注入；
+         count.js 自带 localhost 不上报守卫（§9.5 预览环境口径）。 */
+      import.meta.env.PROD && (
+        <script
+          is:inline
+          data-goatcounter={GOATCOUNTER_ENDPOINT}
+          async
+          src="https://gc.zgo.at/count.js"
+        />
+      )
+    }
+    <!-- 统计事件契约（SRD §9.5，内联 ≤1KB）：
+         pdf-download（.pdf 链接点击）/ contact-click（[data-track="contact"] 内链接点击）
+         由事件委托覆盖全站；scroll-75:{path} 仅在 body[data-track-scroll] 的内容详情页启用。
+         lab-mount / lab-backend / lab-error 由 src/lab/facade.ts 上报（同一 goatcounter 句柄）。 -->
+    <script is:inline>
+      (function () {
+        function count(name) {
+          var gc = window.goatcounter;
+          if (gc && typeof gc.count === 'function') gc.count({ path: name, event: true });
+        }
+        document.addEventListener('click', function (e) {
+          var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+          if (!a) return;
+          if (/\.pdf([?#]|$)/.test(a.getAttribute('href') || '')) count('pdf-download');
+          else if (a.closest('[data-track="contact"]')) count('contact-click');
+        });
+        if (document.body.hasAttribute('data-track-scroll')) {
+          var fired = false;
+          var onScroll = function () {
+            if (fired) return;
+            var doc = document.documentElement;
+            var max = doc.scrollHeight - window.innerHeight;
+            if (max > 0 && window.scrollY / max >= 0.75) {
+              fired = true;
+              window.removeEventListener('scroll', onScroll);
+              count('scroll-75:' + location.pathname);
+            }
+          };
+          window.addEventListener('scroll', onScroll, { passive: true });
+        }
+      })();
+    </script>
+  </body>
+</html>
+
+<style>
+  main:focus {
+    outline: none;
+  }
+</style>

@@ -19,3 +19,14 @@ pnpm-debug.log*
 
 # 浏览器测试临时产物
 .playwright-mcp/
+
+# Playwright E2E 运行产物（报告与截图入库路径为 docs/spec/assets/）
+test-results/
+playwright-report/
+
+# Lighthouse CI 本地复跑产物（lhci autorun，见鸟瞰图 §12 cheatsheet）
+.lighthouseci/
+
+# 第三方参考仓库 clone（约 760MB，静态资产过大不入库；见 vendor/README.md）
+vendor/*
+!vendor/README.md

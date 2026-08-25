@@ -1,0 +1,225 @@
+---
+// Lab 舞台组件：统一 facade DOM 契约（SRD §9.2）。
+// 结构：宿主 section（data-lab-host，data-state 状态机）
+//   ├─ data-lab-config：manifest 记录（facade 客户端配置，单一事实源）
+//   ├─ data-lab-stage：舞台容器（view-transition-name 挂点；slot="stage" 放 canvas/HMI）
+//   │   └─ data-lab-facade：poster 覆盖层（启动按钮/进度/错误/noscript，400ms 交叉淡出）
+//   └─ 默认 slot：模块专属控制面（页面以 data-lab-gated + inert 标注，ready 后解锁）
+import type { LabModule } from '../../lab/contracts';
+
+interface Props {
+  module: LabModule;
+  /** 宿主 section 附加 class（页面用于排布舞台与控制坞） */
+  class?: string;
+  /** 舞台容器附加 class（页面控制宽高比 / 边框等） */
+  stageClass?: string;
+  /** facade 标题（默认模块 title） */
+  heading?: string;
+  /** facade 提示行（如资产体积说明） */
+  note?: string;
+  startLabel?: string;
+  /** mount() reject 时展示的错误文案（§9.2） */
+  errorText?: string;
+  noscriptText?: string;
+}
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const {
+  module,
+  class: className,
+  stageClass,
+  heading = module.title,
+  note,
+  startLabel = '启动演示',
+  errorText = '模块初始化失败：当前浏览器可能不支持所需能力，可更换浏览器后重试。',
+  noscriptText = '本演示需要启用 JavaScript；页面其余说明内容不受影响。',
+} = Astro.props;
+
+// </script> 注入防护：JSON 中的 < 一律转义
+const configJson = JSON.stringify(module).replace(/</g, '\\u003c');
+---
+
+<section
+  class:list={['lab-host', className]}
+  data-lab-host
+  data-lab-slug={module.slug}
+  data-state="idle"
+  aria-label={module.title}
+>
+  <script type="application/json" data-lab-config set:html={configJson} />
+  <div
+    class:list={['lab-stage', stageClass]}
+    data-lab-stage
+    style={`view-transition-name: ${module.viewTransitionName};`}
+  >
+    <slot name="stage" />
+    <div class="lab-facade" data-lab-facade>
+      <img
+        class="lab-poster"
+        src={`${base}/${module.poster}`}
+        alt=""
+        loading="eager"
+        decoding="async"
+      />
+      <div class="lab-facade-scrim" aria-hidden="true"></div>
+      <div class="lab-facade-inner">
+        <span class="lab-facade-chip">LAB {module.code} · {module.kind.toUpperCase()}</span>
+        <h2 class="lab-facade-heading">{heading}</h2>
+        {note && <p class="lab-facade-note">{note}</p>}
+        <button class="lab-start" type="button" data-lab-start>{startLabel}</button>
+        <p class="lab-blocked-note" data-blocked-reason="pointer">
+          移动端默认不自动加载重资产 —— 点按上方按钮显式启动。
+        </p>
+        <p class="lab-blocked-note" data-blocked-reason="save-data">
+          检测到省流量模式，已暂停自动加载 —— 点按上方按钮显式启动。
+        </p>
+        <p class="lab-blocked-note" data-blocked-reason="reduced-motion">
+          系统已开启「减少动态效果」，默认停留静态海报 —— 仍可点按上方按钮显式启动。
+        </p>
+        <div class="lab-progress" role="progressbar" aria-label="资产加载进度">
+          <i data-lab-progress-bar></i>
+        </div>
+        <p class="lab-error" data-lab-error hidden>{errorText}</p>
+        <noscript><p class="lab-error">{noscriptText}</p></noscript>
+      </div>
+    </div>
+  </div>
+  <slot />
+</section>
+
+<script>
+  import { initAllLabFacades } from '../../lab/facade';
+  initAllLabFacades();
+</script>
+
+<style>
+  .lab-host {
+    display: block;
+  }
+  .lab-stage {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ---------- facade 覆盖层（poster → 画布 400ms 交叉淡入，§9.2） ---------- */
+  .lab-facade {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    z-index: 2;
+    transition: opacity 400ms ease;
+  }
+  .lab-host[data-state='ready'] .lab-facade {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .lab-poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .lab-facade-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 11, 14, 0.22) 0%, rgba(10, 11, 14, 0.78) 100%);
+  }
+  .lab-facade-inner {
+    position: relative;
+    padding: 1rem;
+    max-width: 34rem;
+  }
+  .lab-facade-chip {
+    font-family: var(--lab-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--lab-accent-on-stage, #9ecbff);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    padding: 0.3em 1em;
+    background: rgba(12, 13, 17, 0.6);
+  }
+  .lab-facade-heading {
+    margin: 0.9rem 0 0.2rem;
+    font-size: clamp(1.3rem, 2.6vw, 1.7rem);
+    font-weight: 600;
+    color: #f2f3f5;
+  }
+  .lab-facade-note {
+    margin: 0 0 1.1rem;
+    font-size: 0.85rem;
+    color: #b9bec7;
+  }
+  .lab-start {
+    font: inherit;
+    color: #f2f3f5;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(22, 24, 30, 0.85);
+    border-radius: 10px;
+    padding: 0.62em 1.6em;
+    font-weight: 550;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .lab-start:hover {
+    border-color: var(--lab-accent-on-stage, #9ecbff);
+    background: rgba(30, 34, 44, 0.9);
+  }
+  .lab-start:focus-visible {
+    outline: 2px solid var(--lab-accent-on-stage, #9ecbff);
+    outline-offset: 2px;
+  }
+  .lab-host[data-state='loading'] .lab-start,
+  .lab-host[data-state='error'] .lab-start {
+    display: none;
+  }
+
+  /* 自动挂载被拦下的原因提示（§12.4 四项检查 → data-blocked） */
+  .lab-blocked-note {
+    display: none;
+    margin: 0.8rem 0 0;
+    font-size: 0.78rem;
+    color: #b9bec7;
+  }
+  .lab-host[data-blocked='pointer'] .lab-blocked-note[data-blocked-reason='pointer'],
+  .lab-host[data-blocked='save-data'] .lab-blocked-note[data-blocked-reason='save-data'],
+  .lab-host[data-blocked='reduced-motion'] .lab-blocked-note[data-blocked-reason='reduced-motion'] {
+    display: block;
+  }
+
+  .lab-progress {
+    display: none;
+    width: min(260px, 60vw);
+    height: 3px;
+    margin: 1.2rem auto 0;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.16);
+    overflow: hidden;
+  }
+  .lab-host[data-state='loading'] .lab-progress {
+    display: block;
+  }
+  .lab-progress i {
+    display: block;
+    width: 0%;
+    height: 100%;
+    background: var(--lab-accent-on-stage, #9ecbff);
+    transition: width 0.25s ease;
+  }
+  .lab-error {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #f2b8b5;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lab-facade,
+    .lab-progress i {
+      transition-duration: 0.01ms;
+    }
+  }
+</style>

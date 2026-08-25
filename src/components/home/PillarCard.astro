@@ -1,0 +1,78 @@
+---
+// PillarCard —— 区块 2：能力三支柱卡（PRD HOME-02；文案源 master-plan §3 区块 2）。
+// 支柱名 + 一句能力描述 + 等宽量化锚点 + 指向旗舰案例的链接。
+interface Props {
+  title: string;
+  desc: string;
+  /** 量化锚点，等宽渲染（仪表感） */
+  anchor: string;
+  caseHref: string;
+  caseLabel: string;
+  /** 入场 stagger 偏移，如 '--reveal-delay: 6%' */
+  style?: string;
+}
+
+const { title, desc, anchor, caseHref, caseLabel, style } = Astro.props;
+---
+
+<article class="card pillar reveal" style={style}>
+  <h3>{title}</h3>
+  <p class="desc">{desc}</p>
+  <p class="anchor data">{anchor}</p>
+  <a class="more" href={caseHref}>
+    {caseLabel}
+    <span class="arrow" aria-hidden="true">→</span>
+  </a>
+</article>
+
+<style>
+  .pillar {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-6);
+  }
+
+  h3 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  .desc {
+    margin-block-start: var(--space-3);
+    font-size: var(--text-small);
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  .anchor {
+    margin-block-start: auto;
+    padding-block-start: var(--space-5);
+    color: var(--accent);
+  }
+
+  .more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-block-start: var(--space-3);
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--line);
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--ink-2);
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  .more:hover {
+    color: var(--accent);
+  }
+
+  .arrow {
+    transition: transform var(--duration-hover) var(--ease-out);
+  }
+
+  .more:hover .arrow {
+    transform: translateX(4px);
+  }
+</style>

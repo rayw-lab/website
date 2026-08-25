@@ -1,0 +1,101 @@
+---
+// LabCardCar —— 3D 配置器入口卡（大卡，7 列）。
+// P1 静态：poster + 技术参数角标；P2 增加 hover 车漆变体与深链。
+// view-transition-name: demo-car —— 与 Lab 页头图 morph 打通（spec §3.4 转场）。
+import TechChip from '../ui/TechChip.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const chips = ['WebGPU', 'WebGL 2', 'KTX2', 'Draco', 'HDRI'];
+---
+
+<a class="card lab-card reveal" href={`${base}/lab/car-configurator/`}>
+  <figure class="media">
+    <img
+      src={`${base}/posters/car-configurator-poster.webp`}
+      alt=""
+      width="1280"
+      height="720"
+      loading="lazy"
+      decoding="async"
+    />
+  </figure>
+  <div class="body">
+    <h3>3D 汽车配置器</h3>
+    <p class="desc">
+      通用概念车虚拟展厅：8 种车漆、2 款轮毂饰面、3
+      套预设涂装实时切换；WebGPU 优先渲染，WebGL&nbsp;2 自动回退。
+    </p>
+    <p class="chips">
+      {chips.map((c) => <TechChip label={c} />)}
+    </p>
+    <p class="enter">
+      进入配置器 <span class="arrow" aria-hidden="true">→</span>
+    </p>
+  </div>
+</a>
+
+<style>
+  .lab-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .media {
+    view-transition-name: demo-car;
+    border-block-end: 1px solid var(--line);
+  }
+
+  img {
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: var(--space-6);
+  }
+
+  h3 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  .desc {
+    margin-block-start: var(--space-3);
+    font-size: var(--text-small);
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-start: auto;
+    padding-block-start: var(--space-5);
+  }
+
+  .enter {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-block-start: var(--space-4);
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .arrow {
+    transition: transform var(--duration-hover) var(--ease-out);
+  }
+
+  .lab-card:hover .arrow {
+    transform: translateX(4px);
+  }
+</style>

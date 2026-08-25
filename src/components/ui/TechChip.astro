@@ -1,0 +1,28 @@
+---
+// TechChip —— 技术参数角标（`KTX2` `Draco` `RTL`…），芯片状等宽小标签。
+// 「工程图纸」情绪板落点：参数外显，懂行的人看得出深浅（spec §1.2 / §5.2）。
+interface Props {
+  label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<span class="chip">{label}</span>
+
+<style>
+  .chip {
+    display: inline-block;
+    padding: 0.125rem var(--space-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-chip);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: var(--leading-data);
+    letter-spacing: 0.04em;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+</style>

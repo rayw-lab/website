@@ -1,0 +1,43 @@
+---
+// EvidenceBadge —— 证据等级徽章 L1–L4（master-plan 附录 B；spec §5.2）。
+// 等宽字体渲染，全站统一的可视化信用组件。
+interface Props {
+  level: 'L1' | 'L2' | 'L3' | 'L4';
+}
+
+const { level } = Astro.props;
+
+const LEVEL_LABELS: Record<Props['level'], string> = {
+  L1: '可公开验证',
+  L2: '有形产出',
+  L3: '量化自述',
+  L4: '定性自述',
+};
+---
+
+<span class="badge data" title={`证据等级 ${level} · ${LEVEL_LABELS[level]}`}>
+  <span class="tick" aria-hidden="true"></span>
+  {level}
+  <span class="visually-hidden">证据等级 · {LEVEL_LABELS[level]}</span>
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 0.125rem var(--space-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-chip);
+    color: var(--ink-2);
+    background: var(--bg);
+    white-space: nowrap;
+  }
+
+  .tick {
+    inline-size: 0.375rem;
+    block-size: 0.375rem;
+    border-radius: 1px;
+    background: var(--accent-strong);
+  }
+</style>

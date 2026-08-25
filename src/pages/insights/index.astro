@@ -1,0 +1,199 @@
+---
+// /insights/ —— 洞见索引（master-plan §2.3；PRD INS-01）。
+// 三分类分组展示（行业判断 / 方法论沉淀 / 复盘笔记），每篇显示
+// 标题 + 一句话结论（thesis，结论而非摘要）+ 日期 + 分类标签；单层目录。
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+const CATEGORIES = [
+  { id: 'industry-judgment', label: '行业判断', desc: '有明确的、可被证伪的观点' },
+  { id: 'methodology', label: '方法论沉淀', desc: '可被他人直接套用' },
+  { id: 'retrospective', label: '复盘笔记', desc: '有真实教训与迁移结论' },
+] as const;
+
+const all = (await getCollection('insights'))
+  .filter((e) => !e.data.draft)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+
+const groups = CATEGORIES.map((cat) => ({
+  ...cat,
+  entries: all.filter((e) => e.data.category === cat.id),
+})).filter((g) => g.entries.length > 0);
+
+const fmtDate = (date: Date) => date.toISOString().slice(0, 10);
+
+const title = 'Insights 洞见｜王磊 - 汽车智能座舱与 AI 解决方案';
+const description =
+  '知识影响力阵地：智能座舱、多语种、端云大模型与 AI 工作流的独立判断——行业判断、方法论沉淀、复盘笔记三类内容，每篇给一句话可证伪结论。';
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="insights container">
+    <header class="head">
+      <p class="kicker">
+        <span class="eyebrow">Insights</span>
+        <span class="rule" aria-hidden="true"></span>
+      </p>
+      <h1>洞见</h1>
+      <p class="lede">
+        每篇文章先给一句话结论（可证伪的判断，而不是摘要）；宁少勿滥，单篇不达
+        八问题模板深度不发布。
+      </p>
+    </header>
+
+    {
+      groups.map((group) => (
+        <section class="group" aria-labelledby={`cat-${group.id}`}>
+          <header class="group-head">
+            <h2 id={`cat-${group.id}`}>{group.label}</h2>
+            <p class="group-desc">{group.desc}</p>
+          </header>
+          <ul class="list">
+            {group.entries.map((entry) => (
+              <li>
+                <article class="item reveal">
+                  <p class="item-meta">
+                    <span class="chip data">{group.label}</span>
+                    <time class="date data" datetime={fmtDate(entry.data.publishDate)}>
+                      {fmtDate(entry.data.publishDate)}
+                    </time>
+                  </p>
+                  <h3>
+                    <a href={`${base}/insights/${entry.id}/`}>{entry.data.title}</a>
+                  </h3>
+                  <p class="thesis">
+                    <span class="thesis-label data">论点</span>
+                    {entry.data.thesis}
+                  </p>
+                </article>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .insights {
+    padding-block: var(--space-7) var(--space-9);
+  }
+
+  .head {
+    max-inline-size: var(--measure);
+    margin-block-end: var(--space-7);
+  }
+
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .kicker .eyebrow {
+    color: var(--accent);
+  }
+
+  .rule {
+    flex: 1;
+    block-size: 1px;
+    background: var(--line);
+  }
+
+  h1 {
+    margin-block: var(--space-4);
+    font-size: var(--text-h2);
+    font-weight: 600;
+    line-height: var(--leading-h2);
+    letter-spacing: -0.01em;
+  }
+
+  .lede {
+    color: var(--ink-2);
+  }
+
+  .group {
+    margin-block-end: var(--space-8);
+  }
+
+  .group-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding-block-end: var(--space-3);
+    border-block-end: 1px solid var(--line);
+    margin-block-end: var(--space-5);
+  }
+
+  h2 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  .group-desc {
+    font-size: var(--text-small);
+    color: var(--ink-3);
+  }
+
+  .list {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .item {
+    max-inline-size: var(--measure);
+  }
+
+  .item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-block-end: var(--space-2);
+  }
+
+  .chip {
+    display: inline-flex;
+    padding: 0.125rem var(--space-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-chip);
+    color: var(--ink-2);
+    background: var(--bg-raised);
+    white-space: nowrap;
+  }
+
+  .date {
+    color: var(--ink-3);
+  }
+
+  h3 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  h3 a {
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  h3 a:hover {
+    color: var(--accent);
+  }
+
+  .thesis {
+    margin-block-start: var(--space-2);
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    color: var(--ink-2);
+  }
+
+  .thesis-label {
+    color: var(--accent);
+    margin-inline-end: var(--space-2);
+  }
+</style>

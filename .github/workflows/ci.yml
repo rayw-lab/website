@@ -1,0 +1,90 @@
+# CI 质量门禁（Track D · D2 一期 + D3 Lighthouse + D4 断言预埋）—— SRD §11.2、roadmap §4.4
+#
+# 与 deploy.yml 的分工与不冲突约定：
+#   - deploy.yml：main push → 构建 → 发布 Pages（concurrency group: pages，持有 pages/id-token 权限）；
+#   - ci.yml（本文件）：PR + main push → 只验证不部署，仅 contents:read，
+#     使用独立 concurrency group，不触碰 Pages 部署队列。
+#   - 遗留 jekyll-gh-pages.yml 已删除（SRD 技术债 D1：与 deploy.yml 同触发同目标的部署竞态）。
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: 门禁（check / build / links / budget / lighthouse）
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # pnpm 版本由 package.json#packageManager 决定，不在此显式指定（与 deploy.yml 同约定）。
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # ① TS + content schema 校验（SRD §11.2 ①）
+      - name: astro check
+        run: pnpm astro check
+
+      # ② 构建（SRD §11.2 ②）
+      - name: Build
+        run: pnpm build
+
+      # ③ 内部链接/锚点 + DemoLink↔manifest 一致性（SRD §11.2 ③）
+      - name: Link gate（check-links.mjs）
+        run: node scripts/check-links.mjs dist/
+
+      # ④ 预算门禁：首页 <200KB gzip 分项核算、零 world 字节断言、
+      #    public/ ≤40MB 配额、资产黑名单、manifest 预算对照（SRD §11.2 ④，NFR-P2/P4/P6）。
+      #    预算表写入 job summary（PR 页可见）。
+      - name: Budget gate（audit-budget.mjs）
+        run: node scripts/audit-budget.mjs dist/
+
+      # ⑤ Lighthouse CI（Track D · D3，SRD §11.2 ⑤，NFR-P1 / C-2）
+      #    阈值与 URL 清单单源在仓库根 lighthouserc.json（本地 lhci autorun 与 CI 同源）：
+      #    - 靶站：pnpm preview 伺服 dist/（base=/website，端口 4321，AGENTS.md 约定）；
+      #      不用 LHCI 静态服务器——它按根路径伺服，会破坏 /website/ 前缀的绝对路径资产引用。
+      #    - 覆盖：首页 + /work/ + /work/multilingual-cockpit/（案例 A 内容页）+ /about/
+      #      + /lab/car-configurator/ + /lab/tts-cockpit/，每 URL 3 轮取中位轮
+      #      （MVP Gate 六 URL 基线，实测见 docs/spec/lighthouse-mvp-gate-report.md）。
+      #    - 断言：Lighthouse 默认即移动端预设（Moto G 模拟 + 4x CPU throttle + Slow 4G，
+      #      formFactor 已在 lighthouserc.json 显式钉死）；四项（Perf/A11y/BP/SEO）≥ 95
+      #      为 error 级断言。裁决走不降级路径：不设 continue-on-error 过渡轮，
+      #      PR 检查即 main 合并线，断言失败直接阻断合并（与 push main 同一门禁）。
+      #    - 报告：结果上传为 workflow artifact + 临时公开存储（action 输出含逐页报告链接），
+      #      仅 contents:read 权限即可，不需要 PR comment 写权限。
+      - name: Start preview server（Lighthouse 靶站）
+        run: |
+          nohup pnpm preview --host 127.0.0.1 --port 4321 > preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sfo /dev/null http://127.0.0.1:4321/website/ && exit 0
+            sleep 1
+          done
+          echo "::error::preview server 30s 内未就绪"
+          cat preview.log
+          exit 1
+
+      - name: Lighthouse gate（treosh/lighthouse-ci-action，四项 ≥95 阻断）
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true

@@ -1,0 +1,147 @@
+---
+// HomeHero —— 区块 1：定位首屏（PRD HOME-01；spec §2 / §4.1）。
+// 文案 3 秒可读完，永不做入场延迟（LCP 红线）；文字取 master-plan §3 区块 1。
+// Start here 入口按 PRD HOME-10 门控隐藏（审计 F-1 整改）：world 未 Phase B 正式
+// 上线（LAB-16）前按钮不出现（无 Coming soon）；/world-spike/ 是 noindex 隐藏路由，
+// 依 PRD §7.4「不进导航」不得从首页链接。Phase B /world/ 转正时在 stage-col 内
+// 恢复「Start here」<a>（纯 <a>+CSS 零字节，G-D 导航豁免口径不变）。
+import CtaButton from '../ui/CtaButton.astro';
+import HeroCarStage from './HeroCarStage.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+const domains = ['汽车', '座舱', '多语种', '大模型', 'AI 工作流', '项目交付'];
+---
+
+<section class="hero" aria-label="定位首屏">
+  <div class="container grid">
+    <div class="copy">
+      <p class="eyebrow kicker">
+        <span class="tick" aria-hidden="true"></span>
+        Solutions · Automotive AI
+      </p>
+      <h1>王磊｜汽车智能座舱与 <span class="nowrap">AI 解决方案</span>经理</h1>
+      <p class="sub">把复杂技术转化为可决策、可交付、可复用的解决方案</p>
+      <p class="expand">
+        聚焦
+        {
+          domains.map((d, i) => (
+            <>
+              <span class="domain">{d}</span>
+              {i < domains.length - 1 && (
+                <span class="x" aria-hidden="true">
+                  ×
+                </span>
+              )}
+            </>
+          ))
+        }
+        的交叉地带
+      </p>
+      <div class="ctas">
+        <CtaButton href={`${base}/work/`}>查看旗舰案例 →</CtaButton>
+        <CtaButton href={`${base}/contact/`} variant="secondary">
+          联系合作
+        </CtaButton>
+      </div>
+    </div>
+
+    <div class="stage-col">
+      <HeroCarStage />
+      {/* Start here 入口：HOME-10 门控中（见文件头注），Phase B /world/ 上线随 LAB-16 恢复 */}
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: clamp(3rem, 8vh, 5.5rem) clamp(3.5rem, 9vh, 6.5rem);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-7) var(--grid-gutter);
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .grid {
+      grid-template-columns: repeat(12, 1fr);
+    }
+
+    .copy {
+      grid-column: 1 / span 6;
+    }
+
+    .stage-col {
+      grid-column: 7 / span 6;
+    }
+  }
+
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--ink-3);
+  }
+
+  .tick {
+    inline-size: 1.25rem;
+    block-size: 2px;
+    background: var(--accent-strong);
+    flex-shrink: 0;
+  }
+
+  h1 {
+    margin-block-start: var(--space-5);
+    font-size: var(--text-display);
+    font-weight: 700;
+    line-height: var(--leading-display);
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  .nowrap {
+    white-space: nowrap;
+  }
+
+  .sub {
+    margin-block-start: var(--space-5);
+    max-inline-size: 32ch;
+    font-size: clamp(1.125rem, 1rem + 0.6vw, 1.3125rem);
+    line-height: 1.6;
+    color: var(--ink-2);
+    text-wrap: balance;
+  }
+
+  .expand {
+    margin-block-start: var(--space-4);
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    color: var(--ink-3);
+  }
+
+  .domain {
+    color: var(--ink-2);
+    font-weight: 500;
+  }
+
+  .x {
+    margin-inline: 0.2em;
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    color: var(--accent);
+  }
+
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-block-start: var(--space-6);
+  }
+
+  .stage-col {
+    display: grid;
+    gap: var(--space-3);
+  }
+</style>

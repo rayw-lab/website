@@ -1,0 +1,245 @@
+---
+// /work/ —— 案例索引（master-plan §2.3；PRD WORK-01）。
+// 三旗舰置顶（A/B/C 固定序），其余按发布日期倒序；卡片 = 问题→动作→结果
+// 三行结构 + 证据等级徽章（master-plan §3 区块 3 同款语义，AP-8 单源自 frontmatter）。
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EvidenceBadge from '../../components/ui/EvidenceBadge.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+const PILLAR_LABELS = {
+  'cockpit-i18n': '智能座舱多语种',
+  'edge-cloud-llm': '端云大模型',
+  'ai-workflow': 'AI 原生工作流',
+} as const;
+
+const all = (await getCollection('work')).filter((e) => !e.data.draft);
+const flagshipOrder = { A: 0, B: 1, C: 2 } as const;
+const entries = all.sort((a, b) => {
+  const fa = a.data.flagship ? flagshipOrder[a.data.flagship] : 9;
+  const fb = b.data.flagship ? flagshipOrder[b.data.flagship] : 9;
+  if (fa !== fb) return fa - fb;
+  return b.data.publishDate.getTime() - a.data.publishDate.getTime();
+});
+
+const fmtDate = (date: Date) => date.toISOString().slice(0, 10);
+
+const title = 'Work 案例｜王磊 - 汽车智能座舱与 AI 解决方案';
+const description =
+  '能力证明主阵地：多语种智能座舱、端云大模型分层、AI 原生工作流三大旗舰案例——12 模块结构、证据等级标注、脱敏红线自查。';
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="work container">
+    <header class="head">
+      <p class="kicker">
+        <span class="eyebrow">Work</span>
+        <span class="rule" aria-hidden="true"></span>
+      </p>
+      <h1>案例</h1>
+      <p class="lede">
+        每篇案例统一使用 12 模块结构（背景 → 决策 → 结果 →
+        证据），证据等级如实标注（L1 可公开验证 / L2 有形产出 / L3 量化自述 / L4
+        定性自述）；所有素材经保密分级与脱敏自查后发布。
+      </p>
+    </header>
+
+    <ul class="cases">
+      {
+        entries.map((entry, i) => (
+          <li>
+            <article class="card case-card reveal" style={`--reveal-delay: ${i * 6}%`}>
+              <header class="case-head">
+                <p class="badges">
+                  {entry.data.flagship && (
+                    <span class="chip data">旗舰 {entry.data.flagship}</span>
+                  )}
+                  <span class="chip data">{PILLAR_LABELS[entry.data.pillar]}</span>
+                  <EvidenceBadge level={entry.data.evidenceLevel} />
+                </p>
+                <h2>
+                  <a href={`${base}/work/${entry.id}/`}>{entry.data.title}</a>
+                </h2>
+              </header>
+              <dl class="rows">
+                <div class="row">
+                  <dt class="data">问题</dt>
+                  <dd>{entry.data.problem}</dd>
+                </div>
+                <div class="row">
+                  <dt class="data">动作</dt>
+                  <dd>{entry.data.action}</dd>
+                </div>
+                <div class="row">
+                  <dt class="data">结果</dt>
+                  <dd>{entry.data.result}</dd>
+                </div>
+              </dl>
+              <footer class="case-foot">
+                <span class="meta data">
+                  {entry.data.modules.length === 12
+                    ? '12 模块完整版'
+                    : `精简版 · 模块 ${entry.data.modules
+                        .map((n) => String(n).padStart(2, '0'))
+                        .join('/')}`}
+                  {' · '}
+                  {fmtDate(entry.data.publishDate)}
+                </span>
+                <span class="links">
+                  <a class="more" href={`${base}/work/${entry.id}/`}>
+                    阅读案例 <span aria-hidden="true">→</span>
+                  </a>
+                  {entry.data.demo && (
+                    <a class="more demo" href={`${base}/lab/${entry.data.demo}/`}>
+                      配套 Demo <span aria-hidden="true">→</span>
+                    </a>
+                  )}
+                </span>
+              </footer>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .work {
+    padding-block: var(--space-7) var(--space-9);
+  }
+
+  .head {
+    max-inline-size: var(--measure);
+    margin-block-end: var(--space-7);
+  }
+
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .kicker .eyebrow {
+    color: var(--accent);
+  }
+
+  .rule {
+    flex: 1;
+    block-size: 1px;
+    background: var(--line);
+  }
+
+  h1 {
+    margin-block: var(--space-4);
+    font-size: var(--text-h2);
+    font-weight: 600;
+    line-height: var(--leading-h2);
+    letter-spacing: -0.01em;
+  }
+
+  .lede {
+    color: var(--ink-2);
+  }
+
+  .cases {
+    display: grid;
+    gap: var(--grid-gutter);
+  }
+
+  .case-card {
+    padding: var(--space-6);
+  }
+
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    margin-block-end: var(--space-3);
+  }
+
+  .chip {
+    display: inline-flex;
+    padding: 0.125rem var(--space-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-chip);
+    color: var(--ink-2);
+    background: var(--bg);
+    white-space: nowrap;
+  }
+
+  h2 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  h2 a {
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  h2 a:hover {
+    color: var(--accent);
+  }
+
+  .rows {
+    display: grid;
+    gap: var(--space-3);
+    margin-block: var(--space-5);
+    max-inline-size: var(--measure);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--space-3);
+  }
+
+  .row dt {
+    color: var(--ink-3);
+    line-height: 1.9;
+  }
+
+  .row dd {
+    font-size: var(--text-small);
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  .case-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-5);
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--line);
+  }
+
+  .meta {
+    color: var(--ink-3);
+  }
+
+  .links {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+  }
+
+  .more {
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--ink-2);
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  .more:hover {
+    color: var(--accent);
+  }
+
+  .demo {
+    color: var(--accent);
+  }
+</style>

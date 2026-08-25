@@ -12,14 +12,22 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test:e2e": "astro build && playwright test",
+    "test:e2e:report": "playwright show-report",
+    "human-gate:preview": "node scripts/human-gate-preview.mjs",
+    "human-gate:verify": "node scripts/verify-human-gate.mjs"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
     "@astrojs/mdx": "^7.0.7",
+    "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
+    "@playwright/test": "^1.62.1",
     "@types/three": "^0.185.4",
     "astro": "^7.2.4",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite-plugin-wasm": "^3.6.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -27,6 +35,7 @@
     ]
   },
   "dependencies": {
+    "@dimforge/rapier3d": "^0.20.0",
     "three": "^0.185.1"
   }
 }

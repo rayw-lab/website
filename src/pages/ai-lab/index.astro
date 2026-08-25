@@ -1,0 +1,238 @@
+---
+// /ai-lab/ —— AI Lab 索引（master-plan §2.3 / §5.2）。
+// 核心原则：按工作阶段分组展示（需求规划 / 设计开发 / 测试交付 / 运营复盘），
+// 不做工具大全；每篇显示场景 + 前后对比指标 + 证据等级。
+// 可运行的重型交互 Demo 在 /lab/ 子系统（独立路由），与本栏实验记录互链不混排。
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EvidenceBadge from '../../components/ui/EvidenceBadge.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+const STAGES = [
+  {
+    id: 'requirements-planning',
+    label: '需求与规划',
+    desc: '需求澄清、竞品调研、PRD 起草中的 AI 用法',
+  },
+  {
+    id: 'design-development',
+    label: '设计与开发',
+    desc: '方案设计、代码评审、文档生成中的 AI 用法',
+  },
+  {
+    id: 'test-delivery',
+    label: '测试与交付',
+    desc: '用例生成、多语种验证、发布材料中的 AI 用法',
+  },
+  {
+    id: 'ops-retrospective',
+    label: '运营与复盘',
+    desc: '数据分析、会议纪要、复盘报告中的 AI 用法',
+  },
+] as const;
+
+const all = (await getCollection('ai-lab'))
+  .filter((e) => !e.data.draft)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+
+const groups = STAGES.map((stage) => ({
+  ...stage,
+  entries: all.filter((e) => e.data.stage === stage.id),
+}));
+
+const fmtDate = (date: Date) => date.toISOString().slice(0, 10);
+
+const title = 'AI Lab 实验记录｜王磊 - 汽车智能座舱与 AI 解决方案';
+const description =
+  'AI 工作流实验记录：按需求规划、设计开发、测试交付、运营复盘四个工作阶段分类——每篇含前后对比、可复用模板与失败记录，不做工具大全。';
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="ai-lab container">
+    <header class="head">
+      <p class="kicker">
+        <span class="eyebrow">AI Lab</span>
+        <span class="rule" aria-hidden="true"></span>
+      </p>
+      <h1>AI 工作流实验记录</h1>
+      <p class="lede">
+        一律按<strong>工作阶段</strong>分类（不按工具分类）：读者带着阶段性问题来，按阶段找答案。
+        每篇必含：场景 → 原流程痛点 → AI 介入方式 → 前后对比 → 可复用模板 →
+        局限与失败记录。可上手的交互 Demo 见
+        <a href={`${base}/lab/`}>Lab 实验室</a>。
+      </p>
+    </header>
+
+    {
+      groups.map((group) => (
+        <section class="group" aria-labelledby={`stage-${group.id}`}>
+          <header class="group-head">
+            <h2 id={`stage-${group.id}`}>{group.label}</h2>
+            <p class="group-desc">{group.desc}</p>
+          </header>
+          {group.entries.length > 0 ? (
+            <ul class="list">
+              {group.entries.map((entry) => (
+                <li>
+                  <article class="item card reveal">
+                    <p class="item-meta">
+                      <span class="chip data">{group.label}</span>
+                      <EvidenceBadge level={entry.data.evidenceLevel} />
+                      <time
+                        class="date data"
+                        datetime={fmtDate(entry.data.publishDate)}
+                      >
+                        {fmtDate(entry.data.publishDate)}
+                      </time>
+                    </p>
+                    <h3>
+                      <a href={`${base}/ai-lab/${entry.id}/`}>{entry.data.title}</a>
+                    </h3>
+                    <p class="scenario">{entry.data.scenario}</p>
+                    <p class="metric data">{entry.data.comparison.metric}</p>
+                  </article>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="empty">本阶段实验记录整理中——按每 2 周 1 篇的节奏补齐。</p>
+          )}
+        </section>
+      ))
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .ai-lab {
+    padding-block: var(--space-7) var(--space-9);
+  }
+
+  .head {
+    max-inline-size: var(--measure);
+    margin-block-end: var(--space-7);
+  }
+
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .kicker .eyebrow {
+    color: var(--accent);
+  }
+
+  .rule {
+    flex: 1;
+    block-size: 1px;
+    background: var(--line);
+  }
+
+  h1 {
+    margin-block: var(--space-4);
+    font-size: var(--text-h2);
+    font-weight: 600;
+    line-height: var(--leading-h2);
+    letter-spacing: -0.01em;
+  }
+
+  .lede {
+    color: var(--ink-2);
+  }
+
+  .lede a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .group {
+    margin-block-end: var(--space-8);
+  }
+
+  .group-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding-block-end: var(--space-3);
+    border-block-end: 1px solid var(--line);
+    margin-block-end: var(--space-5);
+  }
+
+  h2 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  .group-desc {
+    font-size: var(--text-small);
+    color: var(--ink-3);
+  }
+
+  .list {
+    display: grid;
+    gap: var(--grid-gutter);
+  }
+
+  .item {
+    padding: var(--space-5) var(--space-6);
+    max-inline-size: var(--measure);
+  }
+
+  .item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    margin-block-end: var(--space-3);
+  }
+
+  .chip {
+    display: inline-flex;
+    padding: 0.125rem var(--space-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-chip);
+    color: var(--ink-2);
+    background: var(--bg);
+    white-space: nowrap;
+  }
+
+  .date {
+    color: var(--ink-3);
+  }
+
+  h3 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-h3);
+  }
+
+  h3 a {
+    transition: color var(--duration-hover) var(--ease-out);
+  }
+
+  h3 a:hover {
+    color: var(--accent);
+  }
+
+  .scenario {
+    margin-block-start: var(--space-2);
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    color: var(--ink-2);
+  }
+
+  .metric {
+    margin-block-start: var(--space-3);
+    color: var(--accent);
+  }
+
+  .empty {
+    font-size: var(--text-small);
+    color: var(--ink-3);
+  }
+</style>

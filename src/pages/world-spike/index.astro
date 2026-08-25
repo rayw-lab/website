@@ -1,0 +1,513 @@
+---
+// /world-spike/ —— Phase A Spike 隐藏路由（roadmap §7 · noindex，不入导航/站点地图）。
+// 独立最小壳（不挂 BaseLayout/站点导航）：Spike 壳 = poster + 进入按钮 + noscript
+// 说明（roadmap §7.1 Step 2），不引入全站页眉页脚（避免对未建成路由的链接依赖）。
+// 静态壳纪律：点击「进入试验场」前零 world 字节（three/模型/HDRI 全部在点击后才拉取）；
+// 壳本身只有本页 HTML/CSS + ~21KB poster 复用图 + <1KB 引导脚本。
+//
+// ★ 集成说明（engine + vehicle 两分支合流，本页为唯一壳）：
+//   · 默认挂载 = 可驾驶 Spike（src/lab/modules/world/，CarConcept + 运动学控制器，
+//     Phase A 决策记录 docs/research/world-spike-log.md 的验证对象）；
+//   · ?impl=engine = 引擎层灰盒（src/lab/world/，folio 架构 Game loop + Rapier 物理，
+//     Player 意图层已备 physicalVehicle 挂点）——两交付物同页可达、互不侵改；
+//   · Phase B 转正 /world/ 时按决策记录 §8：vehicle/carRig/inputs/camera 四模块
+//     插进正式 Game 循环合二为一，本页归档。
+// 深链参数白名单：gl（?gl=1 强制 WebGL 2 复测）透传给 mount；impl 由本页消费选择入口。
+// 性质声明：Spike 产出默认可丢弃，全部价值在验证结论 + 参数记录
+// （docs/research/world-spike-log.md）。
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>world Spike · 车辆驾驶验证（内部）</title>
+    <meta
+      name="description"
+      content="Phase A Spike：灰盒试验场 + CarConcept 可驾驶验证。内部隐藏路由，产出默认可丢弃。"
+    />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <meta name="theme-color" content="#0c0d0f" />
+  </head>
+  <body>
+    <section class="ws">
+    <header class="ws-head">
+      <p class="ws-chip">WORLD · PHASE A SPIKE（内部验证，noindex）</p>
+      <h1>灰盒试验场 —— CarConcept 可驾驶验证</h1>
+      <p class="ws-lede">
+        验证目标：操控手感 / 物理选型（手写运动学 vs Rapier）/ 双后端帧率 / 移动端摇杆。
+        一切美术为灰盒纪律；结论与参数记录见 <code>docs/research/world-spike-log.md</code>。
+        <a href={`${base}/`}>跳过 3D，返回首页 →</a>
+      </p>
+    </header>
+
+    <div class="ws-host" data-ws-host data-state="idle">
+      <div class="ws-stage" data-ws-stage data-lab-stage>
+        <canvas
+          class="ws-canvas"
+          data-ws-canvas
+          data-world-canvas
+          aria-label="灰盒试验场：WASD/方向键驾驶概念车"></canvas>
+
+        <!-- HUD（挂载后可见） -->
+        <div class="ws-hud" aria-hidden="true">
+          <div class="ws-hud-cell">
+            <span class="ws-hud-num" data-ws-speed>0</span>
+            <span class="ws-hud-unit">km/h</span>
+          </div>
+          <div class="ws-hud-cell">
+            <span class="ws-hud-label">FPS 均值 / 1% low</span>
+            <span class="ws-hud-mono" data-ws-fps>—</span>
+          </div>
+          <div class="ws-hud-cell">
+            <span class="ws-hud-label">锥桶</span>
+            <span class="ws-hud-mono"><span data-ws-cones>0</span>/16</span>
+          </div>
+          <span class="ws-backend" data-ws-backend>—</span>
+          <button class="ws-respawn" type="button" data-ws-respawn>复位 (R)</button>
+        </div>
+        <p class="ws-hint" data-ws-hint aria-hidden="true">
+          W/A/S/D 或方向键驾驶 · Shift 加速 · 空格刹车 · R 复位 · 触屏按住拖动为摇杆
+        </p>
+        <div class="ws-joystick" data-ws-joystick aria-hidden="true"></div>
+
+        <!-- 静态壳覆盖层（poster + 显式进入；点击前零 world 字节） -->
+        <div class="ws-cover" data-ws-cover>
+          <img
+            class="ws-poster"
+            src={`${base}/posters/car-configurator-poster.webp`}
+            alt=""
+            loading="eager"
+            decoding="async"
+          />
+          <div class="ws-cover-scrim" aria-hidden="true"></div>
+          <div class="ws-cover-inner">
+            <h2>进入灰盒试验场</h2>
+            <p data-ws-cover-note>加载约 4 MB（CarConcept 3.5 MB 复用配置器资产 + HDRI）· WebGPU 优先，WebGL 2 自动回退</p>
+            <button class="ws-start" type="button" data-ws-start>进入试验场（实验性）</button>
+            <div class="ws-progress" role="progressbar" aria-label="资产加载进度">
+              <i data-ws-progress-bar></i>
+            </div>
+            <p class="ws-error" data-ws-error hidden>
+              3D 引擎初始化失败：当前浏览器可能不支持 WebGPU / WebGL 2。可更换浏览器后重试。
+            </p>
+            <noscript><p class="ws-error">本页驾驶验证需要启用 JavaScript；下方说明仍可正常阅读。</p></noscript>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ws-notes">
+      <h2>操作与验证口径</h2>
+      <ul>
+        <li><strong>驾驶</strong>：W/↑ 前进 · S/↓ 倒车（行驶中先刹停再倒车）· A/D 或 ←/→ 转向 · Shift boost · 空格/B 刹车 · R 复位。</li>
+        <li><strong>触屏</strong>：画面内按住拖动生成虚拟摇杆（y 轴油门 / x 轴转向）；窄屏触屏不自动加载，需显式点击进入。</li>
+        <li><strong>场地</strong>：环形试车道（半径 55 m）+ 慢弯桩 8 桶 + 出弯门 6 桶 + 内场坡道（贴地/腾空验证）+ 轮胎墙边界。</li>
+        <li><strong>帧率读数</strong>：HUD 实时显示均值与 1% low；控制台 <code>__worldSpike.fps()</code> 可取数。双后端验证加 <code>?gl=1</code> 强制 WebGL 2。</li>
+        <li><strong>引擎层灰盒</strong>：加 <code>?impl=engine</code> 挂载 folio 架构引擎层（完整 Game loop · Ticker.scale=2 · Rapier 物理锥桶 · 零资产），R 重置试验场；<code>#debug</code> 暴露 <code>__worldSpikeGame</code> 句柄。Phase B 按决策记录 §8 与引擎层合体转正。</li>
+        <li><strong>门禁</strong>：Spike 新增资产（public/world/）= 0（全程序化灰盒）≤ 1 MB；CarConcept 3.5 MB 复用显式豁免（审计 P0-2）。</li>
+      </ul>
+      <p class="ws-credit">
+        车模：<a href="https://github.com/KhronosGroup/glTF-Sample-Assets" rel="license noopener">Khronos CarConcept</a>
+        （CC BY 4.0，Khronos Group + DGG）· 环境贴图：Poly Haven Studio Small 08（CC0）
+      </p>
+    </div>
+    </section>
+  </body>
+</html>
+
+<script>
+  // 显式启动引导（≤1KB）：点击后才动态 import 世界分包（mount() 契约，SRD §9.2）。
+  // 不走 lab facade 的自动挂载（视口+idle 即加载）——world 规格要求「确认进入后才加载」。
+  // 入口二选一（集成说明见页首注释）：默认 = 可驾驶 Spike；?impl=engine = 引擎层灰盒。
+  import type { LabInstance } from '../../lab/contracts';
+
+  const host = document.querySelector<HTMLElement>('[data-ws-host]');
+  if (host) {
+    const startBtn = host.querySelector<HTMLButtonElement>('[data-ws-start]');
+    const progressBar = host.querySelector<HTMLElement>('[data-ws-progress-bar]');
+    const errorEl = host.querySelector<HTMLElement>('[data-ws-error]');
+    const backendEl = host.querySelector<HTMLElement>('[data-ws-backend]');
+    const respawnBtn = host.querySelector<HTMLButtonElement>('[data-ws-respawn]');
+    const coverNote = host.querySelector<HTMLElement>('[data-ws-cover-note]');
+    const hintEl = host.querySelector<HTMLElement>('[data-ws-hint]');
+    let instance: LabInstance | null = null;
+    let starting = false;
+
+    const incoming = new URLSearchParams(location.search);
+    const useEngineImpl = incoming.get('impl') === 'engine';
+    if (useEngineImpl) {
+      // 引擎层灰盒腿：HUD 车辆读数无源（无车），壳文案同步切换
+      host.dataset.impl = 'engine';
+      if (coverNote) {
+        coverNote.textContent =
+          '引擎层灰盒（?impl=engine）：约 0.5 MB 引擎分包 + 1.5 MB Rapier 物理 wasm · 零美术资产 · WebGPU 优先，WebGL 2 自动回退';
+      }
+      if (hintEl) {
+        hintEl.textContent =
+          'R 重置试验场 · 引擎层灰盒：完整 Game loop + Rapier 锥桶（physicalVehicle 挂点待 Phase B 上车）';
+      }
+    }
+
+    const setState = (s: string) => {
+      host.dataset.state = s;
+    };
+
+    startBtn?.addEventListener('click', async () => {
+      if (starting) return;
+      starting = true;
+      setState('loading');
+      if (progressBar) progressBar.style.width = '4%';
+      try {
+        // 两入口都是懒分包：点击前零 world 字节（G2）
+        const { default: mount } = useEngineImpl
+          ? await import('../../lab/world/index')
+          : await import('../../lab/modules/world/index');
+        const params = new URLSearchParams();
+        const gl = incoming.get('gl');
+        if (gl !== null) params.set('gl', gl);
+        instance = await mount({
+          host,
+          mode: 'full',
+          params,
+          onProgress: (loaded, total) => {
+            if (progressBar) {
+              progressBar.style.width = `${Math.round(4 + (loaded / Math.max(total, 1)) * 96)}%`;
+            }
+          },
+          onBackend: (backend) => {
+            if (backendEl) backendEl.textContent = backend === 'webgpu' ? 'WebGPU' : 'WebGL 2';
+          },
+        });
+        setState('ready');
+      } catch (err) {
+        console.error('[world-spike] mount 失败：', err);
+        setState('error');
+        if (errorEl) errorEl.hidden = false;
+      }
+    });
+
+    // 复位按钮（触屏）：直接复用键盘 R 的动作语义（两入口的 R 语义一致：
+    // spike = respawn + 锥桶复位；engine = Player respawn + Objects.resetAll）
+    respawnBtn?.addEventListener('click', () => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyR', key: 'r' }));
+    });
+
+    // 生命周期：离页释放 GPU；标签页隐藏暂停 RAF（§9.2 契约）
+    document.addEventListener('visibilitychange', () => {
+      if (!instance) return;
+      if (document.visibilityState === 'hidden') instance.pause();
+      else instance.resume();
+    });
+    window.addEventListener('pagehide', (e) => {
+      if (!e.persisted && instance) {
+        instance.dispose();
+        instance = null;
+      }
+    });
+  }
+</script>
+
+<style>
+  /* 独立最小壳样式（不依赖全站 tokens；系统字体栈，Spike 灰盒纪律） */
+  html {
+    color-scheme: dark;
+  }
+  body {
+    margin: 0;
+    background: #0c0d0f;
+    color: #e6e8ec;
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      'PingFang SC',
+      'Noto Sans CJK SC',
+      sans-serif;
+    line-height: 1.6;
+  }
+  a {
+    color: #ffb35c;
+  }
+  code {
+    font-family: ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace;
+    font-size: 0.92em;
+    background: rgba(255, 255, 255, 0.07);
+    padding: 0.1em 0.4em;
+    border-radius: 5px;
+  }
+  .ws {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 4rem;
+  }
+  .ws-head h1 {
+    margin: 0.4rem 0 0.6rem;
+    font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+  }
+  .ws-chip {
+    display: inline-block;
+    margin: 0;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    padding: 0.32em 1em;
+    border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+    border-radius: 999px;
+    opacity: 0.85;
+  }
+  .ws-lede {
+    max-width: 62ch;
+    line-height: 1.7;
+    opacity: 0.88;
+  }
+
+  /* ---------- 舞台 ---------- */
+  .ws-host {
+    margin-top: 1.6rem;
+  }
+  .ws-stage {
+    position: relative;
+    height: clamp(420px, 62vh, 640px);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #101216;
+    touch-action: none; /* 摇杆手势独占 */
+  }
+  .ws-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* ---------- HUD ---------- */
+  .ws-hud {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: flex-end;
+    gap: 1.1rem;
+    padding: 0.85rem 1.1rem;
+    color: #eef0f3;
+    background: linear-gradient(180deg, transparent, rgba(10, 11, 14, 0.65));
+    opacity: 0;
+    transition: opacity 400ms ease;
+    pointer-events: none;
+  }
+  .ws-host[data-state='ready'] .ws-hud {
+    opacity: 1;
+  }
+  /* 引擎层灰盒腿（?impl=engine）：车辆读数（速度/FPS/锥桶）无源，整组隐藏 */
+  .ws-host[data-impl='engine'] .ws-hud-cell {
+    display: none;
+  }
+  .ws-hud-cell {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+  .ws-hud-num {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 1.9rem;
+    font-weight: 650;
+  }
+  .ws-hud-unit,
+  .ws-hud-label {
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .ws-hud-mono {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 1.05rem;
+  }
+  .ws-backend {
+    margin-left: auto;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    padding: 0.3em 0.9em;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+  }
+  .ws-respawn {
+    pointer-events: auto;
+    font: inherit;
+    font-size: 0.78rem;
+    color: #eef0f3;
+    background: rgba(22, 24, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    padding: 0.45em 1em;
+    cursor: pointer;
+  }
+  .ws-hint {
+    position: absolute;
+    top: 0.9rem;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    max-width: 92%;
+    font-size: 0.78rem;
+    color: #dfe2e7;
+    background: rgba(12, 13, 17, 0.62);
+    padding: 0.4em 1.1em;
+    border-radius: 999px;
+    opacity: 0;
+    transition: opacity 400ms ease;
+    pointer-events: none;
+    text-align: center;
+  }
+  .ws-host[data-state='ready'] .ws-hint {
+    opacity: 1;
+  }
+  .ws-host[data-state='ready'] .ws-hint[data-dismissed='true'] {
+    opacity: 0;
+  }
+  .ws-joystick {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .ws-joystick :global(.ws-nipple-base) {
+    position: absolute;
+    width: 104px;
+    height: 104px;
+    margin: -52px 0 0 -52px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-radius: 50%;
+    background: rgba(20, 22, 28, 0.3);
+  }
+  .ws-joystick :global(.ws-nipple-knob) {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(240, 242, 245, 0.85);
+    transform: translate(-50%, -50%);
+  }
+
+  /* ---------- 静态壳覆盖层 ---------- */
+  .ws-cover {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    z-index: 2;
+    transition: opacity 400ms ease;
+  }
+  .ws-host[data-state='ready'] .ws-cover {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .ws-poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .ws-cover-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 11, 14, 0.3), rgba(10, 11, 14, 0.82));
+  }
+  .ws-cover-inner {
+    position: relative;
+    max-width: 36rem;
+    padding: 1rem;
+    color: #f2f3f5;
+  }
+  .ws-cover-inner h2 {
+    margin: 0 0 0.3rem;
+    font-size: clamp(1.3rem, 2.6vw, 1.7rem);
+  }
+  .ws-cover-inner p {
+    margin: 0 0 1.2rem;
+    font-size: 0.85rem;
+    color: #b9bec7;
+  }
+  .ws-start {
+    font: inherit;
+    color: #f2f3f5;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(22, 24, 30, 0.85);
+    border-radius: 10px;
+    padding: 0.66em 1.7em;
+    font-weight: 550;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .ws-start:hover {
+    border-color: #ffb35c;
+    background: rgba(30, 34, 44, 0.92);
+  }
+  .ws-host[data-state='loading'] .ws-start,
+  .ws-host[data-state='error'] .ws-start {
+    display: none;
+  }
+  .ws-progress {
+    display: none;
+    width: min(280px, 62vw);
+    height: 3px;
+    margin: 1.1rem auto 0;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.16);
+    overflow: hidden;
+  }
+  .ws-host[data-state='loading'] .ws-progress {
+    display: block;
+  }
+  .ws-progress i {
+    display: block;
+    width: 0%;
+    height: 100%;
+    background: #ffb35c;
+    transition: width 0.25s ease;
+  }
+  .ws-error {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #f2b8b5;
+  }
+
+  /* ---------- 说明区 ---------- */
+  .ws-notes {
+    margin-top: 2.2rem;
+    line-height: 1.75;
+  }
+  .ws-notes h2 {
+    font-size: 1.1rem;
+  }
+  .ws-notes ul {
+    padding-left: 1.2em;
+  }
+  .ws-notes li {
+    margin: 0.35em 0;
+  }
+  .ws-credit {
+    margin-top: 1.4rem;
+    font-size: 0.8rem;
+    opacity: 0.75;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ws-cover,
+    .ws-hud,
+    .ws-hint,
+    .ws-progress i {
+      transition-duration: 0.01ms;
+    }
+  }
+</style>

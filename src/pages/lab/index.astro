@@ -1,0 +1,233 @@
+---
+// Lab 索引页（SRD §12.2 第 5 步：索引卡自动从 manifest 生成，新模块接入零改动）。
+// 零 JS 静态页；卡片海报与详情页舞台共享 view-transition-name（§9.3 morph 注册表）。
+import { labModules } from '../../lab/manifest';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const title = 'Lab 实验室｜王磊';
+const description =
+  '可交互工程演示索引：多语言 TTS 座舱可视化、WebGPU 3D 车辆配置器——manifest 注册、统一 facade 懒加载、四级降级链。';
+const statusLabel = { live: 'LIVE', wip: 'WIP', archived: 'ARCHIVED' } as const;
+const visible = labModules.filter((m) => m.status !== 'archived');
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="dark" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="page">
+      <header class="head">
+        <nav class="crumb mono" aria-label="面包屑">
+          <a href={`${base}/`}>首页</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Lab</span>
+        </nav>
+        <h1>Lab 实验室</h1>
+        <p class="lede">
+          可交互的工程演示：每个模块经 manifest 注册、统一 facade 懒加载（poster → 动态
+          import → 400ms 交叉淡入），并声明预算分级与降级链。页面静态可读，重资产按需拉取。
+        </p>
+      </header>
+
+      <main>
+        <ul class="cards">
+          {visible.map((m) => (
+            <li>
+              <a class="card" href={`${base}/lab/${m.slug}`}>
+                <span
+                  class="card-visual"
+                  style={`view-transition-name: ${m.viewTransitionName};`}
+                >
+                  <img src={`${base}/${m.poster}`} alt="" loading="lazy" decoding="async" />
+                </span>
+                <span class="card-body">
+                  <span class="card-code mono">
+                    LAB / {m.code} · {m.kind.toUpperCase()}
+                    <em class:list={['status', `status-${m.status}`]}>{statusLabel[m.status]}</em>
+                  </span>
+                  <strong class="card-title">{m.title}</strong>
+                  <span class="card-desc">{m.description}</span>
+                  <span class="card-chips mono" aria-label="技术要点">
+                    {m.techChips.map((chip) => <i>{chip}</i>)}
+                  </span>
+                  <span class="card-budget mono">
+                    预算 {m.budgetClass} · 懒加载 JS {m.budget.lazyJsKbGzip}KB gzip · 资产 {m.budget.assetsMb}MB
+                  </span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </main>
+
+      <footer class="foot">
+        <p><a href={`${base}/`}>← 返回首页</a></p>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0b0c0f;
+    --panel: #101216;
+    --line: #23252c;
+    --line-strong: #34373f;
+    --text: #e8e9eb;
+    --muted: #9aa0aa;
+    --accent: #9ecbff;
+    --mono: ui-monospace, 'SF Mono', 'Cascadia Code', Consolas, monospace;
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, 'Source Han Sans SC', 'Noto Sans SC', system-ui, sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono {
+    font-family: var(--mono);
+  }
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.2rem 1.25rem 3rem;
+  }
+  .crumb {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    gap: 0.6em;
+  }
+  .crumb a {
+    color: var(--muted);
+  }
+  .crumb a:hover {
+    color: var(--accent);
+  }
+  .head h1 {
+    margin: 0.7rem 0 0.4rem;
+    font-size: clamp(1.6rem, 3.4vw, 2.1rem);
+    font-weight: 650;
+  }
+  .lede {
+    margin: 0 0 2rem;
+    max-width: 62ch;
+    color: var(--muted);
+  }
+
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(24rem, 100%), 1fr));
+    gap: 1rem;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--panel);
+    color: inherit;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .card:hover {
+    border-color: var(--line-strong);
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+  .card-visual {
+    display: block;
+    aspect-ratio: 16 / 8;
+    overflow: hidden;
+    background: radial-gradient(120% 95% at 50% 18%, #1a1d24 0%, #0e0f13 72%);
+  }
+  .card-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1rem 1.15rem 1.15rem;
+  }
+  .card-code {
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+  }
+  .status {
+    font-style: normal;
+    margin-left: 0.8em;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 0.08em 0.7em;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+  }
+  .status-live {
+    color: #59c99a;
+    border-color: #59c99a66;
+  }
+  .card-title {
+    font-size: 1.08rem;
+    font-weight: 620;
+    line-height: 1.4;
+  }
+  .card-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .card-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.66rem;
+  }
+  .card-chips i {
+    font-style: normal;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 2px 8px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .card-budget {
+    margin-top: 0.2rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    opacity: 0.85;
+  }
+  .foot {
+    margin-top: 3rem;
+    border-top: 1px solid var(--line);
+    padding-top: 1.4rem;
+    font-size: 0.88rem;
+  }
+</style>
