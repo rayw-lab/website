@@ -109,7 +109,7 @@ const buildings = cityMap.buildings.map((b) => ({
           <button class="hud-respawn" type="button" data-world-respawn>回到路口 (R)</button>
         </div>
         <p class="hint" data-ws-hint aria-hidden="true">
-          W/A/S/D 或方向键驾驶 · Shift 加速 · Space/B 刹车 · R 回到路口 · 靠近大楼按 E 进站
+          W/A/S/D 或方向键驾驶 · Shift 加速 · Space/B 刹车 · R 回到路口 · 靠近大楼按 E 进站 · Esc 菜单
         </p>
 
         <!-- 静态壳覆盖层：poster（LCP）+ 定位语 + 三支柱 + 楼宇快览 + 显式进入（挂载前零 world 字节） -->
@@ -176,6 +176,22 @@ const buildings = cityMap.buildings.map((b) => ({
         </div>
       </div>
     </div>
+
+    <!-- ESC 菜单（SRD §12.7.8 出口④ / PRD CITY-09②，A4 硬条件 M11）：Escape 开合的
+         最小 DOM 出口——原生 <dialog>（showModal = 焦点陷阱 + 背景 inert + Esc 原生可关），
+         零框架零动画库；挂载前后均可用，链接为真实 URL（内容永不进 3D） -->
+    <dialog class="esc-menu" data-world-esc-menu aria-label="ESC 菜单：快速出口">
+      <p class="esc-title mono">ESC 菜单 · 快速出口</p>
+      <nav class="esc-links" aria-label="快速出口">
+        <a data-world-esc-work href={`${base}/work/`} autofocus>招聘方速览 → Work 案例索引</a>
+        <a href={`${base}/home/`}>内容首页 → 纯 HTML 全站速览</a>
+      </nav>
+      <p class="esc-note">
+        这座科技城是全站导航的 3D 形态：楼即产品线，靠近大楼按 E 进站；全部内容均有真实
+        URL，不依赖 3D。再按 Esc 或点关闭可回到城市。
+      </p>
+      <button class="esc-close" type="button" data-world-esc-close>关闭（Esc）</button>
+    </dialog>
   </body>
 </html>
 
@@ -307,6 +323,23 @@ const buildings = cityMap.buildings.map((b) => ({
         instance = null;
       }
     });
+  }
+
+  // ESC 菜单（SRD §12.7.8 出口④ / PRD CITY-09②，A4 M11）：Escape 开合。
+  // showModal 自带焦点陷阱 + 背景 inert（键盘/读屏可达）；关闭后焦点自动还原
+  // 触发前元素。preventDefault 必须：不吞则同一次按键的原生 close request
+  // （close watcher，keydown cancel + keyup close）会把刚 showModal 的菜单立即关回。
+  const escMenu = document.querySelector<HTMLDialogElement>('[data-world-esc-menu]');
+  if (escMenu) {
+    window.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape' || e.repeat) return;
+      e.preventDefault();
+      if (escMenu.open) escMenu.close();
+      else escMenu.showModal();
+    });
+    escMenu
+      .querySelector('[data-world-esc-close]')
+      ?.addEventListener('click', () => escMenu.close());
   }
 </script>
 
@@ -709,6 +742,60 @@ const buildings = cityMap.buildings.map((b) => ({
     letter-spacing: 0.08em;
     color: #8b95a3;
     white-space: nowrap;
+  }
+
+  /* ---------- ESC 菜单（出口④：最小 DOM <dialog>，挂载前后均可用） ---------- */
+  .esc-menu {
+    margin: auto;
+    width: min(30rem, calc(100vw - 2.4rem));
+    padding: 1.2rem 1.4rem 1.3rem;
+    color: #e8ecf2;
+    background: rgba(8, 12, 19, 0.96);
+    border: 1px solid rgba(73, 197, 182, 0.45);
+    border-radius: 14px;
+    box-shadow: 0 0 30px rgba(73, 197, 182, 0.2);
+  }
+  .esc-menu::backdrop {
+    background: rgba(3, 5, 9, 0.6);
+  }
+  .esc-title {
+    margin: 0 0 0.8rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    color: #9ecbff;
+    text-transform: uppercase;
+  }
+  .esc-links {
+    display: grid;
+    gap: 0.35rem;
+    margin-bottom: 0.9rem;
+  }
+  .esc-links a {
+    padding: 0.5em 0.75em;
+    border: 1px solid rgba(158, 203, 255, 0.28);
+    border-radius: 8px;
+    color: #dbe2ec;
+    font-size: 0.9rem;
+  }
+  .esc-links a:hover,
+  .esc-links a:focus-visible {
+    background: rgba(158, 203, 255, 0.12);
+    text-decoration: none;
+  }
+  .esc-note {
+    margin: 0 0 1rem;
+    font-size: 0.78rem;
+    color: #9aa4b2;
+  }
+  .esc-close {
+    font: inherit;
+    font-size: 0.78rem;
+    color: #eef2f7;
+    background: rgba(16, 22, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    padding: 0.4em 1em;
+    cursor: pointer;
   }
 
   /* ---------- 窄屏（<768px：不自动挂载，纵排速览） ---------- */
