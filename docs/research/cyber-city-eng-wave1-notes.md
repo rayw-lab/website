@@ -418,3 +418,129 @@ reduced-motion：instant swap（零动画窗直落 car_ready）+ 文字状态提
 - **M7**：`Player.setInputs` 保留 E2 键位（Space=刹车 / KeyF=悬挂）并并入 E6 `driving` categories。
 - **M8**：`Reveal` 键位提示文案 =「Space/B 刹车 · F 悬挂跳」。
 - 合并顺序权威：E2 → E4 → E6（见 `cyber-city-wave2-audit.md`）。
+
+---
+
+## CC-E8 — CI 门禁改造（波 3，2026-08-25）
+
+上位条款：SRD §11.2 ④⑤⑥ v2.0 改造 + §12.7.2 预算总表与双口径 Lighthouse；实施方案
+`cyber-city-implementation-plan.md` §4.4 六项门禁清单 + §5.2 预算总表 + §7 CC-E8 行；
+A2 审计 `cyber-city-wave2-audit.md` §6（manifest 先行死卡片纪律）。分支
+`cursor/cc-e8-ci-gates-1d6f`，base = `cursor/cyber-city-hero-design-1d6f`（波 2 合流 tip）。
+
+### 交付物
+
+| 文件 | 改造 |
+|---|---|
+| `scripts/audit-budget.mjs` | ① G-A/B/C 考核对象重定向：探测器 `E7_SWITCHED = dist/home/index.html 存在` ——切换后自动改盯 `dist/home/index.html`，切换前继续考核 `dist/index.html` 并打印明确过渡口径日志；② 新增壳专项 **G-A′**（HTML+CSS ≤35 / 引导 JS ≤15 / poster ≤40 / 合计 ≤90KB gzip + 静态标签零重资产/零 world 字节）；③ G-D 排除表条件化：E7 后根 `index.html` 移出保护表（壳归 G-A′ 接管），E7 前根首页仍全额受保护；④ 新增 **G-G(world) 直测**：`dist/_astro/` 内 world 命名 chunk gzip 合计 ≤900KB + world 资产池（`public/models`+`hdri`+`textures/city`）≤12MB，不依赖 manifest 注册；⑤ 首屏核算逻辑提炼为 `collectFirstView()` 供 G-A/B/C 与 G-A′ 共用（行为对基线零变化） |
+| `scripts/check-links.mjs` | ① 新增检查 5（feature-detect `src/data/cyber-city-buildings.json`）：12 栋在册大楼 `deepLink` 存在性（`deepLinkStatus:'fallback'` 打登记行放行）+ dist 内全部 `?poi={id}` 深链的 id 在册校验；② live 模块路由页规则对 `kind==='world'` 豁免预埋（world 路由 = `/` 而非 `/lab/world/`，SRD §12.7.1）；③ 壳六导航无需专项入口——普通 `<a>` 由既有检查 1 自动覆盖（头注释已写明） |
+| `lighthouserc.json` | 由 `assert.assertions` 单组改为 **assertMatrix 双断言组**：组① `.*/website/home/` 四项 ≥95（E7 前 collect.url 无 /home/ → 空匹配不生效，**已实测 LHCI 空匹配组不报错**）；组② `.*` 四项 ≥95（与基线完全等效）。collect.url 六 URL 未动——本波对现网 CI 行为零变化 |
+| `lighthouserc.e7-draft.json` | **新增** E7 日切 draft（不被 CI 引用，`configPath` 恒指 `lighthouserc.json`）：collect.url 增 `/website/home/`；assertMatrix 三组——`/` 壳 Perf ≥0.80 阻断 + A11y/BP/SEO ≥95 阻断、`/` Perf ≥0.90 warn 目标线、其余 URL（正则 `.*/website/.+` 不罩根）四项 ≥95。激活方式写在文件内 `_cc_e8_notes` |
+| `src/lab/manifest.json` | **本波不动**（A2 §6 过渡纪律选 (b)）：Lab 索引过滤逻辑为 `status !== 'archived'`（`wip` 也渲染卡片）、`contracts.ts` status 枚举无 `hidden`、卡片 href 指向 `/lab/{slug}`——manifest 先行注册必然产出死卡片或语义歪的 `archived`。world 预算考核改由 G-G(world) 直测承载，注册块作为占位补丁见下 |
+| `.github/workflows/ci.yml` | **零改动**（六项落地均不需要：脚本路径、configPath、步骤序全部不变——workflow 影响面为零） |
+
+### 断言硬度表（哪些本波已硬 / 哪些 E7 日切硬）
+
+| 断言 | 本波（E7 前） | E7 日切后 | 切换机制 |
+|---|---|---|---|
+| G-A/B/C 宪法首页预算 | **硬**（考核 `dist/index.html`） | **硬**（考核 `dist/home/index.html`） | `E7_SWITCHED` 探测器自动重定向，零改脚本 |
+| G-A′ 壳体积四分项（35/15/40/90KB） | SOFT（超限 WARN 分类打印） | **硬** | 同上，自动转档 |
+| G-A′ 静态标签零重资产/零 world | **硬** | **硬** | 恒硬（现行首页天然满足，无误伤） |
+| G-D 零 world 字节 | **硬**（根 index.html 仍受保护） | **硬**（根移入排除表，`/home/`+内容页受保护） | 探测器条件排除 |
+| G-G manifest 声明对照 | **硬**（现 2 模块） | **硬**（world 补丁激活后双轨） | 既有逻辑 |
+| G-G(world) chunk 直测 ≤900KB | **硬**（实测 20.9KB） | **硬** | 恒硬，不依赖 manifest |
+| G-G(world) 资产池 ≤12MB | **硬**（实测 5.2MB） | **硬** | 恒硬 |
+| LHCI 全 URL 四项 ≥95 | **硬**（与基线等效） | `/home/` 与内容页维持硬 | assertMatrix 组② |
+| LHCI `/home/` 断言组 | 空匹配不生效（无 URL） | **硬**（collect.url 增补即自动生效） | assertMatrix 组① |
+| LHCI `/` Perf ≥80 阻断 / ≥90 目标 | 未生效（draft 文件） | **硬**（阻断线 80 写死） | E7 以 draft 替换 ci 块 |
+| check-links buildings deepLink | 警告档（过渡不变红） | **硬** | `resolveToFile('/home/')` 探测自动转档 |
+| check-links `?poi=` id 在册 | **硬**（当前空集自然绿） | **硬** | 恒硬 |
+| e2e 交互前零 world 字节冒烟 | skip（CITY-E2E-01 骨架已在，E10 交付） | 解 skip 归 E7 绿灯 PR | 本波不解禁任何 CITY skip，不新增重复用例 |
+
+e2e 冒烟准备说明（§4.4 第 5 项落地口径）：SRD §11.2 ⑥ 要求的「`/` 打开后、自动挂载触发
+前零 `_astro/world*`/`models/`/`hdri/` 请求」已由 `e2e/cyber-city.spec.ts` CITY-E2E-01
+完整承载（其 `WORLD_BYTES_RE` 在三类之外还保护 `textures/city/`，覆盖面超规格），处
+红灯 skip 态、绿灯条件与选择器契约在该文件头部逐条留档——本波核对无缺口，不新增
+重复骨架、不动 e2e 文件域。
+
+### manifest 占位补丁（CC-E7 同 PR 激活，勿提前合入）
+
+```jsonc
+// 追加进 src/lab/manifest.json 数组（字段对照 src/lab/contracts.ts labModuleSchema 全过）：
+{
+  "slug": "world",
+  "code": "RW-01",
+  "title": "智能座舱科技城",
+  "description": "Full Entry 旗舰：全屏赛博科技城 + 座舱 AI 机器人↔CarConcept 变形 + 十字路口 WASD 驾驶，12 栋主题大楼即全站导航。",
+  "status": "live",
+  "kind": "world",
+  "entry": "world/index.ts",
+  "poster": "posters/world-poster.webp",
+  "budgetClass": "world",
+  "budget": { "lazyJsKbGzip": 500, "assetsMb": 12 },
+  "capabilities": { "webgpu": "preferred", "webgl2": "fallback", "audio": false, "pointerFine": true },
+  "deepLinkParams": ["poi", "paint", "gl", "quality", "ritual"],
+  "viewTransitionName": "world-entry",
+  "techChips": ["WebGPU", "Rapier", "TSL", "变形仪式", "12 楼 POI"],
+  "relatedWork": ["llm-capability-layering"],
+  "relatedArticles": []
+}
+```
+
+激活须知（E7 逐条核对）：
+
+1. **死卡片拆弹（A2 §6 的本体）**：`src/pages/lab/index.astro` 过滤为 `status !== 'archived'`
+   且卡片 href 硬拼 `/lab/{slug}`、poster 硬引 `${base}/${m.poster}`——world 注册即渲染指向
+   `/lab/world`（404）的死卡片 + poster 404。激活时**必须同步**给索引页加 `kind !== 'world'`
+   过滤（推荐：world 的入口就是 `/`，索引页可复用 spike 专区卡样式做「进入科技城 →」真实
+   入口），或交付 `/lab/world/` 跳转页。二选一，不允许裸激活。
+2. `deepLinkParams` 白名单与壳页 `PARAM_ALLOWLIST`（M6 织合后含 `ritual`/`quality`）对齐后
+   定稿；`poster` 路径按 E7 实产出物（`posters/world-poster.webp` 为建议名）核对。
+3. `check-links.mjs` 的 `kind==='world'` live 路由豁免**已预埋**（本波交付），激活后
+   check-links 直接绿；`audit-budget.mjs` G-G 将自动进入「声明校验 × 直测」双轨。
+4. `budget.lazyJsKbGzip: 500` = SRD §12.7.2「首屏可玩 JS」上限声明（当前实测 20.9KB，
+   声明按上限写防告警噪音；G-G 直测 900KB 全量硬线独立于该声明）。
+
+### 给 CC-E7 的交接点清单
+
+1. **LHCI 日切**：以 `lighthouserc.e7-draft.json` 的 `ci` 块整体替换 `lighthouserc.json`
+   的 `ci` 块（含 collect.url 增 `/website/home/`），删除 `_cc_e8_notes` 键与 draft 文件本体。
+   `ci.yml` 的 configPath 不用动。
+2. **audit-budget / check-links 零改动跟随**：两脚本全部日切逻辑挂在
+   `dist/home/index.html` 存在性探测器上——`/home/` 产物出现即自动完成 G-A/B/C 重定向、
+   G-A′ 转硬、G-D 排除根 index、deepLink 缺链转阻断。E7 不需要再碰 scripts/。
+3. **G-A′ 是壳的设计红线**：HTML+CSS ≤35 / 引导 JS ≤15 / poster ≤40 / 合计 ≤90KB gzip、
+   world 分包零静态标签（只许引导脚本动态 import）——壳页施工时按此自查，合并前
+   `node scripts/audit-budget.mjs dist/` 必须零 ❌。
+4. **manifest 补丁**：按上方占位补丁 + 激活须知 1–4 执行，与路由切换同 PR。
+5. **e2e**：解 CITY-E2E-01~06 skip、串行 project 编排、SwiftShader 计时系数标定归 E7
+   绿灯 PR（E10 文件头绿灯五条件不变）。
+6. **`?poi=` 深链**：check-links 已对 dist 内全部 `?poi={id}` 做在册校验（阻断级）——
+   壳/POI 落深链时 id 必须与 `cyber-city-buildings.json` 一致；两条 fallback 楼
+   （agent-nexus → /ai-lab/、autodrive-lab → /work/）登记行已在 CI 输出常驻，转正时改
+   `deepLinkStatus: 'live'` 即消。
+
+### 验收命令输出摘要（本分支实测，2026-08-25）
+
+- `pnpm astro check` → **0 errors**（111 files，0 warnings / 57 hints 与基线持平）。
+- `pnpm build` → **18 page(s) built**，绿。
+- `node scripts/audit-budget.mjs dist/` → exit 0，**阻断级门禁全绿、零 WARN**：
+  G-A/B/C（过渡口径考核 `dist/index.html`）33.8KB / 200KB；G-A′ SOFT 档四分项全过
+  （13.0/0.0/20.6/33.8KB）+ 零重资产零 world 命中 0；G-D 受保护 14 页命中 0；
+  G-E 8.7MB/40MB；G-F 命中 0；G-G 两模块声明+流式豁免全过；
+  **G-G(world) 直测：world chunk ×2 合计 20.9KB/900KB ✅ + 资产池 5.2MB/12MB ✅**。
+- `node scripts/check-links.mjs dist/` → exit 0：310 条内部引用全有效；科技城深链
+  核对 12 栋 deepLink × 0 条 ?poi=（E7 未切换，缺链降为警告档）；fallback 登记 2 条。
+- **LHCI assertMatrix 行为三连验证**（本地 `@lhci/cli@0.15.x` + Chrome 151 实测）：
+  ① 新 assertMatrix 语法 healthcheck/assert 全过；② `/website/home/` 组在 collect
+  无该 URL 时**空匹配零报错**（`All results processed!` exit 0）——「目标路径存在才断言」
+  机制成立；③ 反向对照（注入必失败断言 `first-contentful-paint maxNumericValue 1`）
+  → `Assertion failed. Exiting with status code 1`——断言组真实生效非静默跳过。
+- **E7 双态模拟**（临时 dist 操作，未入库）：
+  ① 造 `dist/home/index.html` → 日志切「E7 已切换」口径、G-A/B/C 改盯 home、G-A′
+  转阻断级、G-D 排除表含根 index，全绿 exit 0；
+  ② 切换态 + 向根 index 注入 world `<script src>` → G-A′ 阻断 2 条（引导 JS 20.5KB>15KB
+  + world 静态标签），G-D 不误报（根已排除、内容页仍 0 命中）,exit 1；
+  ③ 过渡态（无 home/）同样注入 → G-D 抓到（受保护页命中 1 处 FAIL）+ G-B JS 超硬阻断
+  + G-A′ 零 world 恒硬阻断 + 体积分项仅 WARN，exit 1——三态行为与设计口径逐条一致。
+- e2e 全量回归：见下（跑毕回填）。
