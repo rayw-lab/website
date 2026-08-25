@@ -326,12 +326,14 @@ const buildings = cityMap.buildings.map((b) => ({
   }
 
   // ESC 菜单（SRD §12.7.8 出口④ / PRD CITY-09②，A4 M11）：Escape 开合。
-  // showModal 自带焦点陷阱 + 背景 inert（键盘/读屏可达）；开态按 Esc 由原生
-  // cancel 行为关闭（本监听先行 close() 亦幂等）；关闭后焦点自动还原触发前元素。
+  // showModal 自带焦点陷阱 + 背景 inert（键盘/读屏可达）；关闭后焦点自动还原
+  // 触发前元素。preventDefault 必须：不吞则同一次按键的原生 close request
+  // （close watcher，keydown cancel + keyup close）会把刚 showModal 的菜单立即关回。
   const escMenu = document.querySelector<HTMLDialogElement>('[data-world-esc-menu]');
   if (escMenu) {
     window.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape' || e.repeat) return;
+      e.preventDefault();
       if (escMenu.open) escMenu.close();
       else escMenu.showModal();
     });
