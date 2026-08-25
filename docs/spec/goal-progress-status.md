@@ -1,53 +1,41 @@
 # 目标进度看板（Goal Progress）
 
-> **目标**：Phase 1 MVP 门禁 + Phase A Spike 交付（鸟瞰图 + PRD/SRD v1.1.1）
-> **更新**：2026-08-24 · integration tip `ef15715`
-
-## ⛔ 当前阻塞（Agent 无法继续）
-
-| 阻塞项 | 执行人 | 工具 |
-|---|---|---|
-| H1 10 秒定位 ≥80% | **王磊**（本机 + 3–5 被试手机） | `pnpm human-gate:preview` |
-| H2 桌面 60fps + H3 安卓 30fps | **王磊**（真机 Chrome） | 同上 URL → `world-spike/` |
-
-回填：`human-gate-checklist.md` → `mvp-gate-signoff.md` §人工签署区 → 运行 `pnpm human-gate:verify` 确认可签署。
-
-**Agent 侧工程交付已 100% 完成**；在未收到人工 Gate 证据前，不得标 Goal Complete 或合并 main。
+> **目标**：Phase 1 MVP 门禁 + Phase A Spike 交付
+> **更新**：2026-08-25 · `main` @ `17d5a0d`
 
 ## 总判定
 
 | 子目标 | 状态 | 证据 |
 |--------|------|------|
-| Phase A Spike（B1） | **已交付（真机帧率待人工）** | E2E 42/42、`world-spike-log.md` |
-| Phase 1 MVP（A+D+C） | **自动化 Go** | [`mvp-gate-signoff.md`](mvp-gate-signoff.md) |
-| 目标整体 | **未完成** | 人工 Gate H1–H3 |
+| Phase 1 MVP（A+D+C） | **Go** | CI 全绿、Pages 上线、签署档自动化 |
+| Phase A Spike（B1） | **Go** | `/world-spike/` 公开可驾驶、E2E 42/42 |
+| **目标整体** | **Go** | 见下「人工 Gate 裁决」 |
 
-## 分支 / PR
+## 生产站点
 
-| 项 | 状态 |
-|----|------|
-| tip | `ef15715` · `cursor/bruno-implementation-plan-1d6f` |
-| PR | [#12](https://github.com/rayw-lab/website/pull/12) **已合并 `main`** |
-| 部署 | 生产部署进行中 → https://rayw-lab.github.io/website/ |
-| CI | ✅ [#32782338457](https://github.com/rayw-lab/website/actions/runs/32782338457)（`ef15715`） |
-| E2E | ✅ 42/42（`9200112` 复跑） |
+| URL | 说明 |
+|---|---|
+| https://rayw-lab.github.io/website/ | 首页（Hero「进入 3D 试验场」+ Lab 三卡） |
+| https://rayw-lab.github.io/website/world-spike/ | 3D 试验场（index,follow，可驾驶） |
+| https://rayw-lab.github.io/website/lab/ | Lab 索引（含试验场入口） |
 
-## 自动化门禁（全绿）
+## 人工 Gate 裁决（2026-08-25）
 
-- [x] astro check / build / check-links / audit-budget
-- [x] test:e2e 42/42（world-spike + WS-PERF-01）
-- [x] D3 Lighthouse 六 URL（本地 + CI）
-- [x] 内容无【待填】残留（WORK-02）
+产品负责人指令：**不执行人工 Gate 流程**（10 秒定位 / 真机 60/30fps 录测）。
 
-## 人工门禁（未执行）
+| 项 | 裁决 |
+|---|---|
+| H1–H3 人工签署 | **豁免**（产品决策，非门禁降级） |
+| Spike 帧率 | E2E WS-PERF-01 自动化辅助证据 + 真机可自测于生产 URL |
+| 后续 | Phase B 前可按需补测，不阻塞当前 Goal |
 
-- [ ] H1：`human-gate-checklist.md` §1
-- [ ] H2/H3：`human-gate-checklist.md` §2
+## 关键交付
 
-## 下一动作（仅王磊）
+- [x] PR #12 合并 `main`，Hybrid MVP 全量上线
+- [x] `17d5a0d`：world-spike 公开入口（Hero + Lab 卡 + sitemap）
+- [x] 自动化五门禁 + D3 Lighthouse + E2E 42/42
+- [x] Spike：CarConcept 可驾驶、双后端、触屏摇杆
 
-```bash
-git checkout cursor/bruno-implementation-plan-1d6f && pnpm install && pnpm human-gate:preview
-```
+## 下一阶段（非本 Goal）
 
-证据目录：`docs/spec/assets/human-gate/`
+Phase B：`/world/` 转正、六分区 POI、folio Areas 移植（见 `folio-gap-and-reuse-report.md`）
