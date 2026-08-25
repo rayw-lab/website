@@ -2,23 +2,38 @@
 // 结构对照 folio World/World.js 的两段式：
 //   step(0)：纯视觉底座（网格地面 + 灯光）——RAPIER 未就绪也能出画面，
 //            加载期渲染循环已跑（Game 启动坑②）；
-//   step(1)：物理内容（地面碰撞体 + 3 个动态锥桶）——必须晚于 Physics/Objects
+//   step(1)：物理内容（地面碰撞体 + 16 个动态锥桶）——必须晚于 Physics/Objects
 //            构造（Game 启动坑③）。
 // 地面网格 = MeshGridMaterial 简化版（TSL 程序化，零贴图资产）+ 程序化环形试车道；
-// 锥桶 = cone primitive（不建模），掉落沉降即是物理循环在跑的可见证据。
+// 锥桶 = cone primitive（不建模），掉落沉降即是物理循环在跑的可见证据；
+// 阵位继承 spike scene.ts 三组布局（CC-E2 合流：慢弯桩 + 环道 slalom + 出弯门），
+// 按 10m 环缩尺重排，动力学从 spike 手写球碰撞换成 Rapier 动态体（碰撞即物理真值）。
 import * as THREE from 'three/webgpu';
 import { Fn, fwidth, mix, positionGeometry, positionWorld, smoothstep, vec3 } from 'three/tsl';
+import cityMapData from '../../../data/cyber-city-buildings.json';
 import type { Game } from '../core/Game';
 import type { WorldObject } from '../core/Objects';
 
-/** 环形试车道布局常量（Game 摆 respawn、World 摆锥桶都参照它） */
+/** 环形试车道布局常量（World 摆锥桶参照它；出生点另有单一事实源，见 SPAWN） */
 export const RING = { radius: 10, halfWidth: 2.5 };
 
-/** 出生点：环形道上角度 0 处（静态相机取景以此为焦点） */
+/** 出生点单一事实源（审计 M3）：城市地图 world.spawn——十字路口正中 (0,0)、heading 0 */
+const CITY_SPAWN = (
+  cityMapData as {
+    world: { spawn: { position: { x: number; z: number }; heading: number } };
+  }
+).world.spawn;
+
+/**
+ * 出生点（M3 合流后 = cyber-city-buildings.json 的 world.spawn，机器人站位 /
+ * 变形落点 / 城市出生光圈三者同锚；灰盒环形道恰以此为圆心，出发直行即上道）。
+ * heading（度；0=北(-Z)，顺时针）→ folio 底盘 rotationY（前向 = (cos r, 0, -sin r)）：
+ * 世界前向 (sin h, 0, -cos h) ≡ (cos r, 0, -sin r) ⇒ r = π/2 − h·π/180；
+ * h=0 → r=π/2，车头朝 -Z（北）。
+ */
 export const SPAWN = {
-  position: { x: RING.radius, y: 0, z: 0 },
-  // 朝向道路切线方向（+θ 侧），车辆接入后即沿道出发
-  rotation: -Math.PI / 2,
+  position: { x: CITY_SPAWN.position.x, y: 0, z: CITY_SPAWN.position.z },
+  rotation: Math.PI / 2 - CITY_SPAWN.heading * (Math.PI / 180),
 };
 
 export class World {
@@ -119,7 +134,8 @@ export class World {
   }
 
   private setCones(): void {
-    // 3 个碰撞锥桶：环形道上、出生点正前方（cone primitive，不建模）
+    // 16 个碰撞锥桶（cone primitive，不建模）：阵位继承 spike scene.ts 三组布局，
+    // 按 10m 环缩尺重排——出生点 (0,0) 朝北（-Z）出发，直道桩→环道 slalom→出弯门。
     const coneRadius = 0.45;
     const coneHeight = 1.1;
 
@@ -134,15 +150,30 @@ export class World {
       return mix(orange, white, band);
     })();
 
-    // 出生点正前方沿道排开（间距约 2.2m，左右交错成小 slalom），静态相机内可见
-    const angles = [0.22, 0.33, 0.44];
-    const offsets = [-0.9, 0.9, -0.9];
-    for (let i = 0; i < angles.length; i++) {
-      const theta = angles[i];
-      const radius = this.ring.radius + offsets[i];
-      const x = Math.cos(theta) * radius;
-      const z = Math.sin(theta) * radius;
+    // ① 出生直道慢弯桩 4：车头正前方沿 -Z 排到环道内沿——首脚油门即有可撞物
+    //   （e2e 锥桶闭环的确定性锚点：(0,-4.5) 恰在直行路径正中）
+    const homes: [number, number][] = [
+      [0, -4.5],
+      [-1.5, -6.8],
+      [1.5, -6.8],
+      [0, -9],
+    ];
+    // ② 环道 slalom 8：北偏东起顺时针（φ 自 -Z 向 +X 展开），内外线交错 ∓1.5m
+    //   （spike 阵位 ±2.6 @ 6.5m 半宽路 → 2.5m 半宽路等比收窄）
+    for (let i = 0; i < 8; i++) {
+      const phi = 0.5 + i * 0.4;
+      const radius = this.ring.radius + (i % 2 === 0 ? -1.5 : 1.5);
+      homes.push([Math.sin(phi) * radius, -Math.cos(phi) * radius]);
+    }
+    // ③ 出弯双排门 4：slalom 段末尾两道门（spike φ=90° 出弯门的缩尺版）
+    for (const phi of [3.8, 4.2]) {
+      homes.push(
+        [Math.sin(phi) * (this.ring.radius - 1.7), -Math.cos(phi) * (this.ring.radius - 1.7)],
+        [Math.sin(phi) * (this.ring.radius + 1.7), -Math.cos(phi) * (this.ring.radius + 1.7)],
+      );
+    }
 
+    for (const [x, z] of homes) {
       const mesh = new THREE.Mesh(geometry, material);
 
       const object = this.game.objects.add(
@@ -161,5 +192,31 @@ export class World {
 
       this.cones.push(object);
     }
+  }
+
+  /**
+   * 已击倒锥桶数（HUD 计数 + __worldSpike 遥测消费；spike knockedCount 的物理真值版）。
+   * 判定：相对初始位的水平位移 > 0.6m（被撞飞/推走）或倾角 > ~56°（up·ŷ < 0.55，
+   * 撞倒后倒伏）。出生掉落沉降是纯竖直下落 + 直立姿态，两条都不会误报；
+   * R 复位（Objects.resetAll）回初始位姿后计数自然归零。
+   */
+  knockedConeCount(): number {
+    let knocked = 0;
+    for (const cone of this.cones) {
+      const physical = cone.physical;
+      if (!physical || cone.reseting) continue;
+
+      const initial = physical.initialState.position;
+      const position = physical.body.translation();
+      const dx = position.x - initial.x;
+      const dz = position.z - initial.z;
+
+      // 四元数旋转后的本地 +Y 在世界系的 y 分量：up.y = 1 − 2(qx² + qz²)
+      const rotation = physical.body.rotation();
+      const upY = 1 - 2 * (rotation.x * rotation.x + rotation.z * rotation.z);
+
+      if (dx * dx + dz * dz > 0.36 || upY < 0.55) knocked++;
+    }
+    return knocked;
   }
 }

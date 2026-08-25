@@ -129,13 +129,17 @@ export class View {
   }
 
   private setZoom(): void {
-    // Wheel 输入 V1 已砍（§9.1 第 11 项）：baseRatio 固定，速度拉远仍生效
+    // Wheel 输入 V1 已砍（§9.1 第 11 项）：baseRatio 固定，速度拉远仍生效。
+    // speedEdge 为 CC-E2 重标定（spike camera.ts 速度变焦的引擎版）：
+    // focusPointSpeed 是真实 m/s，物理车常态软限速 ≈10 m/s（folio topSpeed 5 ×
+    // Ticker.scale 2）、boost 更高——folio 原值 {5,40} 在此速度域几乎不动；
+    // 取 {4,24}：巡航即有可感拉远，boost 逼近满幅（spike「推背观感」等价物）。
     this.zoom = {
       baseRatio: 0.6,
       ratio: 0.6,
       smoothedRatio: 0.6,
       speedAmplitude: -0.4,
-      speedEdge: { min: 5, max: 40 },
+      speedEdge: { min: 4, max: 24 },
       sensitivity: 0.05,
     };
   }

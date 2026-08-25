@@ -204,3 +204,56 @@ pnpm test:e2e  # 独立 worktree 全量验证（E2E_PORT=4620，避开共享 VM 
   → 既有 42 用例零回归；WS-PERF-01 软门禁 OBS 照常登记（SwiftShader ~1.4fps 下界读数，不阻断）
   → 运行再生成的报告截图（docs/spec/assets/e2e-*）按「不提交无关 png」纪律全部还原，未入库
 ```
+
+---
+
+## CC-E2 — spike 合流退役（单实现）（2026-08-25，波 2）
+
+分支 `cursor/cc-e2-spike-merge-1d6f`（base：`cursor/cyber-city-hero-design-1d6f` 波 1 合流 tip）。
+完整退役决策记录（七文件去向表 / M2-M4 裁决 / engine.ts 纪律迁入清单 / 合流期修复）见
+**`world-spike-log.md` §10**，此处只记交付面与交接点。
+
+### 交付物
+
+| 文件 | 内容 |
+|------|------|
+| `src/lab/modules/world/spike/`（七文件） | **删除**。参数表留档 `world-spike-log.md` §2（§10.1 有逐文件去向） |
+| `src/lab/modules/world/index.ts` | 薄入口唯一指向引擎 `src/lab/world/index.ts`（facade 分包映射位不变） |
+| `src/lab/world/index.ts` | mount 入口重写：HUD 接线（tick 999 / 0.25s 节流 / 提示消隐）、`__worldSpike` 遥测（+`vehicle`、nipple 双字段）、`?city=1`/`?robot=1` 动态挂载、respawn→`Objects.resetAll()`、ready 等 `revealed` 事件（输入放行后才 resolve）、`#debug` 句柄 |
+| `src/lab/world/world/World.ts` | **M3**：`SPAWN` 切 `cyber-city-buildings.json` `world.spawn` (0,0)（heading→rotationY 换算 `r=π/2−h·π/180`）；spike 三组锥桶阵按 10m 环缩尺重排（16 只 Rapier 动态体 + 出生正前锚点桩），`knockedConeCount()` 物理真值判定 |
+| `src/lab/world/player/Player.ts` | 键位合流：**Space=刹车**（spike 口径裁决，folio 悬挂跳挪 KeyF）；brake 组 = Space/B/ControlLeft |
+| `src/lab/world/inputs/Keyboard.ts` | 驾驶键 preventDefault（keydown+keyup 双向，Space keyup 防误触聚焦按钮） |
+| `src/lab/world/inputs/Nipple.ts` | 修引擎既有缺陷两枚：NDC 未减舞台 rect 偏移、angle 口径镜像（详见 log §10.4） |
+| `src/lab/world/view/View.ts` | spike 速度变焦换算：`zoom.speedEdge` {5,40}→{4,24}（物理车真实速度域重标定） |
+| `src/lab/world/rendering/Rendering.ts` | dispose 时 canvas 原位克隆置换（可重复挂载，WS-E2E-07 依赖） |
+| `src/lab/world/core/Game.ts` | 新增 `vehicleKind`（physics\|kinematic，init 落定）——速度遥测两档换算依据 |
+| `src/lab/world/utils/FpsMeter.ts` | 新增。spike FpsMeter 摘出（墙钟口径 + 暂停边界 reset，log §10.3-3） |
+| `src/pages/world-spike/index.astro` | `?impl=` 分叉退役；**M4** 白名单 = gl/vehicle/city/robot；DOM 摇杆退役（引擎 3D Nipple 接管）；文案/注记随单实现更新；复位按钮 keydown+keyup 成对派发 |
+| `e2e/world-spike.spec.ts` | 重标定（出生 (0,0)/速度阈值/锥桶直线锚点桩/摇杆走遥测/WS-E2E-11 改守 kinematic 回退腿），用例数不变；perf 与 mobile 两文件零改动 |
+| `docs/research/cyber-city-implementation-plan.md` | **M2**：§3.1/§3.2 VisualVehicle 落位文字修订为 `player/`（E1 实况，不搬文件） |
+
+### 验证
+
+- `pnpm astro check` 0 errors / `pnpm build` 通过。
+- 独立 Chromium 标定探针（build 产物 + 独占 preview 端口）：出生 (0, ~0.98, 0) 朝 -Z、
+  W 巡航 ≈36km/h、boost 破 45km/h、直行撞锚点桩 cones>0、R 复位全场清零、
+  CDP 真触摸摇杆 nippleActive/progress 遥测就位并驱动车辆、`?vehicle=kinematic` 可开、
+  `?city=1&robot=1` 城市 + 机器人同帧渲染正常、控制台零未捕获异常。
+- `pnpm test:e2e` 全量（E2E_PORT=4640 独占端口，避开共享 VM 其他 Task）：
+  **42 passed / 6 skipped（= CITY-E2E-01~06 红灯态不动）/ 0 failed，15.1m，exit 0**——
+  既有 42 用例零回归达成。抽样读数（SwiftShader 软渲染下界）：WS-E2E-03 boost 峰值
+  57.9km/h（阈值 45）；WS-E2E-04 直线锚点桩第 1 轮命中（knocked=1）；WS-E2E-09 摇杆
+  满推 progress=1 驱动至 30.9km/h；WS-PERF-01 软门禁照常 OBS 登记（p95 766.6ms，
+  ≈1.5fps 下界，不阻断）。
+- 截图纪律：e2e-batch1 无关截图（home/tts/car）运行再生成后已还原未入库；
+  e2e-integration 的 world_* 截图随场景实变（出生 (0,0)/新锥桶阵/3D 摇杆）更新入库，
+  新增 `world_kinematic_fallback.png`（WS-E2E-11 改测回退腿）；退役腿旧图
+  `world_engine_impl_ready.png` 保留（历史批次报告 `e2e-test-report-integration.md`
+  引用它，该报告为既往战役存档不追改）。
+
+### 交接点（波 2 同僚 + 波 3）
+
+- **给 CC-E6（变形/首幕）**：respawn 默认点已是城市 `world.spawn` (0,0)——变形落点/机器人站位同锚兑现（M3 完成，E6 无需再动 Respawns）；mount 的 ready 语义已改「revealed 后 resolve」，首幕剧本若接管 reveal 时序请保持该契约（e2e 依赖 ready 即可操作）。
+- **给 CC-E7（壳）**：壳页白名单模式已转正（`PARAM_ALLOWLIST` 四项透传 mount，引擎不读 location.search）——`/` 世界壳复用该模式即可；`__worldSpike` 遥测为 e2e 公共契约，壳重写时保留挂点 data-ws-* 命名。
+- **速度口径红线**：physics 档 `forwardSpeed` 是 folio 时基（真实 m/s = ×Ticker.scale），kinematic 档本征 SI——任何新消费方（音效/UI/成就）走 `Game.vehicleKind` 分派，勿直读 forwardSpeed 当真实速度。
+- E1 遗留「CarConcept 车宽略窄于物理盒」维持现状（正式资产波次解决）；运动学档锥桶无物理互动维持（域不同，log §9.3）。

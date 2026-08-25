@@ -146,3 +146,46 @@ dt 纪律照抄 folio §5.3：车辆积分用 **30 帧滑动平均 dt**（与渲
 ### 9.3 运动学回退档（SRD §12.7.5「世界永远能开」）
 
 本 Spike `vehicle.ts` 的 SI 参数表（§«params.ts»）**原值拷贝**进 `KinematicFallback.ts`（拷贝而非 import——spike/ 目录 CC-E2 退役，引擎层不得依赖）；dt 用 `ticker.deltaAverage` 真实秒，**不乘 Ticker.scale**（两套参数不可混搭红线）。触发：Rapier wasm 加载失败自动切换，或 `?vehicle=kinematic` 显式 A/B。运动学档下锥桶无物理互动（域不同），贴地 raycast 打视觉地面网格。
+
+## 10. CC-E2 退役决策记录：spike 合流、单实现转正（2026-08-25）
+
+§8 预告的合流第二步执行完毕（Task CC-E2，分支 `cursor/cc-e2-spike-merge-1d6f`）：`src/lab/modules/world/spike/` **七文件全部删除**，`/world-spike/` 壳页与薄入口 `src/lab/modules/world/index.ts` 唯一指向引擎层（`src/lab/world/`，folio 架构 Game loop + Rapier 物理车），`?impl=` 分叉退役。本节 = 各文件去向裁决 + 合流期新决策；被退役代码此后仅存于 git 历史（本分支删除提交之前）。
+
+### 10.1 七文件去向表
+
+| spike 文件 | 去向 | 说明 |
+|-----------|------|------|
+| `vehicle.ts` | `player/KinematicFallback.ts`（E1 已迁，见 §9.3） | SI 参数原值拷贝；`?vehicle=kinematic` 显式回退腿保活 |
+| `carRig.ts` | `player/VisualVehicle.ts`（E1 已并，见 §9） | 轮组 rig 红线（§7）随迁；落位裁决见 §10.2 M2 |
+| `params.ts` | **本文档 §2 参数表快照即留档**（单一事实源退役后转历史档） | 车辆 SI 参数活拷贝在 KinematicFallback；锥桶 kick 动力学参数**随手写碰撞一并退役**（锥桶已转 Rapier 动态体，动力学=物理真值，无参数可调）；场地参数被引擎灰盒替代（环形道 55m→10m，`World.RING`） |
+| `inputs.ts` | 键位表并入 `player/Player.ts` actions；`preventDefault` 纪律并入 `inputs/Keyboard.ts`；摇杆职责归引擎 `inputs/Nipple.ts`（自绘 DOM 摇杆退役） | 键位冲突裁决见 §10.2 |
+| `camera.ts` | 速度变焦参数换算进 `view/View.ts` zoom 配置 | `speedEdge` 重标定 {5,40}→{4,24}：focusPointSpeed 是真实 m/s，物理车常态软限速 ≈10 m/s（folio topSpeed 5 × Ticker.scale 2），folio 原阈值在此速度域几乎不动；新值下巡航即有可感拉远、boost 逼近满幅（spike「推背观感」等价物） |
+| `scene.ts` | 锥桶阵位并入 `world/World.ts`（三组布局按 10m 环缩尺重排：直道慢弯桩 4 + 环道 slalom 8 + 出弯双排门 4，共 16 只）；地面/环道/轮胎墙被引擎程序化灰盒替代 | 锥桶从手写球碰撞换 **Rapier 动态体**（Objects 注册表管理，R 复位走 `resetAll`）；击倒判定 = 物理真值（位移 >0.6m 或倾角 >56°），出生正前方 -Z 直线上有确定性锚点桩 (0,-4.5)/(0,-9)（e2e 直行即撞，循迹控制器退役） |
+| `engine.ts` | 装配职责归 `src/lab/world/index.ts` mount 入口；FpsMeter 摘出为 `utils/FpsMeter.ts` | HUD 接线 / `__worldSpike` 遥测 / canvas 置换纪律 / 教学提示消隐全部迁入；详见 §10.3 |
+
+### 10.2 合流期裁决（M2/M3/M4 + 键位冲突）
+
+- **M2 · VisualVehicle 落位**：保持 `player/VisualVehicle.ts`（E1 实况），**修订实施方案 §3.1/§3.2 文字**而非搬文件——它与底盘（PhysicsVehicle/KinematicFallback）同属 Player 装配域，从契约回读位姿；`world/` 留给场景内容件。
+- **M3 · 出生锚点统一**：`World.SPAWN` 切到 `src/data/cyber-city-buildings.json` 的 `world.spawn`（十字路口 (0,0)、heading 0）——机器人站位（`?robot=1`）、变形落点（E6）、城市出生光圈三者同锚。heading（度，0=北 -Z，顺时针）→ folio 底盘 rotationY 换算：`r = π/2 − h·π/180`（h=0 → r=π/2，车头朝北）。灰盒环形道恰以出生点为圆心，出发直行即上道。
+- **M4 · 深链白名单转正**：壳页白名单 = `gl` / `vehicle` / `city` / `robot` 四项，全部经壳页过滤后透传 mount；引擎入口**不再** `location.search` 兜底（临时接线退役），白名单外参数一律忽略且不回写 URL。
+- **键位冲突（Space）**：spike 口径 Space=刹车 vs folio 口径 Space=悬挂跳。**裁决：Space=刹车**（WS-E2E-03 验收契约 + 触屏教学文案既成事实），folio 悬挂跳挪 KeyF（非核心验收行为）。`brake` 键组 = Space/B/ControlLeft。
+- **速度遥测口径统一**：`__worldSpike.state().speedKmh` = 真实 km/h 两档同口径——physics 档 `forwardSpeed` 是 folio 时基，×`Ticker.scale`(=2)×3.6；kinematic 档本征即 SI，×3.6。由 `Game.vehicleKind`（init 落定）分派。常态巡航实测 ≈36km/h、boost >45km/h（e2e 阈值据此重标定，原 spike 65km/h 阈值随参数域退役）。
+
+### 10.3 spike engine.ts 纪律迁入清单（新宿主）
+
+1. **HUD 接线**（`src/lab/world/index.ts`，tick order 999 渲染后结算，0.25 世界秒节流）：速度/帧率/锥桶计数 + 教学提示消隐（任何驾驶意图含摇杆即收）。挂点缺席容忍——引擎不依赖壳页 DOM。
+2. **`__worldSpike` 遥测**契约结转并扩展：`backend`/`vehicle`（physics|kinematic）/`state()`（位姿 + speedKmh + grounded + cones + **nippleActive/nippleProgress** 新增——3D 摇杆无 DOM 锚，e2e 断言全走遥测）/`fps()`/`info()`；`#debug` 暴露 `__worldSpikeGame` 句柄；dispose 时删除。
+3. **FpsMeter**（`utils/FpsMeter.ts`）：喂墙钟 `performance.now()`，**不能用 Ticker.delta**（被 maxDelta 钳制且随暂停冻结，读不出真实帧间隔——spike wallDt/rawDt 双轨纪律）；pause/resume 边界 `reset()`（跨暂停长间隔不得计入 1% low）。
+4. **canvas 置换**（`rendering/Rendering.dispose`）：dispose 后原位克隆置换 canvas，保证可重复挂载（WS-E2E-07 再挂载链路依赖）。
+5. **ready = 输入已放行**：mount 等引擎 `revealed` 事件（intro→wandering 过滤器切换）后才 resolve——否则「ready 即按键」被 intro 过滤器吞掉（e2e 与真实用户首帧即操作场景）。
+6. **驾驶键 preventDefault**（`inputs/Keyboard.ts`）：方向键/Space 的 keydown+keyup 双向拦截（Space 对聚焦按钮的 click 激活发生在 keyup——刹车键不得误触「进入」按钮）；输入框聚焦守卫在前。
+7. **复位即整场复位**：R/触屏复位按钮 → Player respawn 事件 → `Objects.resetAll()`（锥桶阵列恢复）。触屏按钮派发 keydown+keyup 成对事件（引擎 Inputs 是 toggle 语义，只派 down 会卡按下态）。
+
+### 10.4 合流期修复（引擎侧既有缺陷，合流验证揪出）
+
+- **Nipple NDC 偏移**：Pointer 给 client 视口坐标，NDC 归一化未减舞台 `getBoundingClientRect()` 偏移——壳页舞台非满屏时射线整体偏移。已修（`updateFromPointer`）。
+- **Nipple 角度约定镜像**：内部 `targetAngle = atan2(dz, dx)` 是世界 XZ 方位角口径，而 `this.angle` 直存 folio rotationY（前向 `(cos r, 0, -sin r)`）——两口径混用导致转向镜像。已修：`this.angle = -rotationY`（车头 XZ 方位角 = atan2(-sin r, cos r) = -r），mesh 自转仍用 rotationY。
+
+### 10.5 e2e 重标定摘要（`e2e/world-spike.spec.ts`，用例数不变）
+
+出生点 (0,0)（原 z=55）、速度阈值（巡航 25 / boost 45 km/h）、锥桶=Rapier 真值 + 直线锚点桩打法（撞空 R 复位重试 ≤3 轮，决不 skip）、摇杆断言全走遥测 nippleActive/nippleProgress（`.ws-nipple-*` DOM 选择器退役）、WS-E2E-11 从「?impl=engine 灰盒腿」改守「?vehicle=kinematic 运动学回退档」（SRD §12.7.5「世界永远能开」显式腿）。`world-spike-perf.spec.ts` 与 `mobile.spec.ts` 零改动（无旧口径引用）。

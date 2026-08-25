@@ -76,6 +76,12 @@ export class Game {
    * KinematicFallback（wasm 失败 / ?vehicle=kinematic），同 PlayerVehicle 契约。
    */
   physicalVehicle: PlayerVehicle | null = null;
+  /**
+   * 实际启用的车辆档（init 阶段三落定）：速度遥测换算依赖它——
+   * physics 档 forwardSpeed 是 folio 时基（真实 m/s = ×Ticker.scale），
+   * kinematic 档是 SI 真实 m/s（契约「实现本征时基」的消费侧口径）。
+   */
+  vehicleKind: 'physics' | 'kinematic' | null = null;
   /** 视觉车辆（CarConcept rig）：从 physicalVehicle 契约回读，两档通用 */
   visualVehicle: VisualVehicle | null = null;
 
@@ -157,6 +163,7 @@ export class Game {
     }
 
     const useKinematic = this.options.vehicle === 'kinematic' || !RAPIER;
+    this.vehicleKind = useKinematic ? 'kinematic' : 'physics';
     this.physicalVehicle = useKinematic ? new KinematicFallback(this) : new PhysicsVehicle(this);
     this.player = new Player(this);
     this.visualVehicle = new VisualVehicle(this, this.resources.carConcept as GLTF);

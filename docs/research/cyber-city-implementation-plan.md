@@ -143,7 +143,7 @@ pnpm test:e2e                          # 既有 42 用例零回归 + 新增世�
 | `CitySilhouette.ts`（远景程序化） | `src/lab/world/city/CitySilhouette.ts` | 保留原设想 |
 | `ThemeTowers.ts`（主题楼） | `src/lab/world/city/ThemeTowers.ts` | 改为数据驱动（读 `cyber-city-buildings.json`，10–20 槽） |
 | `HeroRobot.ts` | `src/lab/world/city/HeroRobot.ts` | GLB 经 ResourcesLoader 两阶段清单首批加载 |
-| `HeroCar.ts`（CarConcept 薄封装） | `src/lab/world/world/VisualVehicle.ts` | 与 spike carRig 合并，不另建封装 |
+| `HeroCar.ts`（CarConcept 薄封装） | `src/lab/world/player/VisualVehicle.ts` | 与 spike carRig 合并，不另建封装；落位按 E1 实况 `player/`（审计 M2 裁决：E2 修订本方案文字，不搬文件） |
 | `TransformRitual.ts` | `src/lab/world/player/TransformSystem.ts` | 直接落正式位置，免去「未来迁入」二次搬家 |
 | `NeonRain.ts` | `src/lab/world/city/NeonRain.ts` | Quality 0 专属（§5.3 分档表） |
 
@@ -155,12 +155,13 @@ src/lab/world/                      ← 唯一引擎 + 世界内容（folio 架�
   inputs/    Inputs(并入 spike 键位映射) / Keyboard / Pointer / Nipple / Wheel(新搬)
   physics/   Physics / PhysicsVehicle(新搬 ~450 行，folio 参数表原封起步)
   player/    Player(挂点接 PhysicsVehicle) / KinematicFallback(spike vehicle 降级遗产)
+             / VisualVehicle(轮同步段 + carRig 并入；M2 裁决落位于此，与底盘契约同域)
              / TransformSystem(新写 ~250 行，遮蔽式 V1)
   rendering/ Rendering / MeshGridMaterial(新搬) / PreRenderer(新搬)
              / NeonMaterials(新写：emissive 窗格 atlas + 湿地面反射 + 雾/bloom 档位)
   view/      View(吸收 spike ChaseCamera 参数)
   world/     World(step 编排) / Grid(新搬) / Reveal(Intro+Reveal 合并移植)
-             / VisualVehicle(新搬轮同步段 + carRig 并入) / Zones / References / Respawns
+             / Zones / References / Respawns
   city/      CityBlocks(程序化楼体) / CitySilhouette(远景剪影) / ThemeTowers(数据驱动地标)
              / Roads(路网 + 主十字路口) / HeroRobot / NeonRain(可选粒子)
   utils/     maths(补函数) / ObservableSet / FpsMeter(spike 遗产摘出)

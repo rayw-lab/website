@@ -120,16 +120,18 @@ export class Player {
   }
 
   private setInputs(): void {
-    // 动作表（Player.js L220-239 的 Spike 子集；Gamepad 键位随模块砍除）
+    // 动作表（Player.js L220-239 的 Spike 子集；Gamepad 键位随模块砍除）。
+    // CC-E2 合流键位裁决：Space = 刹车（spike inputs.ts 口径，「空格更顺手」+
+    // WS-E2E-03 验收契约），folio 原 Space=悬挂跳挪到 KeyF（非核心验收行为）。
     this.game.inputs.addActions([
       { name: 'forward',     categories: ['wandering', 'racing', 'cinematic'], keys: ['Keyboard.ArrowUp', 'Keyboard.KeyW'] },
       { name: 'right',       categories: ['wandering', 'racing', 'cinematic'], keys: ['Keyboard.ArrowRight', 'Keyboard.KeyD'] },
       { name: 'backward',    categories: ['wandering', 'racing', 'cinematic'], keys: ['Keyboard.ArrowDown', 'Keyboard.KeyS'] },
       { name: 'left',        categories: ['wandering', 'racing', 'cinematic'], keys: ['Keyboard.ArrowLeft', 'Keyboard.KeyA'] },
       { name: 'boost',       categories: ['wandering', 'racing'],              keys: ['Keyboard.ShiftLeft', 'Keyboard.ShiftRight'] },
-      { name: 'brake',       categories: ['wandering', 'racing'],              keys: ['Keyboard.KeyB', 'Keyboard.ControlLeft'] },
+      { name: 'brake',       categories: ['wandering', 'racing'],              keys: ['Keyboard.Space', 'Keyboard.KeyB', 'Keyboard.ControlLeft'] },
       { name: 'respawn',     categories: ['wandering'],                        keys: ['Keyboard.KeyR'] },
-      { name: 'suspensions', categories: ['wandering', 'racing'],              keys: ['Keyboard.Space'] },
+      { name: 'suspensions', categories: ['wandering', 'racing'],              keys: ['Keyboard.KeyF'] },
     ]);
 
     // Respawn
