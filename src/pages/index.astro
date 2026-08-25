@@ -82,6 +82,13 @@ const heroTowers = buildings.filter((b) => b.hero);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={homeUrl} />
     <meta property="og:locale" content="zh_CN" />
+    <!-- [CC-L2 A10] OG 与壳 poster 同源同帧（重拍主帧一拍三吃：静态壳/移动端/OG） -->
+    <meta
+      property="og:image"
+      content={new URL(`${base}/posters/cyber-city-poster.webp`, Astro.site).href}
+    />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="720" />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLdAll)} />
   </head>
   <body>
@@ -142,16 +149,27 @@ const heroTowers = buildings.filter((b) => b.hero);
 
         <!-- 静态壳覆盖层：poster（LCP）+ 定位语 + 三支柱 + 楼宇快览 + 显式进入（挂载前零 world 字节） -->
         <div class="cover" data-world-cover>
-          <img
-            class="poster"
-            data-world-poster
-            src={`${base}/posters/cyber-city-poster.webp`}
-            alt=""
-            width="1280"
-            height="720"
-            fetchpriority="high"
-            decoding="async"
-          />
+          <!-- [CC-L2 A10] poster 重拍（rubric §4 协议 B robot_idle 主帧，canvas 纯帧）：
+               desktop 16:9 + mobile 9:16 竖版裁切（销 L0 观察「移动 poster 无构图」）；
+               <picture> 按断点单选加载——预算口径两图皆入 G-A′ 壳静态段合计 -->
+          <picture>
+            <source
+              media="(max-width: 767.98px)"
+              srcset={`${base}/posters/cyber-city-poster-mobile.webp`}
+              width="720"
+              height="1280"
+            />
+            <img
+              class="poster"
+              data-world-poster
+              src={`${base}/posters/cyber-city-poster.webp`}
+              alt=""
+              width="1280"
+              height="720"
+              fetchpriority="high"
+              decoding="async"
+            />
+          </picture>
           <div class="scrim" aria-hidden="true"></div>
 
           <div class="intro">
@@ -674,13 +692,19 @@ const heroTowers = buildings.filter((b) => b.hero);
     opacity: 0;
     pointer-events: none;
   }
+  /* <picture> 自身绝对定位为背景层（不参与 .cover 网格布局；display:contents 方案
+     会让空 <source> 变成 grid item 抢占首列，故整体脱流） */
+  .cover picture {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
   .poster {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: -2;
   }
   .scrim {
     position: absolute;
