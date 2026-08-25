@@ -25,10 +25,21 @@
 
 ### 本地命令
 
+**前置**：必须在 **`rayw-lab/website`** 仓库（Astro 个人站），**不是**其他项目（如 `scout-r0`）。根目录应有 `astro.config.mjs`、`src/pages/world-spike/`。
+
 ```bash
+# 首次
+git clone https://github.com/rayw-lab/website.git && cd website
+git fetch origin cursor/bruno-implementation-plan-1d6f
+git checkout cursor/bruno-implementation-plan-1d6f
+pnpm install
+
+# 每次测人工 Gate
 pnpm human-gate:preview   # build + 局域网 preview，打印手机可访问 URL
 pnpm human-gate:verify    # 回填签署档与证据后校验是否可签署
 ```
+
+若 `git checkout cursor/bruno-implementation-plan-1d6f` 报 `pathspec did not match`，说明当前目录不是 `website` 仓库或尚未 `git fetch origin`。
 
 ## 1. 10 秒定位测试（门禁：通过率 ≥ 80%）
 
