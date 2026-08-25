@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0.0",
+  "score": 59,
+  "target": 85,
+  "subject": "Phase 0 `/` Full Entry 世界壳 + 3D 首幕（main 合入 tip 74947d9；评分分支 3D 代码零改动）",
+  "rubric": "docs/research/cyber-city-visual-rubric.md",
+  "scoredAt": "2026-08-25",
+  "scoredBy": "CC-L0-visual (claude-fable-5-thinking-xhigh)",
+  "evidence": {
+    "protocol": "pnpm test:visual（visual-chromium，VIS-01~04 全过 4/4，3.0m）",
+    "captures": [
+      "e2e/visual/__screenshots__/world-visual.spec.ts/visual-chromium/world-shell-static.png",
+      "e2e/visual/__screenshots__/world-visual.spec.ts/visual-chromium/world-esc-menu.png",
+      "test-results/visual/world-robot-idle.png",
+      "test-results/visual/world-poi-concept-garage.png"
+    ],
+    "crossChecks": "Rendering.ts bloom(0.55,0,1) threshold 纪律 · city/index.ts Fog('#0d0c11',160,900) · Grid.ts Q0 实时 reflector（E4 帧倒影实证）· cyber-city-phase0-full-audit.md §5 真跑冒烟"
+  },
+  "dimensions": {
+    "v1FirstFrame": {
+      "label": "首幕构图与第一印象",
+      "weight": 0.2,
+      "score": 55,
+      "evidence": "robot_idle 取证帧：机器人居中 + 峡谷对景 + 斑马线导视线成立；扣分 = spike 遗留锥桶阵滞留首幕、天空纯黑、poster 为软渲染帧"
+    },
+    "v2LightingMaterial": {
+      "label": "光照·材质·后处理",
+      "weight": 0.2,
+      "score": 58,
+      "evidence": "bloom threshold=1 纪律 + 湿地实时反射（POI 帧倒影实证）+ 三档降载；扣分 = 窗格大色块、单层距离雾（PRD 体积雾未兑现）、无 IBL/AO"
+    },
+    "v3PaletteAtmosphere": {
+      "label": "色彩体系与氛围一致性",
+      "weight": 0.15,
+      "score": 72,
+      "evidence": "buildings JSON 12 楼霓虹色单源贯穿 3D/DOM 快览/POI 光圈；深蓝底 #05070d + 品牌青 #49c5b6（与 Jesse's Ramen Awwwards 色板同色）；扣分 = 缺明暗节奏、standard 楼趋同"
+    },
+    "v4SceneDensity": {
+      "label": "场景密度与世界可信度",
+      "weight": 0.15,
+      "score": 40,
+      "evidence": "楼=收分体量 + 檐口/信标，零招牌文字、零街道道具、零氛围粒子（TextCanvas 已就位未消费）；对标 Orion 实模街景差距最大维"
+    },
+    "v5MotionTransition": {
+      "label": "动效与转场工艺",
+      "weight": 0.15,
+      "score": 65,
+      "evidence": "变形仪式成套（充能环→光幕遮蔽→easeOutBack 落地 1.05s，A4 冒烟实证）+ 光柱显现 + idle 微动 + reduced-motion 直出；扣分 = 无镜头编舞、HUD 过渡仅 opacity"
+    },
+    "v6UiHudIntegration": {
+      "label": "DOM UI/HUD 视觉整合",
+      "weight": 0.1,
+      "score": 60,
+      "evidence": "壳排版干净、ESC dialog/霓虹 chip 与 3D 同色系、12 楼快览色点导航；扣分 = 系统字体栈、HUD 速度表恒 0（观察 F）、挂载后快览不可达（观察⑨）"
+    },
+    "v7ThematicOriginality": {
+      "label": "主题原创性与叙事贴合",
+      "weight": 0.05,
+      "score": 78,
+      "evidence": "CC-T1 竞品矩阵证「机甲站岗 + 一键变车 + 楼=产品线」无直接克隆；扣分 = 无招牌/道具时画面近似通用霓虹城，隐喻靠文案自明"
+    }
+  },
+  "notes": "总分 59/100 = Σ(维分×权重)：55×.20+58×.20+72×.15+40×.15+65×.15+60×.10+78×.05=59.05。与 85 分（Awwwards HM 量级）差距集中在 V4 密度（-45）、V1 首幕（-30）、V2 光照（-27）——工程系统齐备（bloom/反射/变形仪式/色彩单源全部实证成立），欠账在美术密度与精修；提分路径见 rubric §6（首幕除噪/招牌文字/道具层等 7 项，预估可达 ~70，75-80 需二期投入）。"
+}

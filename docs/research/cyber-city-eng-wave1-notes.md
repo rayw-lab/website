@@ -739,3 +739,12 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
 - **交接**：ESC 出口的 CITY 专项 e2e 用例（Esc 开合 + 链接直达断言）随 Phase 1 首个
   e2e 批次（POI 专项用例同批）补入；SRD §11.2「手动画质档常驻 ESC 菜单」属 Phase 1
   帧率自适应交付面，本次最小菜单不含画质档（口径见 SRD 原文，非缺口）。
+
+## CC-L0-visual — 竞品视觉调研 + 85 分 rubric（Loop 0，2026-08-25）
+
+- 分支 `cursor/cc-l0-visual-research-1d6f`（base：`cursor/cc-l0-test-framework-1d6f`）；只读调研 + 文档/JSON，3D 代码零改动。
+- 交付：`cyber-city-visual-rubric.md`（竞品锚 6 档含 URL——Bruno folio-2025 95° / Cyber City Orion 88° / Jesse's Ramen 82° 等 + 七维 0-100 锚点 + 复现协议 + 提分清单）+ `cyber-city-visual-rubric-score.json`（score-loop 维度④机读位，85° = Awwwards HM 量级标定）。
+- 自评 **59/100**：V1 首幕 55 / V2 光照 58 / V3 色彩 72 / V4 密度 40 / V5 动效 65 / V6 UI 60 / V7 原创 78（权重 20/20/15/15/15/10/5）——差距集中在 V4 密度/V1 首幕/V2 光照，即「工程系统实证成立、美术密度与精修欠账」。
+- 证据：本分支实跑 `pnpm test:visual` 4/4 全过（3.0m）；取证帧新发现三扣点 = spike 锥桶阵滞留首幕、天空纯黑、幕墙窗格大色块（已入 rubric §6 提分清单第 1 项）。
+- 域外最小改动一处：`e2e/visual/world-visual.spec.ts` JSON import 补 `with { type: 'json' }`——Node 22 ESM 硬性要求，原样在本 VM 报「No tests found」（astro check 0 err 复验，非 3D 代码）。
+- 交接：VIS-01/02 截图基线未入库（全新 VM 首跑 `--update-snapshots`，入库裁决归 CC-L0-setup/baseline）；`node scripts/score-loop.mjs` 已验维度④由「缺失」转 59.0；Loop 1 建议从 rubric §6 清单 #1-3（首幕除噪/招牌文字/道具层，预估 +5.3）起步。
