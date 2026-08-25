@@ -15,7 +15,7 @@
     "prompt": { "zh": "进站", "en": "Enter" }
   },
   "point": {
-    "hoverHeight": 4.2
+    "hoverHeight": 3.2
   },
   "pois": [
     { "id": "lingua-tower", "buildingId": "lingua-tower", "kind": "building-entry", "action": "navigate" },

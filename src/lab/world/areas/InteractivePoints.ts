@@ -87,8 +87,9 @@ export class InteractivePoints {
   static readonly STATE_OPEN = 4;
   static readonly STATE_CONCEALED = 5;
 
-  /** 标点整体缩放（folio 0.85 → 城市尺度放大；菱形全开对角 ≈ 2×scale 米） */
-  static readonly POINT_SCALE = 2.2;
+  /** 标点整体缩放（folio 0.85 → 城市尺度放大；菱形全开对角 ≈ 2×scale 米。
+   *  1.7 = 运行时冒烟标定：跟车相机 15–30m 机位下标签可读且不压 HUD 提示行） */
+  static readonly POINT_SCALE = 1.7;
 
   private readonly game: Game;
   private readonly rayCursor: RayCursor;
