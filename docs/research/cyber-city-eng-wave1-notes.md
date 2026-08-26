@@ -962,3 +962,57 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   下一段主路径（→~70）；招牌覆盖扩 standard 七栋、灯杆密度上调是 V4 的
   低风险追加位（本批按 spec 未扩）。
 
+## CC-L3-content — 内容一致性批：B2 灯箱内容 + poster 三面同源（Loop 3 首批，2026-08-26）
+
+- 分支 `cursor/cc-l3-content-poster-1d6f`（base：`main@76950e7`，AL2 终审基线
+  综合 91.0 / 独立视觉 64）。单聚焦 PR 纪律：只做 AL2 终审 §7 非阻塞保留项
+  #1 #2 收口（`cyber-city-loop2-audit.md` Loop 3 裁决第 1 条原文「先给 B2 灯箱补
+  TextCanvas 内容；所有运行时视觉落定后，最后重拍 desktop/mobile/OG poster」）；
+  禁做项（分层雾、B3 光轨、B5 运镜、新楼/新资产管线）未越界。
+- 交付两件（poster 按 A10 纪律排批次最后）：
+  1. **B2 灯箱 TextCanvas 广告内容（AL2 §7 #2）**：rubric B2 施工说明「灯箱纹理走
+     TextCanvas 程序化」兑现——10 件挂旗灯箱各配差异化竖排霓虹标语（与产品线/
+     楼名弱关联：AI CORE/DRIVE/EDGE AI/FOUNDRY/TTS LIVE/39 LANGS/SAY HI »/
+     WORKS →/GARAGE/TUNE-UP，行序=摆位序，`StreetLamps.SLOGANS` 注释逐件对楼）。
+     实现：① 单张 TextCanvas atlas（10 行 × 128px 等高，行宽 308px ≈ 灯箱大面
+     2.5/1.04 纵横比——旋转映射后字形零变形；系统等宽栈，零外部字体零网络请求）
+     + 行内下划饰线（偶数行细通栏/奇数行短粗条，广告排版层次）；②
+     `createStreetLampMaterial` 广告内容层：`instanceIndex + rowStart` 逐实例选行
+     （两色族材质共享 atlas），90° 竖排映射（阅读自上而下、字形顶朝观者右手，
+     港式挂旗惯例；±Z 双面镜像选择保双面正读）+ Chebyshev 描边框 + 行号 %3==2
+     反相（亮板暗字，面板 0.95 < bloom threshold 1 不入泛光保暗字可读；其余
+     暗板亮字 1.9 与楼身立面招牌同档 bloom 锚点）。**draw call 台账不变**（仍
+     2 个 InstancedMesh），几何/物理/摆位零改动，常亮无时间项（CITY-03 配额
+     ≤2 处不变）。坑：合并几何无独立 UV 通道——面板 UV 从 `positionGeometry`
+     本地坐标 + `BANNER_BOX` 单源常量推导（几何/掩码/UV 三处同源防错位）；
+     行内 v 压 [0.01,0.99] 防 clamp 边缘采到相邻行。
+  2. **poster 三面同源重拍（AL2 §7 #1，最后执行）**：B2 内容落定后按 rubric §4
+     协议 B 重截 robot_idle 主帧——2560×1440 高清 canvas 纯帧一拍两吃：desktop
+     1280×720 降采样（超采 AA 补软渲染无 MSAA）38.6KB gzip + mobile 720×1280
+     主体居中裁 9:16 34.9KB（各 ≤40KB；og:image 与 desktop 同文件）。新帧含
+     Tier B 全套：AGENT NEXUS 双件招牌、北廊灯杆灯箱广告（DRIVE 可读）、
+     分层剪影——销「reduced-motion/移动端/无 3D 用户看到的仍是 A-plus 城市」。
+     坑复用：视口高补偿顶栏占高 53px（a-plus 口径），DOM 覆盖层隐藏时补
+     `.world-ritual`（变形 CTA 是引擎注入件，不在壳 selector 表内，首拍入镜返工）。
+- 验证：`pnpm astro check` 0 err；`node scripts/audit-budget.mjs` 全过（poster
+  38.6/40KB、壳静态段合计 82.2/90KB、world chunk 82.2/900KB、受保护 14 页
+  world 命中 0、外部资产新增 0 字节）；`pnpm test:visual` 4/4（VIS-01 壳基线
+  经审阅 `--update-snapshots`——新 poster 有意变更；VIS-02 在 2% 容差内零 diff
+  未重生成）；**全量 e2e 52/52 零回归**（17.0m，@smoke3d 3/3）；本地隔离 LHCI
+  （独立 npm 布局 @lhci/cli@0.15.1 + Playwright Chromium，7 URL ×3 = 21 LHR）
+  `/` 与 `/home/` 四项中位数全 100 不降，assert exit 0；统一计分
+  COMPOSITE_SCORE=91.5、availableWeight=1、missing=[]。
+- 帧证据：`l3-world-robot-1440.webp`（主机位后帧：AI CORE/DRIVE 灯箱竖排标语
+  可读 + EDGE AI 远位反相亮板）vs `l2b-world-robot-1440.webp`（前帧：灯箱仍是
+  通用条纹发光板）；`l3-world-poi-garage-1440.webp`（POI 深链：TUNE-UP 品红
+  灯箱近景）；`l3-lamp-ad-cyan.webp` / `l3-lamp-ad-magenta.webp`（双色族特写）。
+  V5 沿用 `l2-transform-seq.mp4`（动效零改动）。
+- 视觉自评 **66（校准基线 = CC-AL2 终审独立分 64 逐维原值）**：V4 53→59
+  （主攻维 +6：「灯箱无 TextCanvas 内容」判词销账）/ V1 61→64（poster 漂移
+  判词销账 + 中景文字锚点）/ V6 72→74（三面同源恢复）/ V7 72→73（街道层
+  叙事延伸）；V2 65 段顶持平（越界须分层雾——本批禁做项，不预支）、V3/V5
+  持平。达派发目标「自评 ≥66」。
+- 交接：待 CC-AL3 独立复评；Loop 3 主攻批按 AL2 §7 裁决第 2 条开分层雾/低云带
+  （V2 破 65 段顶 + V1 远景）；B3/B5 按裁决第 3 条分批后置（B3 先书面统一
+  CITY-03 配额并验证 Q2 关闭；B5 先补 reduced-motion 直出与运镜门禁）。
+

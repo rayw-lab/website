@@ -19,6 +19,7 @@ import {
   float,
   fract,
   hash,
+  instanceIndex,
   max,
   mix,
   normalGeometry,
@@ -347,6 +348,17 @@ export interface StreetLampMaterialOptions {
   head: { y0: number; y1: number; xMin: number };
   /** 沿街广告灯箱：y 带 + x 下界（杆侧挂旗式灯箱） */
   banner: { y0: number; y1: number; xMin: number };
+  /** [CC-L3-content] 灯箱广告内容层（TextCanvas 标语 atlas，AL2 §7 保留项 #2 收口） */
+  ads: {
+    /** 标语 atlas 纹理（TextCanvas 黑底白字 mask，flipY=false 口径，行等高纵向堆叠） */
+    map: THREE.Texture;
+    /** atlas 总行数（全部灯位共 1 张 atlas，两色族材质共享） */
+    rows: number;
+    /** 本 InstancedMesh 首实例对应的 atlas 行号（行 = instanceIndex + rowStart） */
+    rowStart: number;
+    /** 灯箱盒本地坐标范围（大面 UV 由几何位置推导——合并几何无独立 UV 通道） */
+    box: { x0: number; x1: number; y0: number; y1: number };
+  };
 }
 
 /**
@@ -354,6 +366,15 @@ export interface StreetLampMaterialOptions {
  * 合并几何（杆+臂+灯头+灯箱）单材质单 draw call/色族——positionGeometry 是实例
  * 本地坐标，InstancedMesh 逐实例旋转不破坏掩码。色 hex 从 neon-tokens 单源传入
  * （双主轴色族：南北=青、东西=品红，Roads/壳 CSS 同一出处）。常亮无时间项。
+ *
+ * [CC-L3-content] 挂旗灯箱大面从通用条纹升级为可读广告内容（AL2 审计 §3「灯箱只有
+ * 条纹 emissive，视觉上仍读作通用发光板」判词收口）：
+ *   · 逐实例标语：instanceIndex + rowStart 在共享 atlas 里选行——draw call 台账
+ *     不变（仍 2 个 InstancedMesh），零新增几何零新增材质；
+ *   · 竖排广告字：横排 atlas 行旋转 90°（阅读方向自上而下、字形顶朝观者右手，
+ *     港式挂旗惯例）；±Z 两面各自镜像映射，双面正读不出镜像字；
+ *   · 三分之一灯位反相（亮板暗字，行号 %3==2）：面板底 0.95 < bloom threshold 1
+ *     不入泛光，暗字保读；其余灯位暗板亮字，字符 1.9 与楼身立面招牌同档 bloom 锚点。
  */
 export function createStreetLampMaterial(
   hex: string,
@@ -375,15 +396,41 @@ export function createStreetLampMaterial(
       smoothstep(options.banner.xMin - 0.03, options.banner.xMin, x),
     );
 
-    // 灯箱面板横向灯带条纹（静态）：叠帧广告位语义，避免整面平光
-    const stripeCoord = fract(y.mul(1.55));
-    const stripe = smoothstep(0.02, 0.14, stripeCoord)
-      .mul(smoothstep(0.98, 0.86, stripeCoord))
-      .mul(0.45)
-      .add(0.55);
+    // 灯箱大面（本地法向 ±Z）= 广告面；窄边 = 金属框沿常亮
+    const nz = normalGeometry.z;
+    const faceMask = bannerMask.mul(step(0.5, abs(nz)));
+    const rimMask = bannerMask.mul(step(abs(nz), 0.5));
+
+    // 大面板内坐标：p = 杆侧(0)→外缘(1)，q = 底(0)→顶(1)
+    const { box, rows, rowStart } = options.ads;
+    const p = x.sub(box.x0).div(box.x1 - box.x0).clamp();
+    const q = y.sub(box.y0).div(box.y1 - box.y0).clamp();
+
+    // 竖排字映射：u = 阅读向（banner 顶→底 = atlas 行左→右）；v = 行内字形向
+    // （字形顶朝观者右手——+Z 面观者右手 = +X，-Z 面 = -X，两面镜像选择）。
+    // 行内 v 压进 [0.01,0.99] 防 clamp 边缘采到相邻行。
+    const row = float(rowStart).add(instanceIndex.toFloat());
+    const glyphV = mix(p, p.oneMinus(), step(0, nz)).mul(0.98).add(0.01);
+    const adsMask = texture(options.ads.map, vec2(q.oneMinus(), row.add(glyphV).div(rows))).r;
+
+    // 描边框（灯箱金属框内衬霓虹管，SignPanel 同款 Chebyshev 细环）
+    const cheb = max(p.sub(0.5).abs(), q.sub(0.5).abs()).mul(2);
+    const border = smoothstep(0.05, 0.015, cheb.sub(0.9).abs());
+
+    // 行号 %3==2 反相（亮板暗字）：件间差异 + 面板 0.95<1 不触 bloom 保暗字可读
+    const inverted = step(0.6, fract(row.mul(1 / 3)));
+    const faceLum = mix(
+      adsMask.mul(1.9).add(border.mul(0.5)).add(0.15),
+      float(0.95).sub(adsMask.mul(0.85)),
+      inverted,
+    );
 
     const c = linearColorNode(hex);
-    return c.mul(headMask).mul(2.3).add(c.mul(bannerMask).mul(stripe).mul(1.5));
+    return c
+      .mul(headMask)
+      .mul(2.3)
+      .add(c.mul(faceMask).mul(faceLum))
+      .add(c.mul(rimMask).mul(0.8));
   })();
 
   return material;
