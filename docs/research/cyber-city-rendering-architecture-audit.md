@@ -23,7 +23,8 @@
   Quality 2 档整段旁路（`renderer.render` 直连，零 pass 开销）。
 - **着色器：使用，且是全站材质系统的主体——但零手写 GLSL/WGSL**。全部自定义着色
   走 **TSL（Three.js Shading Language）节点材质**：`src/lab/world/` 下 35 个文件
-  import `three/webgpu`、14 个文件 import `three/tsl`；全仓 **0 处**
+  import `three/webgpu`、14 个文件 import `three/tsl`（`CC-MNT-TICKER-TSL` 清除
+  Ticker 死 uniform 后为 13）；全仓 **0 处**
   `RawShaderMaterial` / `ShaderMaterial` / `onBeforeCompile` / GLSL 字符串
   （grep 交叉验证，`three` 核心包仅 2 处 type-only import，为 KTX2Loader
   `detectSupport` 的类型签名摩擦，见 `core/ResourcesLoader.ts`、`shared/gltf-loaders.ts`）。
@@ -116,7 +117,7 @@ bloom 主干「零改名直迁」（`pass`/`bloom` 具名导出面 r183→0.185 
 | `areas/InteractivePoints.ts` | MeshBasicNodeMaterial ×3（键帽/标签/菱形圈） | `texture()` mask + `discard`、Chebyshev 菱形距离场、标签滑入 offset | **JS tween 写 uniform**（开合动画期间） | 无 |
 | `world/World.ts` | MeshStandardNodeMaterial ×2（灰盒地面 + 锥桶） | `fwidth` 抗锯齿网格简化版 + 程序化环道；锥桶反光带高度切带 | 否 | 无（锥桶仅 greybox 档出场） |
 | `world/Zones.ts` | MeshBasicNodeMaterial（wireframe 预览） | 纯 color（无自定义节点） | 否 | 无 |
-| `core/Ticker.ts` | —（uniform 源） | `elapsed/delta` 四件套 TSL uniform 逐帧写入 | JS 逐帧写 | **当前无材质消费方**（动画主源是 `time` 节点；预留接口，见 §9） |
+| `core/Ticker.ts` | —（已出清单） | 审计时为 `elapsed/delta` 四件套 TSL uniform 逐帧写入、零材质消费方；已由 `CC-MNT-TICKER-TSL` 按 gaps-consult §1.3 移除，shader 时间源统一 `time` 节点 | —（已移除） | — |
 
 非 TSL 材质（经典 three 材质，详见 §8）：`city/HeroRobot.ts`（回退机甲
 `MeshStandardMaterial` ×5、光柱 `MeshBasicMaterial` ×2、GLB 自带材质）、
@@ -263,6 +264,8 @@ legacyFactor  = (d−140)/(850−140)                                 // 旧线�
 （注释称 Nipple/未来材质消费），但 grep 证实当前**零消费方**——所有 shader 动画
 实际走 TSL `time` 节点（渲染器内建时间源），Nipple 用自有 uniform。属可留可清的
 预留面（见 §9 建议 5）。
+（2026-08-26 更新：已由维护 PR `CC-MNT-TICKER-TSL` 按 gaps-consult §1.3 清除——
+`three/tsl` import、4 个字段与 4 次逐帧写入全删，`Ticker` 现纯为 tick 总线。）
 
 ---
 
@@ -290,6 +293,7 @@ legacyFactor  = (d−140)/(850−140)                                 // 旧线�
    多一组 mips pass（默认 5 层降采样 + 合成），Q2 旁路是正确的止损面。清理项：
    Ticker 四个无消费方的 TSL uniform（每帧 4 次 value 写入，成本趋零但语义悬空）
    ——留作接口须补注释指路 `time` 节点为主源，或径直移除。
+   （已执行：`CC-MNT-TICKER-TSL` 径直移除，见 §8 更新。）
 
 ---
 
@@ -342,7 +346,7 @@ legacyFactor  = (d−140)/(850−140)                                 // 旧线�
 | 文件 | 职责 |
 |---|---|
 | `core/Game.ts` | 两阶段 init：scene/rendering/资源/物理装配序（坑①–④） |
-| `core/Ticker.ts` | 渲染循环驱动的 tick 总线 + 4 个 TSL 时间 uniform（当前无消费方） |
+| `core/Ticker.ts` | 渲染循环驱动的 tick 总线（wait/delay/30 帧滑动平均 dt；原 4 个 TSL 时间 uniform 已由 `CC-MNT-TICKER-TSL` 清除） |
 | `core/Quality.ts` | 0/1/2 三档事实源 + change 事件 |
 | `core/Viewport.ts` | 尺寸/DPR 量测（pixelRatioMax 档位闸） |
 | `core/Objects.ts` | 视觉+物理注册表（Materials 系统未移植，updateMaterials no-op） |
