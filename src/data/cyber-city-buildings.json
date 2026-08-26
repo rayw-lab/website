@@ -136,6 +136,7 @@
       "priority": "P0",
       "unlockPhase": 0,
       "lodProfile": "hero",
+      "heroGlb": "models/autodrive-lab/AutodriveLab.glb",
       "parkingBay": { "x": 28, "z": -28, "heading": 45, "radius": 6 }
     },
     {

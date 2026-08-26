@@ -20,6 +20,7 @@ import type { CyberCityMap } from './CityMap';
 import { loadCityMap } from './CityMap';
 import { Roads } from './Roads';
 import { ThemeTowers } from './ThemeTowers';
+import { HeroBlenderMesh } from './HeroBlenderMesh';
 import { CityBlocks } from './CityBlocks';
 import { CitySilhouette } from './CitySilhouette';
 import { Sky, SKY_ZENITH_COLOR, applyAtmosphereQuality } from './Sky';
@@ -34,6 +35,8 @@ export interface City {
   map: CyberCityMap;
   roads: Roads;
   themeTowers: ThemeTowers;
+  /** [CC-BL1] hero 楼实模层（Blender GLB 热替换；Q2/加载失败回退 ThemeTowers） */
+  heroBlenderMesh: HeroBlenderMesh;
   cityBlocks: CityBlocks;
   silhouette: CitySilhouette;
   /** 霓虹网格地面（CC-E4） */
@@ -60,6 +63,8 @@ export function mountCity(game: Game): City {
 
   const roads = new Roads(game, map);
   const themeTowers = new ThemeTowers(game, map);
+  // [CC-BL1] hero 实模层：Q0/Q1 异步加载 GLB（不阻塞挂载/ready），Q2 零请求
+  const heroBlenderMesh = new HeroBlenderMesh(game, map, themeTowers);
   const cityBlocks = new CityBlocks(game, map);
   const silhouette = new CitySilhouette(game, map);
   const sky = new Sky(game);
@@ -116,7 +121,8 @@ export function mountCity(game: Game): City {
         silhouette.instanceCount - silhouette.slotColliders.length
       }（1 draw call）；道路 ${map.world.roads.length} 条 + 尽头路障 ${roads.barriers.length}` +
       `；出生点 (${spawn.x}, ${spawn.z}) heading ${map.world.spawn.heading}（十字路口正中，车头朝北）` +
-      `；外部资产 0 字节（全程序化）` +
+      `；外部资产：hero 实模 GLB ${heroBlenderMesh.plannedCount} 件在册` +
+      `（[CC-BL1] Q0/Q1 异步加载，Q2/失败回退程序化——其余全程序化 0 字节）` +
       `；[CC-E4] 霓虹视觉系统就位：Quality ${game.quality.level} 档` +
       `（bloom/湿地反射/剪影密度/窗格动画四联动，?quality=0|1|2 或 #debug 句柄切档）` +
       `；[CC-L1] 天空穹顶+地平线辉光 · 窗色三族纪律 · 街角隔离墩 ${streetProps.spots.length} 只（锥桶已撤场）` +
@@ -135,6 +141,7 @@ export function mountCity(game: Game): City {
     map,
     roads,
     themeTowers,
+    heroBlenderMesh,
     cityBlocks,
     silhouette,
     grid,
@@ -160,6 +167,7 @@ export type {
 } from './CityMap';
 export { Roads } from './Roads';
 export { ThemeTowers } from './ThemeTowers';
+export { HeroBlenderMesh } from './HeroBlenderMesh';
 export { CityBlocks } from './CityBlocks';
 export { CitySilhouette } from './CitySilhouette';
 export {
