@@ -86,6 +86,12 @@ export class HeroRobot {
   private headAnimatedByClip = false;
   /** 呼吸灯载体材质（GLB 的 Eye 传感器 / 回退机甲的胸屏+视觉条） */
   private breathMaterials: THREE.MeshStandardMaterial[] = [];
+  /**
+   * [CC-L5-C1] 关节伺服辉光材质（GLB LightGrey 槽 / 回退机甲 joint 材质）：
+   * 随胸口呼吸同拍微脉动（同一 CITY-03 idle 呼吸配额席位，非新增循环动画），
+   * 峰值 0.42 阈下（bloom threshold=1 纪律：机器人辉光锚点仍只有 Eye 传感器）。
+   */
+  private jointMaterials: THREE.MeshStandardMaterial[] = [];
   private breathLight!: THREE.PointLight;
 
   private pillar!: THREE.Group;
@@ -162,6 +168,10 @@ export class HeroRobot {
     for (const material of this.breathMaterials) {
       material.emissiveIntensity = 0.9 + 1.4 * breath;
     }
+    // [CC-L5-C1] 关节伺服同拍微脉动（同一呼吸时间轴 = 同一配额席位；0.16–0.42 阈下）
+    for (const material of this.jointMaterials) {
+      material.emissiveIntensity = 0.16 + 0.26 * breath;
+    }
     this.breathLight.intensity = 6 + 10 * breath;
 
     // 头部环顾（reduced-motion 静止）：
@@ -206,6 +216,22 @@ export class HeroRobot {
       if (material.name === 'Eye') {
         material.emissiveIntensity = 1.2;
         this.breathMaterials.push(material);
+      } else if (material.name === 'LightGrey') {
+        // [CC-L5-C1] 材质分区②关节：肩/肘/髋/膝机械件（GLB LightGrey 槽）加青色
+        // 伺服辉光，随呼吸同拍微脉动——「关节有动力」的材质层次
+        material.emissive.set(0x49c5b6);
+        material.emissiveIntensity = 0.24;
+        this.jointMaterials.push(material);
+      } else if (material.name === 'Accent') {
+        // [CC-L5-C1] 材质分区③警示条：工业橙常亮微 emissive（0.42 阈下不辉光），
+        // 夜景里胸/肩/胫警示条不再沉入黑装甲
+        material.emissive.set(0xff6b35);
+        material.emissiveIntensity = 0.42;
+      } else if (material.name === 'Main') {
+        // [CC-L5-C1] 材质分区①胸甲主装甲：metalness/roughness 微调锐化高光滚降，
+        // A5 品红 rim 背光的轮廓响应更清晰（rim 灯位/强度零改动）
+        material.metalness = 0.62;
+        material.roughness = 0.38;
       }
     });
 
@@ -235,17 +261,31 @@ export class HeroRobot {
 
   private setFallbackMech(targetHeight: number): void {
     // 全站 token 配色（与 GLB 换装同表）：钛灰主装甲 / 工业橙警示 / 青传感器
+    // [CC-L5-C1] 分区口径与 GLB 路径对齐：主装甲高光微锐化、关节伺服辉光、警示条微亮
     const titanium = this.ownMaterial(
-      new THREE.MeshStandardMaterial({ color: 0x5c6472, metalness: 0.55, roughness: 0.45 }),
+      new THREE.MeshStandardMaterial({ color: 0x5c6472, metalness: 0.62, roughness: 0.38 }),
     );
     const dark = this.ownMaterial(
       new THREE.MeshStandardMaterial({ color: 0x3a404c, metalness: 0.5, roughness: 0.5 }),
     );
     const joint = this.ownMaterial(
-      new THREE.MeshStandardMaterial({ color: 0xb3bac6, metalness: 0.65, roughness: 0.32 }),
+      new THREE.MeshStandardMaterial({
+        color: 0xb3bac6,
+        metalness: 0.65,
+        roughness: 0.32,
+        emissive: 0x49c5b6,
+        emissiveIntensity: 0.24,
+      }),
     );
+    this.jointMaterials.push(joint as THREE.MeshStandardMaterial);
     const accent = this.ownMaterial(
-      new THREE.MeshStandardMaterial({ color: 0xff6b35, metalness: 0.2, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({
+        color: 0xff6b35,
+        metalness: 0.2,
+        roughness: 0.5,
+        emissive: 0xff6b35,
+        emissiveIntensity: 0.42,
+      }),
     );
     const sensor = this.ownMaterial(
       new THREE.MeshStandardMaterial({
