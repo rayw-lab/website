@@ -25,7 +25,7 @@
 
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
-| CC-L5-C1 | `cursor/cc-l5-tierc-interior-windows-1d6f` @ `6e48f1a` · [PR #40](https://github.com/rayw-lab/website/pull/40) | [L5-C1](bc-2a06873e-daa2-5ab0-8806-06c78da0f5de) | 🚀 RUNNING（CI 进行中 + 本地 e2e/取证） |
+| CC-L5-C1 | `cursor/cc-l5-tierc-interior-windows-1d6f` @ `6e48f1a` · [PR #40](https://github.com/rayw-lab/website/pull/40) ✅ CI | [L5-C1](bc-2a06873e-daa2-5ab0-8806-06c78da0f5de) | 🚀 RUNNING（CI ✅，本地 e2e/取证中） |
 | CC-AL5 | `cursor/cc-al5-loop5-audit-1d6f` | Sol | 待 L5 收口 |
 
 ## Loop 6 前瞻（AL5 后条件触发）
