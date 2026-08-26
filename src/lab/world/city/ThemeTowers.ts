@@ -59,6 +59,10 @@ export class ThemeTowers {
       litRatio: 0.5,
       intensity: 1.5,
       lobby: true,
+      // [CC-L5-C1] hero 近景楼 ~10% 窗格升格假室内映射（standard 楼不开，零开销）；
+      // rotationY 供室内视差的视线世界→本地变换（JSON 单源，编译期常量）
+      interiorRatio: 0.1,
+      rotationY: (building.position.rotationY * Math.PI) / 180,
     });
 
     const addBox = (

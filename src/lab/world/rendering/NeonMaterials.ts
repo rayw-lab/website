@@ -16,6 +16,7 @@ import * as THREE from 'three/webgpu';
 import {
   Fn,
   abs,
+  cameraPosition,
   float,
   fract,
   hash,
@@ -26,6 +27,7 @@ import {
   normalWorld,
   positionGeometry,
   positionWorld,
+  sign,
   sin,
   smoothstep,
   step,
@@ -100,18 +102,29 @@ export interface FacadeMaterialOptions {
   intensity?: number;
   /** 底层大堂霓虹光带（临街观感，hero 楼开） */
   lobby?: boolean;
+  /**
+   * [CC-L5-C1] 假室内映射窗格占比 0..1（0/缺省 = 整段编译剔除，standard 楼零开销；
+   * hero 近景楼 0.10——rubric §6 Tier C「假室内映射窗格（generator_city 同技法，
+   * ~10% 近景窗）」的执行位）
+   */
+  interiorRatio?: number;
+  /** 楼体世界旋转（弧度，绕 Y）：室内映射视线世界→本地变换用，编译期常量 */
+  rotationY?: number;
 }
 
 /**
  * 楼体幕墙材质（几何以「楼体中心为原点、真实米制」构建时使用——positionGeometry 即米）。
  * 窗格 = 层高 × 列宽栅格；每窗一个 hash：亮/灭、色相（[CC-L1 A3] 三族纪律：
  * 青 55% / 品红 25% / 暖白 20%，WINDOW_PALETTE 单源）、呼吸闪烁相位
- * （相位散布/振幅/时间轴受品质档 uniform 控制）、亮屏升格（~7% 高亮窗）。
+ * （相位散布/振幅/时间轴受品质档 uniform 控制）、亮屏升格（~7% 高亮窗）、
+ * [CC-L5-C1] 假室内映射升格（interiorRatio>0 时 ~10% 窗格出「有进深的房间」，
+ * hero 近景楼专用；standard 楼缺省 0 = 编译剔除零开销）。
  */
 export function createFacadeMaterial(options: FacadeMaterialOptions): THREE.MeshStandardNodeMaterial {
   const floorHeight = options.floorHeight ?? 3.4;
   const columnWidth = options.columnWidth ?? 3.0;
   const intensity = options.intensity ?? 1.4;
+  const interiorRatio = options.interiorRatio ?? 0;
   const seedNode = float((options.seed % 100000) / 97);
 
   const material = new THREE.MeshStandardNodeMaterial({ roughness: 0.55, metalness: 0.35 });
@@ -162,9 +175,85 @@ export function createFacadeMaterial(options: FacadeMaterialOptions): THREE.Mesh
     // 亮屏窗升格（D3 质感件）：~7% 的亮窗 1.9× 强度，bloom 档成为立面高光锚点
     const screenBoost = step(0.93, hash(cellId.mul(2.417).add(seedNode))).mul(0.9).add(1);
 
-    let emissive = windowColor.mul(
-      windowMask.mul(lit).mul(sideMask).mul(flicker).mul(screenBoost).mul(intensity),
-    );
+    // 窗内容层（平涂窗基线；interiorRatio>0 时部分窗格升格为假室内映射）
+    let windowCore = windowColor.mul(lit.mul(flicker).mul(screenBoost).mul(intensity));
+
+    // —— [CC-L5-C1] 假室内映射窗格（rubric §6 Tier C 首项：generator_city 同技法，
+    // TSL 程序化零贴图）：~interiorRatio 的窗格升格为「有进深的房间」——视线与窗后
+    // 虚拟房盒（宽=窗宽 / 高=窗高 / 进深 2.2m）逐轴求交，按最近命中面（后墙/侧墙/
+    // 天花/地板）给出暖房 72% / 冷屏房 28% 的房内光 + 家具剪影。全静态零时间项
+    //（不占 CITY-03 循环动画配额，Q2 冻结无感）；房内亮度峰值 ≈0.6 全程 <1
+    //（bloom threshold=1 纪律：「室内是纵深不是光源」，阈上名额台账见
+    // cyber-city-rendering-architecture-audit.md §5，本件登记在阈下方）。
+    if (interiorRatio > 0) {
+      // 世界→楼体本地视线（buildings JSON rotationY 编译期常量；0 = 直通零开销）
+      const viewWorld = positionWorld.sub(cameraPosition).normalize();
+      const rotY = options.rotationY ?? 0;
+      const cosR = Math.cos(rotY);
+      const sinR = Math.sin(rotY);
+      const vx = rotY === 0 ? viewWorld.x : viewWorld.x.mul(cosR).sub(viewWorld.z.mul(sinR));
+      const vz = rotY === 0 ? viewWorld.z : viewWorld.x.mul(sinR).add(viewWorld.z.mul(cosR));
+
+      // 面内正交基（与 alongFacade 同轴选择）；进深分量按外法线取负 = 入房为正，
+      // 掠射角下限 0.04 防除零/过度拉伸
+      const dAlong = mix(vx, vz, xFaceMask);
+      const dIn = mix(vz.mul(sign(normalGeometry.z)), vx.mul(sign(normalGeometry.x)), xFaceMask)
+        .negate()
+        .max(0.04);
+      const dUp = viewWorld.y;
+
+      // 窗内 UV（windowMask 全开区间 [0.24,0.76]×[0.36,0.78] → [0,1]）+ 房间米制
+      const u0 = wx.sub(0.24).div(0.52).clamp();
+      const v0 = wy.sub(0.36).div(0.42).clamp();
+      const roomDepth = 2.2;
+
+      // 射线转房间单位盒空间，三对壁面取最近命中 t（|d| 下限 1e-4 防除零）
+      const du = dAlong.div(columnWidth * 0.52);
+      const dv = dUp.div(floorHeight * 0.42);
+      const dw = dIn.div(roomDepth);
+      const tU = step(0, du).sub(u0).abs().div(du.abs().max(1e-4));
+      const tV = step(0, dv).sub(v0).abs().div(dv.abs().max(1e-4));
+      const tBack = float(1).div(dw);
+      const tHit = tBack.min(tU).min(tV);
+
+      const hitU = u0.add(du.mul(tHit)).clamp();
+      const hitV = v0.add(dv.mul(tHit)).clamp();
+      const hitW = dw.mul(tHit).clamp(); // 0 = 窗面 → 1 = 后墙
+
+      // 命中面权重（互斥）：后墙 / 侧墙 / 仰视天花 / 俯视地板
+      const wBack = step(tBack, tHit.add(1e-3));
+      const wSide = step(tU, tHit.add(1e-3)).mul(wBack.oneMinus());
+      const wVert = float(1).sub(wBack).sub(wSide).max(0);
+      const wCeil = wVert.mul(step(0, dv));
+      const wFloor = wVert.sub(wCeil);
+
+      // 逐房随机：暖房（钨丝白）72% / 冷屏房（显示器蓝）28%，亮度 0.55–1.0
+      const roomTint = mix(
+        vec3(1.0, 0.62, 0.34),
+        vec3(0.45, 0.75, 1.0),
+        step(0.72, hash(cellId.mul(4.271).add(seedNode))),
+      );
+      const roomLum = hash(cellId.mul(6.733).add(seedNode)).mul(0.45).add(0.55);
+
+      // 逐壁明暗：后墙上亮下暗 + 3 列家具剪影；天花最亮（顶灯面）；地板最暗；侧墙中间调
+      const furnRand = hash(cellId.mul(9.157).add(hitU.mul(3).floor()).add(seedNode));
+      const furniture = step(hitV, furnRand.mul(0.3).add(0.22)).mul(step(0.4, furnRand));
+      const backLum = hitV.mul(0.32).add(0.3).mul(float(1).sub(furniture.mul(0.72)));
+      const ceilLum = float(0.62).sub(hitW.mul(0.18));
+      const floorLum = float(1).sub(hitW).mul(0.1).add(0.1);
+      const sideLum = float(1).sub(hitW).mul(0.16).add(0.2);
+      const wallLum = wBack
+        .mul(backLum)
+        .add(wCeil.mul(ceilLum))
+        .add(wFloor.mul(floorLum))
+        .add(wSide.mul(sideLum));
+
+      // 升格选择与亮/灭窗独立（部分暗窗因此点亮为中间调房间，密度净增益）
+      const interiorSel = step(1 - interiorRatio, hash(cellId.mul(5.113).add(seedNode)));
+      windowCore = mix(windowCore, roomTint.mul(wallLum).mul(roomLum).mul(0.95), interiorSel);
+    }
+
+    let emissive = windowCore.mul(windowMask.mul(sideMask));
 
     // 底层大堂光带（0–3.2m 渐隐），hero 楼临街辨识度
     if (options.lobby) {
