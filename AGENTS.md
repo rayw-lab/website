@@ -36,6 +36,55 @@
 - 用户临时指定其他可用模型时，以当次指令为准。
 - 所有子代理回复的第一行建议自报实际使用的 model slug。
 
+### 4. 提分 Loop 编排范式（Cyber City Score Loop）
+
+本节为 Phase 0 波次（W1–W4）+ 提分 Loop（L0–L2）实战归纳的精华版；完整手册（七段逐段范式、
+已知坑总表、开拍 checklist、Task prompt 与审计清单骨架）见
+`docs/research/cyber-city-orchestration-paradigm.md`。
+
+#### 4.1 角色与模型
+
+| 角色 | 职责 | model slug |
+|------|------|-----------|
+| 父代理 | **只编排**：任务书/文件域/串并行裁决/合并/看板，不写业务代码、不替审计打分 | 产品设置决定 |
+| 实现子代理（Fable5） | 落地代码 + 自评 + 取证登记 | `claude-fable-5-thinking-xhigh` |
+| 审计子代理（Sol） | 独立复评/复算/放行裁决（异族模型防同族自证） | `gpt-5.6-sol-xhigh-fast` |
+
+#### 4.2 串并行与 PR 形态
+
+- **默认串行、单 PR 聚焦**（base = main，一段一 PR，范围 = 任务书清单，执行中禁止扩批）。
+  提分（视觉调参）批次永远单 PR：归因依赖固定机位前后帧对照。
+- **并行例外（L0 型）**：仅当交付物正交、文件域可划分（如 L0 的 setup/baseline/visual 三件套，
+  或波次多 Epic 工程铺面）。并行 Task 涉及同一运行时链路时，段末审计必做试合并 + 合流树冒烟
+  （文本零冲突 ≠ 语义零冲突）。
+- **门控链（L2 型）**：审计设专项门时严格串行——实现 → 审计门 → 过门才进下段；卡门时开
+  **定向补洞段**（只做审计点名缺口），不降门、不硬闯、不推倒重来。
+- **PR 栈仅两种场景**：① 门控补洞段必须叠在未合入前段上（如 a-plus base=a-tail）；
+  ② 终审条件清账段（如 M11/M12 gates base=E7）。开栈须登记栈序与各段 base SHA；
+  审计栈上 PR 必须先自建「候选 ⊕ main」集成树再审（防 main 推进后的 diff 假象）。
+- 审计分支零业务代码改动、只交报告；测试重写的历史截图提交前还原；
+  合并由父代理按审计指定顺序/解法执行，有条件放行时禁止天然合并。
+
+#### 4.3 硬条件（每段放行必查）
+
+| 硬门 | 口径 |
+|------|------|
+| e2e **52/52** | 0 failed / 0 skipped / 0 flaky（全量 ~17–23 min 墙钟，排期按每段 ≥2 轮预算） |
+| LHCI 不降 | `/` 与 `/home/` 四项分类逐项不低于上轮（本 VM null 时用同 SHA green CI artifact 回填并登记来源） |
+| `availableWeight===1` | 且 `missing=[]`；缺维归一化分只作诊断，禁止用作发布/登记分 |
+| 视觉双评 \|Δ\|≤5 | 检验自评合理性；**专项门（如视觉 ≥62）以审计独立分判定**，综合分不能覆盖专项门 |
+| 综合分 ≥85 | 五维权重 25/15/20/25/15，实现单源 `scripts/score-loop.mjs` |
+
+高频坑速查（详表见手册 §3.5）：SwiftShader LHCI null → CI artifact 回填；e2e 内 JSON 用
+`readFileSync` 读（Node 22 ESM import 断言坑）；PR/run 链接用 `gh` 实际输出（曾错写
+`rayw-lab/mywebsite`）；poster 重拍永远排批次最后；视觉自评系统性偏乐观 ~2 分。
+
+#### 4.4 看板单源
+
+提分 Loop 状态（分支/PR/分数/裁决）唯一登记处 = `docs/research/cyber-city-score-loop-orchestration.md`；
+每段收口即更新，禁止多处重复登记。测试跑法单源 = `docs/research/cyber-city-test-framework.md`；
+视觉打分单源 = `docs/research/cyber-city-visual-rubric.md`（帧优先协议见其 §4）。
+
 ## Cursor Cloud specific instructions
 
 本仓库是个人网站工程（Astro + TypeScript + MDX，部署到 GitHub Pages），总纲见 `docs/website-plan/master-plan.md`（第 7 章为技术实现）。Cloud Agent 环境由 `.cursor/environment.json` 定义：install 阶段运行 `.cursor/install.sh`（确保 Node 20+ / pnpm / git 并安装依赖），`astro-dev` 终端由 `.cursor/dev-server.sh` 启动 dev server。
