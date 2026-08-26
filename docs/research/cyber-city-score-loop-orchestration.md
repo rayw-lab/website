@@ -35,8 +35,8 @@
 
 | ID | 分支 | 任务 | Agent | 状态 |
 |----|------|------|-------|------|
-| CC-L4-B5 | `cursor/cc-l4-b5-transform-camera-1d6f` | 充能推镜+落地微震+5–10s录屏 | Fable5 xhigh | 🚀 下一 tick 派发 |
-| CC-AL4 | `cursor/cc-al4-loop4-audit-1d6f` | 复评 ≥68 | gpt-5.6-sol-xhigh-fast | 待 L4 |
+| CC-L4-B5 | `cursor/cc-l4-b5-transform-camera-1d6f` | B5 变形运镜 | [L4-B5](bc-d11d23fd-959e-54b8-bd74-caa609eb48d5) | ✅ 自评 **68**；综合 92.0 |
+| CC-AL4 | `cursor/cc-al4-loop4-audit-1d6f` | Loop 4 终审 | gpt-5.6-sol-xhigh-fast | 🚀 已派发 |
 
 ## Loop 编排定时器
 
