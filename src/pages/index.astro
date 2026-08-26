@@ -986,6 +986,9 @@ const heroTowers = buildings.filter((b) => b.hero);
       padding-top: 3.4rem;
     }
     .topbar {
+      /* [CC-L2-a+ V6] 跳过丸（fixed 右上）让位：brand/nav 整体落到丸下方，
+         销「brand 尾部没进跳过丸底下」的既有排版重叠（A 尾件帧内可见瑕疵） */
+      padding-top: 3rem;
       padding-right: 1rem;
       flex-wrap: wrap;
     }
