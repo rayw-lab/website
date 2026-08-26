@@ -47,8 +47,8 @@
 | ID | 分支 | 任务 | Agent | 状态 |
 |----|------|------|-------|------|
 | CC-L3-content | `cursor/cc-l3-content-poster-1d6f` | B2 TextCanvas + poster 三面（合批） | [L3-content](bc-629d6692-8f11-5885-bdcd-3296e634b2c9) | ✅ 自评 66；综合 91.5 |
-| CC-AL3-B2C | `cursor/cc-al3-b2c-audit-1d6f` | 审 B2C+poster exact tree | gpt-5.6-sol-xhigh-fast | 🚀 已派发 |
-| CC-L3-ATM | `cursor/cc-l3-layered-atmosphere-1d6f` | 分层雾/低云带（V2 主攻） | Fable5 xhigh | 待 AL3-B2C 过门 |
+| CC-AL3-B2C | `cursor/cc-al3-b2c-audit-1d6f` | 审 B2C+poster exact tree | gpt-5.6-sol-xhigh-fast | ✅ 独立 65；放行 ATM |
+| CC-L3-ATM | `cursor/cc-l3-layered-atmosphere-1d6f` | 分层雾/低云带（V2 主攻） | Fable5 xhigh | ✅ 自评 66；综合 91.5 |
 | CC-AL3-MID | `cursor/cc-al3-mid-audit-1d6f` | 集成树中审；裁决 B3/B5 | gpt-5.6-sol-xhigh-fast | ✅ 独立 66；裁决 B3+POSTER |
 | CC-L3-B3 | `cursor/cc-l3-b3-flight-trails-1d6f` | 飞行光轨（条件） | Fable5 xhigh | 🚀 下一实现（V4 瓶颈） |
 | CC-L3-B5 | `cursor/cc-l3-b5-transform-camera-1d6f` | 变形运镜（条件） | Fable5 xhigh | ⏸ 本轮不派（V5 非最低维） |
