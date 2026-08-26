@@ -36,9 +36,22 @@
 |------|------|------|
 | **A Blender spike** | `CC-BL1-hero-corner` | 产品批准；单栋 hero + 街角；V4 主攻 |
 | **B 收口** | — | 不批准 Blender → 视觉停 68，北极星 98 需另策 |
-| **维护** | `CC-MNT-TICKER-TSL` | AL5 后空档，与 Blender 可并行 |
+| **维护** | `CC-MNT-TICKER-TSL` | ✅ 实现完毕（见下节），待审/待合 |
 
 **不开**：Loop 6 tone mapping（AL5 裁决：残余非 V2/V3 主导）
+
+## 维护 — CC-MNT-TICKER-TSL ✅ 实现完毕（待审/待合）
+
+| ID | 分支 | Agent | 状态 |
+|----|------|-------|------|
+| CC-MNT-TICKER-TSL | `cursor/cc-maint-ticker-tsl-uniforms-1d6f` @ `336095e`（base `main@9262cbc`） | CC-MNT-TICKER-TSL | ✅ 已推送；draft PR 由父代理/环境创建（本 VM gh token 只读） |
+
+**范围（gaps-consult §1.3/§2 边界）**：删 `Ticker.ts` 四个零消费 TSL uniform + `three/tsl` import +
+四次逐帧写入 + 失真注释；直接文档同步（rendering-architecture-audit / gaps-consult §1.3）。
+不动 `time` 节点、tick/delay/wait、`scale=2`。零行为变化，不计视觉增量。
+**硬门**：astro check 0 err/0 warn · e2e 全量 50 过 2 基建失败（跑批中共享 VM 并发任务清了
+worktree node_modules，VIS-03/04 崩）→ 重装依赖后 visual-chromium 补跑 4/4 绿，52 例唯一用例
+在 `336095e` 树上全通过 · 与 CC-BL1 文件域互斥
 
 ## 渲染三条发现 — Sol 裁决
 
@@ -46,7 +59,7 @@
 |---|------|------|----------|
 | ① | 无 tone mapping | **建议补** | **本轮不开**；Blender 后或产品另策 |
 | ② | PreRenderer 仅 Q0+WebGPU | **可 defer** | AL5 观测：无 L5 可归因硬门击穿 |
-| ③ | Ticker TSL uniform 悬空 | **建议补** | 维护 PR `CC-MNT-TICKER-TSL` |
+| ③ | Ticker TSL uniform 悬空 | **建议补** | ✅ 已执行：维护 PR `CC-MNT-TICKER-TSL` |
 
 ## Loop 4 — ✅ · 专项 — ✅
 
