@@ -1100,3 +1100,62 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   + 时间轴冻结双保险）、Q0 全效 / Q1 简化、`prefers-reduced-motion` 冻结时间轴、
   dispose 随 Game 场景遍历闭合；**禁做项 = 雾、运镜、poster、B5**。
 
+### 交付与验证
+
+- 分支 `cursor/cc-l3-b3-flight-trails-1d6f`（base：`cursor/cc-l3-layered-atmosphere-1d6f`
+  @ `d258e23`，AL3-MID 放行基线独立视觉 66）。单主题 PR 纪律：只做飞行光轨；
+  禁做项（雾、运镜、poster、B5）零字节触碰——`Sky.ts`/`View.ts`/
+  `TransformSystem.ts`/poster 资产全部零改动。
+- 交付一件（`FlightTrails.ts` 单文件新增 + `city/index.ts` 装配 6 行）：
+  **中远景飞行光轨 3 航线 630 点**（≤800 任务书上限），单
+  `InstancedMesh(PlaneGeometry 1×1, SpriteNodeMaterial)` = 全部航线 **1 次
+  draw call**。每实例 = 拖尾上一个 billboard 光点，位置由航线参数（椭圆环 +
+  高度起伏）+ TSL `time` 顶点级解析求出——**零逐帧 JS update、零 Ticker 订阅、
+  零 CPU 写缓冲**；`θ = phase0 + time·ω − tailT·signedSpan`，机头亮/大、尾端
+  暗/小/微散（长曝光光轨读法）：
+  1. **航线 M 中景环**（品红，单架次）：内外环楼群之间走廊（z −110..−220，
+     离主体最近 111m），穿行 now-signal/autodrive-lab 楼隙（避楼核对过）；
+  2. **航线 F 远景环**（青，双架次错拍 π 对开）：外环外侧、剪影带之前
+     （z −260..−400）——远景暗剪影上的亮线，与低云带/辉光同帧；
+  3. **航线 H 西北远环**（青，双架次）：西北象限，画框左半纵深层。
+     巡航高度 20-30m 压在首幕可见天空带（仰角 3-5° < 画框顶 +6°）。
+- 纪律对齐：遮挡走深度测试（depthWrite=false + depthTest 保留——光轨穿楼即被
+  剪影吞没，穿行空间感自证）· additive 逐点 0.3、机头叠加峰 ≈1.3 略过 bloom
+  threshold=1、拖尾速降阈下（招牌 1.9-2.4 辉光名额不挤占）· `material.fog=false`
+  + 手工 200-620m 距离衰减（additive 片元吃 fogNode 会「加出雾灰」，改与 ATM
+  远景纱帘同带手工融入）· 色相锁 NEON 青/品红双主轴 + 机头 40% 暖白（窗色三族
+  同轴零新色相）· 零贴图零资产全程序化。
+- 档位（`applyQuality` 接 city 装配段 quality.events，模块级 uniform +
+  mesh.count/visible）：Q0 全效 3 航线 / Q1 简化 2 航线（route-major 实例序
+  `mesh.count` 裁尾，CitySilhouette 同技法）× 强度 0.8 / **Q2 明确关闭**
+  （`visible=false` + 强度/时间轴双归零——不画，drawCalls 直接 −1）；
+  `prefers-reduced-motion` 冻结时间轴（光轨定格静态光带，View thetaDrift 同款
+  「偏好静止即静止」纪律）。取证开关
+  `scene.userData.cityFlightTrails.setTrails(0|1)`（cityAtmosphere 同协议）。
+- 验证：`pnpm astro check` 0 err；`node scripts/audit-budget.mjs` 全过（world
+  chunk 83.9/900KB，+1.1KB，外部资产 0 新增）；**全量 e2e 52/52 零回归**
+  （17.8m，0 failed/0 skipped/0 flaky，@smoke3d 3/3；VIS-01/02 壳基线零 diff
+  未重生成——本批零 DOM/poster 改动）；本地隔离 LHCI（独立 npm 布局
+  @lhci/cli@0.15.1 + Playwright Chromium——workspace pnpm 布局的 lighthouse 触
+  `tslib.__spreadArray is not a function` 兼容坑致 perf/BP 全 NaN，按 ATM 先例
+  换隔离布局后 7 URL ×3 = 21 LHR perf 全有值，无需 CI 回填）`/` 与 `/home/`
+  四项中位数全 100 不降，assert exit 0；统一计分 **COMPOSITE_SCORE=91.8**、
+  availableWeight=1、missing=[]。drawCalls 台账（#debug 实测，WebGL2 腿）：
+  Q0 92 / Q1 47 / Q2 34——光轨结构性贡献恒为 1 draw call（setTrails(0) 取证
+  开关是 uniform 加零不减 draw，Q2 关闭才摘 mesh）。
+- 帧证据（同构建参数开关对照 + 时间维双证）：`l3b3-world-robot-1440.webp`
+  （开：品红拖尾穿行 AGENT NEXUS 楼隙 + 青色机头拖尾划过右上天空带）vs
+  `l3b3-world-robot-trailsoff-1440.webp`（关 = ATM 批帧面）；真实运动证据 =
+  `l3b3-world-robot-t2-1440.webp`（+8s 机头位移可测、品红航线出画）+ 22s 定机位
+  录像 `l3b3-trails-motion.mp4`（顾问稿验收行「动态证据能区分真实运动与静态
+  emissive」）；分档帧 `l3b3-world-robot-q1/q2-1440.webp`；POI 深链
+  `l3b3-world-poi-garage-1440.webp`（主体近景零回退）。
+- 视觉自评 **67（校准基线 = CC-AL3-MID 独立总分 66 + ATM 批逐维向量）**：
+  V4 57→60（主攻维 +3：AL3-MID 点名判词「零车流/雨丝/光轨」中光轨项销账，
+  段内保守取分——招牌覆盖/车流/雨丝欠账仍在）；V1/V2/V3/V5/V6/V7 诚实持平
+  （生命感收益只计一次入 V4，不在 V1/V5 重复计）。加权 66.75→67，综合 91.8。
+- 交接：待 CC-AL3-B3 审 exact tree（只审动画配额/Quality/帧内密度增益/性能）；
+  若独立视觉仍 <68，本 Loop 停止追加运行时效果（B5 顺延 Loop 4，不连续赌分）；
+  **poster 三面重拍（CC-L3-POSTER）在运行时冻结后收口 Loop 3**——本批 runtime
+  又改画面，poster 漂移债继续挂专批。
+
