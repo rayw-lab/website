@@ -5,8 +5,10 @@
 | 编排者 | 父代理（只编排，不实现） |
 | 实现模型 | `claude-fable-5-thinking-xhigh` |
 | 审计模型 | `gpt-5.6-sol-xhigh-fast` |
-| 生产 tip | `main` @ `5fd3ddb`（Loop 2 齐套：综合 **91.0**，视觉 **64**） |
-| 目标 | **综合分 ≥ 85**（见下方计分口径） |
+| 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
+| Loop 3+ 顾问稿 | `docs/research/cyber-city-loop3-planning-consult.md` |
+| 生产 tip | `main` @ `b81e8a1`（Loop 2 齐套；综合 **91.0**，视觉 **64**） |
+| Loop 3 目标 | 视觉独立 **≥68**（终审硬门）；综合 ≥85 已达成 |
 
 ## 综合分口径（Loop 统一）
 
@@ -20,36 +22,50 @@
 
 基线由 CC-L0-baseline 首跑登记；每轮 Loop 结束由 CC-AL* 审计复算。
 
-## Loop 0 — ✅ 三 Task 齐套
+## 三道门（Loop 3+ AND 关系）
+
+| 门 | 含义 |
+|----|------|
+| \|Δ\|≤5 | 自评与独立分一致性 |
+| ≥62 | 历史安全底线（防倒退） |
+| **≥68** | Loop 3 终审硬门（仅独立审计分） |
+
+## Loop 0–2 摘要
+
+| Loop | 综合 | 视觉独立 | 裁决 |
+|------|------|----------|------|
+| L0 | 87.2 | 49–51 | AL0 有条件放行 |
+| L1 | 89.2 | 57 | AL1 放行 |
+| L2 | 91.0 | 64 | AL2 放行 |
+
+详表见各 `cyber-city-loop*-audit.md`。
+
+## Loop 3 — 🚀 按顾问稿门控链推进
+
+拓扑：`B2C+poster` → `AL3-B2C` → `ATM` → `AL3-MID` →（条件 B3 或 B5）→ `POSTER`（若未合批）→ `AL3`
 
 | ID | 分支 | 任务 | Agent | 状态 |
 |----|------|------|-------|------|
-| CC-L0-setup | `cursor/cc-l0-test-framework-1d6f` | VM 安装 3D H5 测试框架（Playwright 视觉/点击/canvas 截图纪律） | [L0-setup](bc-1a7804d0-3f2f-5f96-9d5e-a4d2a7a41ba9) | ✅ PR #29 齐套 |
-| CC-L0-baseline | `cursor/cc-l0-baseline-score-1d6f` | 全套工程检验 + 基线分数矩阵 + 工件 | [L0-baseline](bc-45675d88-0cc5-5b62-bd55-1b18638a43ce) | ✅ 五维基线 87.2 |
-| CC-L0-visual | `cursor/cc-l0-visual-research-1d6f` | 竞品视觉调研 + 85 分 rubric | [L0-visual](bc-d0cbec75-f78f-5a57-b07c-873062fa73b0) | ✅ PR #30 rubric v1.1 / 51 |
+| CC-L3-content | `cursor/cc-l3-content-poster-1d6f` | B2 TextCanvas + poster 三面（合批） | [L3-content](bc-629d6692-8f11-5885-bdcd-3296e634b2c9) | ✅ 自评 66；综合 91.5 |
+| CC-AL3-B2C | `cursor/cc-al3-b2c-audit-1d6f` | 审 B2C+poster exact tree | gpt-5.6-sol-xhigh-fast | 🚀 已派发 |
+| CC-L3-ATM | `cursor/cc-l3-layered-atmosphere-1d6f` | 分层雾/低云带（V2 主攻） | Fable5 xhigh | 待 AL3-B2C 过门 |
+| CC-AL3-MID | `cursor/cc-al3-mid-audit-1d6f` | 集成树中审；裁决 B3/B5 | gpt-5.6-sol-xhigh-fast | 待 ATM |
+| CC-L3-B3 | `cursor/cc-l3-b3-flight-trails-1d6f` | 飞行光轨（条件） | Fable5 xhigh | 待 MID 判 V4 瓶颈 |
+| CC-L3-B5 | `cursor/cc-l3-b5-transform-camera-1d6f` | 变形运镜（条件） | Fable5 xhigh | 待 MID；与 B3 互斥 |
+| CC-AL3 | `cursor/cc-al3-loop3-audit-1d6f` | Loop 3 终审 ≥68 | gpt-5.6-sol-xhigh-fast | 待全链 |
 
-## Loop 0 审计 — ✅ 有条件放行
+## Loop 4–5 前瞻（顾问稿 B 节）
 
-| ID | 分支 | 任务 | Agent | 状态 |
-|----|------|------|-------|------|
-| CC-AL0 | `cursor/cc-al0-loop0-audit-1d6f` | 复核基线分 + 框架可复现 + rubric 合理性 | gpt-5.6-sol-xhigh-fast | ✅ 有条件放行；复算 87.2，视觉独立复评 49（Δ2）；见 `cyber-city-loop0-audit.md` |
+| Loop | 主题 | 前提 |
+|------|------|------|
+| L4 | Tier C 程序化打磨（材质/IBL 轻量、剪影细节） | L3 ≥68 或程序化上限复评 |
+| L5 | Blender/实模特专项裁决 | 独立复评确认程序化天花板 |
+| 停 Loop | 独立视觉连续两轮 <+2 且 V2/V4 双瓶颈 | 转实模或降目标 |
 
-## Loop 1 — ✅ Tier A 五项 + AL1 放行
+## Loop 编排定时器
 
-| ID | 分支 | 任务 | Agent | 状态 |
-|----|------|------|-------|------|
-| CC-L1-improve | `cursor/cc-l1-visual-tier-a-1d6f` · [PR #32](https://github.com/rayw-lab/website/pull/32) | AL0 §6 Tier A：天空/雾辉光、锥桶撤场、窗色纪律、首幕构图/轮廓光、变形白爆抑制 | [L1-improve](bc-c6cee121-d50f-5491-b19d-aeb9d608c4ab) | ✅ `1f0d19e`；视觉 51→59；e2e 52/52；综合 89.2 |
-| CC-AL1 | `cursor/cc-al1-loop1-audit-1d6f` | 复算综合分 + 视觉复评 | gpt-5.6-sol-xhigh-fast | ✅ 放行；独立视觉 57（Δ2）；保守综合 88.7；见 `cyber-city-loop1-audit.md` |
-
-## Loop 2 — 🚀 Tier B 完成，AL2 终审中
-
-| 阶段 | 分支 | 任务 | Agent | 状态 |
-|------|------|------|-------|------|
-| CC-L2-a-tail | `cursor/cc-l2-visual-a-tail-1d6f` · [PR #33](https://github.com/rayw-lab/website/pull/33) | A7–A10 | [L2-a-tail](bc-ddb54b1b-f83e-5082-b79e-de513f56ca92) | ✅ 5/5；自评 62；综合 90.5 |
-| CC-AL2-a | `cursor/cc-al2-a-tail-audit-1d6f` | 复评门 | gpt-5.6-sol-xhigh-fast | ⛔ 独立视觉 60；见 `loop2-a-audit.md` |
-| CC-L2-a-plus | `cursor/cc-l2-visual-a-plus-1d6f` · [PR #34](https://github.com/rayw-lab/website/pull/34) | 湿反射前景 + HUD 字级 | [L2-a-plus](bc-9eb424da-1c75-562d-a07a-ec295e2feb57) | ✅ 自评 62；综合 90.5 |
-| CC-AL2-a-plus | `cursor/cc-al2-a-plus-audit-1d6f` | 复评门复核 | gpt-5.6-sol-xhigh-fast | ✅ 独立视觉 **62**；放行 Tier B；见 `loop2-a-plus-audit.md` |
-| CC-L2-tier-b | `cursor/cc-l2-visual-tier-b-1d6f` · [PR #35](https://github.com/rayw-lab/website/pull/35) | B1/B2/B4 | [L2-tier-b](bc-a63837d1-6b15-530d-96b0-24fd0585f8d0) | ✅ 视觉 65；V4 40→56；综合 **91.3** |
-| CC-AL2 | `cursor/cc-al2-loop2-audit-1d6f` | Loop 2 全量终审 | gpt-5.6-sol-xhigh-fast | 🚀 已派发 |
-
-**进入条件（AL1 §6）：** e2e 52/52、LHCI 两 URL 不降、`availableWeight===1` 作硬条件。B3/B5 后置不进本 Loop。
+| 项 | 内容 |
+|----|------|
+| 订阅名 | `loop-cyber-city-orchestrate` |
+| 节奏 | 动态 ~10min（子 Task 墙钟 17–23min，tick 查状态/派发/合流） |
+| 父代理 tick | 读看板 → fetch 分支 → 过门则派下一 Task → 更新本文件 |
