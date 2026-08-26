@@ -49,10 +49,11 @@
 | CC-L3-content | `cursor/cc-l3-content-poster-1d6f` | B2 TextCanvas + poster 三面（合批） | [L3-content](bc-629d6692-8f11-5885-bdcd-3296e634b2c9) | ✅ 自评 66；综合 91.5 |
 | CC-AL3-B2C | `cursor/cc-al3-b2c-audit-1d6f` | 审 B2C+poster exact tree | gpt-5.6-sol-xhigh-fast | 🚀 已派发 |
 | CC-L3-ATM | `cursor/cc-l3-layered-atmosphere-1d6f` | 分层雾/低云带（V2 主攻） | Fable5 xhigh | 待 AL3-B2C 过门 |
-| CC-AL3-MID | `cursor/cc-al3-mid-audit-1d6f` | 集成树中审；裁决 B3/B5 | gpt-5.6-sol-xhigh-fast | 待 ATM |
-| CC-L3-B3 | `cursor/cc-l3-b3-flight-trails-1d6f` | 飞行光轨（条件） | Fable5 xhigh | 待 MID 判 V4 瓶颈 |
-| CC-L3-B5 | `cursor/cc-l3-b5-transform-camera-1d6f` | 变形运镜（条件） | Fable5 xhigh | 待 MID；与 B3 互斥 |
-| CC-AL3 | `cursor/cc-al3-loop3-audit-1d6f` | Loop 3 终审 ≥68 | gpt-5.6-sol-xhigh-fast | 待全链 |
+| CC-AL3-MID | `cursor/cc-al3-mid-audit-1d6f` | 集成树中审；裁决 B3/B5 | gpt-5.6-sol-xhigh-fast | ✅ 独立 66；裁决 B3+POSTER |
+| CC-L3-B3 | `cursor/cc-l3-b3-flight-trails-1d6f` | 飞行光轨（条件） | Fable5 xhigh | 🚀 下一实现（V4 瓶颈） |
+| CC-L3-B5 | `cursor/cc-l3-b5-transform-camera-1d6f` | 变形运镜（条件） | Fable5 xhigh | ⏸ 本轮不派（V5 非最低维） |
+| CC-L3-POSTER | `cursor/cc-l3-poster-three-surface-1d6f` | poster 三面重拍 | Fable5 xhigh | 待 B3 审计后串行 |
+| CC-AL3 | `cursor/cc-al3-loop3-audit-1d6f` | Loop 3 终审 ≥68 | gpt-5.6-sol-xhigh-fast | ⏸ HOLD（66/68） |
 
 ## Loop 4–5 前瞻（顾问稿 B 节）
 

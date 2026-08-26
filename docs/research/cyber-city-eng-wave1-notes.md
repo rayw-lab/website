@@ -1073,3 +1073,14 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   重拍（CC-L3-POSTER）须在 Loop 3 收口前落地**——本批 runtime 大气已改画面，
   AL2 §7 #1 漂移在专批清账前是已知链上状态。
 
+## CC-AL3-MID — B2C+ATM 集成树中审（Loop 3 中审，2026-08-26）
+
+- 审计分支 `cursor/cc-al3-mid-audit-1d6f@0884e1d`（exact tree `11b9c3e`，ATM tip
+  `d258e23`）。
+- fresh e2e **52/52**（17.8m）；@smoke3d 3/3；LHCI 计分 URL CI @ `d258e23` 全 100。
+- 独立视觉 **66**（原始 65.80；V1 64 / V2 69 / V3 69 / V4 57 / V5 63 / V6 72 /
+  V7 73）；|Δ|=0；68 硬门未过。
+- COMPOSITE_SCORE=91.5、availableWeight=1、missing=[]。
+- 裁决：CC-L3-B3 GO；B5 本轮不派；POSTER 待 B3 后；CC-AL3 HOLD。
+  详 `cyber-city-loop3-mid-audit.md`。
+
