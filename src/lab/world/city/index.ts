@@ -26,6 +26,7 @@ import { Sky, SKY_ZENITH_COLOR, applyAtmosphereQuality } from './Sky';
 import { StreetProps } from './StreetProps';
 import { BuildingSigns } from './BuildingSigns';
 import { StreetLamps } from './StreetLamps';
+import { FlightTrails } from './FlightTrails';
 import { applyNeonQuality } from './NeonFacade';
 
 export interface City {
@@ -45,6 +46,8 @@ export interface City {
   buildingSigns: BuildingSigns;
   /** 街道灯杆 + 沿街广告灯箱 10 件（CC-L2-B2） */
   streetLamps: StreetLamps;
+  /** 中远景飞行光轨 3 航线（CC-L3-B3：CITY-03 配额第 3 席，≤800 点） */
+  flightTrails: FlightTrails;
 }
 
 /**
@@ -63,6 +66,7 @@ export function mountCity(game: Game): City {
   const streetProps = new StreetProps(game, map);
   const buildingSigns = new BuildingSigns(game, map);
   const streetLamps = new StreetLamps(game, map);
+  const flightTrails = new FlightTrails(game);
 
   // CC-E4 地表升级：霓虹网格地面（湿地反射三档）接管 plaza 的地表职责——
   // plaza 对象保留（隐藏，回退开关），高度层 0.02 由 Grid 顶替（路面 0.1 仍在其上）
@@ -74,12 +78,14 @@ export function mountCity(game: Game): City {
   // [CC-L2-a+] Roads 路面湿反射层随档：Grid 先切（Q0 时 reflector 就绪）再喂给
   // Roads 共享——主体脚下/斑马线区的倒影与广场同一镜像渲染（AL2-a §6-1）。
   // [CC-L3-ATM] 大气分档（Sky.ts 模块 uniform）：Q0 全效 / Q1 简化 / Q2 兜底
+  // [CC-L3-B3] 光轨分档：Q0 3 航线 / Q1 2 航线 + 0.8 / Q2 明确关闭（不画）
   const applyCityQuality = (level: QualityLevel) => {
     applyNeonQuality(level);
     applyAtmosphereQuality(level);
     grid.applyQuality(level);
     roads.applyWetQuality(level, grid.reflectionNode);
     silhouette.applyQuality(level);
+    flightTrails.applyQuality(level);
   };
   applyCityQuality(game.quality.level);
   game.quality.events.on('change', applyCityQuality);
@@ -119,7 +125,10 @@ export function mountCity(game: Game): City {
       } 面，占位箍带已替换）· 街道灯杆 ${streetLamps.spots.length} 杆（灯箱色族=路轴 neon 单源）` +
       `· 剪影填充增密至 ${silhouette.instanceCount - silhouette.slotColliders.length}（高度方差三档）` +
       `；[CC-L3-ATM] 分层大气就位：双坡距离雾+近地雾床+方位辉光染雾（fogNode）· 地平线低云带（静态）` +
-      `——Q0 全效/Q1 简化/Q2 线性雾兜底`,
+      `——Q0 全效/Q1 简化/Q2 线性雾兜底` +
+      `；[CC-L3-B3] 飞行光轨 ${flightTrails.routeCount} 航线 ${flightTrails.pointCount} 点` +
+      `（≤800 合同；CITY-03 配额第 3 席，单 InstancedMesh 1 draw call）` +
+      `——Q0 3 航线/Q1 2 航线/Q2 关闭`,
   );
 
   return {
@@ -133,6 +142,7 @@ export function mountCity(game: Game): City {
     streetProps,
     buildingSigns,
     streetLamps,
+    flightTrails,
   };
 }
 
@@ -162,6 +172,7 @@ export {
 export { StreetProps } from './StreetProps';
 export { BuildingSigns } from './BuildingSigns';
 export { StreetLamps } from './StreetLamps';
+export { FlightTrails, setFlightTrails } from './FlightTrails';
 export {
   applyNeonQuality,
   createFacadeMaterial,
