@@ -63,9 +63,12 @@ export function mountCity(game: Game): City {
 
   // CC-E4 品质联动：霓虹材质 uniform（窗格闪烁三态）+ 地面反射档 + 剪影密度。
   // Rendering 的 bloom/DPR/阴影档位由其自身监听 quality.events，此处不重复接。
+  // [CC-L2-a+] Roads 路面湿反射层随档：Grid 先切（Q0 时 reflector 就绪）再喂给
+  // Roads 共享——主体脚下/斑马线区的倒影与广场同一镜像渲染（AL2-a §6-1）。
   const applyCityQuality = (level: QualityLevel) => {
     applyNeonQuality(level);
     grid.applyQuality(level);
+    roads.applyWetQuality(level, grid.reflectionNode);
     silhouette.applyQuality(level);
   };
   applyCityQuality(game.quality.level);

@@ -7,14 +7,19 @@
 //   ② 四条道路尽头全息路障（fixed cuboid，CC-P1 全图开放前的「世界边界」）。
 // 出生点标记 = 霓虹光圈 + 朝北箭标，直接读 JSON world.spawn 坐标（对齐 SRD §12.7.5）。
 import * as THREE from 'three/webgpu';
-import { Fn, abs, fract, hash, mix, positionWorld, smoothstep, step, vec2, vec3 } from 'three/tsl';
+import { Fn, abs, float, fract, hash, mix, positionWorld, smoothstep, step, vec2, vec3 } from 'three/tsl';
+import { NEON } from '../../../data/neon-tokens';
 import type { Game } from '../core/Game';
 import type { WorldObject } from '../core/Objects';
+import type { QualityLevel } from '../core/Quality';
+import type { Vec3Node } from '../rendering/MeshGridMaterial';
+import { cityPuddleMask, citySheenColor, type Grid } from '../world/Grid';
 import type { CyberCityMap, Road } from './CityMap';
 import { createHologramBarrierMaterial } from './NeonFacade';
 
-/** 道路主题色（数据无色字段，主题常量归本模块）：中轴大道=青（南北）、霓虹大街=品红（东西） */
-const ROAD_NEON = { northSouth: '#49c5b6', eastWest: '#ff2d6f' } as const;
+/** 道路主题色（中轴大道=青（南北）、霓虹大街=品红（东西））。
+ *  [CC-L2-a+] 色值收敛 src/data/neon-tokens.ts 单源（壳 CSS --neon-* 同一出处） */
+const ROAD_NEON = { northSouth: NEON.cyan, eastWest: NEON.magenta } as const;
 
 /** 分层高度：plaza(0.02) < 路面(0.1)——WebGL 2 标准深度下远端 24bit 精度约 ±8cm，留足余量防 z-fighting */
 const PLAZA_Y = 0.02;
@@ -32,6 +37,12 @@ export class Roads {
   barriers: WorldObject[] = [];
   /** 城市地面碰撞体（物理-only） */
   cityFloor!: WorldObject;
+
+  /** 路面共享材质（湿反射层按品质档重组 emissive/roughness，见 applyWetQuality） */
+  private surfaceMaterial!: THREE.MeshStandardNodeMaterial;
+  /** 路面霓虹 emissive 基底（路缘光 + 出生标记；品质无关，构造时建一次跨档复用） */
+  private neonBase!: Vec3Node;
+  private currentWetLevel: QualityLevel | null = null;
 
   constructor(game: Game, map: CyberCityMap) {
     this.game = game;
@@ -133,7 +144,7 @@ export class Roads {
       return paint;
     })();
 
-    material.emissiveNode = Fn(() => {
+    this.neonBase = Fn(() => {
       const x = positionWorld.x;
       const z = positionWorld.z;
 
@@ -155,9 +166,47 @@ export class Roads {
         .mul(curbNS)
         .add(magenta.mul(curbEW))
         .add(cyan.mul(ring.max(chevron)).mul(1.6));
-    })();
+    })() as unknown as Vec3Node;
+    material.emissiveNode = this.neonBase;
 
+    this.surfaceMaterial = material;
     return material;
+  }
+
+  /**
+   * [CC-L2-a+ V2] 路面湿反射层（AL2-a §6-1「湿反射进主体前景」）：机器人站位 (0,0)
+   * 与斑马线带都在本路面上（y=0.1），此前湿反射只在 Grid 广场（帧内右缘）——路面
+   * 三档接入后，首幕主体脚下/斑马线区可见倒影（机器人品红 rim、路缘霓虹、楼窗随源入水）。
+   *   Q0 共享 Grid 的实时 reflector（同一镜像渲染零二次开销；反射平面 y=0.02 与路面
+   *      高差 8cm，20m 斜距观感可忽略）；反射项峰值系数 0.72+0.1=0.82<1——bloom
+   *      threshold=1 纪律不动（Grid 同款 0.98 更严一档，斑马线白条在湿区不炸白）
+   *   Q1 假反射 sheen（citySheenColor 单源，与 Grid 观感衔接）
+   *   Q2 干燥哑光（emissive 只留霓虹基底）
+   * 掩码 = cityPuddleMask 单源（含首幕前景英雄湿区，Grid/Roads 跨网格图案无缝）。
+   * 幂等、事件级调用；city/index.ts 保证 Grid 先切档（Q0 时 reflection 已就绪）。
+   */
+  applyWetQuality(level: QualityLevel, reflection: Grid['reflectionNode']): void {
+    if (level === this.currentWetLevel) return;
+    this.currentWetLevel = level;
+
+    const material = this.surfaceMaterial;
+
+    if (level === 0 && reflection) {
+      const puddle = cityPuddleMask();
+      const wet = reflection.rgb.mul(puddle.mul(0.72).add(0.1));
+      material.emissiveNode = this.neonBase.add(wet);
+      // 湿区更光滑：主光在积水路面拉出高光条（干区维持沥青 0.82）
+      material.roughnessNode = mix(float(0.82), float(0.24), puddle);
+    } else if (level === 1) {
+      const puddle = cityPuddleMask();
+      material.emissiveNode = this.neonBase.add(citySheenColor().mul(puddle).mul(0.18));
+      material.roughnessNode = mix(float(0.85), float(0.4), puddle);
+    } else {
+      material.emissiveNode = this.neonBase;
+      material.roughnessNode = float(0.85);
+    }
+
+    material.needsUpdate = true;
   }
 
   /** 城市地面碰撞体：可驾驶范围铺满（World 灰盒地面只有 ±150m，道路 range 到 ±260m） */

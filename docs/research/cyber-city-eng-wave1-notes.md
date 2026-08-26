@@ -812,3 +812,93 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
 - 交接：Tier A 尾件 A7-A10（HUD 面板化 + mini 楼宇快览、H1 排版、湿反射调参、
   poster 重拍——重拍必须在前三件落定后）归 Loop 2 →目标 ~62；Tier B（招牌文字
   /街道灯箱）在 A 复评达标后开工。
+
+## CC-L2-a-tail — 视觉 Tier A 尾件 A7-A10 聚焦 PR（Loop 2 第一段，2026-08-25）
+
+- 分支 `cursor/cc-l2-visual-a-tail-1d6f`（base：`main@8f7c86d`，L1 合入基线 89.2/
+  视觉 59、AL1 独立 57）。单聚焦 PR 纪律：只做 rubric §6 A7-A10 四尾件 +
+  AL1 复评门条款（§6-2 时间维证据）；Tier B B1/B2/B4 留下一 Task。
+- 交付四件（A7/A8 纯 DOM/CSS 零引擎改动，A9 uniform 级调参，A10 资产重拍）：
+  1. **A7 HUD 霓虹面板化 + mini 楼宇快览**：`index.astro` 挂载后 HUD 全件面板化
+     （1px 霓虹描边 + 8% 填色，设计提案 §5.2——速度表/回到路口/提示丸/backend
+     徽标同族）；右下常驻 5 栋 hero 楼 mini 快览（`lodProfile=hero` 单源筛选 =
+     `streaming.spawnHd` 五钉，真实 URL 直跳）——销 A4 观察⑨「挂载后退化素面
+     /快览随 cover 消失」。附带销 baseline §A.5-2：HUD 容器 aria-hidden →
+     visibility 门控（隐藏态不可聚焦不进 AT，`aria-hidden-focus` 违例清除，
+     ready 后回到路口/快览键盘可达）。
+  2. **A8 排版强化（零 webfont，G-A′ 红线内）**：霓虹色单源 token
+     `--neon-cyan/--neon-magenta/--neon-ink`（与 Roads `ROAD_NEON` 字面同值），
+     壳内全部霓虹描边/辉光/填色经 `color-mix` 取自 token；H1 字距 0.01→0.06em +
+     暗投影+青晕双层辉光；顶栏 brand/nav/backend、chip/pillars 同族化；
+     壳内小字号全部提至 ≥0.75rem/12px（销 §A.5-3 BP font-size 审计项）。
+  3. **A9 湿反射可见性**：`Grid.ts` 水洼掩码 smoothstep 0.42/0.78→0.3/0.64
+     （覆盖率 ~18%→~38%）+ Q0 反射强度 0.55/0.14→0.8/0.18（峰值系数 0.98<1，
+     bloom threshold=1 纪律不动）+ Q1 sheen 0.12→0.2；网格线强 0.55/0.8→0.3/0.45
+     （棋盘格弱化——地面读作湿沥青而非发光网格）。首幕主机位帧内可见（帧证）。
+  4. **A10 poster 重拍（最后执行）**：A1-A9 落地后按 rubric §4 协议 B 重截
+     robot_idle 主帧（canvas 纯帧，DOM 覆盖层隐藏）——desktop 1280×720 34.5KB +
+     **新增** mobile 9:16 竖版 720×1280 24.2KB（`<picture>` 断点单选，销「移动
+     poster 无构图」）+ og:image 首接（三处同源同帧）。壳静态段合计 67.3KB ≤90KB。
+     坑：`<picture>` 需自身绝对定位脱流——`display:contents` 方案会让空
+     `<source>` 变成 grid item 抢占 `.cover` 首列（实拍翻版发现，已修）。
+- AL1 复评门条款销账：固定脚本录屏 118.8s 墙钟全程（robot_idle 62.2s → Space
+  68.1s → transforming 73.0s → car_ready 113.8s，SwiftShader 时间膨胀 ×~39），
+  变长加速出 **9.4s** 序列 `assets/visual-rubric/l2-transform-seq.mp4`（idle 呼吸
+  →充能→双色光幕→热交换→easeOutBack 落地→提示丸，veil 段楼体/斑马线全程可读）；
+  关键帧 `l2-world-{robot,veil,car}-1440.webp` + 壳双端 `l2-shell-*.webp` 入库。
+- 验证：`pnpm astro check` 0 err；`node scripts/audit-budget.mjs` 全过（壳 67.3KB
+  /90、world JS 79.4KB/900）；`pnpm test:visual` 4/4（VIS-01 壳基线经审阅
+  `--update-snapshots`——A8 排版 + A10 新 poster 的有意变更；VIS-02 在 2% 容差内
+  零 diff）；**全量 e2e 52/52 零回归**（17.8m）；测试重写的 `docs/spec/assets/e2e-*`
+  历史截图照例还原不提交。
+- 视觉自评 **59 → 62（+3；对 AL1 独立 57 = +5）**：V6 55→70（主攻维）/ V2 60→64 /
+  V1 56→59 / V3 68→70 / V4 44、V5 65、V7 72 诚实持平（本 PR 零场景内容/零动效
+  改动）——达 rubric §6 Tier A 完成档 ~62。综合分 `COMPOSITE_SCORE=89.9`
+  （LHCI 沿用 CI artifact @8f7c86d 回填口径 + 当轮 e2e JSON，五维齐套）；
+  §A.5-2/3 两项 LHCI 修法落地后 `/` A11y/BP 有望在本 PR CI 上修（不预支计分）。
+- 交接：Tier B 主批 B1/B2/B4（5 栋 hero 可读招牌、沿街灯箱/灯杆 6-10 件、剪影
+  密度/高度方差）按 AL1 §6-3 开工，V4=44 仍是最低维；B3/B5 后置（动画配额与
+  运镜门禁先裁决）。
+
+---
+
+## CC-L2-a-plus — AL2-a 复评门补洞 PR（Loop 2 第二段，2026-08-26）
+
+- 分支 `cursor/cc-l2-visual-a-plus-1d6f`（base：`cursor/cc-l2-visual-a-tail-1d6f`
+  @711339c——PR #33 未合入 main，按派发指示叠在 a-tail 上）。背景：AL2-a 审计
+  A7-A10 5/5 落地、双评容差 Δ2≤5 通过，但**独立视觉 60 < 62 硬门**，Tier B 暂停；
+  §6 补洞两件 = 本 PR 全部内容（零 Tier B 场景内容）。
+- 交付三件（①引擎 ②DOM ③收窄条款销账）：
+  1. **湿反射进主体前景（AL2-a §6-1，V2 主攻）**：根因——机器人站位 (0,0) 与
+     斑马线带都在 **Roads 路面**（y=0.1）上，A9 只调了 Grid 广场（y=0.02），
+     所以反射「主要停在画面右缘」。修法：`Roads.applyWetQuality` 三档湿反射层
+     （Q0 **共享 Grid 的 reflector 节点**——同一镜像渲染零二次开销，反射平面高差
+     8cm 在 20m 斜距不可辨；Q1 sheen / Q2 干燥），`city/index.ts` 保证 Grid 先
+     切档再喂 Roads；掩码抽为 `Grid.cityPuddleMask` 单源（全城噪声 + **首幕前景
+     英雄湿区**：椭圆中心 (3,8) 半轴 (13,11.5)，按实拍机位推导恰盖「主体脚下→
+     南斑马线→近机位路面」，区内 0.6-1.0 噪声调制防盖章感，北向路廊零覆盖保
+     干湿对比）。纪律：反射项峰值系数 0.72+0.1=0.82<1（比 Grid 0.98 更严），
+     bloom threshold=1 不动。
+  2. **HUD/mini 字级·留白·占比（AL2-a §6-2，V6）**：顶栏 brand/nav 12→13.6px、
+     backend/skip 12→12.8px、速度表 28.8→38.4px、mini 快览行 12.8→14.4px +
+     面板 15.5→17.5rem、hint/respawn 同步，内衬/行距全面放宽；另修移动端顶栏
+     brand 没进跳过丸底下的既有重叠（<768px 顶栏 padding-top 3rem 让位）。
+  3. **neon token 真单源（AL2-a §2 收窄条款销账，V3）**：`src/data/neon-tokens.ts`
+     跨 TS/CSS 单一事实源——引擎 Roads/NeonMaterials/Reveal import + 壳
+     `<html>` 内联 style 构建期注入；壳内青色 rgba 分解字面量清零（全部
+     color-mix(var(--neon-cyan))）。
+- **poster 三处同源重拍**（A10 纪律「永远排批次最后」随批执行）：desktop
+  1280×720 37.9KB + mobile 720×1280 34.1KB（≤40KB，壳合计 80.9KB ≤90KB）；
+  mobile 从 2160×1350 高清帧按主体居中裁 9:16（销「横图硬裁」，构图优于 a-tail
+  的贴边裁切）。坑：canvas 纯帧截图要先量「视口高 − 画布高」补偿顶栏占高，
+  否则 1280×720 视口实拍出 1280×668（纵横比 1.92 构图错）。
+- 验证：`pnpm astro check` 0 err；`node scripts/audit-budget.mjs` 全过；
+  `pnpm test:visual` 4/4（VIS-01 壳基线经审阅 `--update-snapshots`——顶栏字级 +
+  新 poster 有意变更；VIS-02 在 2% 容差内零 diff）；**全量 e2e 52/52 零回归**；
+  LHCI 本轮 exact-tree 实采。同机位前后对比帧 `l2-world-robot-1440.webp`（前）
+  vs `l2a-world-robot-1440.webp`（后）+ 壳双端 `l2a-shell-*.webp` 入库。
+- 视觉自评 **62（校准基线 = AL2-a 独立分 60 逐维原值，非 a-tail 自评轨道）**：
+  V2 61→66（70 段四条件满足三条，唯雾单层压段界）/ V6 69→73 / V1 59→61 /
+  V3 68→70；V4 40、V5 63、V7 70 诚实持平。四处加分全部有帧内可见证据。
+- 交接：AL2-a 复评达门（≥62）后启动 Tier B B1/B2/B4；V4=40 仍最低维；
+  V2 下一段提分需雾分层（Tier B/C），V6 再上要 diegetic 面板/字体选型（Tier C）。
