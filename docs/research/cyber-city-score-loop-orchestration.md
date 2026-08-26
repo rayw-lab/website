@@ -7,8 +7,8 @@
 | 审计模型 | `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
-| 北极星 | 综合 **98**（登记 **92.0/68**，Δ **−6.0**） |
-| 生产 tip | `main` @ `a3875e5`（登记 **92.0/68**；AL-BL1 独立 **70/92.5** 待清账合流登记） |
+| 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
+| 生产 tip | `main` @ `b24544a`（登记 **92.5/70**） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -27,33 +27,26 @@
 
 Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归绿）· 渲染发现③ 已清
 
-## Blender 路径 — 🚀 全马力（Fable5 顾问拍板）
+## Blender 路径 — BL1 ✅ 已合 main
 
-<<<<<<< HEAD
 | ID | 分支 | PR | Agent | 状态 |
 |----|------|-----|-------|------|
-| CC-BL1 | `cursor/cc-bl1-hero-corner-blender-1d6f` @ `94a7781` | [#42](https://github.com/rayw-lab/website/pull/42) | [BL1](bc-c774aeb8-6935-51db-b871-45578b1c64eb) | ✅ IDLE 交付（自评 70/92.5，**禁登记**） |
-| CC-AL-BL1 | `cursor/cc-al-bl1-audit-1d6f` @ `e15a7d3` | — | [AL-BL1](bc-27254995-4b15-55d8-b0e2-fc9edeb9696d) | ✅ 有条件放行 **70/92.5**（**禁合流**） |
+| CC-BL1 | 已合 main | [#42](https://github.com/rayw-lab/website/pull/42) | [BL1](bc-c774aeb8-6935-51db-b871-45578b1c64eb) | ✅ |
+| CC-AL-BL1 | `cursor/cc-al-bl1-audit-1d6f` @ `76713e0` | — | [AL-BL1](bc-27254995-4b15-55d8-b0e2-fc9edeb9696d) | ✅ 有条件放行 **70/92.5** |
 
-报告：`docs/research/loop-bl1-audit.md` · 清账：`scripts/blender/` → `tools/blender/`（台账 BL1 `@94a7781` 已补）
-=======
-| ID | 分支 | Agent | 状态 |
-|----|------|-------|------|
-| CC-BL1 | `cursor/cc-bl1-hero-corner-blender-1d6f` | [BL1](bc-c774aeb8-6935-51db-b871-45578b1c64eb) | ✅ 交付（[PR #42](https://github.com/rayw-lab/website/pull/42)，自评 **70/≈92.5**，raw 69.65：V4 60→68 主攻 + V1/V2/V7 各 +1；三态回退取证 + 全量闸绿；派发 71–74 在单楼+单角帧证据下诚实不可达，见 score JSON notes） |
-| CC-AL-BL1 | `cursor/cc-al-bl1-audit-1d6f` | Sol | 审计中（exact tree 全量闸已跑绿） |
->>>>>>> origin/cursor/cc-bl1-hero-corner-blender-1d6f
+报告：`docs/research/loop-bl1-audit.md` · 清账 `@0f5d461`（`tools/blender/` + 台账）
 
 ### BL1 拍板（[Fable5 顾问](bc-da728b97-e892-5b2a-a4f8-dbc8b7449177)）
 
 - **目标**：`autodrive-lab` + 十字路口东北角（x 8–52 / z −52–−8）
 - **双帧收益**：VIS-03 首幕 + VIS-04 深链
 - **预算**：单 GLB ≤10MB（Draco+KTX2、≤100k tri）；失败回退程序化 `ThemeTowers`
-- **自评目标**：V4 68–72，整体 71–74（须 AL-BL1 独立复评）
+- **登记**：AL-BL1 独立 **70/92.5**（禁止用 BL1 自评登记）
 - **依赖调研单**：`ResourcesLoader.ts` · asset-ledger · `github-assets-research` Kenney CC0 · `gltf-transform` 一次性构建
 
 ### 通往 98（顾问估 3–4 轮）
 
-BL1 → BL2 沿街扩展 → tone mapping（实模密度到位后）→ poster 三面收口
+BL2 沿街扩展 → tone mapping（实模密度到位后）→ poster 三面收口
 
 ## 渲染三条发现 — Sol 裁决
 
@@ -65,7 +58,7 @@ BL1 → BL2 沿街扩展 → tone mapping（实模密度到位后）→ poster �
 
 ## 纪律
 
-- AL5 登记 **68/92.0**，禁止用 L5 自评 69 登记生产
+- 登记只认审计独立分（当前 **70/92.5**）
 - **禁止降级模型**；缺依赖先调研再实现
 - tone mapping **等 Blender 路径验证后再开**
 - poster 永远排批次最后
