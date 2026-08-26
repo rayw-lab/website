@@ -132,6 +132,10 @@ detached merge commit。试合并未推送，`ort` 零冲突。
 `extensionsUsed` 同时含 `KHR_materials_emissive_strength`；材质名 13 个与 README 合同一致。
 体积小不能单独证明压缩成立，本审计以容器 extension + MIME + accessor 计数为准。
 
+审计机同时具备 Blender 4.0.2 与 `toktx`。按 README 三段命令从脚本 fresh 生成 raw GLB，
+再跑 ETC1S → Draco，得到 **157,444 B 且 SHA-256 与入库 GLB 字节级完全相同**；生成器
+是可复现源，不是只写了命令但无法还原的说明文件。
+
 ### 3.2 工程预算
 
 `node scripts/audit-budget.mjs`（exact tree）：
