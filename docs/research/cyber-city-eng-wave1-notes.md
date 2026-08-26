@@ -1159,3 +1159,46 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   **poster 三面重拍（CC-L3-POSTER）在运行时冻结后收口 Loop 3**——本批 runtime
   又改画面，poster 漂移债继续挂专批。
 
+## CC-L3-POSTER — poster 三面同源重拍 + VIS-01 基线（Loop 3 收口批，2026-08-26）
+
+- 分支 `cursor/cc-l3-poster-three-surface-1d6f`（base：`cursor/cc-l3-b3-flight-trails-1d6f`
+  @ `8d523b7`，AL3-B3 裁决基线：独立视觉仍 66、B5 HOLD——运行时视觉冻结）。
+  单聚焦 PR 纪律：只重拍 desktop/mobile/OG poster + VIS-01 壳基线（清 AL2 §7 #1
+  口径下 ATM/B3 两批积累的三面漂移；A10 铁律「poster 重拍永远排批次最后」=
+  Loop 3 运行时冻结后收口批）；**零 3D/CSS 构图改动**——`src/` 全域零字节触碰，
+  diff 仅 2 张 webp + 1 张基线 png（+文档）。
+- 重拍协议（rubric §4 协议 B，L3-content 口径复用）：preview 伺服 dist →
+  2560×1493 视口（顶栏补偿 53px——phase1 用 reduced-motion 拦截态实测量取，
+  与 a-plus 口径复核一致）→ 等 `data-state=ready` + `data-world-state=robot_idle`
+  + 稳帧 8s → 隐藏 DOM 覆盖层（.skip/.hud/.hud-city/.hint/.cover/**.world-ritual**）
+  → `visibilitychange(hidden)` 暂停 RAF（合成器留末帧，绕开 SwiftShader 下 RAF
+  独占主线程的 screenshot 超时）→ canvas 纯帧 2560×1440 一拍两吃：desktop
+  1280×720 lanczos3 降采样（超采 AA 补软渲染无 MSAA）q=68 → **39.7KB gzip**；
+  mobile 720×1280 主体居中裁 9:16 q=76 → **38.0KB gzip**（各 ≤40KB）；og:image
+  与 desktop 同文件三面同源。坑（新增留档）：「主体居中」= **crop 中心对机器人
+  （x≈870/2560），非画幅居中**——主体在画面左 1/3，画幅居中裁 (left=875) 会把
+  主体切半出画，首裁翻车按旧 mobile 帧构图对齐后重裁 (left=465)。
+- 新帧带入两批运行时增量（销漂移的实证）：右地平线 ATM 低云带/大气纵深入镜 +
+  右上空域 B3 青色机头拖尾入镜；机位/构图与旧帧逐像素同构（相机零改动自证）。
+- VIS-01 壳基线重生成：新旧帧落在 toHaveScreenshot 2% 像素容差内，
+  `--update-snapshots`（默认 changed 模式）判定通过**不触发重写**——按任务书
+  「重拍 VIS-01 基线」改 `--update-snapshots all` 强制重生成（坑留档：poster
+  级有意变更未必超容差，重拍基线必须显式 all）；VIS-02 在 2% 容差内零 diff
+  未重生成（惯例口径）。
+- 验证：`node scripts/audit-budget.mjs dist/` 全过（G-A′ poster 39.7/40KB、
+  壳静态段合计 86.5/90KB、world chunk 83.9/900KB 零变化、受保护 14 页命中 0）；
+  `pnpm test:visual` 4/4；**全量 e2e 52/52 零回归**（18.2m，0 failed/0 skipped/
+  0 flaky，@smoke3d 3/3）；本地隔离 LHCI（B3 同口径：workspace pnpm 布局
+  `pnpm lhci:local` 复现 tslib 兼容坑 perf/BP 全 NaN → 独立 npm 布局
+  @lhci/cli@0.15.1 + Playwright Chromium，7 URL ×3 = 21 LHR perf 全有值）
+  `/` 与 `/home/` 四项中位数全 100 不降（poster 为 `/` LCP 资源，+1.1KB gzip
+  无感），assert exit 0；统一计分 **COMPOSITE_SCORE=91.8**、availableWeight=1、
+  missing=[]（与 B3 批持平——本批视觉分不动，唯一变量 LHCI 复测不降）；测试
+  重写的 `docs/spec/assets/e2e-*` 历史截图照例还原不提交；抓帧脚本为临时件
+  不入库（协议全文见本小节）。
+- 视觉自评持平 **67（零运行时改动，不重复计分）**：poster 同源性收益在
+  L3-content V6 已计过一次，本批只清 ATM/B3 后的链上已知漂移（B3 自评 V6 73
+  「本维不预扣」的对价 = 本批销账，score JSON 已加批注）。交接：AL2 §7 #1 /
+  ATM·B3 交接项「poster 三面重拍须在 Loop 3 收口前落地」销账；Loop 3 全链
+  （B2C+ATM+B3+POSTER）就绪，待 CC-AL3 终审 ≥68 硬门裁决。
+
