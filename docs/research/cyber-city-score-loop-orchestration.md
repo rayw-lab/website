@@ -9,48 +9,49 @@
 | 渲染架构 | `cyber-city-rendering-architecture-audit.md` |
 | 渲染缺口裁决 | `cyber-city-rendering-gaps-consult.md`（Sol 2026-08-26） |
 | 北极星 | 综合 **98**（当前 **92.0**，Δ **−6.0**） |
-| 生产 tip | `main` @ `c87a273`（登记 **92.0/68**；L5 自评 92.3/69 **未过 AL5 不得登记生产**） |
+| 生产 tip | 合流后更新（登记 **92.0/68**） |
 
-## 渲染三条发现 — Sol 裁决（不立即开 Task）
-
-| # | 发现 | 裁决 | 插入时机 |
-|---|------|------|----------|
-| ① | 无 tone mapping | **建议补** | AL5 后 **Loop 6** 单批校准（ACES+emissive 整表重校）；**不进 L5** |
-| ② | PreRenderer 仅 Q0+WebGPU | **可 defer** | AL5 补冷启动**观测**；有硬门失败再定向修复 |
-| ③ | Ticker TSL uniform 悬空 | **建议补** | AL5 后**维护小 PR**（删或注释指路）；不占视觉关键路径 |
-
-当前顺序不变：**L5-C1 → AL5 →** 再按决策树开 Loop 6 / 维护 PR / Blender 专项。
-
-## Loop 5 — 🚀 Tier C（V4 主攻）
+## Loop 5 — ✅ 有条件放行（AL5）
 
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
-| CC-L5-C1 | `cursor/cc-l5-tierc-interior-windows-1d6f` @ `8c7da76` · [PR #40](https://github.com/rayw-lab/website/pull/40) | [L5-C1](bc-2a06873e-daa2-5ab0-8806-06c78da0f5de) | ✅ DONE（自评 69，综合 92.3） |
-| CC-AL5 | `cursor/cc-al5-loop5-audit-1d6f` | [AL5](bc-828f4da0-f935-55b1-bc0d-0cfbb8538202) | 🚀 RUNNING（等审计收口） |
+| CC-L5-C1 | `cursor/cc-l5-tierc-interior-windows-1d6f` @ `8c7da76` · [PR #40](https://github.com/rayw-lab/website/pull/40) | [L5-C1](bc-2a06873e-daa2-5ab0-8806-06c78da0f5de) | ✅ 已合 main |
+| CC-AL5 | `cursor/cc-al5-loop5-audit-1d6f` @ `9d829e4` | [AL5](bc-828f4da0-f935-55b1-bc0d-0cfbb8538202) | ✅ 有条件放行 |
 
-## Loop 6 前瞻（AL5 后条件触发）
+**登记分（审计独立口径）**：视觉 **68**（raw 68.00，AL4 +0.50）· 综合 **92.0** · e2e 52/52 · LHCI 不降  
+**未达成**：Loop 5 专项门独立视觉 ≥70；L5 自评 69 **不得登记生产**  
+**报告**：`docs/research/loop5-audit.md`
 
-| 条件 | Task |
-|------|------|
-| 独立 69±、V4 有净增益、缺口=V2/V3 高光 | `CC-L6-tone-mapping`（ACES + 台账重校） |
-| AL5 冷启动硬门失败 | `CC-L5-fix-precompile`（定向预热，非 CubeCamera 一刀切） |
-| 任意时刻 | `CC-maint-ticker-uniforms`（③ 清悬空接口） |
+### AL5 放行条件（父代理须遵守）
+
+1. 看板只登记 **68/92.0**，不宣称 Loop 5 ≥70  
+2. **停止普通程序化 Tier C 叠件**（禁 tone mapping/雨丝/HUD 等赌分）  
+3. 下一视觉动作：**单 hero 楼 + 街角 Blender spike**（须产品立项）；不批准则视觉停在 68 收口  
+4. poster 三面等 runtime/资产路线冻结后单独批  
+5. `CC-MNT-TICKER-TSL` 可维护 PR，不占视觉 Loop  
+
+## 下一拍（待产品/父代理裁决）
+
+| 路径 | Task | 条件 |
+|------|------|------|
+| **A Blender spike** | `CC-BL1-hero-corner` | 产品批准；单栋 hero + 街角；V4 主攻 |
+| **B 收口** | — | 不批准 Blender → 视觉停 68，北极星 98 需另策 |
+| **维护** | `CC-MNT-TICKER-TSL` | AL5 后空档，与 Blender 可并行 |
+
+**不开**：Loop 6 tone mapping（AL5 裁决：残余非 V2/V3 主导）
+
+## 渲染三条发现 — Sol 裁决
+
+| # | 发现 | 裁决 | 插入时机 |
+|---|------|------|----------|
+| ① | 无 tone mapping | **建议补** | **本轮不开**；Blender 后或产品另策 |
+| ② | PreRenderer 仅 Q0+WebGPU | **可 defer** | AL5 观测：无 L5 可归因硬门击穿 |
+| ③ | Ticker TSL uniform 悬空 | **建议补** | 维护 PR `CC-MNT-TICKER-TSL` |
 
 ## Loop 4 — ✅ · 专项 — ✅
 
 Loop 4 B5+AL4（视觉 68）；Rendering-Audit [PR #39](https://github.com/rayw-lab/website/pull/39)。
 
-## Loop 5 corner case 纪律（本轮盯）
-
-| # | 风险 | 处置 |
-|---|------|------|
-| 1 | L5 自评 92.3/69 ≠ 生产分 | **AL5 独立分**过门才登记 tip；不合流前禁止用自评推进 Loop 6 |
-| 2 | PR #40 栈 diff 假象 | AL5 须 exact tree：`8c7da76 ⊕ main@bfd8c92` |
-| 3 | WS-E2E-03 ±π flake | L5 首轮 1 fail 已留档；AL5 须隔离复核，不得静默吞 |
-| 4 | raw +1.0 停批条款 | 若独立 raw 增益 <1.0 → 裁决 Blender，不自动开 Loop 6 |
-| 5 | 渲染三条插队 | tone mapping / PreRenderer / Ticker **不进 AL5 前** |
-| 6 | AL5 分支滞后 main | `cc-al5-loop5-audit` 当前无 ahead commit，等 Agent push 审计报告 |
-
 ## 定时器
 
-`loop-cyber-city-orchestrate` · **300s（5m）** · 北极星 98 · CI 订阅 PR #40 分支
+`loop-cyber-city-orchestrate` · **300s（5m）** · 北极星 98 · 等 Blender 立项或收口裁决
