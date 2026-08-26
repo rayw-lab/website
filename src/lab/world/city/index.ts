@@ -22,7 +22,7 @@ import { Roads } from './Roads';
 import { ThemeTowers } from './ThemeTowers';
 import { CityBlocks } from './CityBlocks';
 import { CitySilhouette } from './CitySilhouette';
-import { Sky, SKY_FOG_COLOR, SKY_ZENITH_COLOR } from './Sky';
+import { Sky, SKY_ZENITH_COLOR, applyAtmosphereQuality } from './Sky';
 import { StreetProps } from './StreetProps';
 import { BuildingSigns } from './BuildingSigns';
 import { StreetLamps } from './StreetLamps';
@@ -37,7 +37,7 @@ export interface City {
   silhouette: CitySilhouette;
   /** 霓虹网格地面（CC-E4） */
   grid: Grid;
-  /** 天空穹顶 + 地平线辉光（CC-L1 A1） */
+  /** 天空穹顶 + 地平线辉光（CC-L1 A1）+ 分层大气：低云带/分层雾 fogNode（CC-L3-ATM） */
   sky: Sky;
   /** 街角霓虹隔离墩（CC-L1 A2：城市道具层，替换 spike 锥桶） */
   streetProps: StreetProps;
@@ -73,8 +73,10 @@ export function mountCity(game: Game): City {
   // Rendering 的 bloom/DPR/阴影档位由其自身监听 quality.events，此处不重复接。
   // [CC-L2-a+] Roads 路面湿反射层随档：Grid 先切（Q0 时 reflector 就绪）再喂给
   // Roads 共享——主体脚下/斑马线区的倒影与广场同一镜像渲染（AL2-a §6-1）。
+  // [CC-L3-ATM] 大气分档（Sky.ts 模块 uniform）：Q0 全效 / Q1 简化 / Q2 兜底
   const applyCityQuality = (level: QualityLevel) => {
     applyNeonQuality(level);
+    applyAtmosphereQuality(level);
     grid.applyQuality(level);
     roads.applyWetQuality(level, grid.reflectionNode);
     silhouette.applyQuality(level);
@@ -83,13 +85,13 @@ export function mountCity(game: Game): City {
   game.quality.events.on('change', applyCityQuality);
 
   // 灰盒相机远裁剪面 200m 只够试车道；城市尺度放宽 + 距离雾衔接天际线渐隐。
-  // [CC-L1 A1] 雾色与天空地平线辉光带同源（SKY_FOG_COLOR）：远景楼宇渐隐进
-  // 「城市光污染」而非纯黑；背景兜底同天顶色，穹顶边角零黑缝。
+  // [CC-L3-ATM] 雾本体已升级为 Sky.ts 分层大气 fogNode（Sky 构造时装上 scene，
+  // 接管 CC-L1 单层线性 Fog；雾色/辉光/云带三件同源单文件）；背景兜底同天顶色，
+  // 穹顶边角零黑缝。
   for (const camera of [game.view.camera, game.view.defaultCamera]) {
     camera.far = 1000;
     camera.updateProjectionMatrix();
   }
-  game.scene.fog = new THREE.Fog(SKY_FOG_COLOR, 140, 850);
   game.scene.background = new THREE.Color(SKY_ZENITH_COLOR);
 
   // 挂载末拍 shader 预热（§12.7.2「shader 预热」行）：离屏 CubeCamera 逼全部
@@ -115,7 +117,9 @@ export function mountCity(game: Game): City {
       `；[CC-L2 Tier B] hero 招牌 ${buildingSigns.buildingIds.length} 栋（全息板 + 立面灯箱 ${
         buildingSigns.panelFaceCount
       } 面，占位箍带已替换）· 街道灯杆 ${streetLamps.spots.length} 杆（灯箱色族=路轴 neon 单源）` +
-      `· 剪影填充增密至 ${silhouette.instanceCount - silhouette.slotColliders.length}（高度方差三档）`,
+      `· 剪影填充增密至 ${silhouette.instanceCount - silhouette.slotColliders.length}（高度方差三档）` +
+      `；[CC-L3-ATM] 分层大气就位：双坡距离雾+近地雾床+方位辉光染雾（fogNode）· 地平线低云带（静态）` +
+      `——Q0 全效/Q1 简化/Q2 线性雾兜底`,
   );
 
   return {
@@ -148,7 +152,13 @@ export { Roads } from './Roads';
 export { ThemeTowers } from './ThemeTowers';
 export { CityBlocks } from './CityBlocks';
 export { CitySilhouette } from './CitySilhouette';
-export { Sky, SKY_FOG_COLOR, SKY_ZENITH_COLOR } from './Sky';
+export {
+  Sky,
+  SKY_FOG_COLOR,
+  SKY_ZENITH_COLOR,
+  applyAtmosphereQuality,
+  setAtmosphereLayers,
+} from './Sky';
 export { StreetProps } from './StreetProps';
 export { BuildingSigns } from './BuildingSigns';
 export { StreetLamps } from './StreetLamps';
