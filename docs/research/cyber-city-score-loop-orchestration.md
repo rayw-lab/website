@@ -9,7 +9,7 @@
 | 渲染架构 | `cyber-city-rendering-architecture-audit.md` |
 | 渲染缺口裁决 | `cyber-city-rendering-gaps-consult.md`（Sol 2026-08-26） |
 | 北极星 | 综合 **98**（当前 **92.0**，Δ **−6.0**） |
-| 生产 tip | `main` @ `bfd8c92`（登记 **92.0/68**；L5 自评 92.3/69 **未过 AL5 不得登记生产**） |
+| 生产 tip | `main` @ `c87a273`（登记 **92.0/68**；L5 自评 92.3/69 **未过 AL5 不得登记生产**） |
 
 ## 渲染三条发现 — Sol 裁决（不立即开 Task）
 
