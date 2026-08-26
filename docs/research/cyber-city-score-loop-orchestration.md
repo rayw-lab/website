@@ -9,7 +9,7 @@
 | 渲染架构 | `cyber-city-rendering-architecture-audit.md` |
 | 渲染缺口裁决 | `cyber-city-rendering-gaps-consult.md`（Sol 2026-08-26） |
 | 北极星 | 综合 **98**（当前 **92.0**，Δ **−6.0**） |
-| 生产 tip | `main` @ `fb48221`（综合 **92.0**，视觉 **68**；L5 自评 92.3/69 待 AL5） |
+| 生产 tip | `main` @ `bfd8c92`（登记 **92.0/68**；L5 自评 92.3/69 **未过 AL5 不得登记生产**） |
 
 ## 渲染三条发现 — Sol 裁决（不立即开 Task）
 
@@ -25,8 +25,8 @@
 
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
-| CC-L5-C1 | `cursor/cc-l5-tierc-interior-windows-1d6f` @ `6e48f1a` · [PR #40](https://github.com/rayw-lab/website/pull/40) ✅ CI | [L5-C1](bc-2a06873e-daa2-5ab0-8806-06c78da0f5de) | 🚀 RUNNING（CI ✅，本地 e2e/取证中） |
-| CC-AL5 | `cursor/cc-al5-loop5-audit-1d6f` | Sol | 待 L5 收口 |
+| CC-L5-C1 | `cursor/cc-l5-tierc-interior-windows-1d6f` @ `8c7da76` · [PR #40](https://github.com/rayw-lab/website/pull/40) | [L5-C1](bc-2a06873e-daa2-5ab0-8806-06c78da0f5de) | ✅ DONE（自评 69，综合 92.3） |
+| CC-AL5 | `cursor/cc-al5-loop5-audit-1d6f` | [AL5](bc-828f4da0-f935-55b1-bc0d-0cfbb8538202) | 🚀 RUNNING（等审计收口） |
 
 ## Loop 6 前瞻（AL5 后条件触发）
 
@@ -39,6 +39,17 @@
 ## Loop 4 — ✅ · 专项 — ✅
 
 Loop 4 B5+AL4（视觉 68）；Rendering-Audit [PR #39](https://github.com/rayw-lab/website/pull/39)。
+
+## Loop 5 corner case 纪律（本轮盯）
+
+| # | 风险 | 处置 |
+|---|------|------|
+| 1 | L5 自评 92.3/69 ≠ 生产分 | **AL5 独立分**过门才登记 tip；不合流前禁止用自评推进 Loop 6 |
+| 2 | PR #40 栈 diff 假象 | AL5 须 exact tree：`8c7da76 ⊕ main@bfd8c92` |
+| 3 | WS-E2E-03 ±π flake | L5 首轮 1 fail 已留档；AL5 须隔离复核，不得静默吞 |
+| 4 | raw +1.0 停批条款 | 若独立 raw 增益 <1.0 → 裁决 Blender，不自动开 Loop 6 |
+| 5 | 渲染三条插队 | tone mapping / PreRenderer / Ticker **不进 AL5 前** |
+| 6 | AL5 分支滞后 main | `cc-al5-loop5-audit` 当前无 ahead commit，等 Agent push 审计报告 |
 
 ## 定时器
 
