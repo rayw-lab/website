@@ -1,8 +1,10 @@
 // 移植自 folio-2025 sources/Game/Ticker.js（71 行）。
 // ★★ scale = 2 必须保留：folio 全部手感参数（引擎力/悬挂/刹车/相机）都按 2 倍速标定
 //    （source-teardown §5.4 隐藏参数）——改成 1 会让所有抄来的参数「不对劲」。
-// 改动：去 Game 单例耦合；gsap.delayedCall 以 delay() 替代（依赖红线 G5：不引入 gsap）。
-import { uniform } from 'three/tsl';
+// 改动：去 Game 单例耦合；gsap.delayedCall 以 delay() 替代（依赖红线 G5：不引入 gsap）；
+//       folio 的 4 个 TSL 时间 uniform（elapsed/delta 及 scaled 变体）已裁——全仓零消费方，
+//       shader 动画统一走 TSL `time` 节点（rendering-gaps-consult §1.3）。未来若有材质
+//       必须与 scale/暂停严格同步，按「先有消费方，再建单一显式 uniform」回补。
 import { Events } from './Events';
 
 interface DelayHandle {
@@ -26,12 +28,6 @@ export class Ticker {
   /** 30 帧滑动平均（车辆控制器专用 dt，防帧尖峰打乱悬挂积分，§5.3） */
   deltaAverage = this.delta;
 
-  // TSL uniform 四件套（shader 侧时间源，Nipple/未来材质都消费它们）
-  readonly elapsedUniform = uniform(0);
-  readonly deltaUniform = uniform(1 / 60);
-  readonly elapsedScaledUniform = uniform(0);
-  readonly deltaScaledUniform = uniform((1 / 60) * 2);
-
   readonly events = new Events();
 
   private waits: Array<[number, () => void]> = [];
@@ -52,11 +48,6 @@ export class Ticker {
     if (arrayLength > count) this.lastDeltas.splice(count, arrayLength - count);
     this.deltaAverage =
       this.lastDeltas.reduce((total, value) => total + value) / this.lastDeltas.length;
-
-    this.elapsedUniform.value = this.elapsed;
-    this.deltaUniform.value = this.delta;
-    this.elapsedScaledUniform.value = this.elapsedScaled;
-    this.deltaScaledUniform.value = this.deltaScaled;
 
     for (let i = 0; i < this.waits.length; i++) {
       const wait = this.waits[i];

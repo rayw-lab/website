@@ -102,6 +102,10 @@
 
 ### 1.3 ③ Ticker TSL uniform 悬空：建议补，放到维护队列
 
+> 已执行（2026-08-26）：维护 PR `CC-MNT-TICKER-TSL` /
+> `cursor/cc-maint-ticker-tsl-uniforms-1d6f` 按 §2 边界清除——四个 uniform、
+> `three/tsl` import、四次逐帧写入与失真注释全删，直接文档同步更新。
+
 #### 事实与边界
 
 - 全仓只有 `core/Ticker.ts` 定义和逐帧写入 `elapsedUniform`、`deltaUniform`、
