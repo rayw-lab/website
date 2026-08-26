@@ -1,9 +1,9 @@
 # Cyber City 渲染架构缺口裁决咨询
 
-> 裁决角色：CC-Rendering-Gaps-Consult（只规划，不改业务代码）  
-> 日期：2026-08-26  
+> 裁决角色：CC-Rendering-Gaps-Consult（只规划，不改业务代码）
+> 日期：2026-08-26
 > 输入：`cyber-city-rendering-architecture-audit.md`、`loop4-audit.md`、当前
-> `main` 实现与 Loop 5 状态  
+> `main` 实现与 Loop 5 状态
 > 基线：综合 **92.0**、独立视觉 **68**（raw 67.50）、V2=70、V3=69、V4=58；
 > `CC-L5-C1` 已派发，目标是验证程序化路径能否稳定到 70+，否则裁决 Blender 专项
 
