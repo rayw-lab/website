@@ -6,29 +6,13 @@
 | 实现模型 | `claude-fable-5-thinking-xhigh` |
 | 审计模型 | `gpt-5.6-sol-xhigh-fast` |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
-| Loop 3+ 顾问稿 | `docs/research/cyber-city-loop3-planning-consult.md` |
-| 生产 tip | `main` @ `2e6126c`（L3 B2+poster 已合入；独立视觉 **65**） |
-| Loop 3 目标 | 视觉独立 **≥68**（终审硬门）；综合 ≥85 已达成 |
+| 生产 tip | `main` @ `70396eb`（Loop 3 全链已合入；综合 **91.5**，视觉独立 **66**） |
+| Loop 3 目标 | 视觉独立 ≥68 — **NO-GO**（见 `cyber-city-loop3-audit.md`） |
+| Loop 4 目标 | B5 变形运镜单主题 → 复评是否过 68 |
 
-## 综合分口径（Loop 统一）
+## 综合分口径
 
-| 维度 | 权重 | 数据源 |
-|------|------|--------|
-| LHCI `/` 四项均值 | 25% | P/A11y/BP/SEO |
-| LHCI `/home/` 四项均值 | 15% | 宪法首页回归 |
-| e2e 通过率 | 20% | passed/total |
-| 视觉 rubric（竞品对标） | 25% | CC-L0-visual 产出量表 |
-| 3D 交互冒烟（首幕+POI+ESC） | 15% | 自动化脚本 PASS 项 |
-
-基线由 CC-L0-baseline 首跑登记；每轮 Loop 结束由 CC-AL* 审计复算。
-
-## 三道门（Loop 3+ AND 关系）
-
-| 门 | 含义 |
-|----|------|
-| \|Δ\|≤5 | 自评与独立分一致性 |
-| ≥62 | 历史安全底线（防倒退） |
-| **≥68** | Loop 3 终审硬门（仅独立审计分） |
+见 `scripts/score-loop.mjs` 与下文权重 25/15/20/25/15。三道门：|Δ|≤5、≥62、≥68（终审硬门）。
 
 ## Loop 0–2 摘要
 
@@ -38,33 +22,27 @@
 | L1 | 89.2 | 57 | AL1 放行 |
 | L2 | 91.0 | 64 | AL2 放行 |
 
-详表见各 `cyber-city-loop*-audit.md`。
+## Loop 3 — ⛔ 终审 NO-GO（综合 91.5 不能盖视觉门）
 
-## Loop 3 — 🚀 按顾问稿门控链推进
+| ID | 状态 |
+|----|------|
+| B2C+poster → AL3-B2C | ✅ 独立 65 |
+| ATM → AL3-MID | ✅ 独立 66；开 B3 |
+| B3 → AL3-B3 | ✅ 独立仍 66；B5 HOLD |
+| POSTER → AL3 | ⛔ 独立 **66**；三门 Δ1✅ ≥62✅ **≥68❌** |
 
-拓扑：`B2C+poster` → `AL3-B2C` → `ATM` → `AL3-MID` →（条件 B3 或 B5）→ `POSTER`（若未合批）→ `AL3`
+## Loop 4 — 🚀 B5 运镜单主题（AL3 建议）
 
 | ID | 分支 | 任务 | Agent | 状态 |
 |----|------|------|-------|------|
-| CC-L3-content | [PR #36](https://github.com/rayw-lab/website/pull/36) | B2 TextCanvas + poster | [L3-content](bc-629d6692-8f11-5885-bdcd-3296e634b2c9) | ✅ 已合 main |
-| CC-AL3-B2C | `cursor/cc-al3-b2c-audit-1d6f` | B2C+poster 审计 | gpt-5.6-sol-xhigh-fast | ✅ 独立 **65**；放行 ATM |
-| CC-L3-B3 | `cursor/cc-l3-b3-flight-trails-1d6f` | 飞行光轨 | [L3-B3](bc-f9fb1e1b-79d4-54a1-8bbe-386adb6b2d8b) | ✅ 自评 67 |
-| CC-AL3-B3 | `cursor/cc-al3-b3-audit-1d6f` | B3 审计 | gpt-5.6-sol-xhigh-fast | ✅ 独立仍 **66**；B5 HOLD → POSTER |
-| CC-L3-POSTER | `cursor/cc-l3-poster-three-surface-1d6f` | poster 三面收口 | [L3-POSTER](bc-a2238425-55a5-5c77-8bf0-734090d2f81f) | ✅ 零 3D 改动 |
-| CC-AL3 | `cursor/cc-al3-loop3-audit-1d6f` | Loop 3 终审 ≥68 | gpt-5.6-sol-xhigh-fast | 🚀 已派发 |
-
-## Loop 4–5 前瞻（顾问稿 B 节）
-
-| Loop | 主题 | 前提 |
-|------|------|------|
-| L4 | Tier C 程序化打磨（材质/IBL 轻量、剪影细节） | L3 ≥68 或程序化上限复评 |
-| L5 | Blender/实模特专项裁决 | 独立复评确认程序化天花板 |
-| 停 Loop | 独立视觉连续两轮 <+2 且 V2/V4 双瓶颈 | 转实模或降目标 |
+| CC-L4-B5 | `cursor/cc-l4-b5-transform-camera-1d6f` | 充能推镜+落地微震+5–10s录屏 | Fable5 xhigh | 🚀 下一 tick 派发 |
+| CC-AL4 | `cursor/cc-al4-loop4-audit-1d6f` | 复评 ≥68 | gpt-5.6-sol-xhigh-fast | 待 L4 |
 
 ## Loop 编排定时器
 
 | 项 | 内容 |
 |----|------|
 | 订阅名 | `loop-cyber-city-orchestrate` |
-| 节奏 | 动态 ~10min（子 Task 墙钟 17–23min，tick 查状态/派发/合流） |
-| 父代理 tick | 读看板 → fetch 分支 → 过门则派下一 Task → 更新本文件 |
+| subscriptionId | `sub_cb9b142d-6b8a-4ed1-acfb-4c74e29128a3` |
+| 间隔 | **600s（10min）** |
+| tick 职责 | fetch 分支/PR → 过门派 Task → 合流 main → 更新本看板 |
