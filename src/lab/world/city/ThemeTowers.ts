@@ -42,6 +42,15 @@ export class ThemeTowers {
     }
   }
 
+  /**
+   * [CC-BL1] 按楼 id 取已注册体——HeroBlenderMesh 实模热替换用：只隐藏程序化
+   * 视觉（visual.object3D.visible），fixed 碰撞体照旧（footprint cuboid 合同不动）。
+   */
+  getTower(id: string): WorldObject | null {
+    const index = this.buildingIds.indexOf(id);
+    return index >= 0 ? this.towers[index] : null;
+  }
+
   private addTower(building: Building): WorldObject {
     const { w, d, h } = building.footprint;
     const seed = hashStringToSeed(building.id);

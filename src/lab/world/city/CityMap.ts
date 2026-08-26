@@ -99,6 +99,12 @@ export interface Building {
   /** 0 首屏第一幕点亮；1 世界壳 WASD 开放点亮；2 Phase 2 扩展点亮 */
   unlockPhase: 0 | 1 | 2;
   lodProfile: LodProfile;
+  /**
+   * [CC-BL1] hero 实模 GLB（public/ 相对路径，Draco+KTX2）：存在即 Q0/Q1 挂载时
+   * 由 HeroBlenderMesh 异步加载替换程序化体块视觉（物理碰撞体不动）；
+   * Q2 / 加载失败回退程序化 ThemeTowers。加一栋实模 = 补本字段，引擎零改动。
+   */
+  heroGlb?: string;
   /** 楼前泊车触发区（圆心/车头朝向/触发半径）——进楼判定归 CC-P1/CC-E9 */
   parkingBay: { x: number; z: number; heading: number; radius: number };
 }
