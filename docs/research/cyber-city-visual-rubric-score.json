@@ -7,9 +7,9 @@
   "scoredAt": "2026-08-26",
   "scoredBy": "CC-BL1 单评自评（校准基线 = CC-AL5 独立总分 68 + 逐维向量（V1 65/V2 71/V3 69/V4 60/V5 70/V6 73/V7 73，raw 68.00）；只对本 PR 帧内可见改动加分；待 CC-AL-BL1 复评，±5 容差纪律）",
   "evidence": {
-    "protocolA": "pnpm quality:loop:full（e2e 52 全量 + 隔离 LHCI `/`+`/home/` 四项中位数不降 + audit-budget + 统一计分 availableWeight=1）——VIS-03 robot_idle 首幕帧右翼：程序化点阵盒 → 实模幕墙楼沿 + 光伏雨棚/发光泊位标线/道具簇入画（同机位 before=main@8ce5284）；VIS-04 POI concept-garage 同机位落盘；autodrive-lab 泊车圈 ?poi= 深链帧 = 实模楼近景主导（逐窗百叶/家具剪影/暖青暗三族可辨）",
+    "protocolA": "pnpm quality:loop:full 全绿：e2e 52/52（干净单轮 28.6m，0 failed/0 flaky）+ 隔离 LHCI 7 URL ×3 = 21 LHR collect/assert exit 0（`/` 与 `/home/` 四项中位数全 100 不降）+ COMPOSITE_SCORE=92.5（availableWeight=1、missing=[]）+ audit-budget 全过（world chunk 85.8/900KB gzip）——VIS-03 robot_idle 首幕帧右翼：程序化点阵盒 → 实模幕墙楼沿 + 光伏雨棚/发光泊位标线/道具簇入画（同机位 before=main@8ce5284）；VIS-04 POI concept-garage 同机位落盘；autodrive-lab 泊车圈 ?poi= 深链帧 = 实模楼近景主导（逐窗百叶/家具剪影/暖青暗三族可辨）",
     "protocolB": "三态回退程序化取证（#debug 句柄 + Playwright route）：① Q0 挂载成功 console.info + towerVisible=false/glbVisible=true；② ?quality=2 挂载零 .glb 请求（performance resource 实测 0 条）+ towerVisible=true + changeLevel(0) 升档不补加载（零字节承诺以挂载档为准）；③ route abort AutodriveLab.glb → ERR_FAILED + console.warn 止损回退 + 程序化体块原样。近景取证帧：泊车圈机位整帧 + 立面 2× 裁剪（窗内百叶/家具剪影/层间梁铆钉板可辨 = 实模非贴花）",
-    "crossChecks": "资产合同全部余量内：154KB/10MB（1.5%）· 4,622/100k tris（4.6%）· 贴图 ≤1024²/2K 上限；world 资产池 ≈4.0/12MB（audit-budget G-G(world) 直测）· 色纪律 A3：窗三族同既有色轴，#ff6b35 只进 LED/信标/警示件；emissive 全部 ≤1 阈下，唯一阈上锚 = 屋顶信标+门架警灯（strength 2.2，KHR_materials_emissive_strength，与既有 beacon 同族）· CITY-03 动画配额零新增（GLB 全静态）· 物理合同不动：footprint cuboid 沿用 ThemeTowers，道具 18 件 collider 随实模 enable/disable（Q2 无隐形墙）· BuildingSigns 挂点兼容（模型侧 24m 招牌避让背板）· astro check 0 err/0 warn",
+    "crossChecks": "资产合同全部余量内：154KB/10MB（1.5%）· 4,622/100k tris（4.6%）· 贴图 ≤1024²/2K 上限；world 资产池实测 5.3/12MB（audit-budget G-G(world) 直测）· 色纪律 A3：窗三族同既有色轴，#ff6b35 只进 LED/信标/警示件；emissive 全部 ≤1 阈下，唯一阈上锚 = 屋顶信标+门架警灯（strength 2.2，KHR_materials_emissive_strength，与既有 beacon 同族）· CITY-03 动画配额零新增（GLB 全静态）· 物理合同不动：footprint cuboid 沿用 ThemeTowers，道具 18 件 collider 随实模 enable/disable（Q2 无隐形墙）· BuildingSigns 挂点兼容（模型侧 24m 招牌避让背板）· astro check 0 err/0 warn",
     "delta": "raw 68.00 → 69.65（+1.65）；整数 68 → 70"
   },
   "dimensions": {

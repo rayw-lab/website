@@ -10,7 +10,7 @@
 | 来源 | **100% 原创程序化生成**——Blender 4.0 headless 脚本 `scripts/blender/generate-autodrive-lab.py`（本仓单源，零外部资产、零许可负担、无 .blend 二进制入库） |
 | 生成日期 | 2026-08-26 |
 | 许可 | 随仓库（自有资产；几何/贴图/材质全部脚本生成，确定性 seed=0x1206） |
-| 体积 | **157,444 B（≈154 KB）** ≤ 10MB spike 合同；12MB 资产池入账后合计 ≈4.0MB |
+| 体积 | **157,444 B（≈154 KB）** ≤ 10MB spike 合同；12MB 资产池入账后合计 5.3MB（`audit-budget` G-G(world) 实测） |
 | 几何 | 4,622 tris（合同 ≤100k）· 13 具名材质 primitive = 13 draw call |
 | 贴图 | 3 张程序化 atlas 全部 KTX2/ETC1S（≤1024²，合同 ≤2K）：窗内景 8×8 emissive atlas / 幕墙金属板可平铺 / 工具四象限（警示纹·棋盘·纯橙·卷帘肋） |
 | 压缩 | `gltf-transform etc1s --quality 255`（toktx/KTX-Software 4.3）→ `gltf-transform draco`；extensionsRequired = `KHR_draco_mesh_compression` + `KHR_texture_basisu`，emissive >1 走 `KHR_materials_emissive_strength` |

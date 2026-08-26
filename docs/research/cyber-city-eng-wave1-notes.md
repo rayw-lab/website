@@ -1373,7 +1373,8 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   辉光锚 = 屋顶信标 + 门架警灯（strength 2.2，`KHR_materials_emissive_strength`）
   ——bloom threshold=1 台账新增 1 处阈上锚（楼顶信标族，与既有 beacon 同族）。
 - 验证：`astro check` 0 err/0 warn；`node scripts/audit-budget.mjs` 全过
-  （world 资产池 +154KB ≈4.0/12MB）；三态回退全部程序化取证（Q0 挂载成功日志 /
+  （world chunk 85.8/900KB gzip；world 资产池 +154KB 实测 5.3/12MB）；
+  三态回退全部程序化取证（Q0 挂载成功日志 /
   Q2 零请求 + towerVisible=true / route abort 失败回退 warn）；全量
   `pnpm quality:loop:full`（e2e 52 + 隔离 LHCI + 统一计分）见看板 BL1 行登记。
 - 自评（rubric v1.1，校准基线 = AL5 独立向量）：详见
