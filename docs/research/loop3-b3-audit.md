@@ -7,7 +7,7 @@
 | merge-base | `d258e23`，候选线性领先 4 commits |
 | 审计分支 | `cursor/cc-al3-b3-audit-1d6f` |
 | 日期 | 2026-08-26（UTC） |
-| 状态 | **独立视觉 66 · 未达 68 · B5 HOLD · 下一步 POSTER** |
+| 状态 | **独立视觉 66 · 未达 68 · e2e 52/52 · LHCI 本机缺维 · B5 HOLD · 下一步 POSTER** |
 
 ## 0. 最终裁决
 
@@ -30,6 +30,10 @@
    规范文本矛盾。该项不阻断 POSTER，必须在 AL3 终审前同步 canonical 口径或登记正式豁免。
 6. 无论 POSTER 是否把完整用户面再抬一档，都不能倒推本次 B3 已过 68；最终目标是否
    达成只能由 POSTER 后的 CC-AL3 exact-tree 独立复评裁决。
+7. fresh exact-tree build、静态门、预算、链接与 Playwright **52/52** 均通过；
+   `@smoke3d` **3/3**。LHCI 在 workspace、隔离 CLI、Playwright Chromium 与系统
+   Chrome 三种组合下都对 Performance/Best Practices 产出 `NaN`，且候选分支没有
+   可回填的 CI run；本审计不伪记五维齐套，AL3 前必须补同树 green CI artifact。
 
 ## 1. 审计边界
 
@@ -135,16 +139,56 @@ B3 在前一向量上把 V4 加到 60，得到 `66.75 → 67`；在真正独立�
 
 ## 5. 工程门禁
 
-首次报告提交后的 fresh exact-tree 验证将按以下顺序回填：
+### 5.1 fresh exact-tree 结果
 
-1. `pnpm astro check`、预算、链接与生产 build；
-2. `pnpm test:e2e`，核对 52/52、0 skipped/0 flaky 与 `@smoke3d` 3/3；
-3. 候选无可用 branch CI 时，LHCI 只登记可复现的 exact-tree 本地/同树工件，不借用
-   相邻 SHA 伪记 PASS；
-4. 用独立视觉 66 复算五维覆盖，只有 `availableWeight===1`、`missing=[]` 才可登记
-   发布综合分。
+| 项 | 结果 |
+|----|------|
+| 首次 build | 基础设施失败：冻结锁文件依赖未完整安装，缺 `vite-plugin-wasm`；`pnpm install --frozen-lockfile` 恢复后重跑通过，不记产品回归 |
+| production build | **PASS**，19 pages |
+| `pnpm astro check` | **0 errors / 0 warnings / 58 hints** |
+| budget | **PASS**；poster 38.6/40KB、壳 82.2/90KB、world JS 83.9/900KB、world 资产池 5.2/12MB、受保护 14 页命中 0 |
+| links | **PASS**；19 页、347 条内部引用，12 栋 deepLink 核对完成 |
+| Playwright | **52 passed / 0 failed / 0 skipped / 0 flaky**，17.2m |
+| `@smoke3d` | **3/3**（VIS-02/03/04） |
+| 软件光栅性能 | 约 2.0fps，仍是 OBS 软门禁；不包装成真机性能 PASS |
 
-本节在验证完成前不预写 PASS。
+全量测试重写的 23 张历史说明截图已恢复，审计分支保持零测试资产漂移。
+
+### 5.2 LHCI 不能独立登记 PASS
+
+候选分支和审计分支都没有 GitHub Actions run。为避免用相邻 SHA 冒充 exact-tree，
+本审计在 `8d523b7` 运行了三组 7 URL ×3 轮：
+
+1. workspace `@lhci/cli@0.15.1` + Playwright Chromium；
+2. npm 隔离 `@lhci/cli@0.15.1` + Playwright Chromium；
+3. npm 隔离 `@lhci/cli@0.15.1` + 系统 Google Chrome。
+
+三组 collect 都完成 21 LHR，但 Performance 与 Best Practices 全轮为 `null`，
+`lhci assert` 均报 `Audit did not produce a value at all`。这与仓库登记的 Cloud VM
+SwiftShader 已知限制同类；它不能证明候选下降，也不能被记作 PASS。提交方工程 notes
+宣称的“隔离布局后四项全 100”在当前 exact tree/VM 无法复现，且没有随分支提交 raw
+LHR 或 CI artifact 可核验。
+
+用独立视觉 66 和 fresh e2e 工件复算只能得到诊断值：
+
+| 维度 | 分数 | 权重 | 可用性 |
+|------|---:|---:|:---:|
+| LHCI `/` | — | 0.25 | 缺失 |
+| LHCI `/home/` | — | 0.15 | 缺失 |
+| e2e | 100 | 0.20 | ✅ |
+| 独立视觉 | 66 | 0.25 | ✅ |
+| 3D smoke | 100 | 0.15 | ✅ |
+
+计分器输出 `COMPOSITE_SCORE=85.8`，但这是按 **60% 可用权重归一化**的诊断分，
+`availableWeight=0.6`、`missing` 含两个 LHCI 维度，**禁止登记为发布综合分**。
+
+工程裁决：
+
+- build/e2e/smoke/预算/链接：✅；
+- LHCI 与五维齐套：⚠️ 无 exact-tree 可用值，未放行；
+- POSTER 可按冻结 runtime 继续，因为它是门控链规定的收口批，不再追加运行时风险；
+- CC-AL3 最终合并前必须取得 POSTER exact tree 的 green CI LHCI artifact，并确认
+  `availableWeight===1`、`missing=[]`。
 
 ## 6. B5 或 POSTER
 
