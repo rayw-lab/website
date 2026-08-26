@@ -902,3 +902,63 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   V3 68→70；V4 40、V5 63、V7 70 诚实持平。四处加分全部有帧内可见证据。
 - 交接：AL2-a 复评达门（≥62）后启动 Tier B B1/B2/B4；V4=40 仍最低维；
   V2 下一段提分需雾分层（Tier B/C），V6 再上要 diegetic 面板/字体选型（Tier C）。
+
+## CC-L2-tier-b — Tier B 主批 B1/B2/B4（Loop 2 第三段，2026-08-26）
+
+- 分支 `cursor/cc-l2-visual-tier-b-1d6f`（base：`cursor/cc-l2-visual-a-plus-1d6f`
+  @bdcd29d，PR #34 之上叠栈）。背景：AL2-a-plus 复评独立视觉 62 达门
+  （`cyber-city-loop2-a-plus-audit.md`），放行 **B1/B2/B4 三件**；B3 飞行光轨、
+  B5 变形运镜按放行边界继续后置，本 PR 未越界。
+- 交付三件（V4 主攻，全程序化零新增资产、零外部字体、零网络请求）：
+  1. **B1 hero 五栋可读招牌（`city/BuildingSigns.ts` 新建）**：rubric §6 B1 原文
+     「TextCanvas 出楼名纹理 → 双面全息板替换占位箍带」落地，每栋两件套——
+     ① 楼顶双面全息板（`title.en` 大写楼名，AdditiveBlending + 静态扫描纹 +
+     慢呼吸脉动；**脉动继承被替换箍带的『招牌脉动』配额席位，CITY-03 ≤2 处不变**：
+     ThemeTowers 占位箍带同 PR 撤场）；② 临街立面灯箱招牌（常亮面板 +
+     Chebyshev 细描边，挂高压双阶收分楼下段满宽区 clamp(0.34h, 9, 25)m——
+     96m 塔的楼顶板出主机位画框，街面认楼由立面件承接）。立面槽位数据驱动：
+     楼心距主轴 ≤100m 的面向道路立面各挂一面（内环四塔 ×2 + garage ×1 = 9 面，
+     同楼多面 mergeGeometries 合 1 draw call）。draw call 台账：5 全息板 +
+     5 立面合并网格 = 10。材质工厂 `createHoloSignMaterial` /
+     `createSignPanelMaterial` 进 `NeonMaterials.ts`（Premortem P9 单材质系统
+     纪律；纹理采样沿用 TextCanvas flipY=false 的 v.oneMinus() 口径）。
+  2. **B2 街道灯杆/灯箱 10 件（`city/StreetLamps.ts` 新建）**：杆+悬臂+灯头盒+
+     挂旗广告灯箱 mergeGeometries 合 1 份几何，按路轴色族分 **2 个 InstancedMesh**
+     （rubric B2「1-2 draw call」原文达标）；发光件用 `positionGeometry` 本地
+     坐标带掩码切出（`createStreetLampMaterial`，布局常量与几何同源防错位），
+     常亮无时间项不占动画配额。**neon 色单源**：青=南北/品红=东西直取
+     `neon-tokens.ts`（非派生字面量）。摆位：北廊 4 杆左右交错（主机位纵深
+     节奏）+ 南段 2 + 东西大街 4（含 garage 门前段两杆，VIS-04 帧内可见）；
+     全部路缘外 1.5m，已核对不侵 parkingBay（最近 = garage bay 距 11m > r8）。
+     物理 = 1 fixed 刚体 × 10 cylinder（隔离墩同款 model:null 注册）。Q0 湿地
+     真镜像渲染自动收灯箱倒影（AL2-a-plus §5「灯箱给湿地面有语义反射源」）。
+  3. **B4 剪影密度/高度方差（`CitySilhouette.ts`）**：填充 48→84、带宽
+     296-436m；高度方差三档（基底 28-96 ≈68% / 中挑 96-134 ≈22% / 地标
+     132-196 ≈10%，地标窄足迹 + 压外带 40%+）。**北向视锥护栏**（AL2-a-plus
+     §5 裁决第 2 条「避免剪影填充吃掉天空开口」的执行体）：固定主机位视线朝北，
+     透视收敛让 z<-120 的走廊旁填充在帧内落进路廊尽头天空开口——平行避让管
+     不住透视，北侧带 |x| 下限随 -z 线性外扩（z=-436 处 105m），角度游走重掷 +
+     末尾钳位兜底；首版实拍确认开口被吃后加此护栏，二拍恢复（前后帧留档）。
+     连带修复既有瑕疵：填充写入顺序改模 4 交错——原顺序下 applyQuality 裁尾
+     会把 Q1/Q2 裁成半圈天际线缺口，现低配档保留全环均匀子集。
+- 验证：`pnpm astro check` 0 err；`node scripts/audit-budget.mjs` 全过（world
+  chunk 81.7KB ≤900KB）；`pnpm test:visual` 4/4（**VIS-01/02 壳基线零 diff
+  未重生成**——本 PR 零壳改动）；**全量 e2e 52/52 零回归**（25.7m）；本地
+  LHCI（standalone lighthouse 12，7 URL ×3）`/` 与 `/home/` 四项中位数全 100
+  不降；统一计分 COMPOSITE_SCORE=91.3、availableWeight=1、missing=[]。
+  坑：本 VM `pnpm lhci:local` 因 pnpm 布局 tslib@1 解析冲突（rxjs←inquirer←
+  @lhci/cli）致 performance/best-practices NaN——CI 用 treosh action 自带
+  lighthouse 不受影响，本地改 `npx @lhci/cli collect` 独立安装采集。
+- 帧证据：`l2b-world-robot-1440.webp`（主机位后帧：AGENT NEXUS 双立面招牌 +
+  湿地倒影 + 北廊灯杆 + 分层剪影 + 天空开口保留）vs `l2a-world-robot-1440.webp`
+  （前帧）；`l2b-world-poi-garage-1440.webp`（POI 深链：CARCONCEPT GARAGE
+  立面招牌 + 品红灯杆）。V5 沿用 `l2-transform-seq.mp4`（动效零改动）。
+- 视觉自评 **65（校准基线 = AL2-a-plus 独立分 62 逐维原值）**：V4 40→56
+  （主攻维 +16，招牌文字层+道具层双齐进 50-65 段中位）/ V1 60→63 / V7 70→72；
+  V2 65 段顶持平（审计已裁定越界须分层雾，本批未动光照架构）、V3/V5/V6 持平。
+  与派发目标 ≥68 差 3：Tier B 档 ~70 按五件全落估算，本批按放行边界只做三件
+  （B3/B5 后置），不虚报预支。
+- 交接：待 CC-AL2 按同一 rubric 独立复评；Tier B 余件 B3/B5 + 分层雾是
+  下一段主路径（→~70）；招牌覆盖扩 standard 七栋、灯杆密度上调是 V4 的
+  低风险追加位（本批按 spec 未扩）。
+
