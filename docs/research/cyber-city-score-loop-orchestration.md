@@ -8,7 +8,7 @@
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 渲染架构 | `cyber-city-rendering-architecture-audit.md` |
 | 渲染缺口裁决 | `cyber-city-rendering-gaps-consult.md`（Sol 2026-08-26） |
-| 生产 tip | `main` @ `1ae993a`（综合 **92.0**，视觉 **68**） |
+| 生产 tip | `main` @ `d2b04c5`（综合 **92.0**，视觉 **68**） |
 
 ## 渲染三条发现 — Sol 裁决（不立即开 Task）
 
@@ -24,8 +24,8 @@
 
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
-| CC-L5-C1 | `cursor/cc-l5-tierc-interior-windows-1d6f` | [L5-C1](bc-2a06873e-daa2-5ab0-8806-06c78da0f5de) | 🚀 RUNNING |
-| CC-AL5 | `cursor/cc-al5-loop5-audit-1d6f` | Sol | 待 L5 |
+| CC-L5-C1 | `cursor/cc-l5-tierc-interior-windows-1d6f` @ `6e48f1a` | [L5-C1](bc-2a06873e-daa2-5ab0-8806-06c78da0f5de) | 🚀 RUNNING（已 push，e2e/取证中） |
+| CC-AL5 | `cursor/cc-al5-loop5-audit-1d6f` | Sol | 待 L5 收口 |
 
 ## Loop 6 前瞻（AL5 后条件触发）
 
