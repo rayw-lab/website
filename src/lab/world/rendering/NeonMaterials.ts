@@ -31,6 +31,7 @@ import {
   uniform,
   vec3,
 } from 'three/tsl';
+import { NEON } from '../../../data/neon-tokens';
 import type { QualityLevel } from '../core/Quality';
 
 /**
@@ -68,11 +69,12 @@ function linearColorNode(hex: string) {
  * 楼体 `neonColor` 不再直出窗格（rubric V3「绿红紫白同帧互撞」扣分项）——
  * neonColor 保留给招牌带/信标/大堂光带等「楼宇身份件」（ThemeTowers/CityBlocks
  * 的 createNeonGlowMaterial 调用与 lobby 光带不变）。
- * 色值与双主轴道路霓虹同源（Roads ROAD_NEON：南北=青 #49c5b6 / 东西=品红 #ff2d6f）。
+ * 色值与双主轴道路霓虹同源（[CC-L2-a+] 经 src/data/neon-tokens.ts 单一事实源
+ * import——与 Roads ROAD_NEON、壳 CSS --neon-* 同一出处，不再是同值字面量拷贝）。
  */
 const WINDOW_PALETTE = {
-  cyan: '#49c5b6',
-  magenta: '#ff2d6f',
+  cyan: NEON.cyan,
+  magenta: NEON.magenta,
   warmWhite: '#f5decb',
 } as const;
 

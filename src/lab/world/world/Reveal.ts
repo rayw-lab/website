@@ -18,6 +18,7 @@
 //
 // 循环动画配额（CITY-03 ≤2 处）：机器人 idle 呼吸灯由本类驱动 update()；
 // 热交换为车后停驱（E5 交接：释放配额），回变机器人时恢复。
+import { NEON } from '../../../data/neon-tokens';
 import type { Game } from '../core/Game';
 import type { HeroRobot } from '../city/HeroRobot';
 import type { TransformState, TransformSystem } from '../player/TransformSystem';
@@ -246,7 +247,7 @@ export class Reveal {
 .world-ritual-cta[hidden]{display:none}
 .world-ritual-cta kbd{font:inherit;font-size:.7em;letter-spacing:.1em;padding:.15em .55em;margin-left:.4em;border:1px solid rgba(234,255,251,.4);border-radius:6px;background:rgba(234,255,251,.08)}
 .world-ritual-progress{display:none;width:210px;height:3px;border-radius:2px;background:rgba(234,255,251,.16);overflow:hidden}
-.world-ritual-progress i{display:block;width:0;height:100%;background:linear-gradient(90deg,#49c5b6,#bdfff4)}
+.world-ritual-progress i{display:block;width:0;height:100%;background:linear-gradient(90deg,${NEON.cyan},#bdfff4)}
 [data-world-state='transforming'] .world-ritual-progress{display:block}
 [data-world-state='transforming'] .world-ritual-progress i{animation:world-ritual-charge 1.05s linear forwards}
 .world-ritual-hint{margin:0;font-size:.8rem;color:#dfe2e7;background:rgba(12,13,17,.66);border-radius:999px;padding:.4em 1.2em;transition:opacity .4s}

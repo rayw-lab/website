@@ -22,6 +22,7 @@
 // parkingBay；PARAM_ALLOWLIST 七参数见引导脚本（M4/M6/M9 全部转正，无 location.search 旁路）。
 import cityMap from '../data/cyber-city-buildings.json';
 import { personJsonLd, webSiteJsonLd } from '../data/jsonld';
+import { NEON } from '../data/neon-tokens';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
@@ -66,7 +67,10 @@ const heroTowers = buildings.filter((b) => b.hero);
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<!-- [CC-L2-a+] 霓虹 token 真单源（AL2-a §2 收窄条款销账）：--neon-cyan/--neon-magenta
+     不再是 CSS 字面量拷贝，构建期从 src/data/neon-tokens.ts 注入（引擎 Roads/
+     NeonMaterials/Reveal 同一 import）——跨 TS/CSS 单一事实源，改色只改 token 模块 -->
+<html lang="zh-CN" style={`--neon-cyan: ${NEON.cyan}; --neon-magenta: ${NEON.magenta};`}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -391,13 +395,12 @@ const heroTowers = buildings.filter((b) => b.hero);
 
 <style>
   /* 独立最小壳样式（不依赖全站 tokens，系统字体栈——G-A′ HTML+CSS ≤35KB 红线） */
-  /* [CC-L2 A8] 霓虹色单源 token：与引擎侧同源（品牌青 #49c5b6 = Roads ROAD_NEON
-     南北轴 = buildings JSON 品牌楼；品红 #ff2d6f = ROAD_NEON 东西轴）——壳内一切
-     霓虹描边/辉光/填色只取这组 token，逐楼色经 --neon 内联注入（buildings JSON 单源） */
+  /* [CC-L2 A8] 霓虹色单源 token：壳内一切霓虹描边/辉光/填色只取 --neon-* token，
+     逐楼色经 --neon 内联注入（buildings JSON 单源）。
+     [CC-L2-a+] --neon-cyan/--neon-magenta 上移 <html> 内联注入（neon-tokens.ts
+     跨 TS/CSS 真单源）；--neon-ink 为壳专属亮墨色，留在 CSS。 */
   html {
     color-scheme: dark;
-    --neon-cyan: #49c5b6;
-    --neon-magenta: #ff2d6f;
     --neon-ink: #eafffb;
   }
   html,
@@ -430,18 +433,19 @@ const heroTowers = buildings.filter((b) => b.hero);
   }
 
   /* ---------- 跳过出口（DOM 首个可聚焦元素，恒在最上层） ---------- */
+  /* [CC-L2-a+ V6] 字级/留白收紧（AL2-a §6-2「顶栏/mini 字级偏小」）：跳过丸 12→12.8px */
   .skip {
     position: fixed;
     top: 0.7rem;
     right: 0.9rem;
     z-index: 30;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     letter-spacing: 0.08em;
     color: var(--neon-ink);
     background: color-mix(in srgb, var(--neon-cyan) 8%, rgba(10, 16, 22, 0.82));
     border: 1px solid color-mix(in srgb, var(--neon-cyan) 55%, transparent);
     border-radius: 999px;
-    padding: 0.42em 1.1em;
+    padding: 0.45em 1.15em;
   }
   .skip:hover,
   .skip:focus-visible {
@@ -458,20 +462,22 @@ const heroTowers = buildings.filter((b) => b.hero);
     flex-direction: column;
   }
 
-  /* ---------- 顶栏六导航 ---------- */
+  /* ---------- 顶栏六导航 ----------
+     [CC-L2-a+ V6] 字级/留白收紧（AL2-a §6-2）：brand/nav 12→13.6px、backend 12→12.8px、
+     栏高与项间距同步放宽——顶栏从「挤在一行的小字」升为可读的导航条 */
   .topbar {
     position: relative;
     z-index: 20;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.55rem 1rem;
-    padding-right: 13rem; /* 让位右上角跳过出口 */
+    gap: 1.2rem;
+    padding: 0.7rem 1.2rem;
+    padding-right: 14rem; /* 让位右上角跳过出口 */
     background: linear-gradient(180deg, rgba(5, 7, 13, 0.88), rgba(5, 7, 13, 0.55) 78%, transparent);
   }
   /* [CC-L2 A8] 顶栏与霓虹单源一致：brand 辉光、导航悬停青族、backend 徽标霓虹面板化 */
   .brand {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     letter-spacing: 0.22em;
     color: var(--neon-cyan);
     text-shadow: 0 0 10px color-mix(in srgb, var(--neon-cyan) 60%, transparent);
@@ -480,13 +486,13 @@ const heroTowers = buildings.filter((b) => b.hero);
   .nav {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.15rem 0.35rem;
-    font-size: 0.75rem;
+    gap: 0.2rem 0.5rem;
+    font-size: 0.85rem;
     letter-spacing: 0.1em;
   }
   .nav a {
     color: #c3cbd8;
-    padding: 0.3em 0.55em;
+    padding: 0.32em 0.6em;
     border-radius: 6px;
   }
   .nav a:hover,
@@ -498,13 +504,13 @@ const heroTowers = buildings.filter((b) => b.hero);
   }
   .backend {
     margin-left: auto;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     letter-spacing: 0.1em;
     color: #bdfff4;
     background: color-mix(in srgb, var(--neon-cyan) 8%, rgba(6, 10, 16, 0.6));
     border: 1px solid color-mix(in srgb, var(--neon-cyan) 35%, transparent);
     border-radius: 999px;
-    padding: 0.24em 0.8em;
+    padding: 0.28em 0.9em;
     white-space: nowrap;
   }
 
@@ -527,6 +533,9 @@ const heroTowers = buildings.filter((b) => b.hero);
      [CC-L2 A7] 霓虹面板化：1px 霓虹描边 + 8% 填色（设计提案 §5.2 HUD 面板规范）；
      visibility 门控代替 aria-hidden——隐藏态不可聚焦不进 AT（销 aria-hidden-focus），
      ready 态成为世界内 HUD（与 3D 同族光效语言，销 A4 观察⑨「挂载后退化素面」） */
+  /* [CC-L2-a+ V6] HUD 字级/留白/画面占比收紧（AL2-a §6-2）：速度表 28.8→38.4px、
+     单位/按钮字级同步上调，面板内衬与整栏留白放宽——挂载后 HUD 从「角落小件」
+     升为世界内可读仪表（画面占比↑，仍不压 3D 主体） */
   .hud {
     position: absolute;
     left: 0;
@@ -535,8 +544,8 @@ const heroTowers = buildings.filter((b) => b.hero);
     z-index: 4;
     display: flex;
     align-items: flex-end;
-    gap: 1.1rem;
-    padding: 0.8rem 1.1rem;
+    gap: 1.3rem;
+    padding: 1rem 1.35rem 1.1rem;
     background: linear-gradient(180deg, transparent, rgba(4, 6, 10, 0.62));
     opacity: 0;
     visibility: hidden;
@@ -554,7 +563,7 @@ const heroTowers = buildings.filter((b) => b.hero);
     display: flex;
     flex-direction: column;
     line-height: 1.15;
-    padding: 0.4em 0.95em 0.45em;
+    padding: 0.5em 1.1em 0.55em;
     border: 1px solid color-mix(in srgb, var(--neon-cyan) 50%, transparent);
     border-radius: 12px;
     background: color-mix(in srgb, var(--neon-cyan) 8%, rgba(5, 9, 15, 0.66));
@@ -563,14 +572,14 @@ const heroTowers = buildings.filter((b) => b.hero);
   }
   .hud-num {
     font-family: ui-monospace, Menlo, Consolas, monospace;
-    font-size: 1.8rem;
+    font-size: 2.4rem;
     font-weight: 650;
     color: #eef2f7;
     text-shadow: 0 0 12px color-mix(in srgb, var(--neon-cyan) 55%, transparent);
   }
   .hud-unit {
-    font-size: 0.75rem;
-    letter-spacing: 0.14em;
+    font-size: 0.8rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: color-mix(in srgb, var(--neon-cyan) 65%, #dfe5ec);
   }
@@ -578,13 +587,13 @@ const heroTowers = buildings.filter((b) => b.hero);
     pointer-events: auto;
     margin-left: auto;
     font: inherit;
-    font-size: 0.78rem;
+    font-size: 0.88rem;
     letter-spacing: 0.06em;
     color: var(--neon-ink);
     background: color-mix(in srgb, var(--neon-cyan) 8%, rgba(10, 16, 22, 0.78));
     border: 1px solid color-mix(in srgb, var(--neon-cyan) 45%, transparent);
     border-radius: 10px;
-    padding: 0.45em 1em;
+    padding: 0.5em 1.15em;
     cursor: pointer;
   }
   .hud-respawn:hover,
@@ -594,15 +603,17 @@ const heroTowers = buildings.filter((b) => b.hero);
   }
 
   /* [CC-L2 A7] mini 楼宇快览：右下常驻 5 栋 hero 楼（1px 描边 + 8% 填色同族面板；
-     visibility 门控同 .hud——ready 前不可聚焦，ready 后链接键盘可达真实 URL） */
+     visibility 门控同 .hud——ready 前不可聚焦，ready 后链接键盘可达真实 URL）。
+     [CC-L2-a+ V6] 字级/留白/占比收紧（AL2-a §6-2「mini 字级偏小」）：行字级
+     12.8→14.4px、标题 12→12.8px、面板加宽 15.5→17.5rem、行距/内衬同步放宽 */
   .hud-city {
     position: absolute;
     right: 1.1rem;
-    bottom: 5rem;
+    bottom: 6rem;
     z-index: 4;
-    width: 15.5rem;
+    width: 17.5rem;
     max-width: calc(100vw - 2.2rem);
-    padding: 0.7rem 0.85rem 0.75rem;
+    padding: 0.95rem 1.05rem 1rem;
     border: 1px solid color-mix(in srgb, var(--neon-cyan) 45%, transparent);
     border-radius: 12px;
     background: color-mix(in srgb, var(--neon-cyan) 8%, rgba(5, 9, 15, 0.66));
@@ -620,8 +631,8 @@ const heroTowers = buildings.filter((b) => b.hero);
     transition: opacity 400ms ease;
   }
   .hud-city-title {
-    margin: 0 0 0.4rem;
-    font-size: 0.75rem;
+    margin: 0 0 0.55rem;
+    font-size: 0.8rem;
     letter-spacing: 0.2em;
     color: var(--neon-cyan);
     text-shadow: 0 0 8px color-mix(in srgb, var(--neon-cyan) 55%, transparent);
@@ -631,21 +642,24 @@ const heroTowers = buildings.filter((b) => b.hero);
     padding: 0;
     list-style: none;
     display: grid;
-    gap: 0.05rem;
+    gap: 0.12rem;
   }
   .hud-city a {
     display: flex;
     align-items: baseline;
     gap: 0.55em;
-    padding: 0.24em 0.45em;
+    padding: 0.32em 0.55em;
     border-radius: 8px;
     color: #dbe2ec;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
   .hud-city a:hover,
   .hud-city a:focus-visible {
     background: color-mix(in srgb, var(--neon-cyan) 14%, transparent);
     text-decoration: none;
+  }
+  .hud-city .b-en {
+    font-size: 0.78rem;
   }
 
   .hint {
@@ -656,12 +670,12 @@ const heroTowers = buildings.filter((b) => b.hero);
     z-index: 4;
     margin: 0;
     max-width: 92%;
-    font-size: 0.78rem;
+    font-size: 0.85rem; /* [CC-L2-a+ V6] 12.5→13.6px：驾驶键位提示与 HUD 同步升级 */
     letter-spacing: 0.02em;
     color: #dfe5ec;
     background: color-mix(in srgb, var(--neon-cyan) 6%, rgba(6, 9, 14, 0.7));
     border: 1px solid color-mix(in srgb, var(--neon-cyan) 30%, transparent);
-    padding: 0.4em 1.1em;
+    padding: 0.45em 1.2em;
     border-radius: 999px;
     opacity: 0;
     transition: opacity 400ms ease;
@@ -780,18 +794,22 @@ const heroTowers = buildings.filter((b) => b.hero);
     font-size: 1rem;
     font-weight: 600;
     letter-spacing: 0.18em;
-    color: #eafffb;
+    color: var(--neon-ink);
     cursor: pointer;
     padding: 0.78em 2.1em;
     border-radius: 999px;
-    border: 1px solid rgba(73, 197, 182, 0.85);
+    border: 1px solid color-mix(in srgb, var(--neon-cyan) 85%, transparent);
     background: linear-gradient(180deg, rgba(18, 46, 52, 0.92), rgba(10, 22, 30, 0.92));
-    box-shadow: 0 0 22px rgba(73, 197, 182, 0.35), inset 0 0 12px rgba(73, 197, 182, 0.25);
-    text-shadow: 0 0 10px rgba(73, 197, 182, 0.8);
+    box-shadow:
+      0 0 22px color-mix(in srgb, var(--neon-cyan) 35%, transparent),
+      inset 0 0 12px color-mix(in srgb, var(--neon-cyan) 25%, transparent);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--neon-cyan) 80%, transparent);
     transition: box-shadow 0.25s, transform 0.25s;
   }
   .enter:hover {
-    box-shadow: 0 0 36px rgba(73, 197, 182, 0.6), inset 0 0 16px rgba(73, 197, 182, 0.36);
+    box-shadow:
+      0 0 36px color-mix(in srgb, var(--neon-cyan) 60%, transparent),
+      inset 0 0 16px color-mix(in srgb, var(--neon-cyan) 36%, transparent);
     transform: translateY(-1px);
   }
   .world[data-state='loading'] .enter,
@@ -823,7 +841,7 @@ const heroTowers = buildings.filter((b) => b.hero);
     display: block;
     width: 0%;
     height: 100%;
-    background: linear-gradient(90deg, #49c5b6, #bdfff4);
+    background: linear-gradient(90deg, var(--neon-cyan), #bdfff4);
     transition: width 0.25s ease;
   }
   .error {
@@ -901,9 +919,9 @@ const heroTowers = buildings.filter((b) => b.hero);
     padding: 1.2rem 1.4rem 1.3rem;
     color: #e8ecf2;
     background: rgba(8, 12, 19, 0.96);
-    border: 1px solid rgba(73, 197, 182, 0.45);
+    border: 1px solid color-mix(in srgb, var(--neon-cyan) 45%, transparent);
     border-radius: 14px;
-    box-shadow: 0 0 30px rgba(73, 197, 182, 0.2);
+    box-shadow: 0 0 30px color-mix(in srgb, var(--neon-cyan) 20%, transparent);
   }
   .esc-menu::backdrop {
     background: rgba(3, 5, 9, 0.6);
