@@ -5,7 +5,7 @@
 | 编排者 | 父代理（只编排，不实现） |
 | 实现模型 | `claude-fable-5-thinking-xhigh` |
 | 审计模型 | `gpt-5.6-sol-xhigh-fast` |
-| 生产 tip | `main` @ Loop 1 合入后（综合 **89.2**，视觉 **59**） |
+| 生产 tip | `main` @ `5fd3ddb`（Loop 2 齐套：综合 **91.0**，视觉 **64**） |
 | 目标 | **综合分 ≥ 85**（见下方计分口径） |
 
 ## 综合分口径（Loop 统一）
@@ -41,15 +41,15 @@
 | CC-L1-improve | `cursor/cc-l1-visual-tier-a-1d6f` · [PR #32](https://github.com/rayw-lab/website/pull/32) | AL0 §6 Tier A：天空/雾辉光、锥桶撤场、窗色纪律、首幕构图/轮廓光、变形白爆抑制 | [L1-improve](bc-c6cee121-d50f-5491-b19d-aeb9d608c4ab) | ✅ `1f0d19e`；视觉 51→59；e2e 52/52；综合 89.2 |
 | CC-AL1 | `cursor/cc-al1-loop1-audit-1d6f` | 复算综合分 + 视觉复评 | gpt-5.6-sol-xhigh-fast | ✅ 放行；独立视觉 57（Δ2）；保守综合 88.7；见 `cyber-city-loop1-audit.md` |
 
-## Loop 2 — 🚀 A 尾件 + 补洞
+## Loop 2 — 🚀 Tier B 完成，AL2 终审中
 
 | 阶段 | 分支 | 任务 | Agent | 状态 |
 |------|------|------|-------|------|
-| CC-L2-a-tail | `cursor/cc-l2-visual-a-tail-1d6f` · [PR #33](https://github.com/rayw-lab/website/pull/33) | A7 HUD+mini 快览、A8 排版、A9 湿反射、A10 poster 重拍 | [L2-a-tail](bc-ddb54b1b-f83e-5082-b79e-de513f56ca92) | ✅ 5/5 落地；自评 62；exact-tree 综合 90.5 |
-| CC-AL2-a | `cursor/cc-al2-a-tail-audit-1d6f` | A 尾件复评门：视觉 ≥62 + 变形 5–10s 录屏 | gpt-5.6-sol-xhigh-fast | ⛔ 不放行 Tier B；独立视觉 **60**（Δ2）；见 `cyber-city-loop2-a-audit.md` |
-| CC-L2-a-plus | `cursor/cc-l2-visual-a-plus-1d6f` | AL2-a 补洞：湿反射前景 + HUD 字级 + neon token 单源 | [L2-a-plus](bc-9eb424da-1c75-562d-a07a-ec295e2feb57) | ✅ 自评 62；综合 90.5 |
-| CC-AL2-a-plus | `cursor/cc-al2-a-plus-audit-1d6f` | 复评门 ≥62 复核 | gpt-5.6-sol-xhigh-fast | 🚀 已派发 |
-| CC-L2-tier-b | `cursor/cc-l2-visual-tier-b-1d6f` | B1 招牌 + B2 灯箱 + B4 剪影密度 | — | 待 AL2-a-plus 过门 |
-| CC-AL2 | `cursor/cc-al2-loop2-audit-1d6f` | Loop 2 全量复算 | gpt-5.6-sol-xhigh-fast | 待 Tier B |
+| CC-L2-a-tail | `cursor/cc-l2-visual-a-tail-1d6f` · [PR #33](https://github.com/rayw-lab/website/pull/33) | A7–A10 | [L2-a-tail](bc-ddb54b1b-f83e-5082-b79e-de513f56ca92) | ✅ 5/5；自评 62；综合 90.5 |
+| CC-AL2-a | `cursor/cc-al2-a-tail-audit-1d6f` | 复评门 | gpt-5.6-sol-xhigh-fast | ⛔ 独立视觉 60；见 `loop2-a-audit.md` |
+| CC-L2-a-plus | `cursor/cc-l2-visual-a-plus-1d6f` · [PR #34](https://github.com/rayw-lab/website/pull/34) | 湿反射前景 + HUD 字级 | [L2-a-plus](bc-9eb424da-1c75-562d-a07a-ec295e2feb57) | ✅ 自评 62；综合 90.5 |
+| CC-AL2-a-plus | `cursor/cc-al2-a-plus-audit-1d6f` | 复评门复核 | gpt-5.6-sol-xhigh-fast | ✅ 独立视觉 **62**；放行 Tier B；见 `loop2-a-plus-audit.md` |
+| CC-L2-tier-b | `cursor/cc-l2-visual-tier-b-1d6f` · [PR #35](https://github.com/rayw-lab/website/pull/35) | B1/B2/B4 | [L2-tier-b](bc-a63837d1-6b15-530d-96b0-24fd0585f8d0) | ✅ 视觉 65；V4 40→56；综合 **91.3** |
+| CC-AL2 | `cursor/cc-al2-loop2-audit-1d6f` | Loop 2 全量终审 | gpt-5.6-sol-xhigh-fast | 🚀 已派发 |
 
 **进入条件（AL1 §6）：** e2e 52/52、LHCI 两 URL 不降、`availableWeight===1` 作硬条件。B3/B5 后置不进本 Loop。
