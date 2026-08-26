@@ -24,6 +24,8 @@ import { CityBlocks } from './CityBlocks';
 import { CitySilhouette } from './CitySilhouette';
 import { Sky, SKY_FOG_COLOR, SKY_ZENITH_COLOR } from './Sky';
 import { StreetProps } from './StreetProps';
+import { BuildingSigns } from './BuildingSigns';
+import { StreetLamps } from './StreetLamps';
 import { applyNeonQuality } from './NeonFacade';
 
 export interface City {
@@ -39,6 +41,10 @@ export interface City {
   sky: Sky;
   /** 街角霓虹隔离墩（CC-L1 A2：城市道具层，替换 spike 锥桶） */
   streetProps: StreetProps;
+  /** hero 五栋可读招牌：楼名全息板 + 立面灯箱（CC-L2-B1） */
+  buildingSigns: BuildingSigns;
+  /** 街道灯杆 + 沿街广告灯箱 10 件（CC-L2-B2） */
+  streetLamps: StreetLamps;
 }
 
 /**
@@ -55,6 +61,8 @@ export function mountCity(game: Game): City {
   const silhouette = new CitySilhouette(game, map);
   const sky = new Sky(game);
   const streetProps = new StreetProps(game, map);
+  const buildingSigns = new BuildingSigns(game, map);
+  const streetLamps = new StreetLamps(game, map);
 
   // CC-E4 地表升级：霓虹网格地面（湿地反射三档）接管 plaza 的地表职责——
   // plaza 对象保留（隐藏，回退开关），高度层 0.02 由 Grid 顶替（路面 0.1 仍在其上）
@@ -103,10 +111,25 @@ export function mountCity(game: Game): City {
       `；外部资产 0 字节（全程序化）` +
       `；[CC-E4] 霓虹视觉系统就位：Quality ${game.quality.level} 档` +
       `（bloom/湿地反射/剪影密度/窗格动画四联动，?quality=0|1|2 或 #debug 句柄切档）` +
-      `；[CC-L1] 天空穹顶+地平线辉光 · 窗色三族纪律 · 街角隔离墩 ${streetProps.spots.length} 只（锥桶已撤场）`,
+      `；[CC-L1] 天空穹顶+地平线辉光 · 窗色三族纪律 · 街角隔离墩 ${streetProps.spots.length} 只（锥桶已撤场）` +
+      `；[CC-L2 Tier B] hero 招牌 ${buildingSigns.buildingIds.length} 栋（全息板 + 立面灯箱 ${
+        buildingSigns.panelFaceCount
+      } 面，占位箍带已替换）· 街道灯杆 ${streetLamps.spots.length} 杆（灯箱色族=路轴 neon 单源）` +
+      `· 剪影填充增密至 ${silhouette.instanceCount - silhouette.slotColliders.length}（高度方差三档）`,
   );
 
-  return { map, roads, themeTowers, cityBlocks, silhouette, grid, sky, streetProps };
+  return {
+    map,
+    roads,
+    themeTowers,
+    cityBlocks,
+    silhouette,
+    grid,
+    sky,
+    streetProps,
+    buildingSigns,
+    streetLamps,
+  };
 }
 
 export { loadCityMap, headingToRotationY, hashStringToSeed, createSeededRandom } from './CityMap';
@@ -127,10 +150,15 @@ export { CityBlocks } from './CityBlocks';
 export { CitySilhouette } from './CitySilhouette';
 export { Sky, SKY_FOG_COLOR, SKY_ZENITH_COLOR } from './Sky';
 export { StreetProps } from './StreetProps';
+export { BuildingSigns } from './BuildingSigns';
+export { StreetLamps } from './StreetLamps';
 export {
   applyNeonQuality,
   createFacadeMaterial,
   createSilhouetteMaterial,
   createNeonGlowMaterial,
   createHologramBarrierMaterial,
+  createHoloSignMaterial,
+  createSignPanelMaterial,
+  createStreetLampMaterial,
 } from './NeonFacade';

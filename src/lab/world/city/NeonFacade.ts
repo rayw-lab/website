@@ -8,11 +8,17 @@ export {
   applyNeonQuality,
   createFacadeMaterial,
   createHologramBarrierMaterial,
+  createHoloSignMaterial,
   createNeonGlowMaterial,
+  createSignPanelMaterial,
   createSilhouetteMaterial,
+  createStreetLampMaterial,
 } from '../rendering/NeonMaterials';
 export type {
   FacadeMaterialOptions,
+  HoloSignMaterialOptions,
   NeonGlowMaterialOptions,
+  SignPanelMaterialOptions,
   SilhouetteMaterialOptions,
+  StreetLampMaterialOptions,
 } from '../rendering/NeonMaterials';

@@ -19,6 +19,7 @@ import {
   float,
   fract,
   hash,
+  max,
   mix,
   normalGeometry,
   normalWorld,
@@ -27,8 +28,11 @@ import {
   sin,
   smoothstep,
   step,
+  texture,
   time,
   uniform,
+  uv,
+  vec2,
   vec3,
 } from 'three/tsl';
 import { NEON } from '../../../data/neon-tokens';
@@ -254,6 +258,132 @@ export function createNeonGlowMaterial(
         ? float(1)
         : sin(neonTime.mul(pulseSpeed).add(phase)).mul(amp).add(float(1).sub(amp));
     return linearColorNode(hex).mul(pulse).mul(intensity);
+  })();
+
+  return material;
+}
+
+export interface SignPanelMaterialOptions {
+  /** 文字 emissive 强度（>1 起 bloom 锚点） */
+  intensity?: number;
+}
+
+/**
+ * [CC-L2-B1] 楼身招牌灯箱面板（临街立面侧挂）：TextCanvas 楼名纹理出霓虹字 +
+ * Chebyshev 细描边框 + 面板微背光。常亮无时间项——不占 CITY-03 循环动画配额
+ * （配额两席 = HeroRobot idle 呼吸 + 楼顶全息板脉动，见 createHoloSignMaterial）。
+ * 纹理采样口径 = TextCanvas flipY=false 约定（v.oneMinus()，InteractivePoints 同款）。
+ */
+export function createSignPanelMaterial(
+  map: THREE.Texture,
+  hex: string,
+  options: SignPanelMaterialOptions = {},
+): THREE.MeshStandardNodeMaterial {
+  const intensity = options.intensity ?? 1.9;
+
+  const material = new THREE.MeshStandardNodeMaterial({ roughness: 0.45, metalness: 0.1 });
+  material.colorNode = vec3(0.015, 0.016, 0.023);
+  material.emissiveNode = Fn(() => {
+    const mask = texture(map, vec2(uv().x, uv().y.oneMinus())).r;
+    // 描边框：归一 Chebyshev 距离 0.88 处细环（灯箱金属框内衬霓虹管语义）
+    const cheb = max(uv().x.sub(0.5).abs().mul(2), uv().y.sub(0.5).abs().mul(2));
+    const border = smoothstep(0.05, 0.015, cheb.sub(0.88).abs());
+    // 文字全强 + 描边半强 + 0.05 面板背光（灯箱面板整体微亮，非纯黑板）
+    return linearColorNode(hex).mul(mask.mul(intensity).add(border.mul(0.5)).add(0.05));
+  })();
+
+  return material;
+}
+
+export interface HoloSignMaterialOptions {
+  /** 呼吸相位（多楼错拍） */
+  phase?: number;
+  /** 文字强度（默认 2.4，对齐被替换的占位箍带 bloom 档） */
+  intensity?: number;
+}
+
+/**
+ * [CC-L2-B1] 楼顶双面全息招牌板（rubric §6 Tier B1：TextCanvas 楼名纹理 →
+ * 双面全息板替换 ThemeTowers 占位箍带）：加色半透明 + 静态扫描纹（无时间项）+
+ * 慢速呼吸脉动。脉动继承被替换箍带的「招牌脉动」配额席位（CITY-03 ≤2 处不变），
+ * 振幅受品质档 flickerScale 控制（Q2 冻结为常亮）。DoubleSide = 正反可见；
+ * 背面文字镜像是全息板拟真口径（同 folio/Orion 惯例），不加第二块板。
+ */
+export function createHoloSignMaterial(
+  map: THREE.Texture,
+  hex: string,
+  options: HoloSignMaterialOptions = {},
+): THREE.MeshBasicNodeMaterial {
+  const intensity = options.intensity ?? 2.4;
+  const phase = options.phase ?? 0;
+
+  const material = new THREE.MeshBasicNodeMaterial({
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+
+  material.colorNode = Fn(() => {
+    const mask = texture(map, vec2(uv().x, uv().y.oneMinus())).r;
+    // 静态全息扫描纹（fract 无时间项——滚动版归路障，此处不占动画配额）
+    const scan = fract(uv().y.mul(26));
+    const scanline = smoothstep(0.0, 0.35, scan).mul(smoothstep(1.0, 0.65, scan)).mul(0.25).add(0.75);
+    const amp = float(0.18).mul(neonUniforms.flickerScale);
+    const pulse = sin(neonTime.mul(0.9).add(phase)).mul(amp).add(float(1).sub(amp));
+    return linearColorNode(hex).mul(mask.mul(intensity).add(0.08)).mul(scanline).mul(pulse);
+  })();
+  material.opacityNode = Fn(() => {
+    const mask = texture(map, vec2(uv().x, uv().y.oneMinus())).r;
+    return mask.mul(0.72).add(0.14); // 板底 0.14 若隐若现，文字段近实体
+  })();
+
+  return material;
+}
+
+/** [CC-L2-B2] 灯杆发光件局部包围（合并几何的本地坐标带，StreetLamps 布局单源传入） */
+export interface StreetLampMaterialOptions {
+  /** 灯头盒：y 带 + x 下界（悬臂端，x 为「朝路面」向） */
+  head: { y0: number; y1: number; xMin: number };
+  /** 沿街广告灯箱：y 带 + x 下界（杆侧挂旗式灯箱） */
+  banner: { y0: number; y1: number; xMin: number };
+}
+
+/**
+ * [CC-L2-B2] 街道灯杆材质（杆/臂暗金属 + 灯头/灯箱按局部坐标带切出 emissive）：
+ * 合并几何（杆+臂+灯头+灯箱）单材质单 draw call/色族——positionGeometry 是实例
+ * 本地坐标，InstancedMesh 逐实例旋转不破坏掩码。色 hex 从 neon-tokens 单源传入
+ * （双主轴色族：南北=青、东西=品红，Roads/壳 CSS 同一出处）。常亮无时间项。
+ */
+export function createStreetLampMaterial(
+  hex: string,
+  options: StreetLampMaterialOptions,
+): THREE.MeshStandardNodeMaterial {
+  const material = new THREE.MeshStandardNodeMaterial({ roughness: 0.5, metalness: 0.55 });
+  material.colorNode = vec3(0.013, 0.014, 0.02);
+
+  material.emissiveNode = Fn(() => {
+    const y = positionGeometry.y;
+    const x = positionGeometry.x;
+    const band = (v: typeof y, lo: number, hi: number) =>
+      smoothstep(lo - 0.03, lo, v).mul(smoothstep(hi + 0.03, hi, v));
+
+    const headMask = band(y, options.head.y0, options.head.y1).mul(
+      smoothstep(options.head.xMin - 0.03, options.head.xMin, x),
+    );
+    const bannerMask = band(y, options.banner.y0, options.banner.y1).mul(
+      smoothstep(options.banner.xMin - 0.03, options.banner.xMin, x),
+    );
+
+    // 灯箱面板横向灯带条纹（静态）：叠帧广告位语义，避免整面平光
+    const stripeCoord = fract(y.mul(1.55));
+    const stripe = smoothstep(0.02, 0.14, stripeCoord)
+      .mul(smoothstep(0.98, 0.86, stripeCoord))
+      .mul(0.45)
+      .add(0.55);
+
+    const c = linearColorNode(hex);
+    return c.mul(headMask).mul(2.3).add(c.mul(bannerMask).mul(stripe).mul(1.5));
   })();
 
   return material;
