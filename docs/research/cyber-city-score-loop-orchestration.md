@@ -6,31 +6,39 @@
 | 实现模型 | `claude-fable-5-thinking-xhigh` |
 | 审计模型 | `gpt-5.6-sol-xhigh-fast` |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
-| 渲染架构 | `docs/research/cyber-city-rendering-architecture-audit.md` |
-| 生产 tip | `main` @ Loop 4 合入后（综合 **92.0**，视觉独立 **68**） |
-| 目标 | 综合 ≥85 ✅ · 视觉独立 ≥68 ✅ |
+| 渲染架构 | `cyber-city-rendering-architecture-audit.md` |
+| 渲染缺口裁决 | `cyber-city-rendering-gaps-consult.md`（Sol 2026-08-26） |
+| 生产 tip | `main` @ `1ae993a`（综合 **92.0**，视觉 **68**） |
 
-## Loop 4 — ✅ B5 运镜 + AL4 放行
+## 渲染三条发现 — Sol 裁决（不立即开 Task）
 
-| ID | 分支 | 状态 |
-|----|------|------|
-| CC-L4-B5 | `cursor/cc-l4-b5-transform-camera-1d6f` | ✅ 自评 68 |
-| CC-AL4 | `cursor/cc-al4-loop4-audit-1d6f` | ✅ 独立 **68**；三门全过；见 `loop4-audit.md` |
+| # | 发现 | 裁决 | 插入时机 |
+|---|------|------|----------|
+| ① | 无 tone mapping | **建议补** | AL5 后 **Loop 6** 单批校准（ACES+emissive 整表重校）；**不进 L5** |
+| ② | PreRenderer 仅 Q0+WebGPU | **可 defer** | AL5 补冷启动**观测**；有硬门失败再定向修复 |
+| ③ | Ticker TSL uniform 悬空 | **建议补** | AL5 后**维护小 PR**（删或注释指路）；不占视觉关键路径 |
 
-## 专项审视
+当前顺序不变：**L5-C1 → AL5 →** 再按决策树开 Loop 6 / 维护 PR / Blender 专项。
 
-| ID | 分支 | 状态 |
-|----|------|------|
-| CC-Rendering-Audit | `cursor/cc-rendering-arch-audit-1d6f` · [PR #39](https://github.com/rayw-lab/website/pull/39) | ✅ 后处理+bloom+TSL 全量清单 |
+## Loop 5 — 🚀 Tier C（V4 主攻）
 
-## Loop 5+ 前瞻
+| ID | 分支 | Agent | 状态 |
+|----|------|-------|------|
+| CC-L5-C1 | `cursor/cc-l5-tierc-interior-windows-1d6f` | [L5-C1](bc-2a06873e-daa2-5ab0-8806-06c78da0f5de) | 🚀 RUNNING |
+| CC-AL5 | `cursor/cc-al5-loop5-audit-1d6f` | Sol | 待 L5 |
 
-| 主题 | 说明 |
+## Loop 6 前瞻（AL5 后条件触发）
+
+| 条件 | Task |
 |------|------|
-| V4 密度 / Tier C | 程序化上限复评后裁决 |
-| Tone mapping | ACES/AgX 须整表重校 emissive 台账 |
-| Blender 实模 | 独立专项，不进常规 Loop |
+| 独立 69±、V4 有净增益、缺口=V2/V3 高光 | `CC-L6-tone-mapping`（ACES + 台账重校） |
+| AL5 冷启动硬门失败 | `CC-L5-fix-precompile`（定向预热，非 CubeCamera 一刀切） |
+| 任意时刻 | `CC-maint-ticker-uniforms`（③ 清悬空接口） |
 
-## Loop 编排定时器
+## Loop 4 — ✅ · 专项 — ✅
+
+Loop 4 B5+AL4（视觉 68）；Rendering-Audit [PR #39](https://github.com/rayw-lab/website/pull/39)。
+
+## 定时器
 
 `loop-cyber-city-orchestrate` · `sub_cb9b142d-6b8a-4ed1-acfb-4c74e29128a3` · 600s
