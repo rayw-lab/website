@@ -6,43 +6,31 @@
 | 实现模型 | `claude-fable-5-thinking-xhigh` |
 | 审计模型 | `gpt-5.6-sol-xhigh-fast` |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
-| 生产 tip | `main` @ `70396eb`（Loop 3 全链已合入；综合 **91.5**，视觉独立 **66**） |
-| Loop 3 目标 | 视觉独立 ≥68 — **NO-GO**（见 `cyber-city-loop3-audit.md`） |
-| Loop 4 目标 | B5 变形运镜单主题 → 复评是否过 68 |
+| 渲染架构 | `docs/research/cyber-city-rendering-architecture-audit.md` |
+| 生产 tip | `main` @ Loop 4 合入后（综合 **92.0**，视觉独立 **68**） |
+| 目标 | 综合 ≥85 ✅ · 视觉独立 ≥68 ✅ |
 
-## 综合分口径
+## Loop 4 — ✅ B5 运镜 + AL4 放行
 
-见 `scripts/score-loop.mjs` 与下文权重 25/15/20/25/15。三道门：|Δ|≤5、≥62、≥68（终审硬门）。
+| ID | 分支 | 状态 |
+|----|------|------|
+| CC-L4-B5 | `cursor/cc-l4-b5-transform-camera-1d6f` | ✅ 自评 68 |
+| CC-AL4 | `cursor/cc-al4-loop4-audit-1d6f` | ✅ 独立 **68**；三门全过；见 `loop4-audit.md` |
 
-## Loop 0–2 摘要
+## 专项审视
 
-| Loop | 综合 | 视觉独立 | 裁决 |
-|------|------|----------|------|
-| L0 | 87.2 | 49–51 | AL0 有条件放行 |
-| L1 | 89.2 | 57 | AL1 放行 |
-| L2 | 91.0 | 64 | AL2 放行 |
+| ID | 分支 | 状态 |
+|----|------|------|
+| CC-Rendering-Audit | `cursor/cc-rendering-arch-audit-1d6f` · [PR #39](https://github.com/rayw-lab/website/pull/39) | ✅ 后处理+bloom+TSL 全量清单 |
 
-## Loop 3 — ⛔ 终审 NO-GO（综合 91.5 不能盖视觉门）
+## Loop 5+ 前瞻
 
-| ID | 状态 |
-|----|------|
-| B2C+poster → AL3-B2C | ✅ 独立 65 |
-| ATM → AL3-MID | ✅ 独立 66；开 B3 |
-| B3 → AL3-B3 | ✅ 独立仍 66；B5 HOLD |
-| POSTER → AL3 | ⛔ 独立 **66**；三门 Δ1✅ ≥62✅ **≥68❌** |
-
-## Loop 4 — 🚀 B5 运镜单主题（AL3 建议）
-
-| ID | 分支 | 任务 | Agent | 状态 |
-|----|------|------|-------|------|
-| CC-L4-B5 | `cursor/cc-l4-b5-transform-camera-1d6f` | B5 变形运镜 | [L4-B5](bc-d11d23fd-959e-54b8-bd74-caa609eb48d5) | ✅ 自评 **68**；综合 92.0 |
-| CC-AL4 | `cursor/cc-al4-loop4-audit-1d6f` | Loop 4 终审 | gpt-5.6-sol-xhigh-fast | 🚀 已派发 |
+| 主题 | 说明 |
+|------|------|
+| V4 密度 / Tier C | 程序化上限复评后裁决 |
+| Tone mapping | ACES/AgX 须整表重校 emissive 台账 |
+| Blender 实模 | 独立专项，不进常规 Loop |
 
 ## Loop 编排定时器
 
-| 项 | 内容 |
-|----|------|
-| 订阅名 | `loop-cyber-city-orchestrate` |
-| subscriptionId | `sub_cb9b142d-6b8a-4ed1-acfb-4c74e29128a3` |
-| 间隔 | **600s（10min）** |
-| tick 职责 | fetch 分支/PR → 过门派 Task → 合流 main → 更新本看板 |
+`loop-cyber-city-orchestrate` · `sub_cb9b142d-6b8a-4ed1-acfb-4c74e29128a3` · 600s

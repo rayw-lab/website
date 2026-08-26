@@ -1202,7 +1202,7 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   ATM·B3 交接项「poster 三面重拍须在 Loop 3 收口前落地」销账；Loop 3 全链
   （B2C+ATM+B3+POSTER）就绪，待 CC-AL3 终审 ≥68 硬门裁决。
 
-## CC-L4-B5 — 变形运镜：充能推镜 + 落地微震（Loop 4 单主题批，2026-08-26）
+<<<<<<< HEAD
 
 - 分支 `cursor/cc-l4-b5-transform-camera-1d6f`（base：`main@ecb0fd3`，运行时树 ≡
   `main@70396eb` Loop 3 全链合入 tip——差量仅编排看板文档）。AL3 终审 NO-GO
@@ -1258,6 +1258,18 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   以录屏/遥测/恒等/白爆四组证据销账，越段进 70-85 段底保守取分——镜头运动仅
   覆盖变形节拍，入场/POI/出口无运镜，次级动效欠账保留）；其余六维诚实持平。
   加权 67.50→68，综合 ≈92.0。
-- 交接：待 CC-AL4 审 exact tree（只审时间维证据、reduced-motion、驾驶镜头稳定
-  与 V5 增益）；若独立复评仍 <68 或 raw 增益 <1.0，按 AL3 条件⑥停止普通效果
-  叠加，单独裁决 V4 近中景密度/Tier C 或调整目标，不打包赌分。
+- 交接：CC-AL4 已放行（独立视觉 **68**，Loop 4 GO）；见 `loop4-audit.md`。
+
+## CC-Rendering-Audit — 渲染架构全量审视（只读调研，2026-08-26）
+
+分支 `cursor/cc-rendering-arch-audit-1d6f`；交付 `docs/research/cyber-city-rendering-architecture-audit.md`。
+- 结论：后处理**在用**（`Rendering.ts` RenderPipeline + 单 bloom 通路，threshold=1，
+  Q0/Q1 启用、Q2 整段旁路）；着色器**在用且为主体**——100% TSL NodeMaterial
+  （35 文件 import `three/webgpu`、14 文件 import `three/tsl`），全仓零手写
+  GLSL/WGSL、零 ShaderMaterial/onBeforeCompile（grep 交叉验证）。
+- 关键发现①：全站未设 toneMapping（NoToneMapping 直通），白爆靠 emissive 台账
+  手工纪律压制——Loop 4+ 若上 ACES/AgX 须整表重校 §5 强度台账（一改全改）。
+- 关键发现②：PreRenderer shader 预热只覆盖 Q0+WebGPU；Q1/Q2 与 WebGL 后端
+  首用新材质存在编译卡顿敞口（新增常驻材质须落在挂载段编译）。
+- 关键发现③：`core/Ticker.ts` 四个 TSL 时间 uniform 逐帧写入但零材质消费方
+  （动画主源是 `time` 节点）——预留面语义悬空，建议补注释或移除。
