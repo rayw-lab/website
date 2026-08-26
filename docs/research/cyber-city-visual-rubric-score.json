@@ -2,58 +2,58 @@
   "schemaVersion": "1.1.0",
   "score": 66,
   "target": 85,
-  "subject": "Loop 3 首批 `/` Full Entry 首幕 + POI 深链 + 壳/HUD（分支 cursor/cc-l3-content-poster-1d6f：AL2 终审 §7 非阻塞保留项 #1 #2 收口的内容一致性批——B2 灯箱 TextCanvas 广告内容 10 件各异 + poster 三面同源重拍；分层雾、B3 光轨、B5 运镜按派发边界禁做，未越界）",
+  "subject": "Loop 3 主攻批 `/` Full Entry 首幕 + POI 深链（分支 cursor/cc-l3-layered-atmosphere-1d6f：AL3-B2C 放行的 CC-L3-ATM 单主题批——分层距离雾/近地雾床/方位辉光染雾（scene.fogNode）+ 地平线低云带，V2 主攻、兼顾 V1；IBL/AO、B3 光轨、B5 运镜、poster 重拍、新贴图按派发边界禁做，未越界）",
   "rubric": "docs/research/cyber-city-visual-rubric.md",
   "scoredAt": "2026-08-26",
-  "scoredBy": "CC-L3-content 单评自评（校准基线 = CC-AL2 终审独立分 64 逐维原值（V1 61/V2 65/V3 69/V4 53/V5 63/V6 72/V7 72），只对本 PR 帧内可见改动加分；帧优先协议 A 实跑帧 + 协议 B 同机位前后对比帧；待 CC-AL3 复评，±5 容差纪律）",
+  "scoredBy": "CC-L3-ATM 单评自评（校准基线 = CC-AL3-B2C 独立分 65 逐维原值（V1 63/V2 65/V3 69/V4 57/V5 63/V6 73/V7 73），只对本 PR 帧内可见改动加分；帧优先协议 A 实跑帧 + 协议 B 同机位「有雾/关雾」参数开关对照帧；待 CC-AL3-MID 复评，±5 容差纪律）",
   "evidence": {
-    "protocolA": "pnpm test:visual 4/4（VIS-01 壳基线经审阅 --update-snapshots——新 poster 有意变更；VIS-02 在 2% 容差内零 diff 未重生成）+ 全量 e2e 52/52：test-results/visual/world-robot-idle.png / world-poi-concept-garage.png 当轮取证帧（前者北廊灯箱 AI CORE/DRIVE 竖排标语可读，后者 TUNE-UP 品红灯箱近景可读）",
-    "protocolB": "同机位 1440×900 前后对比：l2b-world-robot-1440.webp（Tier B 收官帧）vs l3-world-robot-1440.webp（本 PR 后）——前帧灯箱是通用条纹发光板，后帧 AI CORE（青，杆侧竖排+下划饰线+描边框）与 DRIVE（青）主机位可读、EDGE AI 远位反相亮板成远景广告牌；POI 帧 l3-world-poi-garage-1440.webp：TUNE-UP 品红灯箱近景可读。灯箱双色族特写 l3-lamp-ad-cyan.webp / l3-lamp-ad-magenta.webp。V5 时间维证据沿用 l2-transform-seq.mp4（动效代码零改动）",
-    "crossChecks": "StreetLamps.buildAdsAtlas 单张 TextCanvas atlas（10 行标语各异、与产品线/楼名弱关联；系统等宽栈零外部字体零网络请求）· createStreetLampMaterial 广告内容层 = instanceIndex 选行 + 90° 竖排映射（±Z 双面镜像正读）+ Chebyshev 描边框 + 行号 %3 反相——draw call 台账不变（仍 2 个 InstancedMesh），几何/物理零改动 · poster 三面同源：desktop 1280×720 38.6KB gzip + mobile 720×1280 34.9KB（各 ≤40KB，og:image 与 desktop 同文件），2560×1440 高清 canvas 纯帧一拍两吃 · node scripts/audit-budget.mjs 全过（壳静态段 82.2/90KB，world chunk 82.2/900KB，零新增外部资产）· 本地隔离 LHCI `/` 与 `/home/` 四项中位数不降 · e2e 52/52 零回归"
+    "protocolA": "pnpm test:visual 4/4（VIS-01/02 壳基线零 diff 未重生成——本批零 DOM/poster 改动）+ 全量 e2e 52/52：test-results/visual/world-robot-idle.png / world-poi-concept-garage.png 当轮取证帧（前者主体清晰、远景融入辉光雾、东侧天空低云带可辨；后者 TUNE-UP 灯箱近景可读不回退）",
+    "protocolB": "同机位同构建「有雾/关雾」参数开关对照（scene.userData.cityAtmosphere.setLayers(0|1)，关雾 = 严格退回 CC-L1 线性 Fog(140,850) 等价式）：l3atm-world-robot-1440.webp（开）vs l3atm-world-robot-atmoff-1440.webp（关）——开帧主体（机器人+湿反射）清晰 / 中景（AGENT NEXUS 招牌、AI CORE 灯箱可读）轻纱 / 远景剪影底先隐顶后隐融入方位辉光 + 东侧天空条状低云带，关帧退回单层暗雾平铺；POI 同对照 l3atm-world-poi-garage(-atmoff)-1440.webp（TUNE-UP 双帧同读）；低云带特写 l3atm-cloudband-east.webp（条状平流云 + DRIVE 灯箱同帧可读）；Q1/Q2 分档验证帧 l3atm-world-robot-q1/q2-1440.webp（Q1 简化 0.8+平云、Q2 退线性雾兜底无云）。V5 时间维证据沿用 l2-transform-seq.mp4（动效代码零改动，云带静态无时间项）",
+    "crossChecks": "Sky.ts 单文件扩展（雾色/辉光/云带单源，HORIZON_GLOW 青⇄品红与 Roads 双主轴同源）：fogNode = 中景 haze(50-520m)+远景纱帘(260-640m)双坡 + 近地雾床(<30m 增密) 总量封顶 0.86 保远景暗形；mx_noise 两倍频静态云带（无时间项，CITY-03 配额 ≤2 处不变）· bloom threshold=1 纪律：云带峰值 <0.6、雾色峰值 <0.19 全大气不触泛光 · 全程序化 TSL 零新贴图零新 mesh 零新 draw call（fogNode 是材质输出级混合、穹顶复用既有 1 draw）· Q0/Q1/Q2 = 模块级 uniform 切档零重编译 · node scripts/audit-budget.mjs 全过（world chunk 82.8/900KB，外部资产 0 新增）· 本地隔离 LHCI `/` 与 `/home/` 四项中位数不降 · e2e 52/52 零回归"
   },
   "dimensions": {
     "v1FirstFrame": {
       "label": "首幕构图与第一印象",
       "weight": 0.2,
-      "score": 64,
-      "evidence": "AL2 61 → 64（+3）：判词第三扣分项『desktop/mobile 静态 poster 仍是 A-plus 前帧，未呈现本批三项』销账——poster 按 Tier B 落定城市重拍（招牌/灯杆灯箱/分层剪影三项全部入图，三面同源恢复）；灯箱广告文字为首幕中景补一层可读锚点（AI CORE/DRIVE 帧证）。扣分保留 = 构图本体未变、楼顶文字上沿裁切仍在，不越 65"
+      "score": 65,
+      "evidence": "AL3-B2C 63 → 65（+2）：判词『纵深层次扁平』改善——同机位对照帧证首幕现出主体/中景/远景三层可分（近景机器人+倒影清晰、中景楼群轻纱、远景剪影融入辉光雾 + 低云带收边天际），北向天空开口与道路消失点保留且消失点融入近地雾床更有『深巷』感。扣分保留 = 机位/构图本体零改动、poster 三面因本批禁做重拍暂与 runtime 漂移（CC-L3-POSTER 专批已列链上下一段），不越 65 入 70-85 段"
     },
     "v2LightingMaterial": {
       "label": "光照·材质·后处理",
       "weight": 0.2,
-      "score": 65,
-      "evidence": "AL2 65 持平：审计已裁定 V2 越 50-65 段顶须分层雾/IBL/AO——本批按派发边界禁做分层雾，光照架构零改动，不预支。灯箱内容层沿用既有 emissive 通道（反相板 0.95<bloom threshold 1 纪律），计入 V4 不重复计分"
+      "score": 70,
+      "evidence": "AL3-B2C 65 → 70（+5，主攻维破 50-65 段顶）：审计裁定的越段条件『帧内出现可辨的近/中/远大气层次』兑现——开雾帧主体 20m 零染雾、中景 100-150m 轻纱（招牌可读）、远景 296-436m 楼底先隐/楼顶后隐（近地雾床×双坡高度差）融入按方位青⇄品红染色的光污染辉光；天空从纯渐变升级为渐变+辉光+条状低云三段经营。取 70-85 段底沿：bloom 阈值纪律/主机位反射/分层雾三件齐（段界定义项），但无 IBL/AO、无体积光、材质仍程序感（段内上探的既留欠账），不多取"
     },
     "v3PaletteAtmosphere": {
       "label": "色彩体系与氛围一致性",
       "weight": 0.15,
       "score": 69,
-      "evidence": "AL2 69 持平：标语纹理是无色 mask，着色仍走双主轴 NEON token 单源（青=南北/品红=东西），未引入第三色相；Roads/Grid 派生线性字面量收窄条款本批未动，不加分"
+      "evidence": "AL3-B2C 69 持平：雾色/云色严格走 HORIZON_GLOW 青⇄品红单源（与穹顶辉光带、Roads 双主轴 neon 同色相），近中景 haze 为无色相抬亮蓝灰——未引入第三色相也未修既有色彩债（Roads/Grid 派生线性常量未动），不加分"
     },
     "v4SceneDensity": {
       "label": "场景密度与世界可信度",
       "weight": 0.15,
-      "score": 59,
-      "evidence": "AL2 53 → 59（+6，主攻维）：判词『覆盖只到 5 栋 hero、灯箱无 TextCanvas 内容、无车流/雨丝/光轨』的第二项销账——10 件挂旗灯箱各配差异化竖排广告标语（与产品线/楼名弱关联：AI CORE/EDGE AI/39 LANGS/GARAGE/TUNE-UP 等），主机位 2 件直读 + 远位反相亮板成广告牌层次，POI 帧近景 1 件可读，街道层从『通用发光板』升级为有内容的广告基础设施（描边框+下划饰线+亮暗板交替）。扣分保留 = 招牌覆盖仍只 5 栋 hero、零车流/雨丝/光轨（B3 后置），不取段中上沿"
+      "score": 57,
+      "evidence": "AL3-B2C 57 持平：大气不改楼体/道具/文字密度——云带与远景分层的收益已计入 V1 纵深与 V2 大气，此处不重复计（帧优先反通胀）；『招牌覆盖只 5 栋 hero、零车流/雨丝/光轨』扣分项原样保留（B3 待 AL3-MID 裁决）"
     },
     "v5MotionTransition": {
       "label": "动效与转场工艺",
       "weight": 0.15,
       "score": 63,
-      "evidence": "AL2 63 持平：变形编舞/镜头零改动（B5 后置）；灯箱内容常亮无时间项，CITY-03 配额 ≤2 处不变；9.4s 时间维证据 l2-transform-seq.mp4 沿用有效"
+      "evidence": "AL3-B2C 63 持平：零动画/镜头改动（B5 后置）；云带按顾问稿『默认静态层』纪律无时间项（CITY-03 配额 ≤2 处不变），9.4s 既有证据继续有效"
     },
     "v6UiHudIntegration": {
       "label": "DOM UI/HUD 视觉整合",
       "weight": 0.1,
-      "score": 74,
-      "evidence": "AL2 72 → 74（+2）：挂载前后视觉语言连续性收口——壳 poster（LCP）/移动 9:16 竖版/og:image 三面恢复与挂载后 3D 同帧同源（AL2 §7 #1『reduced-motion、移动端和无 3D 用户看到的仍是 A-plus 城市』判词销账）；移动竖版按主体居中重裁构图。DOM/HUD 本体零改动，不重复加分"
+      "score": 73,
+      "evidence": "AL3-B2C 73 持平：DOM/HUD 零字节改动；开雾帧 HUD 面板/提示丸可读性经同机位对照核验不受雾层影响（雾只作用 3D 场景材质）。注：poster 三面暂与 runtime 新大气漂移是本批禁做重拍的已知链上状态（AL3-MID 审计口径已预设『poster 尚未重拍』），漂移债记 CC-L3-POSTER 专批清账，本维不预扣也不加分"
     },
     "v7ThematicOriginality": {
       "label": "主题原创性与叙事贴合",
       "weight": 0.05,
       "score": 73,
-      "evidence": "AL2 72 → 73（+1）：『楼=产品线』叙事从楼名招牌延伸到街道家具层——灯箱广告文案与就近楼/产品线弱关联（39 LANGS↔多语种塔、TTS LIVE↔语音舱、GARAGE/TUNE-UP↔车库配置器、SAY HI↔联络信标），世界内容自洽度上升；机器人↔车核心不变"
+      "evidence": "AL3-B2C 73 持平：大气层强化『雨夜科技城』氛围可信度但未新增叙事载体；机器人↔车核心与楼=产品线语义不变，不加分"
     }
   },
-  "notes": "自评总分 66/100 = 64×.20+65×.20+69×.15+59×.15+63×.15+74×.10+73×.05=65.5→66（校准基线 = CC-AL2 终审独立分 64 逐维原值）。增量全部来自 AL2 §7 两项债务收口：V4 53→59（主攻维 +6：B2 灯箱内容判词销账，10 件各异可读广告 + 亮暗板层次，帧证齐）、V1 61→64（poster 漂移判词销账 + 中景文字锚点）、V6 72→74（三面同源恢复）、V7 72→73（街道层叙事延伸）；V2/V3/V5 诚实持平（V2 越段界所需分层雾是本批禁做项，不预支）。帧优先核对：V1/V4/V6/V7 加分全部有帧内/壳内可见证据（同机位前后对比 + POI 帧 + 双色族特写 + 新 poster 本体），无『代码在帧不在』项。综合分敏感度 ≈75+0.25×视觉分 → 66 分 ≈91.5。提分路径余量：Loop 3 主攻批分层雾/低云带（AL2 §7 裁决第 2 条，V2 破 65 段顶 + V1 远景）→ ~68-70；B3/B5 按 AL2 边界分批后置。"
+  "notes": "自评总分 66/100 = 65×.20+70×.20+69×.15+57×.15+63×.15+73×.10+73×.05=66.3→66（校准基线 = CC-AL3-B2C 独立分 65 逐维原值）。增量全部来自单主题分层大气：V2 65→70（主攻维 +5：破 50-65 段顶的审计裁定条件『帧内可辨近/中/远大气层次』以同机位有雾/关雾参数开关对照帧兑现，取新段底沿不多探）、V1 63→65（+2：纵深扁平判词改善，段顶封住——构图本体未动 + poster 漂移待专批）；V3/V4/V5/V6/V7 诚实持平（云带/分层收益只计一次，不在 V4 重复计；动效/DOM/叙事零改动）。帧优先核对：V1/V2 加分全部有同构建参数开关对照帧（l3atm-*-1440.webp ×4 + 云带特写 + Q1/Q2 分档帧），关雾帧与 main 前帧（l3-world-robot-1440.webp）同构图可互证。综合分敏感度 ≈75+0.25×视觉分 → 66 分 ≈91.5。提分路径余量：AL3-MID 若判 66-67 按最低维（V4 57）裁决 B3 光轨或 B5 运镜；poster 三面重拍（CC-L3-POSTER）须在 Loop 3 收口前落地，否则 AL2 §7 #1 判词回潮。"
 }

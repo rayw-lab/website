@@ -1016,3 +1016,60 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   （V2 破 65 段顶 + V1 远景）；B3/B5 按裁决第 3 条分批后置（B3 先书面统一
   CITY-03 配额并验证 Q2 关闭；B5 先补 reduced-motion 直出与运镜门禁）。
 
+## CC-L3-ATM — 分层雾/低云带/大气纵深（Loop 3 主攻批，2026-08-26）
+
+- 分支 `cursor/cc-l3-layered-atmosphere-1d6f`（base：`main@2e6126c`，AL3-B2C 放行
+  基线独立视觉 65 / 综合 91.3）。单主题 PR 纪律：只做 AL3-B2C §5 放行的分层雾/
+  低云带/大气纵深（V2 主攻、兼顾 V1）；禁做项（IBL/AO、B3 光轨、B5 运镜、
+  poster 重拍、新贴图资产）未越界，全程序化 TSL 零新资产零新 draw call。
+- 交付一件（`Sky.ts` 单文件扩展成大气模块——任务书「扩展 Sky.ts 或新建大气层」
+  取前者：雾色/辉光/云带三件本就同色轴，单文件防色相双源）：
+  1. **分层距离雾（`scene.fogNode` 接管 CC-L1 单层线性 `THREE.Fog(140,850)`）**：
+     ① 中景 haze（50-520m 缓坡 ×0.42）+ 远景纱帘（260-640m 陡坡 ×0.40）双坡
+     叠加——中/远衰减节奏可分；② 近地雾床（世界高度 <30m 增密 ×0.38、随距离
+     50-380m 展开）——远楼「底先隐、顶后隐」，纵向也有层次，主体 20m 机位处
+     严格为 0；③ 远雾色按视线方位染向青⇄品红光污染（`HORIZON_GLOW` 单源，
+     与穹顶辉光带/Roads 双主轴同色相），近中景为无色相抬亮蓝灰；④ 总量封顶
+     0.86 保远景剪影暗形（防「雾更浓=层次更好」假象，AL3-B2C §5 边界第 4 条
+     「不得把无界透明 overdraw 包装成雾层」——fogNode 是材质输出级逐片元混合，
+     零 overdraw 零第二次渲染）。
+  2. **地平线低云带（穹顶着色内嵌）**：`mx_noise_float` 两倍频程序化平流云
+     （3D 方向域直采零接缝、纵向 ×26 压扁成条状），带窗仰角 0.012-0.26、峰值
+     压在首幕可见天空带（俯角 15°/FOV 42° 下画框顶 ≈ 仰角 +6°）；云底被城市
+     辉光自下点亮（0.45→1.15）、云体半遮辉光带（×0.45）——「剪影 → 辉光+云 →
+     夜空」三段远景。**静态无时间项**（云漂移会占 CITY-03 配额 ≤2 处，按顾问稿
+     「默认静态层」纪律不开）。
+- 档位与开关（模块级共享 uniform，切档零材质重建零重编译，neonUniforms 同款）：
+  Q0 全效（layerMix 1/云细节 1）· Q1 简化（0.8/平云 0.35）· Q2 关闭走廉价兜底
+  ——`layerMix×master=0` 时雾严格退回 CC-L1 线性 Fog(140,850) 等价式 + 云带清零；
+  Q2 兜底与「关雾」取证开关（`scene.userData.cityAtmosphere.setLayers`，#debug
+  句柄可达）共用同一条退化路径，归因干净。bloom threshold=1 纪律：云带峰值
+  <0.6、雾色峰值 <0.19，全大气 <1 不触泛光。
+- 验证：`pnpm astro check` 0 err；`node scripts/audit-budget.mjs` 全过（world
+  chunk 82.8/900KB，外部资产 0 新增）；`pnpm test:visual` 4/4（VIS-01/02 壳基线
+  零 diff——本批零 DOM/poster 改动）；**全量 e2e 52/52 零回归**（17.6m，
+  0 failed/0 skipped/0 flaky，@smoke3d 3/3）；本地隔离 LHCI（独立 npm 布局
+  @lhci/cli@0.15.1 + Playwright Chromium，7 URL ×3 = 21 LHR，本轮 perf 有值无需
+  CI 回填）`/` 与 `/home/` 四项中位数全 100 不降，assert exit 0；统一计分
+  COMPOSITE_SCORE=91.5、availableWeight=1、missing=[]。历史文档截图被全量
+  e2e 重写后已按纪律还原（e2e-batch1/e2e-integration 两目录）。
+- 帧证据（同构建参数开关对照，非跨构建前后帧——比历史协议归因更严）：
+  `l3atm-world-robot-1440.webp`（开雾：主体+湿反射清晰 / 中景 AGENT NEXUS·
+  AI CORE 可读轻纱 / 远景融入方位辉光 + 东天低云带）vs
+  `l3atm-world-robot-atmoff-1440.webp`（关雾 = 旧单层暗雾，与 main 前帧
+  `l3-world-robot-1440.webp` 同构图互证）；POI 同对照
+  `l3atm-world-poi-garage(-atmoff)-1440.webp`（TUNE-UP 双帧同读不回退）；
+  低云带特写 `l3atm-cloudband-east.webp`（条状云 + DRIVE 灯箱同帧可读）；
+  分档验证帧 `l3atm-world-robot-q1/q2-1440.webp`。V5 沿用 `l2-transform-seq.mp4`
+  （动效零改动）。
+- 视觉自评 **66（校准基线 = CC-AL3-B2C 独立分 65 逐维原值）**：V2 65→70
+  （主攻维 +5：破 50-65 段顶的审计裁定条件「帧内可辨近/中/远大气层次」以
+  同机位开关对照帧兑现，取 70-85 段底沿不多探——无 IBL/AO/体积光欠账仍在）/
+  V1 63→65（+2：纵深扁平判词改善，段顶封住——构图本体未动）；V3/V4/V5/V6/V7
+  诚实持平（云带/分层收益只计一次不在 V4 重复计；动效/DOM/叙事零改动）。
+  加权 66.3→66，综合 91.5。
+- 交接：待 CC-AL3-MID 审 B2C+ATM 集成树（审计口径已预设「poster 尚未重拍」）；
+  若独立视觉 66-67 按最低维（V4 57）在 B3 光轨/B5 运镜里裁一件；**poster 三面
+  重拍（CC-L3-POSTER）须在 Loop 3 收口前落地**——本批 runtime 大气已改画面，
+  AL2 §7 #1 漂移在专批清账前是已知链上状态。
+
