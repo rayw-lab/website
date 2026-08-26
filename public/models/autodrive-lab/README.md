@@ -7,7 +7,7 @@
 
 | 项 | 内容 |
 |----|------|
-| 来源 | **100% 原创程序化生成**——Blender 4.0 headless 脚本 `scripts/blender/generate-autodrive-lab.py`（本仓单源，零外部资产、零许可负担、无 .blend 二进制入库） |
+| 来源 | **100% 原创程序化生成**——Blender 4.0 headless 脚本 `tools/blender/generate-autodrive-lab.py`（本仓单源，零外部资产、零许可负担、无 .blend 二进制入库） |
 | 生成日期 | 2026-08-26 |
 | 许可 | 随仓库（自有资产；几何/贴图/材质全部脚本生成，确定性 seed=0x1206） |
 | 体积 | **157,444 B（≈154 KB）** ≤ 10MB spike 合同；12MB 资产池入账后合计 5.3MB（`audit-budget` G-G(world) 实测） |
@@ -35,7 +35,7 @@
 ## 复现管线
 
 ```bash
-blender -b --factory-startup -P scripts/blender/generate-autodrive-lab.py -- --out /tmp/bl1-asset
+blender -b --factory-startup -P tools/blender/generate-autodrive-lab.py -- --out /tmp/bl1-asset
 pnpm dlx @gltf-transform/cli etc1s /tmp/bl1-asset/AutodriveLab-raw.glb /tmp/bl1-asset/AutodriveLab-etc1s.glb --quality 255
 pnpm dlx @gltf-transform/cli draco /tmp/bl1-asset/AutodriveLab-etc1s.glb public/models/autodrive-lab/AutodriveLab.glb
 ```

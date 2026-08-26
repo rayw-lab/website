@@ -1339,7 +1339,7 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   禁做项（全城实模、第二栋 hero、tone mapping、poster 重拍、运镜、后处理）
   零字节触碰。
 - 资产管线（无 .blend 二进制入库，全程可复现）：
-  1. **生成**：`scripts/blender/generate-autodrive-lab.py`（Blender 4.0.2
+  1. **生成**：`tools/blender/generate-autodrive-lab.py`（Blender 4.0.2
      headless，确定性 seed）——裙房橱窗展车/门厅骑楼/试车卷帘门 + 双阶塔身
      逐窗幕墙（窗洞实几何：竖梃/层间梁/窗台，非贴图假窗）+ 屋顶机房/风机/
      桅杆/信标 + 东北角道具簇（充电桩×4+光伏雨棚+发光泊位标线、试车升降台

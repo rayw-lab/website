@@ -12,7 +12,7 @@
 | # | 资产 | 入库路径 | 来源（URL + 获取日期） | 许可 | 体积（字节实测） | 首包归属 | 预算对照 |
 |---|------|---------|----------------------|------|----------------|---------|---------|
 | 1 | 机器人英雄 GLB（Quaternius Animated Mech Pack「Stan」换装钛灰/青/橙 + Draco） | `public/models/hero-robot/HeroRobot.glb` | <https://quaternius.com/packs/animatedmech.html>（官方 Google Drive，`Flat Colors/glTF/Stan.gltf`，2026-08-25） | **CC0 1.0**（包内 `License.txt` + 官网全站声明；改造后仍零署名义务） | **345,360 B（≈338 KB）** | 科技城首包（机器人条目） | ≤ 800KB ✅（SRD §12.7.2 / CITY-04；余量 462KB） |
-| 2 | AutoDrive Lab hero 楼实模 + 东北角道具簇 GLB（Blender 4.0 headless 全程序化生成 + Draco + KTX2/ETC1S，CC-BL1） | `public/models/autodrive-lab/AutodriveLab.glb` | 本仓脚本 `scripts/blender/generate-autodrive-lab.py`（确定性 seed，2026-08-26 生成；零外部网格/贴图，无 .blend 二进制入库） | **原创**（随仓库许可；零第三方义务） | **157,444 B（≈154 KB）** | 非首包（Q0/Q1 城市挂载后异步流式拉取；Q2 挂载零字节零请求） | 单 GLB ≤10MB spike 合同 ✅（4,622 tris ≤100k、贴图 3 张 KTX2 ≤1024²≤2K）；world 流式池 ≤12MB（`audit-budget` G-G(world) 直测目录）✅ |
+| 2 | AutoDrive Lab hero 楼实模 + 东北角道具簇 GLB（Blender 4.0 headless 全程序化生成 + Draco + KTX2/ETC1S，CC-BL1） | `public/models/autodrive-lab/AutodriveLab.glb` | 本仓脚本 `tools/blender/generate-autodrive-lab.py`（确定性 seed，2026-08-26 生成；零外部网格/贴图，无 .blend 二进制入库） | **原创**（随仓库许可；零第三方义务） | **157,444 B（≈154 KB）** | 非首包（Q0/Q1 城市挂载后异步流式拉取；Q2 挂载零字节零请求） | 单 GLB ≤10MB spike 合同 ✅（4,622 tris ≤100k、贴图 3 张 KTX2 ≤1024²≤2K）；world 流式池 ≤12MB（`audit-budget` G-G(world) 直测目录）✅ |
 
 改造与复现细节：`public/models/hero-robot/README.md`（改造清单、热替换约定、失败回退）；管线脚本全文见附录 A。autodrive-lab 生成/压缩管线、材质名合同与回退合同见 `public/models/autodrive-lab/README.md`（复现命令三行：blender headless → `gltf-transform etc1s` → `gltf-transform draco`）。
 
