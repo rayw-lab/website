@@ -1202,3 +1202,17 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   ATM·B3 交接项「poster 三面重拍须在 Loop 3 收口前落地」销账；Loop 3 全链
   （B2C+ATM+B3+POSTER）就绪，待 CC-AL3 终审 ≥68 硬门裁决。
 
+
+## CC-Rendering-Audit — 渲染架构全量审视（只读调研，2026-08-26）
+
+分支 `cursor/cc-rendering-arch-audit-1d6f`；交付 `docs/research/cyber-city-rendering-architecture-audit.md`。
+- 结论：后处理**在用**（`Rendering.ts` RenderPipeline + 单 bloom 通路，threshold=1，
+  Q0/Q1 启用、Q2 整段旁路）；着色器**在用且为主体**——100% TSL NodeMaterial
+  （35 文件 import `three/webgpu`、14 文件 import `three/tsl`），全仓零手写
+  GLSL/WGSL、零 ShaderMaterial/onBeforeCompile（grep 交叉验证）。
+- 关键发现①：全站未设 toneMapping（NoToneMapping 直通），白爆靠 emissive 台账
+  手工纪律压制——Loop 4+ 若上 ACES/AgX 须整表重校 §5 强度台账（一改全改）。
+- 关键发现②：PreRenderer shader 预热只覆盖 Q0+WebGPU；Q1/Q2 与 WebGL 后端
+  首用新材质存在编译卡顿敞口（新增常驻材质须落在挂载段编译）。
+- 关键发现③：`core/Ticker.ts` 四个 TSL 时间 uniform 逐帧写入但零材质消费方
+  （动画主源是 `time` 节点）——预留面语义悬空，建议补注释或移除。
