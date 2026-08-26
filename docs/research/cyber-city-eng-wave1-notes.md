@@ -1329,3 +1329,55 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   <1.0」停止条款——按顾问稿 Loop 5 终审问题裁决剩余差距归属（程序化小件 vs
   实模密度 Blender 专项）。poster 三面：本批 runtime 改画面（近景窗格/机器人
   材质），poster 漂移债挂账，按「运行时冻结后收口」纪律留给 Loop 5 收口批。
+
+## CC-BL1 — Blender spike：autodrive-lab 实模 GLB + 东北角道具簇（Blender 路径首拍，2026-08-26）
+
+- 分支 `cursor/cc-bl1-hero-corner-blender-1d6f`（base：`main@8ce5284`，AL5 有条件
+  放行基线独立视觉 68/raw 68.00，最低维 V4=60）。指挥官拍板（Fable5 顾问
+  bc-da728b97）：autodrive-lab 单栋 hero 楼替换为 Blender 实模 GLB + 十字路口
+  东北角象限（x 8–52 / z −52–−8）街角道具簇，VIS-03 首幕 + VIS-04 深链双收益；
+  禁做项（全城实模、第二栋 hero、tone mapping、poster 重拍、运镜、后处理）
+  零字节触碰。
+- 资产管线（无 .blend 二进制入库，全程可复现）：
+  1. **生成**：`scripts/blender/generate-autodrive-lab.py`（Blender 4.0.2
+     headless，确定性 seed）——裙房橱窗展车/门厅骑楼/试车卷帘门 + 双阶塔身
+     逐窗幕墙（窗洞实几何：竖梃/层间梁/窗台，非贴图假窗）+ 屋顶机房/风机/
+     桅杆/信标 + 东北角道具簇（充电桩×4+光伏雨棚+发光泊位标线、试车升降台
+     （载无人车壳）、全息 totem、冷却罐、备件箱堆、警示隔离墩、标定板、缆线
+     槽）。贴图三张 numpy 程序化 atlas：窗内景 8×8 emissive（暖白/青/暗三族 +
+     百叶/家具剪影）、幕墙金属板可平铺、工具四象限。
+  2. **压缩**：`gltf-transform etc1s --quality 255`（KTX-Software toktx 4.3）→
+     `gltf-transform draco` → **157,444 B（≈154 KB）**，4,622 tris，13 具名
+     材质 primitive；合同余量：体积 1.5%/上限 10MB、三角形 4.6%/上限 100k、
+     贴图 ≤1024²/上限 2K。台账：`docs/spec/asset-ledger-cyber-city.md` 第 2 行 +
+     `public/models/autodrive-lab/README.md`（材质名合同/坐标合同/复现三行命令）。
+- 运行时接线（新增 `city/HeroBlenderMesh.ts`，~150 行）：
+  - **数据驱动**：buildings JSON 条目带 `heroGlb` 字段即入册（本拍只有
+    autodrive-lab）；`CityMap.Building` 加可选 `heroGlb?: string`，加一栋实模 =
+    补一个字段，引擎零改动。
+  - **回退合同**（Premortem R4 止损）：Q2 挂载**不发起加载**（实测零 .glb
+    请求零解码）；Q0/Q1 异步加载成功后隐藏对应 ThemeTowers 视觉
+    （`getTower(id)` 新增，物理 footprint cuboid 合同不动），失败 console.warn
+    静默回退（route abort 实测：ERR_FAILED → 程序化体块原样，世界照常起）；
+    运行时热切档只切 visible（Q2 挂载后升档不补加载——零字节承诺以挂载档为准，
+    实测 changeLevel(0) 后零请求）。
+  - **街角道具碰撞体**：单 fixed body + 18 件表驱动 cuboid collider
+    （StreetProps 同款 game.objects 注册；薄片标线/缆线槽/标定板可碾压不设体；
+    Q2/失败态 collider 同步 disable——无隐形墙）。泊车圈 (28,−28) r6 与行车
+    走廊建模侧让空。
+  - **挂点兼容**：BuildingSigns 立面灯箱挂点（±(w/2+0.35) 挂高 20.4）在模型侧
+    留 24m 宽招牌避让背板区（竖梃/层间梁截断让位）；楼顶全息板对角线 x+z=0
+    邻域机房/桅杆全部偏轴。
+- 色纪律（rubric A3）：窗格暖白/青/暗三族 atlas 同既有色轴；楼宇身份色
+  #ff6b35 只进 LED 竖带/檐口线/信标/道具警示件；emissive 全部 ≤1 阈下，唯一
+  辉光锚 = 屋顶信标 + 门架警灯（strength 2.2，`KHR_materials_emissive_strength`）
+  ——bloom threshold=1 台账新增 1 处阈上锚（楼顶信标族，与既有 beacon 同族）。
+- 验证：`astro check` 0 err/0 warn；`node scripts/audit-budget.mjs` 全过
+  （world 资产池 +154KB ≈4.0/12MB）；三态回退全部程序化取证（Q0 挂载成功日志 /
+  Q2 零请求 + towerVisible=true / route abort 失败回退 warn）；全量
+  `pnpm quality:loop:full`（e2e 52 + 隔离 LHCI + 统一计分）见看板 BL1 行登记。
+- 自评（rubric v1.1，校准基线 = AL5 独立向量）：详见
+  `cyber-city-visual-rubric-score.json`——V4 60→68（主攻维：单象限达
+  「实模轮廓+窗框几何+近景道具成层」，全城覆盖面单点诚实压分）、V2 71→72、
+  V1 65→66、V7 73→74，raw 68.00→69.65 → **70**（派发目标 71–74 在单楼+单角
+  帧证据下诚实不可达，V4 顶格 72 也仅 raw 70.25；不预支 AL-BL1）。

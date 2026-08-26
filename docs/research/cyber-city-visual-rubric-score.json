@@ -1,60 +1,60 @@
 {
   "schemaVersion": "1.1.0",
-  "score": 69,
+  "score": 70,
   "target": 85,
-  "subject": "Loop 5 单主题批 `/` Full Entry 首幕+近景材质密度（分支 cursor/cc-l5-tierc-interior-windows-1d6f：AL4 终审 GO（独立 68，raw 67.50，最低维 V4=58）后按顾问稿 Loop 5「V2/V4 材质密度主题」开启的 CC-L5-C1——Tier C 单主题：hero 近景楼 ~10% 窗格假室内映射（generator_city 同技法，TSL 视线×窗后虚拟房盒逐轴求交，全静态零贴图零时间项）+ 机器人材质分区（Main 胸甲高光锐化 / LightGrey 关节青伺服辉光随呼吸同拍 / Accent 警示条工业橙微亮，GLB 与回退机甲同口径）；tone mapping/后处理/运镜/poster/光轨/雾/其它 Tier C 项按派发边界零字节触碰）",
+  "subject": "Blender 路径首拍 `/` Full Entry autodrive-lab 实模 + 东北角道具簇（分支 cursor/cc-bl1-hero-corner-blender-1d6f：AL5 有条件放行（独立 68，raw 68.00，最低维 V4=60）后指挥官拍板的 CC-BL1 Blender spike——autodrive-lab 单栋 hero 楼替换为 Blender 实模 GLB（154KB Draco+KTX2，4,622 tris，13 材质，窗洞实几何 + 窗内景 emissive atlas）+ 十字路口东北角象限街角道具簇（充电桩×4+光伏雨棚+发光泊位标线/试车升降台载车壳/全息 totem/冷却罐/隔离墩/标定板），程序化 ThemeTowers 保留为 Q2/加载失败回退；全城实模/第二栋 hero/tone mapping/poster 重拍/运镜/后处理按派发边界零字节触碰）",
   "rubric": "docs/research/cyber-city-visual-rubric.md",
   "scoredAt": "2026-08-26",
-  "scoredBy": "CC-L5-C1 单评自评（校准基线 = CC-AL4 终审独立总分 68 + 逐维向量（V1 65/V2 70/V3 69/V4 58/V5 70/V6 73/V7 73，raw 67.50）；只对本 PR 帧内可见改动加分；帧优先协议 A 实跑帧 + 协议 B 同机位前后对照帧/驾驶推进双视角视差帧；待 CC-AL5 复评，±5 容差纪律）",
+  "scoredBy": "CC-BL1 单评自评（校准基线 = CC-AL5 独立总分 68 + 逐维向量（V1 65/V2 71/V3 69/V4 60/V5 70/V6 73/V7 73，raw 68.00）；只对本 PR 帧内可见改动加分；待 CC-AL-BL1 复评，±5 容差纪律）",
   "evidence": {
-    "protocolA": "pnpm test:visual 4/4 ×2（main 基线轮 + 改动轮各一次，VIS-01/02 壳基线零 diff 未重生成——本批零 DOM/poster 改动；VIS-03 robot_idle 与 VIS-04 POI 取证帧两轮同机位落盘）+ 全量 e2e 52/52（干净重跑 17.8m，0 failed/0 skipped/0 flaky；首轮 WS-E2E-03 左转 Δyaw ±π 回绕一次失败 = AL4 §4.1 同族既有 flake，隔离复核 1/1 后重跑，不隐去首跑）+ 隔离 LHCI 7 URL ×3 = 21 LHR collect/assert exit 0（`/` 与 `/home/` 四项中位数全 100 不降）+ COMPOSITE_SCORE=92.3（availableWeight=1、missing=[]）；node scripts/audit-budget.mjs 全过（world chunk 84.8/900KB，+0.6KB，零新资产）",
-    "protocolB": "同机位前后对照帧四组（artifacts）：cc-l5-c1-robot-idle-before-after（整帧 1440×900，before=main@1ae993a）、cc-l5-c1-facade-interior-crop-before-after（AGENT NEXUS 立面 2× 裁剪：平涂窗 vs 假室内窗——暖房天花/后墙/地板三段分明、冷屏房蓝辉、斜视角出侧墙「盒体感」）、cc-l5-c1-robot-zoom-before-after（主体 2× 裁剪：警示条橙微亮出暗、关节青伺服辉光、胸甲高光收锐）、cc-l5-c1-drive-interior-parallax（变形→驾驶推进 z=0→-21m 双视角同楼立面：室内可见壁面随视角变化 = 视差深度非贴花自证）；像素级差异噪声族 = 既有窗闪相位 + 首幕慢 yaw 相位（AL4 同口径）",
-    "crossChecks": "假室内映射为纯视线依赖静态 shader：零时间项（CITY-03 配额零占用，Q2 冻结无感）、零贴图零资产、standard 楼 interiorRatio 缺省 0 = 分支编译剔除；房内亮度峰值 ≈0.6 <1 = bloom threshold=1 阈下（「室内是纵深不是光源」，阈上名额台账不变）· 关节呼吸 = 既有 idle 呼吸同一时间轴同一配额席位（幅度 0.16–0.42 阈下）；警示条 0.42 常亮阈下 · 反射链自动收益：interior/关节/警示条经 Grid reflector 镜像渲染入水零接线 · rim 灯位/强度/雾/bloom/相机零改动 · GLB 六材质槽即分区界面（零新材质实例，零 draw call 变化）· astro check 0 err/0 warn",
-    "delta": "raw 67.50 → 68.50（+1.00）；整数 68 → 69"
+    "protocolA": "pnpm quality:loop:full（e2e 52 全量 + 隔离 LHCI `/`+`/home/` 四项中位数不降 + audit-budget + 统一计分 availableWeight=1）——VIS-03 robot_idle 首幕帧右翼：程序化点阵盒 → 实模幕墙楼沿 + 光伏雨棚/发光泊位标线/道具簇入画（同机位 before=main@8ce5284）；VIS-04 POI concept-garage 同机位落盘；autodrive-lab 泊车圈 ?poi= 深链帧 = 实模楼近景主导（逐窗百叶/家具剪影/暖青暗三族可辨）",
+    "protocolB": "三态回退程序化取证（#debug 句柄 + Playwright route）：① Q0 挂载成功 console.info + towerVisible=false/glbVisible=true；② ?quality=2 挂载零 .glb 请求（performance resource 实测 0 条）+ towerVisible=true + changeLevel(0) 升档不补加载（零字节承诺以挂载档为准）；③ route abort AutodriveLab.glb → ERR_FAILED + console.warn 止损回退 + 程序化体块原样。近景取证帧：泊车圈机位整帧 + 立面 2× 裁剪（窗内百叶/家具剪影/层间梁铆钉板可辨 = 实模非贴花）",
+    "crossChecks": "资产合同全部余量内：154KB/10MB（1.5%）· 4,622/100k tris（4.6%）· 贴图 ≤1024²/2K 上限；world 资产池 ≈4.0/12MB（audit-budget G-G(world) 直测）· 色纪律 A3：窗三族同既有色轴，#ff6b35 只进 LED/信标/警示件；emissive 全部 ≤1 阈下，唯一阈上锚 = 屋顶信标+门架警灯（strength 2.2，KHR_materials_emissive_strength，与既有 beacon 同族）· CITY-03 动画配额零新增（GLB 全静态）· 物理合同不动：footprint cuboid 沿用 ThemeTowers，道具 18 件 collider 随实模 enable/disable（Q2 无隐形墙）· BuildingSigns 挂点兼容（模型侧 24m 招牌避让背板）· astro check 0 err/0 warn",
+    "delta": "raw 68.00 → 69.65（+1.65）；整数 68 → 70"
   },
   "dimensions": {
     "v1FirstFrame": {
       "label": "首幕构图与第一印象",
       "weight": 0.2,
-      "score": 65,
-      "evidence": "AL4 独立 65 持平：构图/机位/poster 本体零改动——近景材质丰富度提升的收益已计入 V2/V4，不重复计分"
+      "score": 66,
+      "evidence": "AL5 独立 65 → 66（+1）：相机/景框/poster/天空零改动，但首幕右翼新增街面实模内容层（光伏雨棚 + 发光泊位标线 + 实模幕墙楼沿替换点阵盒）——是新物体入画非材质重计；构图本体未变，只加 1 不越段"
     },
     "v2LightingMaterial": {
       "label": "光照·材质·后处理",
       "weight": 0.2,
       "score": 72,
-      "evidence": "AL4 独立 70 → 72（+2，派发区间上限）：主导画面的幕墙材质首次获得视线依赖层（interior mapping = 真实视差非平涂，程序感显著下降——70-85 段判词「个别材质仍见程序感」的直接销账项）；机器人 PBR 分区（胸甲 metalness 0.62/roughness 0.38 锐化 rim 高光滚降 + 关节/警示条 emissive 层次）细化主体材质；bloom threshold=1 台账零变动（新增件全部阈下），雾/后处理零改动"
+      "evidence": "AL5 独立 71 → 72（+1）：首个实模 PBR 材质组（13 具名材质：窗内景 emissive atlas 逐窗百叶/家具剪影、层间梁铆钉板、KTX2 压缩链）替换单楼 TSL 程序化幕墙；tone mapping/IBL/后处理零新增，整帧占比单楼故只 +1"
     },
     "v3PaletteAtmosphere": {
       "label": "色彩体系与氛围一致性",
       "weight": 0.15,
       "score": 69,
-      "evidence": "AL4 独立 69 持平：室内色相锁两族——暖房钨丝白（暖白族同轴）/ 冷屏蓝（青族同轴），警示条 = 既有工业橙 token，关节青 = 品牌青 #49c5b6；零新色相不加分不扣分"
+      "evidence": "AL5 独立 69 持平：窗格暖白/青/暗三族 atlas 与既有色轴同轴，#ff6b35 楼宇身份色只进 LED 竖带/檐口/信标/道具警示件；零新色相不加分不扣分"
     },
     "v4SceneDensity": {
       "label": "场景密度与世界可信度",
       "weight": 0.15,
-      "score": 62,
-      "evidence": "AL4 独立 58 → 62（主攻维 +4，派发区间中值）：五栋 hero 近景楼 ~10% 窗格升格「有人住的房间」（天花/后墙/地板/侧墙 + 家具剪影 + 暖冷房型随机），首幕/POI/驾驶三类关键视角的主导表面（幕墙）获得逐窗微细节与进深层——「楼体细节层级」与「世界可信度（lived-in）」双收益；段内保守取分不越段：招牌覆盖面/地面车流/雨丝/近景道具欠账原样保留，50-65 段顶仍未达 70-85 段「道具与招牌成层」门槛"
+      "score": 68,
+      "evidence": "AL5 独立 60 → 68（主攻维 +8，派发区间底）：AL5 缺口清单「近景道具、实模轮廓、窗框几何」在东北角象限三项齐清——实模轮廓（双阶收分 + 屋顶机房/风机/桅杆 + 裙房骑楼）、窗框实几何（竖梃/层间梁/窗台非贴图）、近景道具成层（充电站簇/试车台载车壳/totem/标定板/杂件 15+ 件 + 发光泊位标线）；但覆盖面单点诚实压分：其余三象限 + 四栋 hero 楼 + 沿街仍程序化，全城口径未达 70–85 段「道具与招牌成层」的面覆盖门槛"
     },
     "v5MotionTransition": {
       "label": "动效与转场工艺",
       "weight": 0.15,
       "score": 70,
-      "evidence": "AL4 独立 70 持平：零新动画节拍——关节脉动是既有 idle 呼吸时间轴的同拍消费方（同一配额席位），不构成新镜头语言或新转场，不加分"
+      "evidence": "AL5 独立 70 持平：GLB 全静态零新节拍（CITY-03 配额零占用）；信标辉光为材质常亮非动画，不构成新镜头语言"
     },
     "v6UiHudIntegration": {
       "label": "DOM UI/HUD 视觉整合",
       "weight": 0.1,
       "score": 73,
-      "evidence": "AL4 独立 73 持平：DOM/HUD/poster 零字节改动；VIS-01/02 壳基线两轮零 diff 通过，首幕机位族未变（慢 yaw 相位噪声与 AL4 同口径），按 AL3 条件⑤只复核消费链免重拍"
+      "evidence": "AL5 独立 73 持平：DOM/HUD/poster 零字节改动；VIS-01/02 壳基线零 diff"
     },
     "v7ThematicOriginality": {
       "label": "主题原创性与叙事贴合",
       "weight": 0.05,
-      "score": 73,
-      "evidence": "AL4 独立 73 持平：假室内映射与材质分区是行业通用工艺（generator_city/Spider-Man interior mapping 谱系），强化「城市有人住」可信度但不新增叙事载体，不重复加原创分"
+      "score": 74,
+      "evidence": "AL5 独立 73 → 74（+1）：道具簇是可转述叙事载体——「智驾实验楼」楼下试车升降台载无人车壳 + 标定板 + 充电站群，楼与业务身份（mobility 案例）首次在街面道具层自证；100% 原创程序化生成（零外部资产）"
     }
   },
-  "notes": "自评总分 69/100 = 65×.20+72×.20+69×.15+62×.15+70×.15+73×.10+73×.05 = 68.50 → 69（校准基线 = CC-AL4 终审独立向量 raw 67.50）。增量全部来自单主题材质密度：V4 58→62（主攻维 +4：五栋 hero 楼假室内映射窗格，帧证据 = 同机位裁剪对照 + 驾驶双视角视差自证）、V2 70→72（+2：主导材质视线依赖层 + 机器人 PBR 分区）；V1/V3/V5/V6/V7 诚实持平（材质收益只计一次入 V2/V4）。派发目标「自评 70（保守）」的算术说明：AL4 基线 67.50 + 派发区间顶格（V4 +5、V2 +2）= raw 68.65 → 69，整数 70 在本派发边界内不可达（需 raw ≥69.50 = 越界动 V1/V5）；本自评按区间中值 V4 +4 + 上限 V2 +2 = raw 68.50 取 69，不借四舍五入越报。raw 增益 +1.00 = 恰达 AL3 条件⑥「增益 ≥1.0」停止线（上轮 AL4 增益 +1.05）——若 CC-AL5 独立复评 raw 增益 <1.0，触发「连续两轮 <1.0」停止条款，按顾问稿 Loop 5 终审问题裁决：剩余差距是否已属实模密度（Blender 专项）而非程序化小件。综合分敏感度 ≈75+0.25×视觉分 → 69 分 ≈92.25。"
+  "notes": "自评总分 70/100 = 66×.20+72×.20+69×.15+68×.15+70×.15+73×.10+74×.05 = 69.65 → 70（校准基线 = CC-AL5 独立向量 raw 68.00）。增量归因单栋实模 + 单角道具簇：V4 60→68（主攻维 +8：AL5 缺口三项在东北角齐清，覆盖面单点压分不越段）、V2 71→72（+1：首个实模 PBR 材质组）、V1 65→66（+1：首幕右翼新物体入画）、V7 73→74（+1：叙事道具层）；V3/V5/V6 诚实持平。派发目标「整体 71–74」的算术说明：AL5 基线 raw 68.00 下整数 71 需 raw ≥70.50，即使 V4 顶格 72（+12）也仅 raw 70.25——71+ 在单楼+单角帧证据下诚实不可达，按实际帧支撑取 V4=68 → raw 69.65 报 70，不借四舍五入越报、不预支 AL-BL1。raw 增益 +1.65 > 1.0 停止线（上轮 AL5 增益 +0.50 已触发单轮 <1.0，本轮若独立复评 <1.0 即连续两轮触发停止条款——Blender 路径本身即该条款指向的「实模密度专项」）。综合分敏感度 ≈75+0.25×视觉分 → 70 分 ≈92.5。"
 }

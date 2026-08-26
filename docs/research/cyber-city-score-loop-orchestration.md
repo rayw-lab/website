@@ -31,8 +31,8 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
-| CC-BL1 | `cursor/cc-bl1-hero-corner-spike-1d6f` | [BL1](bc-c774aeb8-6935-51db-b871-45578b1c64eb) | 🚀 RUNNING |
-| CC-AL-BL1 | `cursor/cc-al-bl1-audit-1d6f` | Sol | 待 BL1 |
+| CC-BL1 | `cursor/cc-bl1-hero-corner-blender-1d6f` | [BL1](bc-c774aeb8-6935-51db-b871-45578b1c64eb) | ✅ 交付（[PR #42](https://github.com/rayw-lab/website/pull/42)，自评 **70/≈92.5**，raw 69.65：V4 60→68 主攻 + V1/V2/V7 各 +1；三态回退取证 + 全量闸绿；派发 71–74 在单楼+单角帧证据下诚实不可达，见 score JSON notes） |
+| CC-AL-BL1 | `cursor/cc-al-bl1-audit-1d6f` | Sol | 审计中（exact tree 全量闸已跑绿） |
 
 ### BL1 拍板（[Fable5 顾问](bc-da728b97-e892-5b2a-a4f8-dbc8b7449177)）
 
