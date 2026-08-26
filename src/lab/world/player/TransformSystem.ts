@@ -19,7 +19,11 @@
 //   0.60→1.05  车 y 从 +2m 落至 0，easeOutBack 落地弹跳 0.45s（光幕 0.3s 内淡出、
 //              充能环随落地消散）；落定即 activate() → car_ready
 //   合计 1.05s ∈ 验收窗 1.0–1.2s
-// prefers-reduced-motion：instant swap（零动画热交换 + 文字状态提示由 Reveal 呈现）。
+// [CC-L4 B5] 变形运镜（rubric Tier B5）：充能段推镜蓄力→光幕峰值定格→落地段回放
+//   归零 + 落地帧垂直微震/roll 微滚（常量区 SHAKE_*/LANDING_ROLL_KICK；消费通道 =
+//   View.ritualCam，时间轴四拍与状态机零改动）。
+// prefers-reduced-motion：instant swap（零动画热交换 + 文字状态提示由 Reveal 呈现；
+//   不建 ritual 时间轴 → 运镜通道恒 0，全程不动镜）。
 // 补间一律 Ticker + 手写缓动（第 6 章 gsap 禁令）。
 //
 // 物理插入点（CC-E1 交底，wave1-notes §E1「契约」）：
@@ -49,10 +53,31 @@ const DROP = 0.45;
 const DROP_HEIGHT = 2;
 const RING_RADIUS = 4;
 
+/**
+ * [CC-L4 B5] 变形运镜（rubric §6 Tier B5「充能推镜 + 落地微震」；四拍时间轴常量
+ * 零改动，运镜只是既有节拍的相机注解）：
+ *   充能段 0→RING_IN     推镜蓄力 0→1（easeInQuad，与充能环展开同拍）；
+ *   光幕段 RING_IN→swap  峰值保持（waitFor 多转时同样定格在峰值）；
+ *   收尾段 swap→完成      随落地/散幕回放到 0（landing 帧机位已回基线）；
+ *   落地帧               垂直微震 SHAKE_DURATION 内解析衰减归零 + roll.kick 微滚。
+ * reduced-motion 走 instant swap 不建 ritual 时间轴 → 运镜通道恒为 0（全程不动镜）。
+ */
+const SHAKE_DURATION = 0.3;
+/** 微震初始振幅（米）：20m 机位 / FOV 42° 下首个波峰≈画面高 1%，微震不晕镜 */
+const SHAKE_AMPLITUDE = 0.2;
+/** 微震震荡圈数（SHAKE_DURATION 内 2.5 圈 ≈ 8Hz）与衰减指数（终帧强制归零兜底） */
+const SHAKE_CYCLES = 2.5;
+const SHAKE_DECAY = 4.5;
+/** 落地 roll 微滚强度（View.roll 弹簧既有小件；峰值 ≈0.025rad≈1.4°，~0.5s 内收敛） */
+const LANDING_ROLL_KICK = 0.25;
+
 /** 变形期间可触发 driving 态的驾驶动作（键盘四向 + 触屏摇杆） */
 const DRIVE_ACTIONS = ['forward', 'backward', 'left', 'right', 'nipplePointer'];
 
 const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
+
+/** [CC-L4 B5] 充能蓄力缓动（慢起加速逼近光幕峰值 = 能量积聚观感） */
+const easeInQuad = (t: number): number => t * t;
 
 /** folio 落地弹跳缓动（HeroRobot 落定同款；轻微过冲 = 悬挂压缩观感） */
 const easeOutBack = (t: number): number => {
@@ -104,6 +129,8 @@ export class TransformSystem {
   private _state: TransformState = 'robot_idle';
   private ritual: RitualRun | null = null;
   private carAssetsReady: boolean;
+  /** [CC-L4 B5] 落地微震时钟（≥SHAKE_DURATION = 静默；completeRun(car) 置 0 起震） */
+  private shakeClock = SHAKE_DURATION;
 
   private ringMesh!: THREE.Mesh;
   private veilMesh!: THREE.Mesh;
@@ -208,6 +235,9 @@ export class TransformSystem {
     this.disposed = true;
     this.game.ticker.events.off('tick', this.tickHandler);
     this.game.inputs.events.off('actionStart', this.actionStartHandler);
+    // [CC-L4 B5] 运镜通道归零：仪式/微震中途卸载不得在相机上留残余偏移
+    this.game.view.ritualCam.dollyIn = 0;
+    this.game.view.ritualCam.shakeY = 0;
     this.ringMesh.removeFromParent();
     this.veilMesh.removeFromParent();
     for (const geometry of this.ownedGeometries) geometry.dispose();
@@ -274,10 +304,23 @@ export class TransformSystem {
   /* ———————————————————— 时间轴推进 ———————————————————— */
 
   private update(): void {
-    const run = this.ritual;
-    if (!run || this.disposed) return;
-
+    if (this.disposed) return;
     const dt = this.game.ticker.delta;
+
+    // [CC-L4 B5] 落地微震推进（ritual 已清仍需衰减）：解析阻尼正弦按时钟直出，
+    // 任意帧长无积分发散（SwiftShader 大 dt 稳定）；终帧强制归零 = 驾驶零残余漂移
+    if (this.shakeClock < SHAKE_DURATION) {
+      this.shakeClock = Math.min(this.shakeClock + dt, SHAKE_DURATION);
+      const st = this.shakeClock / SHAKE_DURATION;
+      this.game.view.ritualCam.shakeY =
+        st >= 1
+          ? 0
+          : SHAKE_AMPLITUDE * Math.exp(-SHAKE_DECAY * st) * Math.sin(SHAKE_CYCLES * Math.PI * 2 * st);
+    }
+
+    const run = this.ritual;
+    if (!run) return;
+
     this.ringSpin.value += dt;
 
     // 充能环兼资产进度：峰值处等待 waitFor（环保持旋转，时钟不进光幕段）
@@ -288,6 +331,20 @@ export class TransformSystem {
       run.clock += dt;
     }
     const t = run.clock;
+
+    // ⓪ [CC-L4 B5] 充能推镜：蓄力段 0→1，光幕段定格峰值（holding 多转同帧），
+    //    收尾段随落地（car，DROP）/散幕（robot，VEIL_OUT）回放到 0——
+    //    completeRun 前机位已回基线，驾驶接管帧无任何在途相机补间
+    const camSettleClock = t - RING_IN - VEIL_IN;
+    if (t < RING_IN) {
+      this.game.view.ritualCam.dollyIn = easeInQuad(t / RING_IN);
+    } else if (camSettleClock <= 0) {
+      this.game.view.ritualCam.dollyIn = 1;
+    } else {
+      const settleTotal = run.to === 'car' ? DROP : VEIL_OUT;
+      this.game.view.ritualCam.dollyIn =
+        1 - easeOutCubic(Math.min(camSettleClock / settleTotal, 1));
+    }
 
     // ① 充能环展开 0→4m（easeOutCubic 展开 + 刻度扫掠旋转）
     const ringProgress = easeOutCubic(Math.min(t / RING_IN, 1));
@@ -334,6 +391,13 @@ export class TransformSystem {
     this.veilMesh.visible = false;
     this.ringOpacity.value = 0;
     this.veilOpacity.value = 0;
+    // [CC-L4 B5] 推镜显式归零（收尾段回放的兜底恒等）；car 落地帧起垂直微震 +
+    // roll 微滚（既有碰撞弹簧小件复用，~0.5s 自收敛）——robot 回变无落地拍不震
+    this.game.view.ritualCam.dollyIn = 0;
+    if (run.to === 'car') {
+      this.shakeClock = 0;
+      this.game.view.roll.kick(LANDING_ROLL_KICK);
+    }
     this.finish(run.to);
     run.resolve();
   }

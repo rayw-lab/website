@@ -14,6 +14,13 @@ import * as THREE from 'three/webgpu';
 import { clamp, lerp, remap, smoothstep } from '../utils/maths';
 import type { Game } from '../core/Game';
 
+/**
+ * [CC-L4 B5] 变形运镜推镜幅度上限：dollyIn=1 时斜距 ×(1-0.07)（静止 20m → 18.6m）。
+ * rubric §6 Tier B5 施工基线 5% 上调至 7%：帧内可辨性（5% 在 42° FOV 下主体仅
+ * 放大约半档，录屏几乎不可读）；白爆无回归的 A/B 帧证据见 eng notes CC-L4-B5。
+ */
+const RITUAL_DOLLY_MAX = 0.07;
+
 export class View {
   private readonly game: Game;
 
@@ -32,6 +39,15 @@ export class View {
    */
   private readonly framing: { lateral: number; thetaDrift: number };
   private readonly lateralOffset = new THREE.Vector3();
+
+  /**
+   * [CC-L4 B5] 变形运镜通道（TransformSystem order-4 写入，本类 order-7 同帧消费）：
+   * dollyIn = 充能推镜进度 0..1（斜距 ×(1-RITUAL_DOLLY_MAX·dollyIn)）；
+   * shakeY = 落地微震垂直偏移（米，TransformSystem 解析阻尼正弦驱动）。
+   * 恒等保证：两者为 0 时 ×1/+0 按 IEEE 逐位恒等——robot_idle 首幕帧零漂移
+   * （poster 三面免重拍前提）与驾驶接管零残余漂移都由该恒等式机器保证。
+   */
+  readonly ritualCam = { dollyIn: 0, shakeY: 0 };
 
   /** 输出相机（Rendering 渲染它） */
   camera!: THREE.PerspectiveCamera;
@@ -356,15 +372,14 @@ export class View {
     this.zoom.ratio = clamp(this.zoom.ratio, -1, 1);
     this.zoom.smoothedRatio = lerp(this.zoom.smoothedRatio, this.zoom.ratio, this.game.ticker.delta * 10);
 
-    // 半径与球坐标偏移（[CC-L1 A4] 城市档叠加慢 yaw 微动：theta 呼吸 ±thetaDrift）
+    // 半径与球坐标偏移（[CC-L1 A4] 城市档叠加慢 yaw 微动：theta 呼吸 ±thetaDrift；
+    // [CC-L4 B5] 变形充能推镜 = 斜距乘法通道，dollyIn=0 时为 ×1 恒等零漂移）
     const radiusMax =
       this.spherical.radius.edges.max +
       this.ratioOverflow * this.spherical.radius.nonIdealRatioOffset;
-    this.spherical.radius.current = lerp(
-      this.spherical.radius.edges.min,
-      radiusMax,
-      1 - this.zoom.smoothedRatio,
-    );
+    this.spherical.radius.current =
+      lerp(this.spherical.radius.edges.min, radiusMax, 1 - this.zoom.smoothedRatio) *
+      (1 - RITUAL_DOLLY_MAX * this.ritualCam.dollyIn);
     const theta =
       this.spherical.theta +
       this.framing.thetaDrift * Math.sin(this.game.ticker.elapsed * 0.13);
@@ -399,6 +414,10 @@ export class View {
     this.roll.value += this.roll.speed * this.game.ticker.deltaScaled;
     this.roll.speed *= 1 - this.roll.damping * this.game.ticker.deltaScaled;
     this.defaultCamera.rotation.z += this.roll.value;
+
+    // [CC-L4 B5] 落地微震：垂直平移叠加在朝向解算之后（纯平移抖动，不改视线目标；
+    // shakeY=0 时 +0 恒等）——落地冲击的位移分量，旋转分量走既有 roll.kick 弹簧
+    this.defaultCamera.position.y += this.ritualCam.shakeY;
 
     // 输出到最终相机（free 模式已砍，直通）
     this.camera.position.copy(this.defaultCamera.position);
