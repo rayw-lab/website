@@ -7,7 +7,7 @@
 | 审计模型 | `gpt-5.6-sol-xhigh-fast` |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | Loop 3+ 顾问稿 | `docs/research/cyber-city-loop3-planning-consult.md` |
-| 生产 tip | `main` @ `b81e8a1`（Loop 2 齐套；综合 **91.0**，视觉 **64**） |
+| 生产 tip | `main` @ `2e6126c`（L3 B2+poster 已合入；独立视觉 **65**） |
 | Loop 3 目标 | 视觉独立 **≥68**（终审硬门）；综合 ≥85 已达成 |
 
 ## 综合分口径（Loop 统一）
