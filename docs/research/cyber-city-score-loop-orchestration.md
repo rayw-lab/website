@@ -3,55 +3,54 @@
 | 项 | 内容 |
 |----|------|
 | 编排者 | 父代理（只编排，不实现） |
-| 实现模型 | `claude-fable-5-thinking-xhigh` |
-| 审计模型 | `gpt-5.6-sol-xhigh-fast` |
+| 实现模型 | `claude-fable-5-thinking-xhigh`（**禁止降级**） |
+| 审计模型 | `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
-| 渲染架构 | `cyber-city-rendering-architecture-audit.md` |
-| 渲染缺口裁决 | `cyber-city-rendering-gaps-consult.md`（Sol 2026-08-26） |
-| 北极星 | 综合 **98**（当前 **92.0**，Δ **−6.0**） |
-| 生产 tip | 合流后更新（登记 **92.0/68**） |
+| 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
+| 北极星 | 综合 **98**（登记 **92.0/68**，Δ **−6.0**） |
+| 生产 tip | `main` @ `9262cbc`（登记 **92.0/68**） |
 
-## Loop 5 — ✅ 有条件放行（AL5）
+## Loop 5 — ✅ 有条件放行
 
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
-| CC-L5-C1 | `cursor/cc-l5-tierc-interior-windows-1d6f` @ `8c7da76` · [PR #40](https://github.com/rayw-lab/website/pull/40) | [L5-C1](bc-2a06873e-daa2-5ab0-8806-06c78da0f5de) | ✅ 已合 main |
-| CC-AL5 | `cursor/cc-al5-loop5-audit-1d6f` @ `9d829e4` | [AL5](bc-828f4da0-f935-55b1-bc0d-0cfbb8538202) | ✅ 有条件放行 |
+| CC-L5-C1 | 已合 main | [L5-C1](bc-2a06873e-daa2-5ab0-8806-06c78da0f5de) | ✅ |
+| CC-AL5 | 已合 main | [AL5](bc-828f4da0-f935-55b1-bc0d-0cfbb8538202) | ✅ 有条件放行 68/92.0 |
 
-**登记分（审计独立口径）**：视觉 **68**（raw 68.00，AL4 +0.50）· 综合 **92.0** · e2e 52/52 · LHCI 不降  
-**未达成**：Loop 5 专项门独立视觉 ≥70；L5 自评 69 **不得登记生产**  
-**报告**：`docs/research/loop5-audit.md`
+报告：`docs/research/loop5-audit.md`
 
-### AL5 放行条件（父代理须遵守）
+## Blender 路径 — 🚀 全马力（Fable5 顾问拍板）
 
-1. 看板只登记 **68/92.0**，不宣称 Loop 5 ≥70  
-2. **停止普通程序化 Tier C 叠件**（禁 tone mapping/雨丝/HUD 等赌分）  
-3. 下一视觉动作：**单 hero 楼 + 街角 Blender spike**（须产品立项）；不批准则视觉停在 68 收口  
-4. poster 三面等 runtime/资产路线冻结后单独批  
-5. `CC-MNT-TICKER-TSL` 可维护 PR，不占视觉 Loop  
+| ID | 分支 | Agent | 状态 |
+|----|------|-------|------|
+| CC-BL1 | `cursor/cc-bl1-hero-corner-blender-1d6f` | [BL1](bc-c774aeb8-6935-51db-b871-45578b1c64eb) | 🚀 RUNNING |
+| CC-AL-BL1 | `cursor/cc-al-bl1-audit-1d6f` | Sol | 待 BL1 |
+| CC-MNT-TICKER | `cursor/cc-maint-ticker-tsl-uniforms-1d6f` @ `336095e` | [MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) | 🚀 RUNNING |
 
-## 下一拍（待产品/父代理裁决）
+### BL1 拍板（[Fable5 顾问](bc-da728b97-e892-5b2a-a4f8-dbc8b7449177)）
 
-| 路径 | Task | 条件 |
-|------|------|------|
-| **A Blender spike** | `CC-BL1-hero-corner` | 产品批准；单栋 hero + 街角；V4 主攻 |
-| **B 收口** | — | 不批准 Blender → 视觉停 68，北极星 98 需另策 |
-| **维护** | `CC-MNT-TICKER-TSL` | AL5 后空档，与 Blender 可并行 |
+- **目标**：`autodrive-lab` + 十字路口东北角（x 8–52 / z −52–−8）
+- **双帧收益**：VIS-03 首幕 + VIS-04 深链
+- **预算**：单 GLB ≤10MB（Draco+KTX2、≤100k tri）；失败回退程序化 `ThemeTowers`
+- **自评目标**：V4 68–72，整体 71–74（须 AL-BL1 独立复评）
+- **依赖调研单**（实现方必读）：
+  - `ResourcesLoader.ts` — GLTF/Draco/KTX2 现成管线
+  - `asset-ledger-cyber-city.md` — 单楼 ≤220KB 流式口径
+  - `cyber-city-github-assets-research.md` §4 — Kenney City Kit Roads（CC0 街角道具）
+  - `hero-robot/README.md` + asset-ledger 附录 A — `@gltf-transform/*` 一次性构建（`npx` 不入依赖树亦可）
+  - 无 Blender CLI → Kenney CC0 拼装 + 程序化壳 hybrid 合法
 
-**不开**：Loop 6 tone mapping（AL5 裁决：残余非 V2/V3 主导）
+### 通往 98（顾问估 3–4 轮）
 
-## 渲染三条发现 — Sol 裁决
+BL1 → BL2 沿街扩展 → tone mapping（实模密度到位后）→ poster 三面收口
 
-| # | 发现 | 裁决 | 插入时机 |
-|---|------|------|----------|
-| ① | 无 tone mapping | **建议补** | **本轮不开**；Blender 后或产品另策 |
-| ② | PreRenderer 仅 Q0+WebGPU | **可 defer** | AL5 观测：无 L5 可归因硬门击穿 |
-| ③ | Ticker TSL uniform 悬空 | **建议补** | 维护 PR `CC-MNT-TICKER-TSL` |
+## 纪律
 
-## Loop 4 — ✅ · 专项 — ✅
-
-Loop 4 B5+AL4（视觉 68）；Rendering-Audit [PR #39](https://github.com/rayw-lab/website/pull/39)。
+- AL5 登记 **68/92.0**，禁止用 L5 自评 69 登记生产
+- **禁止降级模型**；缺依赖先调研再实现
+- tone mapping **等 Blender 路径验证后再开**
+- poster 永远排批次最后
 
 ## 定时器
 
-`loop-cyber-city-orchestrate` · **300s（5m）** · 北极星 98 · 等 Blender 立项或收口裁决
+`loop-cyber-city-orchestrate` · 300s · 自动驾驶全马力 · CI 订阅 MNT 分支
