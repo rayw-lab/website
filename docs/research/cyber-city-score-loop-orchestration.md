@@ -48,11 +48,10 @@
 |----|------|------|-------|------|
 | CC-L3-content | [PR #36](https://github.com/rayw-lab/website/pull/36) | B2 TextCanvas + poster | [L3-content](bc-629d6692-8f11-5885-bdcd-3296e634b2c9) | ✅ 已合 main |
 | CC-AL3-B2C | `cursor/cc-al3-b2c-audit-1d6f` | B2C+poster 审计 | gpt-5.6-sol-xhigh-fast | ✅ 独立 **65**；放行 ATM |
-| CC-L3-ATM | `cursor/cc-l3-layered-atmosphere-1d6f` | 分层雾/低云带 | [L3-ATM](bc-b1eb4b06-4004-5783-9017-bbb68d5e5669) | ✅ 自评 66；V2 70 |
-| CC-AL3-MID | `cursor/cc-al3-mid-audit-1d6f` | 集成树中审 | gpt-5.6-sol-xhigh-fast | ✅ 独立 **66**；建议 **B3** |
-| CC-L3-B3 | `cursor/cc-l3-b3-flight-trails-1d6f` | 飞行光轨（V4） | [L3-B3](bc-f9fb1e1b-79d4-54a1-8bbe-386adb6b2d8b) | ✅ 自评 67；综合 91.8 |
-| CC-L3-B5 | `cursor/cc-l3-b5-transform-camera-1d6f` | 变形运镜（条件） | Fable5 xhigh | 待 MID；与 B3 互斥 |
-| CC-AL3 | `cursor/cc-al3-loop3-audit-1d6f` | Loop 3 终审 ≥68 | gpt-5.6-sol-xhigh-fast | 待全链 |
+| CC-L3-B3 | `cursor/cc-l3-b3-flight-trails-1d6f` | 飞行光轨 | [L3-B3](bc-f9fb1e1b-79d4-54a1-8bbe-386adb6b2d8b) | ✅ 自评 67 |
+| CC-AL3-B3 | `cursor/cc-al3-b3-audit-1d6f` | B3 审计 | gpt-5.6-sol-xhigh-fast | ✅ 独立仍 **66**；B5 HOLD → POSTER |
+| CC-L3-POSTER | `cursor/cc-l3-poster-three-surface-1d6f` | poster 三面收口 | [L3-POSTER](bc-a2238425-55a5-5c77-8bf0-734090d2f81f) | ✅ 零 3D 改动 |
+| CC-AL3 | `cursor/cc-al3-loop3-audit-1d6f` | Loop 3 终审 ≥68 | gpt-5.6-sol-xhigh-fast | 🚀 已派发 |
 
 ## Loop 4–5 前瞻（顾问稿 B 节）
 
