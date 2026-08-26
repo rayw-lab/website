@@ -1202,3 +1202,62 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   ATM·B3 交接项「poster 三面重拍须在 Loop 3 收口前落地」销账；Loop 3 全链
   （B2C+ATM+B3+POSTER）就绪，待 CC-AL3 终审 ≥68 硬门裁决。
 
+## CC-L4-B5 — 变形运镜：充能推镜 + 落地微震（Loop 4 单主题批，2026-08-26）
+
+- 分支 `cursor/cc-l4-b5-transform-camera-1d6f`（base：`main@ecb0fd3`，运行时树 ≡
+  `main@70396eb` Loop 3 全链合入 tip——差量仅编排看板文档）。AL3 终审 NO-GO
+  （独立 66 <68）后按其 §6 建议受控开启的 Loop 4 唯一主题；派发边界：只做充能
+  推镜 + 落地微震，不改状态机总节拍、车辆物理、雾、光轨、HUD、poster。实装
+  `src/` 仅 2 文件（`view/View.ts` + `player/TransformSystem.ts`，+83 行）。
+- 实现：`View.ritualCam` 双通道（TransformSystem order-4 写入 → View order-7
+  同帧消费）——`dollyIn` 为斜距乘法（×(1−0.07·dollyIn)，静止 20m→18.6m），
+  `shakeY` 为朝向解算后的相机垂直平移；两者为 0 时 ×1/+0 **IEEE 位级恒等**，
+  robot_idle 首幕零漂移与驾驶接管零残余不靠补间收敛、由恒等式机器保证。
+  时间轴映射：充能段 easeInQuad 蓄力 0→1（与充能环展开同拍）→ 光幕段峰值定格
+  （waitFor 多转同帧）→ 落地/散幕段回放归零（completeRun 前机位已回基线）；
+  car 落地帧起 0.3s 垂直微震（解析阻尼正弦按时钟直出，SwiftShader 大 dt 无积分
+  发散，终帧强制归零）+ `View.roll.kick(0.25)` 微滚（folio 碰撞弹簧小件首次
+  接线，~0.5s 自收敛）。reduced-motion 不建 ritual 时间轴 → 通道恒 0 全程不动镜；
+  dispose 显式归零；运镜为一次性瞬态，CITY-03 循环动画配额零占用。
+- 幅度偏差登记（rubric §6 Tier B5 施工基线 → 实装）：推镜 5% → **7%**（5% 在
+  42° FOV / 20m 机位下主体仅放大约半档，录屏几乎不可读；7% 白爆 A/B 峰值仅
+  +0.22pp）；微震 0.15s → **0.3s 衰减窗**（能量集中前 0.15s，解析包络终帧归零）。
+- 录屏协议（新坑+新技法留档）：SwiftShader ~0.7-1fps 下 Playwright 实时录像是
+  慢动作废片；本批用 **CDP Page.startScreencast 逐合成帧存 PNG**——
+  `Ticker.maxDelta=1/30` ⇒ 每合成帧 ≈ 1/30 设计秒，**30fps 拼装 = 设计时间等速
+  视频**（实测变形窗 29-32 帧 ≈ 1.05s 设计窗自证映射成立）。前置条件：注入 CSS
+  隐藏全部 DOM 覆盖层（`.skip/.topbar/.hud/.hud-city/.hint/.cover/.world-ritual`），
+  否则 CSS 进度条动画混入合成流打乱帧↔tick 1:1 映射。产物
+  `l4b5-transform-camera-5s.mp4`（1440×900/30fps/160 帧/5.33s 设计秒，固定脚本
+  robot_idle 23 帧→Space→transforming 29 帧→car_ready→W 接管 driving 86 帧→
+  松键滑行）。坑：350ms 遥测采样会错过微震首 2-3 个大峰（car 首帧管线编译墙钟
+  停顿），微震取证以帧对 f00055/f00056（整帧垂直位移+微滚）为准，遥测只证衰减
+  尾与终态归零。
+- 三门专项证据：①**驾驶零漂移** `final-drift.json`（w-up 滑行后 ×3 采样：
+  dollyIn=0、shakeY=0、radiusDelta=0 全部精确零，roll ~2e-9 rad）；
+  ②**reduced-motion 不动镜** `reduced-report.json`（instant swap 前后相机
+  position/quaternion **位级相同**，且与 main 两跑同值
+  [12.038319925404643, 5.219157938671525, 15.878213742097875]、斜距
+  20.165277777777778——「robot_idle 稳定帧零漂移」按机位位级恒等销账；像素级
+  残差 12.8% 为既有窗闪/呼吸灯时间相位噪声：main-vs-main 双跑地板 2.7%@Δt=0.07s、
+  跨构建 Δt≈1.1s 同族放大，diff 热图几何边缘全黑零位移）；③**变形帧不白爆**
+  同脚本 A/B：变形窗逐帧近白（min(r,g,b)≥240）峰值 B5 **1.41%** vs main
+  **1.19%**（+0.22pp = 推镜覆盖增长比例项；additive 光幕逐像素亮度距离不变，
+  A6 白爆抑制原样有效）。poster 三面按 AL3 条件⑤「没有漂移则只复核 hash/消费链」
+  处理：机位位级恒等 + `src/` 外零文件触碰 → 免重拍。
+- 验证：`astro check` 0 errors/0 warnings/58 hints；`pnpm test:visual` 4/4
+  （VIS-01/02 基线零 diff 未重生成）；**全量 e2e 52/52 零回归**（18.1m，
+  0 failed/0 skipped/0 flaky，@smoke3d 3/3）；`node scripts/audit-budget.mjs`
+  全过（world chunk 84.2/900KB，+0.3KB；poster/壳静态段零变化）；统一计分
+  **COMPOSITE_SCORE=92.0**、availableWeight=1、missing=[]（LHCI 来源：CI
+  artifact @ commit ecb0fd3 run 32967573079，`/` 与 `/home/` 四项均 100——本 VM
+  SwiftShader LHCI null 限制的登记口径，AL4 终审另做隔离 LHCI 复采）；测试重写
+  的 23 张历史说明截图照例还原不提交；抓帧脚本为临时件不入库（协议全文见本小节）。
+- 视觉自评 **68（校准基线 = CC-AL3 终审独立向量 raw 66.45，V4 从上轮自评 60
+  对齐审计 58 不护短）**：V5 63→70（主攻维 +7：AL3 判词「相机仍静止，B5 未做」
+  以录屏/遥测/恒等/白爆四组证据销账，越段进 70-85 段底保守取分——镜头运动仅
+  覆盖变形节拍，入场/POI/出口无运镜，次级动效欠账保留）；其余六维诚实持平。
+  加权 67.50→68，综合 ≈92.0。
+- 交接：待 CC-AL4 审 exact tree（只审时间维证据、reduced-motion、驾驶镜头稳定
+  与 V5 增益）；若独立复评仍 <68 或 raw 增益 <1.0，按 AL3 条件⑥停止普通效果
+  叠加，单独裁决 V4 近中景密度/Tier C 或调整目标，不打包赌分。

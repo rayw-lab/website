@@ -1,59 +1,59 @@
 {
   "schemaVersion": "1.1.0",
-  "score": 67,
+  "score": 68,
   "target": 85,
-  "subject": "Loop 3 条件批 `/` Full Entry 首幕 + POI 深链（分支 cursor/cc-l3-b3-flight-trails-1d6f：AL3-MID 裁决 V4 瓶颈后放行的 CC-L3-B3 单主题批——中远景飞行光轨 3 航线 630 点（单 InstancedMesh additive 拖尾，TSL time 解析航线零逐帧 JS）；CITY-03 配额第 3 席开工前书面登记；雾、运镜、poster、B5 按派发边界禁做，零字节触碰）",
+  "subject": "Loop 4 单主题批 `/` Full Entry 首幕变形段（分支 cursor/cc-l4-b5-transform-camera-1d6f：AL3 终审 NO-GO（独立 66 <68）后按其建议受控开启的 CC-L4-B5——变形运镜唯一主题：充能段推镜 7%（easeInQuad 蓄力→光幕峰值定格→落地段回放归零）+ car 落地帧 0.3s 垂直微震（解析阻尼正弦）+ roll.kick 微滚复用；变形四拍时间轴/状态机/物理/雾/光轨/poster/HUD 按派发边界零字节触碰）",
   "rubric": "docs/research/cyber-city-visual-rubric.md",
   "scoredAt": "2026-08-26",
-  "scoredBy": "CC-L3-B3 单评自评（校准基线 = CC-AL3-MID 集成树独立总分 66 + ATM 批逐维向量（V1 65/V2 70/V3 69/V4 57/V5 63/V6 73/V7 73，AL3-MID 总分与其零偏差）；只对本 PR 帧内可见改动加分；帧优先协议 A 实跑帧 + 协议 B 同机位「有光轨/无光轨」参数开关对照帧 + 双时刻运动帧；待 CC-AL3-B3 复评，±5 容差纪律）",
+  "scoredBy": "CC-L4-B5 单评自评（校准基线 = CC-AL3 终审独立总分 66 + 逐维向量（V1 65/V2 70/V3 69/V4 58/V5 63/V6 73/V7 73，raw 66.45）——V4 从上轮自评 60 对齐审计 58 不护短；只对本 PR 帧内可见改动加分；帧优先协议 A 实跑帧 + 协议 B 设计时间等速录屏/推镜前后帧/白爆 A/B/漂移遥测四组时间维证据；待 CC-AL4 复评，±5 容差纪律）",
   "evidence": {
-    "protocolA": "pnpm test:visual 4/4（VIS-01/02 壳基线零 diff 未重生成——本批零 DOM/poster 改动）+ 全量 e2e 52/52：test-results/visual/world-robot-idle.png / world-poi-concept-garage.png 当轮取证帧（前者远景带可见飞行光轨、主体/招牌/HUD 零遮挡；后者 TUNE-UP/CARCONCEPT GARAGE 近景可读不回退）",
-    "protocolB": "同机位同构建「有光轨/无光轨」参数开关对照（scene.userData.cityFlightTrails.setTrails(0|1)）：l3b3-world-robot-1440.webp（开：品红拖尾穿行 AGENT NEXUS 楼隙 + 青色机头拖尾划过右上远景天空带）vs l3b3-world-robot-trailsoff-1440.webp（关 = ATM 批帧面，additive 加零像素级等价）；真实运动 vs 静态 emissive 的时间维证据 = 双时刻帧 l3b3-world-robot-t2-1440.webp（+8s：品红航线出画、青色机头位移可测）+ 22s 定机位录像 l3b3-trails-motion.mp4；分档验证帧 l3b3-world-robot-q1-1440.webp（Q1 简化 2 航线×0.8）/ l3b3-world-robot-q2-1440.webp（Q2 明确关闭零光轨）；POI 深链 l3b3-world-poi-garage-1440.webp（主体近景零回退）。V5 转场证据沿用 l2-transform-seq.mp4（变形/镜头代码零改动）",
-    "crossChecks": "FlightTrails.ts 单文件新增（city/index.ts 装配 6 行）：3 航线全中远景（离首幕主体最近 111m，巡航高度压首幕可见天空带仰角 3-5°）· 630 点 ≤ 800 任务书上限 · 单 InstancedMesh = 1 draw call（Q2 visible=false 即归零）· 遮挡走深度测试（光轨穿楼即被剪影吞没，穿行空间感自证）· additive 逐点 0.3 机头叠加峰 ≈1.3 略过 bloom threshold=1、拖尾速降阈下（招牌 1.9-2.4 辉光名额不挤占）· material.fog=false + 手工 200-620m 距离衰减（additive 防「加出雾灰」，与 ATM 远景纱帘同带融入）· 色相锁 NEON 青/品红双主轴 + 机头 40% 暖白（窗色三族同轴零新色相）· prefers-reduced-motion 冻结时间轴 · 零贴图零资产零 Ticker 订阅，dispose 随 Game 场景遍历 · node scripts/audit-budget.mjs 全过（world chunk 83.9/900KB，外部资产 0 新增）· CITY-03 循环动画配额第 3 席（开工前书面登记：eng notes CC-L3-B3 小节，计席口径与驱动源无关）"
+    "protocolA": "pnpm test:visual 4/4（VIS-01/02 壳基线零 diff 未重生成——本批零 DOM/poster 改动）+ 全量 e2e 52/52（0 failed/0 skipped/0 flaky）：test-results/visual/world-robot-idle.png 当轮取证帧与 reduced-motion robot_idle 跨构建对照（B5 vs main 相机 position/quaternion 位级恒等 [12.038319925404643,5.219157938671525,15.878213742097875]，斜距 20.165277777777778 两树同值；像素差异 = 既有窗闪/呼吸灯时间相位噪声，main-vs-main 双跑同族且几何边缘零位移）",
+    "protocolB": "固定脚本设计时间等速录屏 l4b5-transform-camera-5s.mp4（1440×900 / 30fps / 160 帧 / 5.33s 设计秒：CDP screencast 逐合成帧 ≈ Ticker.maxDelta=1/30 设计秒 → 30fps 拼装 = 等速；覆盖 robot_idle(23帧)→充能推镜→veil 峰值→car_ready 落地微震→W 接管驾驶(86帧)→松键滑行）；推镜前后帧 l4b5-06-push-ab.png（dollyIn 0 vs 1：斜距 20.11→18.75m = −6.8%，主体满幅推近）；白爆 A/B：变形窗逐帧近白（min(r,g,b)≥240）峰值 B5 1.41% vs main 1.19%（+0.22pp = 推镜覆盖增长比例项，additive 光幕逐像素亮度距离不变式）；落地微震帧对 f00055/f00056（整帧垂直位移+微滚可见）；漂移遥测 telemetry.json/final-drift.json（驾驶终态 dollyIn=0、shakeY=0、radiusDelta=0 精确零 ×3 采样，roll ~2e-9 rad）；reduced-motion 腿 reduced-report.json（instant swap 前后相机 P/Q 位级恒等 = 全程不动镜）",
+    "crossChecks": "View.ritualCam 双通道（dollyIn 斜距乘法 + shakeY 垂直平移）：0 值时 ×1/+0 IEEE 恒等——robot_idle 零漂移与驾驶零残余由恒等式机器保证，非补间收敛近似 · TransformSystem 四拍常量（RING_IN/VEIL_IN/VEIL_OUT/DROP）零改动，运镜为既有节拍的相机注解（e2e 变形窗计时契约不动）· 微震 = 解析阻尼正弦按时钟直出（SwiftShader 大 dt 无积分发散）+ 终帧强制归零；旋转分量复用既有 View.roll 弹簧（folio 小件首次接线，零新机制）· reduced-motion 不建 ritual 时间轴 → 通道恒 0（CITY-E2E-04 全绿）· dispose 显式归零（中途卸载无残余）· 零贴图零资产零循环动画（运镜为一次性瞬态，CITY-03 配额零占用）· node scripts/audit-budget.mjs 全过（world chunk 84.2/900KB，+0.3KB）· 深链/POI/灰盒腿零感知（greybox 无 ritual；?poi= 非 ritual 腿不建 TransformSystem）"
   },
   "dimensions": {
     "v1FirstFrame": {
       "label": "首幕构图与第一印象",
       "weight": 0.2,
       "score": 65,
-      "evidence": "ATM 批 65 持平：构图/机位/poster 本体零改动；光轨为远景带新增微弱亮点、不改焦点层次——生命感收益按帧优先反通胀只计入 V4，不在此重复计"
+      "evidence": "AL3 独立 65 持平：构图/机位/poster 本体零改动——robot_idle 稳定帧相机 position/quaternion 跨构建位级恒等（B5 证据链首条），运镜只存在于 transforming 窗内，不改首幕"
     },
     "v2LightingMaterial": {
       "label": "光照·材质·后处理",
       "weight": 0.2,
       "score": 70,
-      "evidence": "ATM 批 70 持平：雾/大气/bloom 链零改动（本批禁做项）；光轨 additive 强度纪律经对照帧核验不破坏 threshold=1 辉光名额分配，不加分也不扣分"
+      "evidence": "AL3 独立 70 持平：雾/bloom/材质零改动（本批禁做项）；推镜带来的光幕覆盖增长经白爆 A/B 核验（近白峰值 1.41% vs 1.19%，additive 逐像素亮度不随距离变化）不损帧内对比，不加分也不扣分"
     },
     "v3PaletteAtmosphere": {
       "label": "色彩体系与氛围一致性",
       "weight": 0.15,
       "score": 69,
-      "evidence": "ATM 批 69 持平：航线色严格锁 NEON.cyan/NEON.magenta 双主轴（neon-tokens 单源，与路轴/窗色/辉光带同轴），机头 40% 暖白 = 窗色三族既有色相——零新色相零色彩噪音，也未修既有色彩债，不加分"
+      "evidence": "AL3 独立 69 持平：零新色相零新材质——运镜是纯相机域改动，青→品红光幕 tint 与 A6 白爆抑制原样保留"
     },
     "v4SceneDensity": {
       "label": "场景密度与世界可信度",
       "weight": 0.15,
-      "score": 60,
-      "evidence": "ATM 批 57 → 60（+3，主攻维）：AL3-MID 判 V4 为剩余瓶颈的判词「零车流/雨丝/光轨」中光轨项销账——rubric V4 定义列明的「环境生命感（光轨/雨丝/车流）」首次有帧内可见载体（开/关对照帧 + 双时刻运动帧 + 22s 录像证真实穿行而非静态 emissive；穿楼遮挡关系另证空间纵深）。取 50-65 段内 +3 不多探：段顶越线需「关键视角密度达标、道具与招牌成层」——招牌覆盖仍只 5 栋 hero、地面零车流、雨丝缺席、密度覆盖不全的欠账原样保留"
+      "score": 58,
+      "evidence": "AL3 独立 58 对齐（上轮自评 60 按审计向量下修不护短）：楼体/道具/光轨/车流零改动，B5 派发边界明令禁触——招牌覆盖/地面车流/雨丝欠账原样保留"
     },
     "v5MotionTransition": {
       "label": "动效与转场工艺",
       "weight": 0.15,
-      "score": 63,
-      "evidence": "ATM 批 63 持平：变形/入场/镜头零改动（B5 顺延）；光轨的环境微动收益按反通胀只计一次入 V4——V5 判词「镜头静态、节拍单一」原样保留，9.4s 既有证据继续有效"
+      "score": 70,
+      "evidence": "AL3 独立 63 → 70（主攻维 +7，越段进 70-85 段底）：AL3 判词「相机仍静止，B5 未做」销账——变形关键节拍首次获得成套镜头设计（充能 easeInQuad 蓄力推镜 −6.8% 斜距 → 光幕峰值定格 → 落地段回放归零 → 落地帧 0.3s 垂直微震 + roll 微滚），与充能环/光幕/easeOutBack 落地既有编舞同拍锁定；微动层齐（idle 呼吸灯/慢 yaw/环刻度扫掠/驾驶速度变焦）；转场保对比度（白爆 A/B 峰值 1.41%）；reduced-motion 直出全程不动镜（相机 P/Q 位级恒等）；驾驶接管零残余漂移（终态遥测精确零）。段内取底不多探：镜头运动仅覆盖变形一个节拍（入场光柱/POI/出口均无运镜），推镜 7% 幅度克制、微震短促，次级动效打磨（UI 过渡/镜头语言覆盖面）欠账保留——70-85 段中高位需「节拍统一的全链编舞」，不预支"
     },
     "v6UiHudIntegration": {
       "label": "DOM UI/HUD 视觉整合",
       "weight": 0.1,
       "score": 73,
-      "evidence": "ATM 批 73 持平：DOM/HUD 零字节改动；开光轨帧核验 HUD 面板/提示丸/楼宇快览零遮挡（航线全中远景 + 天空带高度）。poster 三面漂移债仍记 CC-L3-POSTER 专批（链上已知状态），本维不预扣【CC-L3-POSTER 批注 2026-08-26：漂移债已销——ATM+B3 落定帧三面同源重拍落地（desktop 39.7KB / mobile 38.0KB gzip ≤40KB，OG 同 desktop 文件），历史判词留档】"
+      "evidence": "AL3 独立 73 持平：DOM/HUD 零字节改动；poster 三面消费链复核——首幕机位位级恒等 + src/ 外零文件触碰，按 AL3 条件⑤「没有漂移则只复核 hash/消费链」处理，免重拍"
     },
     "v7ThematicOriginality": {
       "label": "主题原创性与叙事贴合",
       "weight": 0.05,
       "score": 73,
-      "evidence": "ATM 批 73 持平：飞行光轨强化「赛博城市在运转」的可信度但属类型片通用元素（Orion/Neon Loft 同款），未新增本站独有叙事载体；机器人↔车核心与楼=产品线语义不变，不加分"
+      "evidence": "AL3 独立 73 持平：充能推镜强化「变形仪式」既有叙事载体的呈现力度，但运镜本身是类型片通用手法（Virtual Car Showroom 对标位），不重复加原创分"
     }
   },
-  "notes": "自评总分 67/100 = 65×.20+70×.20+69×.15+60×.15+63×.15+73×.10+73×.05=66.75→67（校准基线 = CC-AL3-MID 独立总分 66 + ATM 批逐维向量，AL3-MID 与其零偏差）。增量全部来自单主题飞行光轨：V4 57→60（主攻维 +3：AL3-MID 点名判词「零车流/雨丝/光轨」中光轨项以开/关对照帧 + 双时刻运动帧 + 22s 录像销账，段内保守取分——招牌覆盖/车流/雨丝欠账仍在，不越 50-65 段）；V1/V2/V3/V5/V6/V7 诚实持平（生命感收益只计一次入 V4；构图/光照/色彩/动效/DOM/叙事零改动）。帧优先核对：V4 加分有同构建参数开关对照帧（l3b3-*-1440.webp ×6 + l3b3-trails-motion.mp4），关光轨帧与 ATM 批帧（l3atm-world-robot-1440.webp）同构图互证。综合分敏感度 ≈75+0.25×视觉分 → 67 分 ≈91.75。提分路径余量：AL3-B3 复评若仍 <68，本 Loop 停止追加运行时效果（B5 顺延 Loop 4，不连续赌分）；poster 三面重拍（CC-L3-POSTER）在运行时冻结后收口 Loop 3。【CC-L3-POSTER 批注 2026-08-26】AL3-B3 裁决落地（独立 66、B5 HOLD）后 poster 三面重拍已收口（分支 cursor/cc-l3-poster-three-surface-1d6f：ATM+B3 落定帧重拍 + VIS-01 基线重生成，零运行时改动，自评 67 持平不重复计分；e2e 52/52、G-A′ poster 39.7/40KB）——Loop 3 全链（B2C+ATM+B3+POSTER）就绪待 CC-AL3 终审。"
+  "notes": "自评总分 68/100 = 65×.20+70×.20+69×.15+58×.15+70×.15+73×.10+73×.05 = 67.50 → 68（校准基线 = CC-AL3 终审独立向量 raw 66.45；V4 从上轮自评 60 对齐审计 58）。增量全部来自单主题变形运镜：V5 63→70（主攻维 +7：AL3 点名判词「相机仍静止」以 5.33s 设计时间等速录屏 + 漂移遥测精确零 + reduced-motion 位级恒等 + 白爆 A/B 四组证据销账，段底保守取分——镜头运动只覆盖变形节拍，次级动效欠账仍在）；V1/V2/V3/V4/V6/V7 诚实持平（运镜收益只计一次入 V5；构图/光照/色彩/密度/DOM/叙事零改动）。幅度偏差登记：rubric §6 Tier B5 施工基线「推镜 5%」实装 7%（5% 在 42° FOV 下主体仅放大约半档、录屏几乎不可读；7% 白爆 A/B 峰值 +0.22pp 仍远离洗帧），「0.15s 微震」实装 0.3s 衰减窗（能量集中前 0.15s，解析包络终帧归零）。综合分敏感度 ≈75+0.25×视觉分 → 68 分 ≈92.0。若 CC-AL4 独立复评仍 <68 或 raw 增益 <1.0，按 AL3 条件⑥停止普通效果叠加，单独裁决 V4 近中景密度/Tier C 或调整目标。"
 }
