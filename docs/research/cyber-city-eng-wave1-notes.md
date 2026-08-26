@@ -859,3 +859,46 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
 - 交接：Tier B 主批 B1/B2/B4（5 栋 hero 可读招牌、沿街灯箱/灯杆 6-10 件、剪影
   密度/高度方差）按 AL1 §6-3 开工，V4=44 仍是最低维；B3/B5 后置（动画配额与
   运镜门禁先裁决）。
+
+---
+
+## CC-L2-a-plus — AL2-a 复评门补洞 PR（Loop 2 第二段，2026-08-26）
+
+- 分支 `cursor/cc-l2-visual-a-plus-1d6f`（base：`cursor/cc-l2-visual-a-tail-1d6f`
+  @711339c——PR #33 未合入 main，按派发指示叠在 a-tail 上）。背景：AL2-a 审计
+  A7-A10 5/5 落地、双评容差 Δ2≤5 通过，但**独立视觉 60 < 62 硬门**，Tier B 暂停；
+  §6 补洞两件 = 本 PR 全部内容（零 Tier B 场景内容）。
+- 交付三件（①引擎 ②DOM ③收窄条款销账）：
+  1. **湿反射进主体前景（AL2-a §6-1，V2 主攻）**：根因——机器人站位 (0,0) 与
+     斑马线带都在 **Roads 路面**（y=0.1）上，A9 只调了 Grid 广场（y=0.02），
+     所以反射「主要停在画面右缘」。修法：`Roads.applyWetQuality` 三档湿反射层
+     （Q0 **共享 Grid 的 reflector 节点**——同一镜像渲染零二次开销，反射平面高差
+     8cm 在 20m 斜距不可辨；Q1 sheen / Q2 干燥），`city/index.ts` 保证 Grid 先
+     切档再喂 Roads；掩码抽为 `Grid.cityPuddleMask` 单源（全城噪声 + **首幕前景
+     英雄湿区**：椭圆中心 (3,8) 半轴 (13,11.5)，按实拍机位推导恰盖「主体脚下→
+     南斑马线→近机位路面」，区内 0.6-1.0 噪声调制防盖章感，北向路廊零覆盖保
+     干湿对比）。纪律：反射项峰值系数 0.72+0.1=0.82<1（比 Grid 0.98 更严），
+     bloom threshold=1 不动。
+  2. **HUD/mini 字级·留白·占比（AL2-a §6-2，V6）**：顶栏 brand/nav 12→13.6px、
+     backend/skip 12→12.8px、速度表 28.8→38.4px、mini 快览行 12.8→14.4px +
+     面板 15.5→17.5rem、hint/respawn 同步，内衬/行距全面放宽；另修移动端顶栏
+     brand 没进跳过丸底下的既有重叠（<768px 顶栏 padding-top 3rem 让位）。
+  3. **neon token 真单源（AL2-a §2 收窄条款销账，V3）**：`src/data/neon-tokens.ts`
+     跨 TS/CSS 单一事实源——引擎 Roads/NeonMaterials/Reveal import + 壳
+     `<html>` 内联 style 构建期注入；壳内青色 rgba 分解字面量清零（全部
+     color-mix(var(--neon-cyan))）。
+- **poster 三处同源重拍**（A10 纪律「永远排批次最后」随批执行）：desktop
+  1280×720 37.9KB + mobile 720×1280 34.1KB（≤40KB，壳合计 80.9KB ≤90KB）；
+  mobile 从 2160×1350 高清帧按主体居中裁 9:16（销「横图硬裁」，构图优于 a-tail
+  的贴边裁切）。坑：canvas 纯帧截图要先量「视口高 − 画布高」补偿顶栏占高，
+  否则 1280×720 视口实拍出 1280×668（纵横比 1.92 构图错）。
+- 验证：`pnpm astro check` 0 err；`node scripts/audit-budget.mjs` 全过；
+  `pnpm test:visual` 4/4（VIS-01 壳基线经审阅 `--update-snapshots`——顶栏字级 +
+  新 poster 有意变更；VIS-02 在 2% 容差内零 diff）；**全量 e2e 52/52 零回归**；
+  LHCI 本轮 exact-tree 实采。同机位前后对比帧 `l2-world-robot-1440.webp`（前）
+  vs `l2a-world-robot-1440.webp`（后）+ 壳双端 `l2a-shell-*.webp` 入库。
+- 视觉自评 **62（校准基线 = AL2-a 独立分 60 逐维原值，非 a-tail 自评轨道）**：
+  V2 61→66（70 段四条件满足三条，唯雾单层压段界）/ V6 69→73 / V1 59→61 /
+  V3 68→70；V4 40、V5 63、V7 70 诚实持平。四处加分全部有帧内可见证据。
+- 交接：AL2-a 复评达门（≥62）后启动 Tier B B1/B2/B4；V4=40 仍最低维；
+  V2 下一段提分需雾分层（Tier B/C），V6 再上要 diegetic 面板/字体选型（Tier C）。

@@ -2,58 +2,58 @@
   "schemaVersion": "1.1.0",
   "score": 62,
   "target": 85,
-  "subject": "Loop 2 `/` Full Entry 首幕 + 变形序列 + 壳/HUD（分支 cursor/cc-l2-visual-a-tail-1d6f：Tier A 尾件 A7-A10——HUD 霓虹面板化+mini 楼宇快览、H1/标签排版强化、湿反射可见性、poster 重拍三处同吃）",
+  "subject": "Loop 2 `/` Full Entry 首幕 + 变形序列 + 壳/HUD（分支 cursor/cc-l2-visual-a-plus-1d6f：AL2-a §6 补洞两件——湿反射进主体前景（Roads 路面三档湿反射层 + 英雄前景湿区）、HUD/mini 字级留白占比收紧；附 §2 收窄条款销账 neon token 真单源）",
   "rubric": "docs/research/cyber-city-visual-rubric.md",
-  "scoredAt": "2026-08-25",
-  "scoredBy": "CC-L2-improve 单评自评（帧优先协议 A 实跑帧 + 5-10s 固定脚本录屏；待 AL2 独立复核，±5 容差纪律）",
+  "scoredAt": "2026-08-26",
+  "scoredBy": "CC-L2-a-plus 单评自评（校准基线 = AL2-a 独立分 60 逐维原值，只对本 PR 帧内可见改动加分；帧优先协议 A 实跑帧 + 协议 B 同机位前后对比帧；待 AL2-a 复评，±5 容差纪律）",
   "evidence": {
-    "protocolA": "pnpm test:visual 4/4（VIS-01~04，2.5m；VIS-01 壳基线经审阅 --update-snapshots，VIS-02 在 2% 容差内零 diff）：test-results/visual/world-robot-idle.png / world-poi-concept-garage.png 当轮取证帧",
-    "protocolB": "pnpm build && pnpm preview 固定脚本录屏 118.8s 墙钟全程（robot_idle 62.2s→Space 68.1s→transforming 73.0s→car_ready 113.8s），变长加速出 9.4s 序列 docs/research/assets/visual-rubric/l2-transform-seq.mp4——销 AL1 复评门「V5 只有关键帧」条款；关键帧 l2-world-{robot,veil,car}-1440.webp + 壳双端 l2-shell-{static-1440,mobile-375}.webp",
-    "crossChecks": "index.astro HUD 面板化（1px 描边+8% 填色 --neon-* 单源 token）+ hud-city 5 栋 hero 快览（lodProfile=hero 单源）+ visibility 门控销 aria-hidden-focus + 全壳小字号 ≥12px · Grid.ts puddleMask 0.3/0.64 + 反射 0.8/0.18（峰值系数 0.98<1，bloom threshold=1 不动）+ 网格线强 0.3/0.45 · poster 重拍 34.5KB/24.2KB ≤40KB + og:image 首接 · e2e 52/52 零回归"
+    "protocolA": "pnpm test:visual 4/4（VIS-01 壳基线经审阅 --update-snapshots：顶栏字级 + 新 poster 有意变更；VIS-02 在 2% 容差内零 diff 未重生成）：test-results/visual/world-robot-idle.png / world-poi-concept-garage.png 当轮取证帧",
+    "protocolB": "同机位 1440×900 前后对比：l2-world-robot-1440.webp（a-tail 前）vs l2a-world-robot-1440.webp（本 PR 后）——前帧主体脚下/斑马线区为干沥青、反射停在右缘广场；后帧机器人镜像倒影/出生光圈倒影/品红 rim 落水/楼窗霓虹倒影布满前景，北向路廊保干湿对比。壳双端 l2a-shell-{static-1440,mobile-375}.webp；V5 时间维证据沿用 l2-transform-seq.mp4（本 PR 动效代码零改动，编舞未变）",
+    "crossChecks": "Roads.ts applyWetQuality 三档（Q0 共享 Grid reflector 同一镜像渲染 / Q1 sheen / Q2 干燥；反射项峰值系数 0.82<1，bloom threshold=1 不动）+ Grid.ts cityPuddleMask 单源掩码（全城噪声 + 首幕前景英雄椭圆，主体脚下必湿、北向路廊零覆盖）· index.astro 顶栏 12→13.6px / 速度表 28.8→38.4px / mini 行 12.8→14.4px + 面板 15.5→17.5rem + 移动端顶栏/跳过丸重叠修复 · neon-tokens.ts 跨 TS/CSS import 单源（Roads/NeonMaterials/Reveal + 壳 <html> 内联注入，壳内青色 rgba 字面量清零）· poster 三处同源重拍 37.9KB/34.1KB ≤40KB（壳合计 80.9KB ≤90KB）· e2e 52/52 零回归"
   },
   "dimensions": {
     "v1FirstFrame": {
       "label": "首幕构图与第一印象",
       "weight": 0.2,
-      "score": 59,
-      "evidence": "l2-world-robot 帧：L1 偏轴 1/3 构图不动，新增地面反射层使前景多一层可读纵深；poster 三处重拍（L0 旧帧锥桶/杂色窗彻底出库，desktop 34.5KB + mobile 9:16 竖版构图销「移动 poster 无构图」判词）——50-65 段内上修 +3；扣分 = 远层楼体仍大色块、右半画面依旧偏空（B4 剪影密度未做）"
+      "score": 61,
+      "evidence": "AL2-a 59 → 61（+2）：l2a-world-robot 帧前景多出一层镜像虚深（机器人倒影 + 光圈倒影落在主体正下方，纵深从「地面一层」变「实体+镜像」双层）；AL2-a 判词「右半画面偏空」部分销账——右半路面现被楼窗霓虹倒影/路缘光倒影填充（帧证）；mobile poster 从平移横裁改为主体居中竖版构图（2160 高清帧裁切）。扣分 = 远层楼体仍大色块、剪影密度未动（B4 留 Tier B）"
     },
     "v2LightingMaterial": {
       "label": "光照·材质·后处理",
       "weight": 0.2,
-      "score": 64,
-      "evidence": "A9 落地销 L1 判词「首幕机位湿反射仍弱」：l2-world-robot 帧右侧广场楼体倒影/路缘霓虹反射清晰入画，机器人脚下品红 rim 溢光落进湿地（帧优先实证）；bloom threshold=1 纪律不破（反射项峰值系数 0.98<1）+ 棋盘格弱化让地面读作湿沥青而非发光网格——50-65 段上沿 64；扣分 = 雾仍单层、无 IBL/AO、材质程序感（Tier B/C）"
+      "score": 66,
+      "evidence": "AL2-a 61 → 66（+5）：判词「收益真实但主要集中在画面右缘」销账——机器人站位 (0,0) 与斑马线带都在 Roads 路面，此前路面无湿反射层；本 PR 路面三档接入 + 英雄前景湿区后，主体脚下/南斑马线/近机位路面全帧可见倒影（同机位前后对比帧实证）。70-85 段四条件已满足三条（bloom threshold=1 纪律 + 主要机位反射可见 + 主体阴影可见），唯雾仍单层压在段界下取 66；扣分 = 雾单层、无 IBL/AO、楼面材质程序感（Tier B/C）"
     },
     "v3PaletteAtmosphere": {
       "label": "色彩体系与氛围一致性",
       "weight": 0.15,
       "score": 70,
-      "evidence": "A8 补齐 DOM↔3D↔poster 三面同源最后一环：壳内霓虹全部收敛 --neon-cyan/--neon-magenta 单源 token（与 Roads ROAD_NEON 字面同值），新 poster 内嵌三族窗色纪律（旧 poster 绿/紫杂色出库）——「palette 单源落地+DOM↔3D 同色系」触 70-85 段下沿 70；扣分 = 明暗节奏/重点色面积运营仍缺"
+      "evidence": "AL2-a 68 → 70（+2）：AL2-a §2 收窄条款（「CSS 变量与 Roads 常量是同值的两份字面量，单源声明不成立」）销账——src/data/neon-tokens.ts 单一事实源，引擎侧 Roads/NeonMaterials/Reveal import + 壳侧 <html> 内联注入构建期取值，壳内青色 rgba 分解字面量全部收敛 color-mix(var(--neon-cyan))；「palette 单源落地 + DOM↔3D 同色系」锚点技术成立，取 70 段下沿。扣分 = 明暗节奏/重点色面积运营仍缺"
     },
     "v4SceneDensity": {
       "label": "场景密度与世界可信度",
       "weight": 0.15,
-      "score": 44,
-      "evidence": "本 PR 零场景内容增量（A7-A10 均为 DOM/调参/资产），湿反射只提升已有物的可见性不新增密度——44 维持 L1 自评不动；3D 内仍零可读招牌文字、道具稀薄、无氛围粒子/车流（Tier B1/B2/B4 主战场，AL1 建议的下一批）"
+      "score": 40,
+      "evidence": "AL2-a 40 持平：本 PR 零场景内容增量（湿反射只提升已有物可见性、DOM/token/poster 均非 3D 密度）；仍无 3D 可读招牌、沿街灯箱、车流/粒子——B1/B2/B4 主战场，AL2-a 放行后启动"
     },
     "v5MotionTransition": {
       "label": "动效与转场工艺",
       "weight": 0.15,
-      "score": 65,
-      "evidence": "动效本体零改动（B5 变形运镜留后），65 维持；AL1 复评门要求的时间维证据补齐——l2-transform-seq.mp4 固定脚本 9.4s（robot_idle 呼吸灯→Space→充能→双色光幕→热交换→easeOutBack 落地→car_ready 提示，veil 段楼体/斑马线全程可读，car 帧无灰绿余辉），中帧 l2-world-veil-1440.webp 双色光幕+车体空中同帧"
+      "score": 63,
+      "evidence": "AL2-a 63 持平：动效代码零改动，镜头仍静止（B5 留后）；9.4s 时间维证据 l2-transform-seq.mp4 沿用有效（编舞/节拍未变，地面反射不改变变形序列结构）"
     },
     "v6UiHudIntegration": {
       "label": "DOM UI/HUD 视觉整合",
       "weight": 0.1,
-      "score": 70,
-      "evidence": "A7+A8 主攻维：挂载后 HUD 全件霓虹面板化（速度表/回到路口/提示丸/backend 徽标 1px 描边+8% 填色，l2-world-robot 帧实证）+ 右下 5 栋 hero mini 快览常驻（销 A4 观察⑨「挂载后退化素面/快览随 cover 消失」）；H1 字距+双层辉光、全壳字号 ≥12px、发光描边体系贯穿挂载前后（l2-shell-static vs l2-world-robot 同语言）+ 移动竖版 poster——「HUD 与 3D 同族语言+排版精修」触 70-85 段下沿 70；扣分 = 系统字体栈无品牌级选型、速度表 robot 态恒 0（观察 F 装饰化留 Tier C）"
+      "score": 73,
+      "evidence": "AL2-a 69 → 73（+4）：判词「顶栏/mini 字级偏小」三件套销账——字级（顶栏 brand/nav 12→13.6px、速度表 28.8→38.4px、mini 行 12.8→14.4px、hint/respawn/backend 同步）、留白（顶栏/HUD/mini 内衬与行距放宽）、画面占比（mini 面板 15.5→17.5rem、HUD 整栏加高）；另修移动端顶栏/跳过丸重叠既有瑕疵（l2a-shell-mobile-375 帧证）。扣分 = 系统字体栈无品牌级选型、覆盖式 DOM 非 diegetic、速度表 robot 态恒 0（Tier C）"
     },
     "v7ThematicOriginality": {
       "label": "主题原创性与叙事贴合",
       "weight": 0.05,
-      "score": 72,
-      "evidence": "72 维持：mini 快览让「楼=产品线」在驾驶态持续可见（此前仅 cover 态），但仍是 DOM 面而非 3D 内载体（B1 招牌文字才是实质增量）；城市面密度不变"
+      "score": 70,
+      "evidence": "AL2-a 70 持平：城市面叙事载体不变（mini 快览仍是 DOM 面，B1 招牌文字才是 3D 内实质增量）；机器人变车原创核心不动"
     }
   },
-  "notes": "自评总分 62/100 = 59×.20+64×.20+70×.15+44×.15+65×.15+70×.10+72×.05=62.05→62（对 L1 自评 59 = +3、对 AL1 独立 57 = +5；达 rubric §6 Tier A 完成档 ~62 预期）。增量全部来自 A7-A10 四件收尾：V6 55→70（主攻维，HUD 面板化+排版+快览常驻）、V2 60→64（湿反射主机位入画）、V1 56→59（poster 三处重拍）、V3 68→70（单源 token 补最后一环）；V4/V5/V7 诚实持平（本 PR 零场景内容/零动效改动）。帧优先核对：四件全部有帧内可见证据（HUD 面板/快览、右侧广场倒影、新 poster 双端、录屏时间维），无「代码在帧不在」项。综合分敏感度 ≈74.44+0.25×视觉分 → 62 分 ≈89.9。提分路径余量见 rubric §6：Tier B B1/B2/B4（V4 主战场）→~70。"
+  "notes": "自评总分 62/100 = 61×.20+66×.20+70×.15+40×.15+63×.15+73×.10+70×.05=62.15→62（校准基线 = AL2-a 独立分 60 逐维原值，非 a-tail 自评轨道 62——两口径分差 Δ2≤5 在双评容差内）。增量全部来自 AL2-a §6 两件补洞 + §2 收窄条款销账：V2 61→66（主攻维：湿反射进主体前景，前后对比帧销「停在右缘」判词）、V6 69→73（字级/留白/占比三件套）、V1 59→61（前景镜像纵深 + 右半倒影填充 + mobile poster 重构图）、V3 68→70（token 真单源）；V4/V5/V7 诚实持平（零场景内容/零动效改动）。帧优先核对：四处加分全部有帧内可见证据（同机位前后对比、壳双端、poster 三处），无「代码在帧不在」项。综合分敏感度 ≈74.44+0.25×视觉分 → 62 分 ≈90。提分路径余量见 rubric §6：Tier B B1/B2/B4（V4=40 主战场）→~70。"
 }
