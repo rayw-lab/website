@@ -8,7 +8,8 @@
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 渲染架构 | `cyber-city-rendering-architecture-audit.md` |
 | 渲染缺口裁决 | `cyber-city-rendering-gaps-consult.md`（Sol 2026-08-26） |
-| 生产 tip | `main` @ `6a3f664`（综合 **92.0**，视觉 **68**） |
+| 北极星 | 综合 **98**（当前 **92.0**，Δ **−6.0**） |
+| 生产 tip | `main` @ `35fd1d8`（综合 **92.0**，视觉 **68**） |
 
 ## 渲染三条发现 — Sol 裁决（不立即开 Task）
 
@@ -41,4 +42,4 @@ Loop 4 B5+AL4（视觉 68）；Rendering-Audit [PR #39](https://github.com/rayw-
 
 ## 定时器
 
-`loop-cyber-city-orchestrate` · `sub_cb9b142d-6b8a-4ed1-acfb-4c74e29128a3` · 600s
+`loop-cyber-city-orchestrate` · **300s（5m）** · 北极星 98 · CI 订阅 PR #40 分支
