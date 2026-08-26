@@ -1273,3 +1273,59 @@ A4 全量终审（`cyber-city-phase0-full-audit.md` §0/§6）「有条件放行
   首用新材质存在编译卡顿敞口（新增常驻材质须落在挂载段编译）。
 - 关键发现③：`core/Ticker.ts` 四个 TSL 时间 uniform 逐帧写入但零材质消费方
   （动画主源是 `time` 节点）——预留面语义悬空，建议补注释或移除。
+
+## CC-L5-C1 — Tier C 单主题：假室内映射窗格 + 机器人材质分区（Loop 5，2026-08-26）
+
+- 分支 `cursor/cc-l5-tierc-interior-windows-1d6f`（base：`main@1ae993a`，AL4 终审
+  GO 基线独立视觉 68/raw 67.50，最低维 V4=58）。顾问稿 Loop 5「V2/V4 材质密度
+  主题」唯一主题：近景 ~10% 假室内映射窗格 + 机器人材质分区；禁做项（tone
+  mapping、新后处理 pass、变形运镜、poster、光轨、雾、Tier C 其它项、Blender
+  资产）零字节触碰——`Rendering.ts`/`View.ts`/`Sky.ts`/`FlightTrails.ts`/
+  `TransformSystem.ts`/poster 资产全部零改动。
+- 交付两件：
+  1. **假室内映射窗格**（`rendering/NeonMaterials.ts` `createFacadeMaterial`
+     新增 `interiorRatio`/`rotationY` 选项 + `city/ThemeTowers.ts` hero 楼开
+     0.10）：generator_city 同技法 TSL 程序化重写（零复制零贴图）——视线与
+     窗后虚拟房盒（宽=窗宽/高=窗高/进深 2.2m）逐轴求交取最近命中壁面
+     （后墙/侧墙/天花/地板互斥权重），逐房 hash 出暖房（钨丝白）72% / 冷屏房
+     （显示器蓝）28% + 亮度 0.55–1.0 + 后墙 3 列家具剪影；升格选择与亮/灭窗
+     独立（部分暗窗点亮为中间调房间 = 密度净增益）。视线世界→楼体本地变换用
+     buildings JSON `rotationY` 编译期常量（当前全城 0 = 直通）；standard 楼
+     `interiorRatio` 缺省 0 = 整段分支编译剔除零开销。
+  2. **机器人材质分区**（`city/HeroRobot.ts`）：GLB 六材质槽即分区界面（零新
+     材质实例）——Main 胸甲 metalness 0.62/roughness 0.38（A5 品红 rim 高光
+     滚降更锐）、LightGrey 关节青伺服辉光（#49c5b6 emissive，随胸口呼吸同拍
+     0.16–0.42 微脉动）、Accent 警示条工业橙常亮 0.42（夜景出暗）；回退机甲
+     同口径（joint/accent 材质对齐 + jointMaterials 同拍）。
+- 纪律对齐：**bloom threshold=1 台账零变动**——室内亮度峰值 ≈0.6、关节峰值
+  0.42、警示条 0.42 全部阈下（「室内是纵深不是光源」；机器人辉光锚点仍只有
+  Eye 呼吸传感器）· **CITY-03 配额零新增**——室内全静态零时间项（Q2 冻结
+  无感），关节脉动消费既有 idle 呼吸时间轴（同一席位）· 室内色相锁两族
+  （暖白族/青族同轴）零新色相 · 反射链自动收益（Grid reflector 镜像渲染，
+  零接线）。
+- 验证：`astro check` 0 err/0 warn（128 files）；`node scripts/audit-budget.mjs`
+  全过（world chunk 84.8/900KB，+0.6KB，零新资产）；`pnpm test:visual` 4/4 ×2
+  轮（main 基线轮 + 改动轮，VIS-01/02 壳基线零 diff 未重生成——零 DOM/poster
+  改动）；全量 e2e **52/52**（干净重跑 17.8m，0 failed/0 skipped/0 flaky，
+  @smoke3d 3/3；首轮 51/52 时 WS-E2E-03 左转断言一次失败——Δyaw 实测 −2.917rad
+  = 慢采样下左转越过 ±π 回绕的既有 flake 模式（AL4 §4.1 同族记录，灰盒车辆
+  物理不在本批改动域），隔离复核 1/1 后干净进程全量重跑得上数，不隐去首跑）；
+  本地隔离 LHCI（独立 npm 布局 @lhci/cli@0.15.1 + Playwright Chromium，L3-B3/
+  AL4 同口径）7 URL ×3 = 21 LHR，collect/assert 均 exit 0，`/` 与 `/home/`
+  四项中位数全 **100** 不降；统一计分 **COMPOSITE_SCORE=92.3**（92.25，
+  availableWeight=1、missing=[]）。
+- 帧证据（artifacts，同机位前后对照）：`cc-l5-c1-robot-idle-before-after.png`
+  （整帧）、`cc-l5-c1-facade-interior-crop-before-after.png`（立面 2× 裁剪：
+  平涂窗 vs 天花/后墙/地板三段分明 + 斜视角出侧墙盒体感）、
+  `cc-l5-c1-robot-zoom-before-after.png`（主体 2× 裁剪：三分区可辨）、
+  `cc-l5-c1-drive-interior-parallax.png`（变形→驾驶推进 z=0→−21m 双视角：
+  室内可见壁面随视角变化 = 视差深度非贴花自证）。
+- 视觉自评 **69（校准基线 = CC-AL4 独立向量 raw 67.50）**：V4 58→62（主攻维
+  +4，五楼假室内映射销「楼体细节层级」账，段内保守）+ V2 70→72（+2 区间上限，
+  主导材质获视线依赖层）；其余五维诚实持平。raw 67.50→68.50（+1.00 恰达停止线）
+  →69。派发目标「自评 70」算术上在本派发边界内不可达（区间顶格 V4+5/V2+2 =
+  raw 68.65→69；整数 70 需 raw ≥69.50 = 越界动 V1/V5），不借四舍五入越报。
+- 交接：待 CC-AL5 审 exact tree。若独立复评 raw 增益 <1.0，触发「连续两轮
+  <1.0」停止条款——按顾问稿 Loop 5 终审问题裁决剩余差距归属（程序化小件 vs
+  实模密度 Blender 专项）。poster 三面：本批 runtime 改画面（近景窗格/机器人
+  材质），poster 漂移债挂账，按「运行时冻结后收口」纪律留给 Loop 5 收口批。
