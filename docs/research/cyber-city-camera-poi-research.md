@@ -5,7 +5,7 @@
 | 触发 | BL2/PLUS 双次 NO-GO 根因：**固定 ritual 机位**与 **东向沿街楼位**几何不匹配；`?poi=` 仅改 **parkingBay 出生**，不改 **robot_idle 首幕机位** |
 | 北极星 | 解锁 V4 whole-frame 可读轮廓 + 游戏化 POI 体验（对标 folio / Orion / three-story-controls） |
 | 实现模型 | `claude-fable-5-thinking-xhigh` × 多路并行 |
-| 登记 | 仍 **70/92.5**；本批次 **不改 Blender GLB**，先解 **机位/镜头单源** |
+| 登记 | 仍 **70/92.5**；**须 Loop 6 合 main 后才可突破 70**（指挥官约束） |
 
 ## 1. 现状痛点（代码事实）
 

@@ -88,9 +88,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 - concept-garage showcase shot：NDC 审计 **主体入帧**
 - 禁 free 漫游（G5）；禁动 poster（另批）
 
-## CC-CAM —（旧标题占位删除）
-
-## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流）
+## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流 · 待机至 Loop 6 后重审）
 
 | ID | 分支 | PR | Agent | 状态 |
 |----|------|-----|-------|------|
