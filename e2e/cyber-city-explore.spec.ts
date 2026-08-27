@@ -261,7 +261,7 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
   //      出生圈 poi-bounding-in 再入账仍零新增 explore-progress（跨会话去重）。
   // ---------------------------------------------------------------------------
   test('CITY-EXP-01 探索计数闭环：深链发现 → 驾驶 +1 → 重复进圈去重 → reload 持久还原（埋点互证）', async ({ page }, testInfo) => {
-    test.setTimeout(2_400_000); // SwiftShader 慢动作 + 共享 VM 竞争：56m 遥测闭环 + 二次挂载
+    test.setTimeout(3_600_000); // SwiftShader 慢动作 + 共享 VM 竞争（实测负载 30+ 时物理时钟 ~1/20 墙钟）：直线腿 + 二次挂载
     const errors = trackErrors(page);
 
     await page.goto(`${PAGE_URL}?poi=${SPAWN_POI}`);
@@ -308,8 +308,10 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     await page.screenshot({ path: 'test-results/explore-second-discover.png' });
 
     // —— ③ 去重：驶出触发圈（bounding-out 入账）再驶回（bounding-in 第二次入账）。
-    //    车头仍朝北（倒车腿不改朝向）：W 前进即沿原直线退出圈，S 再倒回——同为零转向
-    const out = await pedalUntil(page, 'w', (s) => distTo(s, target) > 7.5, 600_000);
+    //    车头仍朝北（倒车腿不改朝向）：W 前进即沿原直线退出圈，S 再倒回——同为零转向。
+    //    触发圈 zones 精确半径进出（无迟滞）：出圈 6.8 / 回圈 5.7，往返行程压到 ~2.4m
+    //    （慢动作下每腿从静止起步的加速段才是墙钟大头，行程越短越稳）
+    const out = await pedalUntil(page, 'w', (s) => distTo(s, target) > 6.8, 900_000);
     expect(out.ok, '应能驶出触发圈').toBe(true);
     const bounded = await pollDump(
       page,
@@ -317,7 +319,7 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
       60_000,
     );
     expect(bounded.ok, '驶出应记 poi-bounding-out').toBe(true);
-    const back = await pedalUntil(page, 's', (s) => distTo(s, target) <= 5.5, 600_000);
+    const back = await pedalUntil(page, 's', (s) => distTo(s, target) <= 5.7, 900_000);
     expect(back.ok, '应能驶回触发圈').toBe(true);
     const reentered = await pollDump(
       page,
@@ -369,7 +371,7 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
   //      explore-progress{n:12} 与 explore-complete{total} 埋点互证（seq 序断言）。
   // ---------------------------------------------------------------------------
   test('CITY-EXP-02 恒等门 + reduced-motion + 完成反馈：robot_idle 隐藏 → 11/12 还原呈现 → 末点集齐完成态（埋点互证）', async ({ page }) => {
-    test.setTimeout(2_100_000); // ritual 挂载 + 40m 遥测闭环驾驶（共享 VM 竞争余量）
+    test.setTimeout(3_000_000); // ritual 挂载 + 遥测闭环驾驶（共享 VM 竞争余量，同 EXP-01 口径）
     const errors = trackErrors(page);
     await page.emulateMedia({ reducedMotion: 'reduce' });
 
