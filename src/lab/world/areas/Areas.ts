@@ -14,6 +14,8 @@
 // 前奏（0.8s tween 至 poi_showcase-* 机位 + 0.4s 定帧 + shot-apply/shot-interrupt
 // 埋点）→ 真实 URL 直跳占位（overlay/View Transition 进站归 CC-P1）；注册表无
 // showcase 条目的楼保持 Phase 1 直跳（数据驱动开关，见 PoiArrival 头注）。
+// 探索计数（[CC-FXN-C4] rubric F6）：首次 boundingIn 某触发圈 = 发现一个探索点，
+// ExploreProgress chip（n/12）+ goal 族埋点随行；非强制轻目标，见组件头注。
 import * as THREE from 'three/webgpu';
 import poisRaw from '../../../data/world-pois.json';
 import type { Game } from '../core/Game';
@@ -22,6 +24,7 @@ import { createNeonGlowMaterial } from '../rendering/NeonMaterials';
 import { Zones } from '../world/Zones';
 import { RayCursor } from '../inputs/RayCursor';
 import { Area } from './Area';
+import { ExploreProgress } from './ExploreProgress';
 import { InteractivePoints } from './InteractivePoints';
 import { PoiArrival } from './PoiArrival';
 
@@ -73,6 +76,8 @@ export class Areas {
   readonly points: InteractivePoints;
   /** [CC-FXN-C3] 进站前奏控制器（E → tween → 定帧 → navigate；驾驶意图中断） */
   readonly arrival: PoiArrival;
+  /** [CC-FXN-C4] 探索计数 n/12（F6 轻目标：boundingIn 首次发现 → chip + goal 埋点） */
+  readonly explore: ExploreProgress;
   readonly records: PoiRecord[] = [];
 
   constructor(game: Game, map: CyberCityMap, options: AreasOptions = {}) {
@@ -171,6 +176,9 @@ export class Areas {
       area.events.on('boundingIn', () => {
         // [CC-OBS-C1] 漏斗步⑥：首次触发圈进入（观测规格 §3.4 poi-bounding-in 行）
         game.session.log('poi-bounding-in', { id: building.id });
+        // [CC-FXN-C4] 探索计数：首次发现该探索点 → chip +1 + explore-progress 埋点
+        // （组件内去重，重复进圈零副作用）
+        this.explore.discover(building.id);
         point.pinned = true;
         point.reveal();
         console.info(
@@ -186,6 +194,12 @@ export class Areas {
 
       this.records.push({ entry, building, area, ring });
     }
+
+    // [CC-FXN-C4] 探索计数 chip（在册探索点全量 = 分母；boundingIn handler 消费，
+    // 装配完成前零 tick、handler 不早于此处触发）
+    this.explore = new ExploreProgress(game, {
+      poiIds: this.records.map((record) => record.building.id),
+    });
 
     // ———— ?poi= 深链出生（非 ritual）————
     if (highlightPoi) this.applyDeepLink(highlightPoi, buildingById);
@@ -228,6 +242,7 @@ export class Areas {
   /** 纹理等非场景资源释放（几何/材质归 Game.dispose 场景遍历；zones/tick 随 Game 停摆） */
   dispose(): void {
     this.arrival.dispose();
+    this.explore.dispose();
     this.points.dispose();
   }
 }
