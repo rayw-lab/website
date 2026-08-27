@@ -14,6 +14,7 @@
 |------|-----------------|------|
 | 日常问题、现状审查、方案讨论、只读调研、进度盘点 | claude-fable-5-thinking-xhigh | 默认分析和规划 |
 | 修复、落地代码、补测试、修复缺陷 | claude-fable-5-thinking-xhigh | 实现与落地 |
+| 独立审计、登记 JSON、放行裁决 | claude-fable-5-thinking-xhigh | L8 起与实现同模型；纪律仍为零业务代码 + fresh 取证 |
 | 复审、复查修复结果、检查回归或遗漏 | claude-fable-5-thinking-xhigh | 独立只读核对 |
 
 如果 xhigh 不在当前列表中，可按明示降级规则使用同系列的 high 版本。
@@ -47,8 +48,9 @@
 | 角色 | 职责 | model slug |
 |------|------|-----------|
 | 父代理 | **只编排**：任务书/文件域/串并行裁决/合并/看板，不写业务代码、不替审计打分 | 产品设置决定 |
-| 实现子代理（Fable5） | 落地代码 + 自评 + 取证登记 | `claude-fable-5-thinking-xhigh` |
-| 审计子代理（Sol） | 独立复评/复算/放行裁决（异族模型防同族自证） | `gpt-5.6-sol-xhigh-fast` |
+| 子代理 Task（实现 / 审计 / 顾问 / 调研 / 脑暴 / 文档 / 测试） | 落地交付或独立审计报告/登记 JSON；审计零业务代码 | `claude-fable-5-thinking-xhigh` |
+
+**模型变更（2026-08-27）**：L8 起全维度统一 Fable5 xhigh，不再新派 Sol。已派单未中止的在途 Sol Task 可跑完，登记分与放行结论照常采纳。
 
 #### 4.2 串并行与 PR 形态
 
@@ -86,8 +88,8 @@
 视觉打分单源 = `docs/research/cyber-city-visual-rubric.md`（帧优先协议见其 §4）。
 
 **编排 Delta / 定时器 `loop-cyber-city-orchestrate` 每次回复必输出登记矩阵四行**：
-北极星 **98 / 98 / 90 / 85** vs 生产登记 **80 / 71 / — / —**（综合/视觉/功能/性能；见看板「登记矩阵」表，以指挥官最新口径为准）。
-功能/性能未登记时显式写 **—** 并说明解锁条件（OBS-C1 → AL-FXN / 真机 human-gate）。
+北极星 **98 / 98 / 90 / 85** vs 生产登记 **80 / 71 / 84 / —**（综合/视觉/功能/性能；见看板「登记矩阵」表，以指挥官最新口径为准）。
+性能未登记时显式写 **—** 并说明解锁条件（真机 human-gate 六腿 → AL-PERF）。
 
 ## Cursor Cloud specific instructions
 

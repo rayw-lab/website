@@ -1,47 +1,46 @@
 # Phase 0 提分 Loop 编排看板
 
-`main` @ `66ed0fe` · 2026-08-27 13:38 UTC · 范式 `cyber-city-orchestration-paradigm.md`
+`main` @ `ea968a4` · 2026-08-27 16:15 UTC · 范式 `cyber-city-orchestration-paradigm.md`
+
+**模型（L8+）**：全部子代理 Task = `claude-fable-5-thinking-xhigh`；在途 Sol 可跑完（§1.2 宽限）。
 
 ## 登记矩阵（**每 tick 首段必输出**）
 
 | 维度 | 北极星 | 生产登记 | Δ | 在途 |
 |------|--------|----------|---|------|
-| **综合** | **98** | **80** | +18 | score-loop |
-| **视觉** | **98** | **71** | +27 | VIS-L8-RS/BR/DES |
-| **功能** | **90** | **—** | +90 | AL-FXN-R2 |
-| **性能** | **85** | **—** | +85 | HG-PREP · PERF-C2 B0/B1 |
+| **综合** | **98** | **80** | +18 | score-loop 五维重算 |
+| **视觉** | **98** | **71** | +27 | VIS-L8 · W1-X1a/X3 |
+| **功能** | **90** | **84** | +6 | —（AL-FXN ✅ [#84](https://github.com/rayw-lab/website/pull/84)） |
+| **性能** | **85** | **—** | +85 | HG-PREP · PERF-C2 · AL-PERF |
 
 > 登记只认审计独立分。禁止 LHCI/e2e/smoke 冒充功能或性能。
 
-## 当前焦点（Loop 8 · 首分冲刺）
+## 当前焦点（Loop 8）
 
 | 轨 | 状态 | 下一拍 |
 |----|------|--------|
-| 功能 | C1–C4 + OBS + VEH-FIX ✅ [#69](https://github.com/rayw-lab/website/pull/69)[#70](https://github.com/rayw-lab/website/pull/70) | **AL-FXN-R2** 登记首分 |
-| 性能 | PERF-C1 ✅ · C2 B0/B1 在途 | HG-PREP → 真机六腿 → AL-PERF |
-| 视觉 | 71 登记 · L8 RS/BR 在途 | DES → 实现批次（#43 BL2 禁合） |
+| 功能 | **84** 首登 ✅ `loop8-fxn-audit.md` | L6/L7 缺口补洞（可选） |
+| 性能 | PERF-C1 ✅ · C2 B0/B1 ✅ · HG-PREP ✅ | 指挥官真机六腿 → **AL-PERF**（Fable5） |
+| 视觉 | 71 · L8 doc 合流 | W1-X1a 实现 · W1-X3 实现 · #43 BL2 禁合 |
 | 综合 | 80 | 功能/性能登记后五维重算 |
 
-## 在途子 Task（≤10 并行）
+## 在途子 Task（≤10 并行 · 新派一律 Fable5 xhigh）
 
 | ID | 模型 | 状态 |
 |----|------|------|
-| CC-AL-FXN-R2 | Sol | 🔄 playtest + 登记 JSON |
-| CC-PERF-HG-PREP | Fable5 xhigh | 🔄 真机手册 |
-| CC-PERF-C2-B0 | Fable5 xhigh | 🔄 O10 longFrames |
-| CC-PERF-C2-B1 | Fable5 xhigh | 🔄 O1 自动降档 |
-| CC-VIS-L8-RS | Fable5 xhigh | 🔄 gap 调研 |
-| CC-VIS-L8-BR | Fable5 xhigh | 🔄 P0/P1 脑暴 |
-| CC-VIS-L8-DES | Fable5 xhigh | 🔄 设计确认 |
-| CC-VEH-R3-PREP | Fable5 xhigh | 🔄 R3 重审预备 |
-| CC-COMPOSITE-98-RS | Fable5 xhigh | 🔄 综合 98 路径 |
+| CC-VIS-L8-W1-X1a | Fable5 xhigh | ⏳ 任务书已合，待实现 |
+| CC-VIS-L8-W1-X3 | Fable5 xhigh | ⏳ 任务书已合，待实现 |
+| CC-AL-VEH-R3 | Fable5 xhigh | ⏳ 75/75 e2e 审计 |
+| CC-VIS-L8-P0-RS | Fable5 xhigh | ⏳ gap 调研 |
+| CC-PERF-C2 后续 | Fable5 xhigh | 按需 O2–O12 |
+| CC-AL-PERF | Fable5 xhigh | 待真机六腿后登记 |
 
 ## 下一拍序
 
-1. AL-FXN-R2 PR → 功能 northStar 出数
-2. doc/实现五路 push → PR → CI 绿合流
-3. HG-PREP 合流 → 指挥官真机窗口
-4. PERF-C2 B0 先合 → B1 rebase 合
+1. 派 W1-X1a / W1-X3 实现（Fable5）· AL-VEH-R3 审计
+2. 指挥官排真机窗口 → human-gate 六腿
+3. AL-PERF 登记性能首分（Fable5）
+4. 功能/性能齐套后重算综合分
 
 ## 阻塞
 
@@ -50,4 +49,4 @@
 
 ## 归档（一行）
 
-L6 CAM **71** [#45](https://github.com/rayw-lab/website/pull/45) · L8 doc [#47](https://github.com/rayw-lab/website/pull/47)–[#68](https://github.com/rayw-lab/website/pull/68) · L8 impl [#53](https://github.com/rayw-lab/website/pull/53)–[#70](https://github.com/rayw-lab/website/pull/70) · board [#71](https://github.com/rayw-lab/website/pull/71)
+L6 CAM **71** [#45](https://github.com/rayw-lab/website/pull/45) · L8 doc [#47](https://github.com/rayw-lab/website/pull/47)–[#83](https://github.com/rayw-lab/website/pull/83) · L8 impl [#53](https://github.com/rayw-lab/website/pull/53)–[#70](https://github.com/rayw-lab/website/pull/70) · **AL-FXN 84** [#84](https://github.com/rayw-lab/website/pull/84) · board [#71](https://github.com/rayw-lab/website/pull/71)
