@@ -52,9 +52,9 @@ BL2 沿街扩展 → tone mapping（实模密度到位后）→ poster 三面收
 
 | ID | 分支 | PR | Agent | 状态 |
 |----|------|-----|-------|------|
-| CC-BL2 | `cursor/cc-bl2-street-extension-1d6f` @ `0b54513` | [#43](https://github.com/rayw-lab/website/pull/43) draft | [BL2](bc-3f4061c8-bf7c-58f5-b540-5e1a932d60ae) | ❌ V4 门未过 |
+| CC-BL2 | `cursor/cc-bl2-street-extension-1d6f` @ `0b54513` | [#43](https://github.com/rayw-lab/website/pull/43) draft | [BL2](bc-3f4061c8-bf7c-58f5-b540-5e1a932d60ae) | ✅ IDLE（实现段完成） |
 | CC-AL-BL2 | `cursor/cc-al-bl2-audit-1d6f` @ `7a5dffa`（已合 main） | — | [AL-BL2](bc-102414b6-9132-5de4-8de5-83580124910d) | ✅ **NO-GO** 独立 71/92.8（V4=71<72） |
-| CC-BL2-PLUS | 同上分支 · **本地未 push**（GLB SHA `2f5295…8303`） | — | [BL2-PLUS](bc-a8ca6d06-9f46-5728-86df-7ab43cd8a630) | 🔄 RUNNING · LHCI 收集中 |
+| CC-BL2-PLUS | 同上分支 · **本地未 push**（GLB SHA `2f5295…8303`） | — | [BL2-PLUS](bc-a8ca6d06-9f46-5728-86df-7ab43cd8a630) | 🔄 RUNNING · 取证补全中（LHCI 已中断） |
 
 报告：`docs/research/loop-bl2-audit.md` · 实现记录 `docs/research/cyber-city-bl2-plus-implementation.md`（本地） · **登记不变**（仍 BL1 70/92.5）
 
