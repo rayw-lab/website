@@ -8,7 +8,7 @@
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
-| 生产 tip | `main` @ `73882c2`（登记 **92.5/70**） |
+| 生产 tip | `main` @ `b9a6edb`（登记 **92.5/70**） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -47,6 +47,17 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 ### 通往 98（顾问估 3–4 轮）
 
 BL2 沿街扩展 → tone mapping（实模密度到位后）→ poster 三面收口
+
+## BL2 — 🚀 已派发（AL-BL1 §9）
+
+| ID | 分支 | Agent | 状态 |
+|----|------|-------|------|
+| CC-BL2 | `cursor/cc-bl2-street-extension-1d6f` | Fable5 | 🚀 RUNNING |
+| CC-AL-BL2 | `cursor/cc-al-bl2-audit-1d6f` | Sol | 待 BL2 |
+
+- **目标**：`concept-garage` 相邻沿街实模（SW 象限，与 autodrive-lab 同框可读）
+- **门**：V4 独立 **72–75**；保留 heroGlb / Q2 零请求 / ThemeTowers 回退
+- **禁**：tone mapping · poster · 扩批其它楼
 
 ## 渲染三条发现 — Sol 裁决
 
