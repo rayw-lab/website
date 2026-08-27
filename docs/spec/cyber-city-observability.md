@@ -254,7 +254,7 @@ DOM 契约（e2e SEL 对齐）：根 `[data-debug-panel]`（`position:fixed` 右
 |------|--------|------|-----|
 | `test-results/session-dump-<case>.json` | 新 e2e 用例（§7）：`page.evaluate(() => window.__worldSession.dump())` → 落盘 + `test.info().attach()` | 漏斗/事件序原始证据（`<case>` ∈ `funnel` / `deep-link` / `q2` …kebab-case） | 证据非门 |
 | `test-results/function-smoke.json` + stdout 末行 `FUNCTION_SMOKE=<0-100>` | 新 `scripts/function-smoke.mjs`（§6.2；score-loop.mjs 同构 sibling，只读 dump 不跑浏览器） | **CI 冒烟分 = 哨兵**：链路存在性/顺序性，不掺时长 | 软门（OBS annotation，首个 Loop 观察后再议转硬） |
-| `test-results/city-perf-evidence.jsonl` | CITY-PERF-01（正本归顾问 §3.3 / FXN-DES；含 `__worldSession.dump()` 附档职责） | 性能 CI 证据包（下界哨兵） | 软门（p95<50ms 沿用） |
+| `test-results/city-perf-evidence.jsonl` | CITY-PERF-01/02（`e2e/cyber-city-perf.spec.ts`，CC-PERF-C1 已落地；正本 = `cyber-city-perf-test-plan.md` §2/§3，行 schema §2.5；秤归 `cyber-city-perf-rubric.md`；含 `__worldSession.dump()` 落盘 `session-dump-city-perf.json` + 附档职责） | 性能 CI 证据包（下界哨兵） | 软门（p95<50ms 沿用） |
 | `docs/research/cyber-city-function-rubric-score.json` | **仅 CC-AL-FXN 审计登记**（契约与 visual score JSON 同构：score/dimensions/notes/溯源） | 功能登记分机读位 | 挡登记 |
 | `docs/research/cyber-city-perf-rubric-score.json` | 仅审计/human-gate 回填登记 | 性能登记分机读位 | 挡登记 |
 | `test-results/quality-score.json` | score-loop.mjs（§6.4 加 northStar 只读块） | 综合分 + 北极星汇总 | 既有 |
