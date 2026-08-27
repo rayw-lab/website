@@ -8,7 +8,7 @@
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
-| 生产 tip | `main` @ `4f616e5`（登记 **92.5/70**） |
+| 生产 tip | `main` @ `1ab3bb2`（登记 **92.5/70**） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -53,7 +53,7 @@ BL2 沿街扩展 → tone mapping（实模密度到位后）→ poster 三面收
 | ID | 分支 | PR | Agent | 状态 |
 |----|------|-----|-------|------|
 | CC-BL2 | 已合入 PLUS 栈 | [#43](https://github.com/rayw-lab/website/pull/43) draft | [BL2](bc-3f4061c8-bf7c-58f5-b540-5e1a932d60ae) | ✅ 交付完成 |
-| CC-BL2-PLUS | `cursor/cc-bl2-street-extension-1d6f` @ **`fcdfcb5`** | — | [BL2-PLUS](bc-a8ca6d06-9f46-5728-86df-7ab43cd8a630) | ✅ **交付完成**（e2e 52/52 · LHCI 全绿） |
+| CC-BL2-PLUS | `cursor/cc-bl2-street-extension-1d6f` @ **`dbc47c3`** | — | [BL2-PLUS](bc-a8ca6d06-9f46-5728-86df-7ab43cd8a630) | ✅ **交付完成**（e2e 52/52 · LHCI 全绿） |
 | CC-AL-BL2 首次 | `cursor/cc-al-bl2-audit-1d6f` @ `7a5dffa`（已合 main） | — | [AL-BL2](bc-102414b6-9132-5de4-8de5-83580124910d) | ✅ NO-GO 71/92.8 |
 | CC-AL-BL2 复审 | `cursor/cc-al-bl2-audit-1d6f` @ **`8d8b604`** | — | [AL-BL2-R2](bc-57c16013-d459-513b-a2dc-7b622c1d00bc) | ✅ **NO-GO** 仍 **71/92.8**（V4=71<72） |
 
