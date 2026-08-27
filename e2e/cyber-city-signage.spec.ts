@@ -109,8 +109,11 @@ test.describe('招牌叙事 v2 验收（CC-VIS-X3；world-chromium 串行）', (
       '首幕（非 reduced-motion）路径 stagger 必须武装（revealStagger=true 台账）',
     ).toBe(true);
 
-    // 光柱落定（reveal 已开演的 DOM 镜像）→ stagger 全序完成自摘台账
-    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 120_000 });
+    // 光柱落定（reveal 已开演的 DOM 镜像）→ stagger 全序完成自摘台账。
+    // 窗宽 180s（CITY-E2E-03 的 120s 精调放宽）：ready→robot_idle 为 1.15 设计秒
+    // delay，R4 实测慢 VM 放大 ~91×（≈105s 墙钟）再叠 trace/video 开销即贴线——
+    // 存在性断言不变，只校准等待上限（文件头「禁墙钟阈值」纪律不涉及超时上限）
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 180_000 });
     await waitForLog(logs, IGNITION_DONE_RE, STAGGER_TIMEOUT);
   });
 
