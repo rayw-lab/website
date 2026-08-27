@@ -61,6 +61,7 @@ declare global {
         nippleActive: boolean;
         nippleProgress: number;
         view: string;
+        fov: number;
       };
       fps: () => { avg: number; low1: number };
       info: () => { drawCalls: number; triangles: number };
@@ -344,6 +345,10 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       // [CC-VEH-VIEW] 驾驶视角遥测（DOM 契约 data-drive-view 之外的引擎侧真值，
       // e2e 双口径互证）：'third' | 'fpv'
       view: game.view.driveView.mode,
+      // [CC-VEH-C2] 输出相机 FOV 遥测（度）：V 硬切合同的引擎侧断言口径——
+      // fpv 基础档 = camera-shots.json drive_fpv.rig.fovDeg（切换帧即写，
+      // reduced-motion 逐帧恰等）；third 恒为基线 42
+      fov: game.view.camera.fov,
     }),
     fps: () => fps.read(),
     info: () => ({

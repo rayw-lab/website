@@ -53,6 +53,25 @@ export interface CameraShotEntry {
   projectionAudit?: unknown;
 }
 
+/**
+ * [CC-VEH-C2] 驾驶态条目（vehicle-camera spec §7.1 冻结字段；schemaVersion 1 加法）：
+ * 运行时消费方 = View.ts 构造期读参（drive_third.dynamics.lookahead / drive_fpv.rig），
+ * **非** ?shot= 深链预设——anchor 是随车动态参考系，无静态世界机位可应用，
+ * applyCameraShot 对 mode='drive' 早退告警（守卫见下）。字段形状由 View.ts 经
+ * resolveJsonModule 编译期校验，此处仅作 union 判别（避免与静态 shot 字段耦合）。
+ */
+export interface DriveShotEntry {
+  mode: 'drive';
+  status: string;
+  anchor: { type: 'vehicle' };
+  spherical?: CameraShotEntry['spherical'];
+  lookAtHeight?: number;
+  lateral?: number;
+  dynamics?: unknown;
+  rig?: unknown;
+  notes?: string;
+}
+
 /** src/data/camera-shots.json 顶层结构（CC-CAM-DATA schemaVersion 1；破坏性变更 +1） */
 export interface CameraShotsConfig {
   schemaVersion: number;
@@ -61,7 +80,7 @@ export interface CameraShotsConfig {
   sources: Record<string, string>;
   conventions: Record<string, string>;
   camera: { fov: number; near: number; far: number; idealRatio: number };
-  shots: Record<string, CameraShotEntry>;
+  shots: Record<string, CameraShotEntry | DriveShotEntry>;
 }
 
 const config = shotsRaw as unknown as CameraShotsConfig;
@@ -116,6 +135,16 @@ export function applyCameraShot(game: Game, map: CyberCityMap, shotId: string): 
     console.warn(
       `[camera-shots] ?shot=${shotId} 无效（注册表未登记）；保持默认机位。` +
         `候选：[${listShotIds().join(', ')}]`,
+    );
+    return false;
+  }
+
+  // [CC-VEH-C2] drive_* 条目是驾驶态运行时参数（View.ts 构造期消费），anchor 随车
+  // 动态无静态世界机位可解算——深链请求一律告警不阻断（无效 slug 同款口径）
+  if (shot.mode === 'drive') {
+    console.warn(
+      `[camera-shots] ?shot=${shotId} 是驾驶态运行时条目（mode=drive，View 消费），` +
+        `非深链展示预设；保持默认机位。`,
     );
     return false;
   }

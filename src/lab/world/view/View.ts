@@ -17,6 +17,7 @@
 // 入画；灰盒试车道（greybox，默认）保持 folio 原框（FOV 25 / phi 按 quality 分档），
 // world-spike 驾驶验证零回归。
 import * as THREE from 'three/webgpu';
+import cameraShots from '../../../data/camera-shots.json';
 import { clamp, lerp, remap, smoothstep } from '../utils/maths';
 import type { Game } from '../core/Game';
 import type { TransformState } from '../player/TransformSystem';
@@ -59,48 +60,21 @@ interface ShotBaseline {
 }
 
 /**
- * [CC-VEH-VIEW] 第三人称行进 lookahead（spec §6.1 冻结值；字段名与 camera-shots.json
- * `drive_third.dynamics.lookahead` 条目草案一字不差）。
- * TODO(CC-CAM 合流：改读 camera-shots.json drive_third.dynamics.lookahead——CAM-C1
- * PR #45 合 main 后删除本内联双源，spec §7.2 降级条款)。
+ * [CC-VEH-C2] 驾驶态参数单源 = camera-shots.json 注册表（spec §7.2 合流规则：
+ * CAM-C1 已合 main，内联双源与 TODO 降级条款到期删除）。字段冻结见 spec §7.1；
+ * TS resolveJsonModule 编译期校验键与字段存在性（缺键即 astro check 失败）。
+ *
+ * DRIVE_LOOKAHEAD（drive_third.dynamics.lookahead，spec §6.1）：满 lookahead
+ * 4.5m ≈ 画面半宽 1/3；速度域 = focusPointSpeed（真实 m/s）；方向 = 位移方向
+ * 低通（倒车/甩尾自动正确）；满舵收缩 ×0.55；变化率硬钳防晕兜底。
+ *
+ * DRIVE_FPV（drive_fpv.rig，spec §6.2）：挡风前上沿机位（裁决 D4——CarConcept
+ * 无内饰实模，hood cam 为诚实 V1；offsetLocal 底盘系 +X=车头 +Y=上 +Z=右，
+ * 中置 z=0 防不对称穿帮）；fovDeg 58 与 third 42 拉开档差 = 切换即时反馈；
+ * 防晕核心 = yaw 直通（延迟 yaw 才是晕源）+ pitch/roll 衰减低通。
  */
-const DRIVE_LOOKAHEAD = {
-  /** 满 lookahead 4.5m ≈ FOV 42°/斜距 20m 下画面半宽 13.7m 的 1/3（不出构图带） */
-  maxDistance: 4.5,
-  /** 输入 = focusPointSpeed（真实 m/s、实现无关）；巡航 ~10 → L≈1.9m 微感 */
-  speedEdge: { min: 3, max: 20 },
-  /** 方向低通 s⁻¹（方向 = 位移方向而非车头——倒车/甩尾自动正确） */
-  directionSmoothRate: 6,
-  /** 幅值低通 s⁻¹（加速/急刹不阶跃） */
-  magnitudeSmoothRate: 4,
-  /** 满舵时 L ×0.55（转弯看近处，弯中焦点稳定） */
-  steeringShrink: 0.45,
-  /** 舵量低通 s⁻¹（收缩渐进非阶跃，spec §9.1） */
-  steeringSmoothRate: 8,
-  /** 偏移向量变化率硬钳 m/s（防晕兜底，SwiftShader 大 dt 下同样成立） */
-  offsetRateClamp: 8,
-} as const;
-
-/**
- * [CC-VEH-VIEW] FPV 挡风机位 rig（spec §6.2 冻结值；camera-shots.json
- * `drive_fpv.rig` 条目草案同名字段）。裁决 D4：CarConcept 无内饰实模，挡风前
- * 上沿舱外机位（hood cam）为诚实 V1——offsetLocal 底盘系 +X=车头 +Y=上 +Z=右，
- * 中置 z=0 防不对称穿帮；底盘原点离地 0.92m → 视高 ≈1.5m。
- * TODO(CC-CAM 合流：改读 camera-shots.json drive_fpv.rig，同上)。
- */
-const DRIVE_FPV = {
-  offsetLocal: { x: 0.35, y: 0.55, z: 0 },
-  /** 与 third 42° 拉开明确档差 = 切换的即时视觉反馈 */
-  fovDeg: 58,
-  /** 速度 FOV kick：推背感，低通缓变防晕；reduced-motion 恒 0 */
-  fovKick: { maxDeg: 6, speedEdge: { min: 8, max: 24 }, smoothRate: 3 },
-  /**
-   * 防晕核心（spec §6.2）：yaw 直通（转向反馈零延迟——延迟 yaw 才是晕源）；
-   * pitch/roll 衰减 + 低通（颠簸/侧倾进相机前先削幅）；reduced-motion 下
-   * pitch/roll 恒 0 = 地平线完全锁定（yaw 保留——关掉无法驾驶，属功能非动效）。
-   */
-  attitudeTransfer: { yaw: 1, pitch: 0.7, roll: 0.35, pitchSmoothRate: 10, rollSmoothRate: 8 },
-} as const;
+const DRIVE_LOOKAHEAD = cameraShots.shots.drive_third.dynamics.lookahead;
+const DRIVE_FPV = cameraShots.shots.drive_fpv.rig;
 
 export class View {
   private readonly game: Game;
@@ -162,8 +136,13 @@ export class View {
     offset: new THREE.Vector3(),
   };
   private readonly lookaheadStep = new THREE.Vector3();
-  /** FPV 姿态低通状态（pitch/roll 衰减通道；yaw 直通不驻留） */
-  private readonly fpvState = { pitch: 0, roll: 0 };
+  /**
+   * FPV 姿态低通状态（pitch/roll 衰减通道；yaw 直通不驻留）。
+   * [CC-VEH-C2] fovKick = 速度 FOV kick 的低通驻留分量（度）——基础档 fovDeg 58
+   * 在切换帧硬切写死（spec §3 D3「硬切天然同形」），只有 kick 增量走低通；
+   * reduced-motion 下目标恒 0 ⇒ 驻留恒为精确 0 ⇒ FOV 逐帧恰 58（spec §10）。
+   */
+  private readonly fpvState = { pitch: 0, roll: 0, fovKick: 0 };
   private readonly fpvEye = new THREE.Vector3();
   private readonly fpvLook = new THREE.Vector3();
   private readonly fpvRef = new THREE.Vector3();
@@ -399,24 +378,30 @@ export class View {
 
   /**
    * [CC-VEH-VIEW] 设定驾驶视角（内部切换 + TransformSystem 强制回位共用，幂等）。
-   * fpv→third 切回帧（spec §9.3）：焦点回玩家跟踪、FOV 立即回基线（同输入重算
-   * 投影 = 与接管前逐位一致）；位姿下一帧由直通拷贝接管（defaultCamera 后台连续
-   * 更新，切回无 pop）。变更时 trigger 'world-drive-view' [mode]（SRD §9.5
-   * world-* 埋点族；Reveal 镜像 data-drive-view）。
+   * 切换帧 FOV 双向硬切（spec §3 D3 / §9.3；CC-AL-VEH 阻断项 B 修复）：
+   * third→fpv 立即写基础 FOV 58 并重算投影——42→58 档差不入低通（低通只作用于
+   * 之后的 speed kick 增量，reduced-motion 下 kick 恒 0 ⇒ FOV 逐帧恰 58）；
+   * fpv→third 立即回基线 42（同输入重算投影 = 与接管前逐位一致），焦点回玩家
+   * 跟踪，位姿下一帧由直通拷贝接管（defaultCamera 后台连续更新，切回无 pop）。
+   * 变更时 trigger 'world-drive-view' [mode]（SRD §9.5 world-* 埋点族；
+   * Reveal 镜像 data-drive-view）。
    */
   setDriveViewMode(mode: 'third' | 'fpv'): void {
     if (this.driveView.mode === mode) return;
     this.driveView.mode = mode;
 
-    // 两向切换都清 FPV 低通驻留：进入帧从 0 起坡（无上次残留姿态甩镜）
+    // 两向切换都清 FPV 低通驻留：进入帧从 0 起坡（无上次残留姿态/kick 甩镜）
     this.fpvState.pitch = 0;
     this.fpvState.roll = 0;
+    this.fpvState.fovKick = 0;
 
     if (mode === 'third') {
       this.focusPoint.isTracking = true;
       this.camera.fov = this.fovBase;
-      this.camera.updateProjectionMatrix();
+    } else {
+      this.camera.fov = DRIVE_FPV.fovDeg;
     }
+    this.camera.updateProjectionMatrix();
 
     this.game.events.trigger('world-drive-view', [mode]);
   }
@@ -527,19 +512,22 @@ export class View {
     this.camera.lookAt(this.fpvLook);
     this.camera.rotation.z += this.fpvState.roll;
 
-    // ⑤ FOV kick 缓变（3 s⁻¹ 低通 ⇒ 实际变化率 ≪ 18°/s 防晕上限）；
-    //   reduced-motion 恒 58（脉动关，档差保留 = 切换反馈仍在）
-    const fovTarget =
-      DRIVE_FPV.fovDeg +
-      (rm
-        ? 0
-        : DRIVE_FPV.fovKick.maxDeg *
-          smoothstep(
-            focusPointSpeed,
-            DRIVE_FPV.fovKick.speedEdge.min,
-            DRIVE_FPV.fovKick.speedEdge.max,
-          ));
-    this.camera.fov += (fovTarget - this.camera.fov) * (1 - Math.exp(-DRIVE_FPV.fovKick.smoothRate * dt));
+    // ⑤ FOV = 基础档 58（切换帧已硬切，此处直写不低通——spec §3 D3；
+    //   CC-AL-VEH 阻断项 B：42→58 档差入低通即违约）+ speed kick 低通分量
+    //   （3 s⁻¹ 从 0 起坡 ⇒ 实际变化率 ≪ 18°/s 防晕上限）。
+    //   reduced-motion：kick 目标恒 0、驻留恒精确 0 ⇒ FOV 逐帧恰 58
+    //   （spec §10「FOV kick 关（恒 58°）」，IEEE 恒等非渐近）
+    const kickTarget = rm
+      ? 0
+      : DRIVE_FPV.fovKick.maxDeg *
+        smoothstep(
+          focusPointSpeed,
+          DRIVE_FPV.fovKick.speedEdge.min,
+          DRIVE_FPV.fovKick.speedEdge.max,
+        );
+    this.fpvState.fovKick +=
+      (kickTarget - this.fpvState.fovKick) * (1 - Math.exp(-DRIVE_FPV.fovKick.smoothRate * dt));
+    this.camera.fov = DRIVE_FPV.fovDeg + this.fpvState.fovKick;
     this.camera.updateProjectionMatrix();
   }
 

@@ -164,6 +164,12 @@ let failedGates = 0;
 
 for (const shotId of shotIds) {
   const shot = shotsDoc.shots[shotId];
+  // [CC-VEH-C2] drive_* 条目 anchor 随车（type=vehicle）动态解算，无静态世界机位——
+  // 不做静态 NDC 审计（vehicle-camera spec §7.2「mode !== 'drive' 早退」条款）
+  if (shot.mode === 'drive') {
+    if (!asJson) console.log(`\n=== shot: ${shotId}（mode drive · ${shot.status}）=== 跳过：动态机位不做静态 NDC 审计`);
+    continue;
+  }
   const { camera, anchor, radius, position, target, fov } = buildCamera(shot);
   const shotReport = { anchor: anchor.label, radius, fov, position: position.toArray(), target: target.toArray(), buildings: {}, gates: [] };
   report.shots[shotId] = shotReport;
