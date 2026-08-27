@@ -10,7 +10,10 @@
 //   - SwiftShader 慢动作：只断存在性/顺序性（seq 序、终态），禁对 t 值/时长设阈值
 //     （前奏 1.2 游戏秒在软渲染下 ≈ 数十秒墙钟，早退互证一律事件驱动等待）；
 //   - route abort 跳转前取证（CITY-OBS-01 先例）：abort 掉 navigate 请求保住 JS
-//     上下文，拦截后 dump/遥测照常可用；
+//     上下文，拦截后 dump/遥测照常可用。errorCode 必须显式 'aborted'
+//     （net::ERR_ABORTED 静默取消）——前奏把 navigate 推迟到 ticker 回调，用户
+//     手势已过期，默认 'failed'（net::ERR_FAILED）会提交错误页销毁上下文
+//     （本 PR 实测；OBS-01 同步适配，function-test-plan §3.3 留痕行）；
 //   - 恒等门：robot_idle 期 poiInteract 被 Inputs filters（intro）物理拦截，
 //     前奏路径完全不可达（CITY-PA-04 复证）。
 //
@@ -164,7 +167,7 @@ test.describe('科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 p
     let navHits = 0;
     await page.route(NAV_ROUTE, (route) => {
       navHits += 1;
-      void route.abort();
+      void route.abort('aborted');
     });
 
     await page.goto(`${PAGE_URL}?poi=${POI_SLUG}#debug`);
@@ -229,7 +232,7 @@ test.describe('科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 p
     let navHits = 0;
     await page.route(NAV_ROUTE, (route) => {
       navHits += 1;
-      void route.abort();
+      void route.abort('aborted');
     });
 
     await page.goto(`${PAGE_URL}?poi=${POI_SLUG}`);
@@ -287,7 +290,7 @@ test.describe('科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 p
     let navHits = 0;
     await page.route(NAV_ROUTE, (route) => {
       navHits += 1;
-      void route.abort();
+      void route.abort('aborted');
     });
 
     await page.goto(`${PAGE_URL}?poi=${POI_SLUG}#debug`);
