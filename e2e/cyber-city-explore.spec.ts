@@ -158,24 +158,52 @@ async function reverseBy(
   }
 }
 
-/** 遥测闭环自动驾驶（CITY-OBS-01 同款：真实键盘输入 + 0.5s 遥测节拍 + 卡死倒车自救） */
+/**
+ * 遥测闭环自动驾驶（CITY-OBS-01 同款：真实键盘输入 + 0.5s 遥测节拍 + 卡死倒车自救）。
+ * opts.from 给定时启用巡线（pure pursuit）：瞄准「车辆位置在 from→target 线段上的
+ * 投影 + 6m 前视」的线上点，而非远端目标本体——共享 VM 竞争下渲染 ~1fps，
+ * bang-bang 舵机对远目标瞄准会横向漂出走廊（50min 轮实测漂进备件箱堆 (26.6,-19)），
+ * 巡线把横向误差沿线指数收敛，是窄缺口（隔离墩间 2.55m 半宽）可重复穿越的前提。
+ * 自救倒退距离逐次升级（3m→5m 封顶）破解「贴障往复」死循环；trail 为 10s 采样
+ * 轨迹面包屑 + 自救标记（失败断言随错误信息落报告，替代无遥测的黑盒排障）。
+ */
 async function driveTo(
   page: Page,
   target: { x: number; z: number },
-  opts: { radius: number; timeoutMs: number },
-): Promise<{ ok: boolean; state: SpikeState }> {
+  opts: { radius: number; timeoutMs: number; from?: { x: number; z: number } },
+): Promise<{ ok: boolean; state: SpikeState; trail: string }> {
+  const LOOK_AHEAD = 6;
   let steering: 'a' | 'd' | null = null;
   let state = await readSpike(page);
+  const crumbs: string[] = [];
+  let rescues = 0;
+  let tick = 0;
   await page.keyboard.down('w');
   try {
     const deadline = Date.now() + opts.timeoutMs;
     let stuckSince = Date.now();
     while (Date.now() < deadline) {
       state = await readSpike(page);
-      const dx = target.x - state.x;
-      const dz = target.z - state.z;
-      if (Math.hypot(dx, dz) <= opts.radius) return { ok: true, state };
+      if (tick % 20 === 0) crumbs.push(`(${state.x.toFixed(1)},${state.z.toFixed(1)})`);
+      tick += 1;
+      if (Math.hypot(target.x - state.x, target.z - state.z) <= opts.radius)
+        return { ok: true, state, trail: crumbs.join('→') };
 
+      // 巡线瞄准点：from→target 线段上的投影 + 前视（无 from 即瞄目标本体）
+      let aim = target;
+      if (opts.from) {
+        const spanX = target.x - opts.from.x;
+        const spanZ = target.z - opts.from.z;
+        const len = Math.hypot(spanX, spanZ);
+        const ux = spanX / len;
+        const uz = spanZ / len;
+        const proj = (state.x - opts.from.x) * ux + (state.z - opts.from.z) * uz;
+        const ahead = Math.min(Math.max(proj, 0) + LOOK_AHEAD, len);
+        aim = { x: opts.from.x + ux * ahead, z: opts.from.z + uz * ahead };
+      }
+
+      const dx = aim.x - state.x;
+      const dz = aim.z - state.z;
       const desired = Math.atan2(-dz, dx); // forward = (cos r, 0, -sin r) 反解
       const diff = wrapAngle(desired - state.yaw);
       const want: 'a' | 'd' | null = diff > 0.12 ? 'a' : diff < -0.12 ? 'd' : null;
@@ -188,19 +216,21 @@ async function driveTo(
       if (state.speedKmh > 3) stuckSince = Date.now();
       else if (Date.now() - stuckSince > 45_000) {
         // 卡死自救 = 倒车退离障碍（OBS-01 用 R 重生，但深链会话的重生锚点
-        // = 泊位面楼——传送回陷阱本身，故此处一律倒车 4m 再续航）
+        // = 泊位面楼——传送回陷阱本身，故一律倒车再续航）；倒退逐次升级
         if (steering) {
           await page.keyboard.up(steering);
           steering = null;
         }
         await page.keyboard.up('w');
-        await reverseBy(page, 3, 120_000); // 倒车实测 ~0.04m/s 墙钟（SwiftShader 慢动作）
+        rescues += 1;
+        crumbs.push(`[R${rescues}@(${state.x.toFixed(1)},${state.z.toFixed(1)})]`);
+        await reverseBy(page, Math.min(3 + (rescues - 1) * 2, 5), 180_000);
         await page.keyboard.down('w');
         stuckSince = Date.now();
       }
       await page.waitForTimeout(500);
     }
-    return { ok: false, state };
+    return { ok: false, state, trail: crumbs.join('→') };
   } finally {
     if (steering) await page.keyboard.up(steering).catch(() => {});
     await page.keyboard.up('w').catch(() => {});
@@ -234,7 +264,7 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
   //      出生圈 poi-bounding-in 再入账仍零新增 explore-progress（跨会话去重）。
   // ---------------------------------------------------------------------------
   test('CITY-EXP-01 探索计数闭环：深链发现 → 驾驶 +1 → 重复进圈去重 → reload 持久还原（埋点互证）', async ({ page }, testInfo) => {
-    test.setTimeout(3_000_000); // SwiftShader 慢动作 + 共享 VM 竞争：对角走廊三腿遥测闭环 + 二次挂载
+    test.setTimeout(3_300_000); // SwiftShader 慢动作 + 共享 VM 竞争：双对角巡线遥测闭环 + 二次挂载
     const errors = trackErrors(page);
 
     await page.goto(`${PAGE_URL}?poi=${SPAWN_POI}`);
@@ -272,7 +302,7 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     //    z=-24 线另有光伏雨棚柱 (14.8,-24.2)/(19.2,-24.2) 封口。
     //    正确动线 = 建模侧预留的对角走廊（HeroBlenderMesh 文件头「隔离墩缺口→
     //    泊车位的对角行车走廊已让空」）：泊位 (28,-28) 沿对角线 x=-z 西北向穿
-    //    隔离墩缺口（中点 (15.4,-15.4)，距两墩各 2.55m）入路口，再直驱 agent-nexus。
+    //    隔离墩缺口入路口腹地，再沿西南对角线 x=z 穿镜像缺口抵 agent-nexus。
     //    出泊位仍先倒车 5m（出生朝向面建筑角，原地掉头必蹭墙角；R 重生锚点=泊位
     //    本身，传送回陷阱）：倒退线 (28,-28)→(24.5,-24.5) 恰落对角走廊上。
     //    倒车实测 ~0.04m/s 墙钟 → 5m ≈ 120s，予 300s 余量
@@ -282,15 +312,23 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
       `应能倒车退出泊位（实测 x=${escaped.state.x.toFixed(1)} z=${escaped.state.z.toFixed(1)}）`,
     ).toBe(true);
     const target = bayOf(SECOND_POI);
-    // wp0 (20,-20)：掉头弧线漂移后先归位对角线（雨棚柱 (19.2,-24.2) 收口前）；
-    // wp1 (10,-10)：整车穿过隔离墩缺口入路口腹地，再转向不致擦墩；
-    // 末段直线 (10,-10)→(-28,-28) 距西侧墩 (-13.6,-17.2) ≥5m、灯杆线 ≥8m 全程净空
-    const wp0 = await driveTo(page, { x: 20, z: -20 }, { radius: 3, timeoutMs: 300_000 });
-    expect(wp0.ok, `对角走廊归位点 (20,-20) 应可达（实测 x=${wp0.state.x.toFixed(1)} z=${wp0.state.z.toFixed(1)}）`).toBe(true);
-    const wp1 = await driveTo(page, { x: 10, z: -10 }, { radius: 3, timeoutMs: 480_000 });
-    expect(wp1.ok, `隔离墩缺口 (10,-10) 应可穿越（实测 x=${wp1.state.x.toFixed(1)} z=${wp1.state.z.toFixed(1)}）`).toBe(true);
-    const leg = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 600_000 });
-    expect(leg.ok, `泊车位 (${target.x},${target.z}) 应可达（实测 x=${leg.state.x.toFixed(1)} z=${leg.state.z.toFixed(1)}）`).toBe(true);
+    // 巡线两腿沿双对角走廊（线心 = 东南象限 x=-z 与西南象限 x=z）：
+    //   A 腿 (24.5,-24.5)→(0,0)：穿东南隔离墩缺口（中点 (15.4,-15.4) 距两墩各
+    //     2.55m，唯一收口；余段距雨棚柱/totem/备件箱堆 ≥3.5m）入路口腹地；
+    //   B 腿 (0,0)→(-28,-28)：穿西南缺口（同 2.55m 半宽）直抵泊位——西南象限
+    //     无 hero 道具（PROP_COLLIDERS 本拍只有 autodrive-lab），全程净空
+    const legA = await driveTo(
+      page,
+      { x: 0, z: 0 },
+      { radius: 5, timeoutMs: 720_000, from: { x: 24.5, z: -24.5 } },
+    );
+    expect(legA.ok, `对角走廊 A 腿→路口 (0,0) 应可达（轨迹 ${legA.trail}）`).toBe(true);
+    const legB = await driveTo(
+      page,
+      { x: target.x, z: target.z },
+      { radius: 5.5, timeoutMs: 720_000, from: { x: 0, z: 0 } },
+    );
+    expect(legB.ok, `泊车位 (${target.x},${target.z}) 应可达（轨迹 ${legB.trail}）`).toBe(true);
 
     const second = await pollDump(
       page,
@@ -302,16 +340,25 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     await page.screenshot({ path: 'test-results/explore-second-discover.png' });
 
     // —— ③ 去重：驶出触发圈（bounding-out 入账）再驶回（bounding-in 第二次入账）
-    const out = await driveTo(page, { x: target.x + 14, z: target.z + 2 }, { radius: 4, timeoutMs: 300_000 });
-    expect(out.ok, '应能驶出触发圈').toBe(true);
+    const outPoint = { x: target.x + 14, z: target.z + 2 };
+    const out = await driveTo(page, outPoint, {
+      radius: 4,
+      timeoutMs: 300_000,
+      from: { x: target.x, z: target.z },
+    });
+    expect(out.ok, `应能驶出触发圈（轨迹 ${out.trail}）`).toBe(true);
     const bounded = await pollDump(
       page,
       (d) => d.events.some((e) => e.type === 'poi-bounding-out' && e.data?.id === SECOND_POI),
       60_000,
     );
     expect(bounded.ok, '驶出应记 poi-bounding-out').toBe(true);
-    const back = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 300_000 });
-    expect(back.ok, '应能驶回触发圈').toBe(true);
+    const back = await driveTo(page, { x: target.x, z: target.z }, {
+      radius: 5.5,
+      timeoutMs: 300_000,
+      from: outPoint,
+    });
+    expect(back.ok, `应能驶回触发圈（轨迹 ${back.trail}）`).toBe(true);
     const reentered = await pollDump(
       page,
       (d) =>
@@ -417,12 +464,21 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     } finally {
       await page.keyboard.up('w');
     }
-    // 原点出圈仍留 (0,-24) 途径点（OBS-01 同款：先出隔离墩阵再入西走廊直线）
+    // 原点出圈仍留 (0,-24) 途径点（OBS-01 同款：先出隔离墩阵再入西走廊直线）；
+    // 两腿同样挂巡线锚线（南向路心 x=0 → 西南斜线），控制纪律与 EXP-01 对齐
     const target = bayOf(SECOND_POI);
-    const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 6, timeoutMs: 480_000 });
-    expect(leg1.ok, `途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`).toBe(true);
-    const leg2 = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 600_000 });
-    expect(leg2.ok, `泊车位 (${target.x},${target.z}) 应可达（实测 x=${leg2.state.x.toFixed(1)} z=${leg2.state.z.toFixed(1)}）`).toBe(true);
+    const leg1 = await driveTo(
+      page,
+      { x: 0, z: -24 },
+      { radius: 6, timeoutMs: 480_000, from: { x: 0, z: 0 } },
+    );
+    expect(leg1.ok, `途径点 (0,-24) 应可达（轨迹 ${leg1.trail}）`).toBe(true);
+    const leg2 = await driveTo(
+      page,
+      { x: target.x, z: target.z },
+      { radius: 5.5, timeoutMs: 600_000, from: { x: 0, z: -24 } },
+    );
+    expect(leg2.ok, `泊车位 (${target.x},${target.z}) 应可达（轨迹 ${leg2.trail}）`).toBe(true);
 
     const completed = await pollDump(
       page,
