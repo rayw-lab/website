@@ -23,6 +23,8 @@ import { ThemeTowers } from './ThemeTowers';
 import { HeroBlenderMesh } from './HeroBlenderMesh';
 import { CityBlocks } from './CityBlocks';
 import { CitySilhouette } from './CitySilhouette';
+import { FacadeKit } from './FacadeKit';
+import { ForegroundFraming } from './ForegroundFraming';
 import { Sky, SKY_ZENITH_COLOR, applyAtmosphereQuality } from './Sky';
 import { StreetProps } from './StreetProps';
 import { BuildingSigns } from './BuildingSigns';
@@ -42,6 +44,10 @@ export interface City {
   heroBlenderMesh: HeroBlenderMesh;
   cityBlocks: CityBlocks;
   silhouette: CitySilhouette;
+  /** [CC-VIS-X2] 立面套件（10 类构件 InstancedMesh；Q2 零请求/加载失败静默回退） */
+  facadeKit: FacadeKit;
+  /** [CC-VIS-X2] 前景景框层（D7：近景管线桥剪影，静态零循环配额） */
+  foregroundFraming: ForegroundFraming;
   /** 霓虹网格地面（CC-E4） */
   grid: Grid;
   /** 天空穹顶 + 地平线辉光（CC-L1 A1）+ 分层大气：低云带/分层雾 fogNode（CC-L3-ATM） */
@@ -85,6 +91,12 @@ export function mountCity(game: Game, options: CityOptions = {}): City {
   const silhouette = new CitySilhouette(game, map);
   const sky = new Sky(game);
   const streetProps = new StreetProps(game, map);
+  // [CC-VIS-X2] 立面套件三消费方（异步贴附，不阻塞挂载/ready；Q2 零 GLB 请求）：
+  // CityBlocks 可见临街面立面件 + StreetProps 街角道具带 + 前景景框管线桥
+  const facadeKit = new FacadeKit(game);
+  cityBlocks.attachFacades(facadeKit);
+  streetProps.placeCornerProps(facadeKit);
+  const foregroundFraming = new ForegroundFraming(game, facadeKit);
   const buildingSigns = new BuildingSigns(game, map);
   const adBoards = new AdBoards(game);
   const streetLamps = new StreetLamps(game, map);
@@ -162,7 +174,10 @@ export function mountCity(game: Game, options: CityOptions = {}): City {
       `——Q0 全效/Q1 简化/Q2 线性雾兜底` +
       `；[CC-L3-B3] 飞行光轨 ${flightTrails.routeCount} 航线 ${flightTrails.pointCount} 点` +
       `（≤800 合同；CITY-03 配额第 3 席，单 InstancedMesh 1 draw call）` +
-      `——Q0 3 航线/Q1 2 航线/Q2 关闭`,
+      `——Q0 3 航线/Q1 2 航线/Q2 关闭` +
+      `；[CC-VIS-X2] 立面套件 FacadeKit.glb 在册（Q0/Q1 异步贴附：可见临街面立面件 +` +
+      ` 街角道具带 6 簇 ×3 件 + 前景管线桥景框——NDC 清单先行，每类构件 1 draw call，` +
+      `全静态零循环配额，emissive 阈下零辉光锚；Q2 零请求/失败静默回退）`,
   );
 
   return {
@@ -172,6 +187,8 @@ export function mountCity(game: Game, options: CityOptions = {}): City {
     heroBlenderMesh,
     cityBlocks,
     silhouette,
+    facadeKit,
+    foregroundFraming,
     grid,
     sky,
     streetProps,
@@ -200,6 +217,9 @@ export { ThemeTowers } from './ThemeTowers';
 export { HeroBlenderMesh } from './HeroBlenderMesh';
 export { CityBlocks } from './CityBlocks';
 export { CitySilhouette } from './CitySilhouette';
+export { FacadeKit } from './FacadeKit';
+export type { FacadeKitPieceName, FacadeKitPieces, PieceTransform } from './FacadeKit';
+export { ForegroundFraming, FOREGROUND_BRIDGE_SPOT } from './ForegroundFraming';
 export {
   Sky,
   SKY_FOG_COLOR,
