@@ -20,3 +20,13 @@
 ## 残项（spec 开放问题，不在本批）
 
 - O1 触屏 FPV（D5 独立任务书）· O2 看弯心偏置（V2 默认关）· O3 座舱内机位（依赖内饰资产）· O4 offsetLocal 终值真机 A/B 校准（两条硬门：引擎盖前缘入画 / nearClearance ≥0.15m——SwiftShader 软渲染帧已截图留档，真机走 human-gate-checklist）。
+
+## 测试证据（同一 dist 构建，Cloud Agent VM · SwiftShader 软渲染 · 多代理并发负载）
+
+| 轮次 | 范围 | 结果 |
+|------|------|------|
+| ① 全量 | 五 project 链 54 例 | 47 过 / 1 败 / 6 连坐跳——唯一失败 = 新增 CITY-VEH 联合旅程撞 describe 级 420s 超时（实测 7.1m，视角断言全部已过，死于最后一条断言的 teardown 竞态）。修复 = 单测 `test.setTimeout(600_000)`（对齐 WS-E2E-03/07 重型用例惯例，commit `05596dd`） |
+| ② world 重跑 | world-chromium 19 + world-perf 1 + visual 4 | 23 过 / 1 败——**CITY-VEH-01..06 两用例全绿**（联合旅程 8.3m，印证 600s 预算必要）；唯一失败 = 既有 WS-E2E-03 负载伪影（慢动作校准下 A 键左转积分超 π，Δyaw naive 差值回绕成 −1.143 rad；同构建①轮已过，与本分支改动无关——灰盒场 gate 恒 'none'） |
+| ③ WS-E2E-03 单跑 | 1 例 | 过（2.9m）——伪影结论坐实 |
+
+三轮并集 = **54/54 全绿**（52 基线零改动 + 2 新增）。另：`astro check` 0 errors / 0 warnings；LHCI（`/` + `/home/` 各 1 轮，quick 档口径）四类分数全 1.0、assert 门禁 PASS。FPV/third 驾驶帧证据：`test-results/veh-fpv-driving.png`、`test-results/veh-third-driving.png`。
