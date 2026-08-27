@@ -1,8 +1,9 @@
 // [CC-BL1] hero 楼实模层：Blender 实模 GLB 热替换程序化 ThemeTowers 体块视觉。
 //
-// 数据驱动：buildings JSON 条目带 `heroGlb`（public/ 相对路径）即入册——本拍只有
-// autodrive-lab（scripts/blender/generate-autodrive-lab.py 全程序化生成，Draco+KTX2
-// 压缩 154KB，台账见 public/models/autodrive-lab/README.md + asset-ledger）。
+// 数据驱动：buildings JSON 条目带 `heroGlb`（public/ 相对路径）即入册——在册两栋：
+//   · autodrive-lab（CC-BL1，tools/blender/generate-autodrive-lab.py，Draco+KTX2 154KB）
+//   · concept-garage（CC-BL2 沿街扩展，tools/blender/generate-concept-garage.py，
+//     Draco+KTX2 143KB）——台账见各自 public/models/*/README.md + asset-ledger。
 //
 // 回退合同（任务书「保留程序化路径作加载失败 / Q2 fallback」）：
 //   · Q2 挂载：**不发起加载**（止损档零 GLB 字节零解码），程序化体块原样；
@@ -12,10 +13,12 @@
 //     道具碰撞体同步 enable/disable——Q2 下无「隐形墙」；Q2 挂载后升档不补加载
 //     （零字节承诺以挂载时档位为准，与 CitySilhouette 密度档同纪律）。
 //
-// 街角道具簇碰撞体：GLB 内东北角道具（充电桩/雨棚柱/试车台/totem/杂件/门廊柱）
-// 按下表注册 fixed cuboid（StreetProps 同款 game.objects 注册；薄片标线/缆线槽/
-// 标定板不设碰撞——可碾压件）。泊车圈 (28,−28) r6 与隔离墩缺口→泊车位的对角
-// 行车走廊在建模侧已让空（generate-autodrive-lab.py 布局纪律注释）。
+// 街角/前场道具簇碰撞体：GLB 内随楼道具（autodrive-lab 东北角充电桩/雨棚柱/试车台/
+// totem/杂件/门廊柱；concept-garage 南前场展车台/kiosk/旗杆/备件杂件）按下表注册
+// fixed cuboid（StreetProps 同款 game.objects 注册；薄片标线/导视光条/标定板不设
+// 碰撞——可碾压件）。各楼 parkingBay 泊车圈与行车通道在建模侧已让空（各生成脚本
+// 布局纪律注释：autodrive-lab (28,−28) r6 对角走廊；concept-garage (140,−18) r8 +
+// 卷帘门正面出入带 + 灯杆 (150,−13.5) 邻域）。
 import * as THREE from 'three/webgpu';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
 import type { Game } from '../core/Game';
@@ -36,8 +39,8 @@ interface PropCollider {
 }
 
 /**
- * 楼 id → 道具碰撞体表（资产随附合同：几何位置见 generate-autodrive-lab.py 对应段）。
- * Blender(bx,by,bz) → three 本地 (x=bx, y=bz, z=−by)；autodrive-lab rotationY=0。
+ * 楼 id → 道具碰撞体表（资产随附合同：几何位置见 tools/blender/generate-*.py 对应段）。
+ * Blender(bx,by,bz) → three 本地 (x=bx, y=bz, z=−by)；两楼 rotationY 均为 0。
  */
 const PROP_COLLIDERS: Record<string, PropCollider[]> = {
   'autodrive-lab': [
@@ -66,6 +69,21 @@ const PROP_COLLIDERS: Record<string, PropCollider[]> = {
     { x: -24.9, y: 2.0, z: -4.6, half: [0.17, 2.0, 0.17] },
     { x: -26.1, y: 0.4, z: 5.6, half: [2.25, 0.4, 0.2] },
     { x: -26.1, y: 0.4, z: -5.6, half: [2.25, 0.4, 0.2] },
+  ],
+  'concept-garage': [
+    // 混凝土基座外挑台阶（0.5m 可见石沿，防车头穿模）
+    { x: 0, y: 0.25, z: 0, half: [30.9, 0.25, 18.9] },
+    // 西翼：室外展车台（含展车整包）+ 配置器 kiosk + 横幅旗杆 ×2
+    { x: -19, y: 1.0, z: 24, half: [2.8, 1.0, 1.5], rotY: (-155 * Math.PI) / 180 },
+    { x: -12.5, y: 1.6, z: 20.5, half: [0.35, 1.6, 0.3] },
+    { x: -26.5, y: 2.3, z: 21, half: [0.12, 2.3, 0.12] },
+    { x: -24, y: 2.3, z: 21, half: [0.12, 2.3, 0.12] },
+    // 东翼：备件箱堆 + 轮胎堆 + 服务推车
+    { x: 21.2, y: 0.55, z: 21, half: [1.5, 0.55, 1.3] },
+    { x: 24.4, y: 0.65, z: 20.3, half: [0.65, 0.65, 0.65] },
+    { x: 26.3, y: 0.6, z: 22, half: [0.8, 0.6, 0.5], rotY: (12 * Math.PI) / 180 },
+    // 西立面贴墙设备箱（凸出基座沿外 0.1，独立小碰撞体防侧擦穿模）
+    { x: -30.5, y: 1.15, z: -13.2, half: [0.5, 1.15, 1.35] },
   ],
 };
 
@@ -182,8 +200,8 @@ export class HeroBlenderMesh {
     if (this.game.quality.level === 2) this.applyQuality(2);
 
     console.info(
-      `[hero-glb] [CC-BL1] ${building.id} 实模已挂载：${building.heroGlb}` +
-        `（Draco+KTX2，13 材质 primitive；街角道具碰撞体 ${props.length} 件；` +
+      `[hero-glb] ${building.id} 实模已挂载：${building.heroGlb}` +
+        `（Draco+KTX2 逐材质 primitive；随楼道具碰撞体 ${props.length} 件；` +
         `程序化体块转入 Q2/失败回退位）`,
     );
   }

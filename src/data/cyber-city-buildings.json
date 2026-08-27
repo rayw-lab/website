@@ -153,6 +153,7 @@
       "priority": "P0",
       "unlockPhase": 0,
       "lodProfile": "hero",
+      "heroGlb": "models/concept-garage/ConceptGarage.glb",
       "parkingBay": { "x": 140, "z": -18, "heading": 0, "radius": 8 }
     },
     {
