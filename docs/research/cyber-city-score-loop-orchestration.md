@@ -7,7 +7,7 @@
 | 审计模型 | `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
-| 生产 tip | `main` @ `7d2de05` |
+| 生产 tip | `main` @ `758f65f` |
 
 ### 登记矩阵（**每次编排 Delta / 定时器回复必输出此表**）
 
@@ -165,7 +165,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | ① | ✅ ADV [#47](https://github.com/rayw-lab/website/pull/47) + RS/BR [#48](https://github.com/rayw-lab/website/pull/48) 已合 |
 | ② | ✅ rubric [#49](https://github.com/rayw-lab/website/pull/49) + OBS [#51](https://github.com/rayw-lab/website/pull/51) 已合 |
 | ③ | ✅ OBS-C1 [#53](https://github.com/rayw-lab/website/pull/53) 已合 |
-| ④ | **CC-OBS-C2** PR [#57](https://github.com/rayw-lab/website/pull/57) draft · e2e 验收中 · **CC-FXN-C2** PR [#56](https://github.com/rayw-lab/website/pull/56) draft · **CC-FXN-C1** hint 包待机 |
+| ④ | **CC-OBS-C2** ✅ [#57](https://github.com/rayw-lab/website/pull/57) 已合 · **CC-FXN-C2** ✅ [#56](https://github.com/rayw-lab/website/pull/56) 已合 · **CC-FXN-C1** hint 包 ⏳ 待派 |
 | ⑤ | CC-AL-FXN + 性能 human-gate 回填 |
 
 ## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流 · 待机至 Loop 6 后重审）
