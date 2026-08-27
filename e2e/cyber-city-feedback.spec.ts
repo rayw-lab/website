@@ -72,8 +72,9 @@ test.describe('科技城驾驶反馈包（CC-FXN-C2 · world-chromium 串行 pro
   //         翻正 → 收窗即藏。
   // ---------------------------------------------------------------------------
   test('CITY-FB-01/02/03/04 反馈全链：恒等门 → boost 双沿 → respawn toast → 翻车倒计时', async ({ page }) => {
-    // 全链 = 挂载 + 变形 + 三段交互；对齐 CITY-VEH 全链先例放宽至 600s
-    test.setTimeout(600_000);
+    // 全链 = 挂载 + 变形 + 三段交互 + 翻车窗（3 设计秒 ≈ 90-120s 墙钟）；
+    // 比 CITY-VEH 全链多一段自救窗等待，放宽至 900s（首轮实测 600s 贴边超时）
+    test.setTimeout(900_000);
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
 
@@ -156,12 +157,14 @@ test.describe('科技城驾驶反馈包（CC-FXN-C2 · world-chromium 串行 pro
       body.setAngvel({ x: 0, y: 0, z: 0 }, true);
     });
 
+    // 自救窗 = 3 设计秒 ≈ 90-120s 墙钟（flipJump 翻正后面板即收）——面板一可见
+    // 立即完成全部窗内断言（首轮实测：断言排后会撞上收窗，innerText 已空）
     const flip = page.locator(SEL.flip);
     await expect(flip).toBeVisible({ timeout: 60_000 });
-    // 倒计时数字：RESCUE_DELAY=3 起一位小数递减（SwiftShader 慢动作下仍 ∈ [0,3]）
-    await expect(page.locator(SEL.flipCount)).toHaveText(/^[0-3]\.\d$/);
-    await expect(flip).toContainText('R 立即回到路口');
     await page.screenshot({ path: 'test-results/feedback-flip.png' });
+    // 倒计时数字：RESCUE_DELAY=3 起一位小数递减（SwiftShader 慢动作下仍 ∈ [0,3]）
+    await expect(page.locator(SEL.flipCount)).toHaveText(/^[0-3]\.\d$/, { timeout: 5_000 });
+    await expect(flip).toContainText('R 立即回到路口', { timeout: 5_000 });
 
     // 埋点互证：倒计时呈现 ⇔ upside-down 事件已入 timeline（OBS-C1 既有行）
     const dumpAfterFlip = await dumpSession(page);

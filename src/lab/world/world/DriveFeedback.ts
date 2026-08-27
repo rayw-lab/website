@@ -221,7 +221,7 @@ export class DriveFeedback {
 .world-fb-chip{margin:0;font-size:.85rem;letter-spacing:.06em;color:#eafffb;background:rgba(8,13,19,.78);border:1px solid rgba(73,197,182,.55);border-radius:999px;padding:.42em 1.25em;text-shadow:0 0 8px rgba(73,197,182,.55);box-shadow:0 0 14px rgba(73,197,182,.22)}
 .world-fb-chip[hidden]{display:none}
 .world-fb-collision{color:#ffe6d9;border-color:rgba(255,150,64,.6);text-shadow:0 0 8px rgba(255,150,64,.6);box-shadow:0 0 14px rgba(255,150,64,.25)}
-.world-fb-boost{position:absolute;left:50%;bottom:6.4rem;transform:translateX(-50%);margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92rem;font-weight:700;letter-spacing:.34em;padding:.4em 1.3em .4em 1.55em;color:#ffe9f4;background:rgba(24,7,16,.72);border:1px solid rgba(255,62,145,.75);border-radius:999px;text-shadow:0 0 12px rgba(255,62,145,.9);box-shadow:0 0 20px rgba(255,62,145,.35),inset 0 0 10px rgba(255,62,145,.22)}
+.world-fb-boost{position:absolute;left:2.2rem;bottom:7.2rem;margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92rem;font-weight:700;letter-spacing:.34em;padding:.4em 1.3em .4em 1.55em;color:#ffe9f4;background:rgba(24,7,16,.72);border:1px solid rgba(255,62,145,.75);border-radius:999px;text-shadow:0 0 12px rgba(255,62,145,.9);box-shadow:0 0 20px rgba(255,62,145,.35),inset 0 0 10px rgba(255,62,145,.22)}
 .world-fb-boost[hidden]{display:none}
 [data-ws-speed][data-boost='1']{color:#ffe9f4!important;text-shadow:0 0 16px rgba(255,62,145,.95)!important}
 .world-fb-flip{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:15.5rem;padding:.9rem 1.2rem 1rem;background:rgba(8,12,19,.82);border:1px solid rgba(73,197,182,.6);border-radius:14px;box-shadow:0 0 26px rgba(73,197,182,.25)}
