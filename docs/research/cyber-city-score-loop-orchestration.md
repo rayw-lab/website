@@ -5,7 +5,7 @@
 | 编排者 | 父代理（只编排，不实现） |
 | 实现 | `claude-fable-5-thinking-xhigh` · 审计 `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
-| 生产 tip | `main` @ `f1646f2` |
+| 生产 tip | `main` @ `bc6b8ae` |
 | 更新 | 2026-08-27 · 瘦身版（历史 Loop 见 §归档） |
 
 ### 登记矩阵（**每 tick 首段必输出**）
