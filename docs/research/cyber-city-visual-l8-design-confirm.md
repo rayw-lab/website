@@ -5,10 +5,10 @@
 | Task | **CC-VIS-L8-DES**（Loop 8 视觉设计确认 · doc-only——把 RS 调研与 BR 脑暴收敛为唯一可派执行设计；评分正本恒归独立审计） |
 | 分支 | `cursor/cc-vis-l8-des-1d6f`（base `main@7d017d5`；任务书 pin `4d35d7e`，必读件 #77 在其后一拍 `7d017d5` 合入 main，本确认要求双必读同时在树，故基线取 `7d017d5`） |
 | 日期 | 2026-08-27 |
-| 必读输入 | PR [#73](https://github.com/rayw-lab/mywebsite/pull/73) RS `cyber-city-visual-l8-gap-survey.md` · PR [#77](https://github.com/rayw-lab/mywebsite/pull/77) BR `cyber-city-visual-l8-optimization-features.md` |
+| 必读输入 | PR [#73](https://github.com/rayw-lab/website/pull/73) RS `cyber-city-visual-l8-gap-survey.md` · PR [#77](https://github.com/rayw-lab/website/pull/77) BR `cyber-city-visual-l8-optimization-features.md` |
 | 复核输入 | rubric v1.1 + `cyber-city-visual-rubric-score.json`（**71**，AL-CAM）· `cyber-city-rendering-gaps-consult.md`（TM 施工合同）· `cyber-city-score-loop-orchestration.md`（板）· `loop-bl2-reaudit.md`（复审 §9）· main 事实核对（§2 映射表脚注） |
 | 消费方 | 父代理 Loop 8+ 视觉轨派单：§3 批序表为排期正本，§4 为 W1 任务书要点，§5 为父代理待裁决清单 |
-| 纪律 | 零 `src/`、零 e2e、零生产 score、零 poster、零像素基线改动；PR [#43](https://github.com/rayw-lab/mywebsite/pull/43) BL2 **禁止合流**不变 |
+| 纪律 | 零 `src/`、零 e2e、零生产 score、零 poster、零像素基线改动；PR [#43](https://github.com/rayw-lab/website/pull/43) BL2 **禁止合流**不变 |
 
 ---
 
@@ -40,7 +40,7 @@
 
 | RS 条目 | 去向 | 状态 |
 |---------|------|------|
-| P0-0 CAR-E2E-01/05 超时修 | —（跨轨前置） | ✅ **已销**：main `4c1e37f`（PR [#69](https://github.com/rayw-lab/mywebsite/pull/69)/[#70](https://github.com/rayw-lab/mywebsite/pull/70) 批），全量 e2e 硬门通，视觉批 GO 门不再被阻断 |
+| P0-0 CAR-E2E-01/05 超时修 | —（跨轨前置） | ✅ **已销**：main `4c1e37f`（PR [#69](https://github.com/rayw-lab/website/pull/69)/[#70](https://github.com/rayw-lab/website/pull/70) 批），全量 e2e 硬门通，视觉批 GO 门不再被阻断 |
 | P0-1 BL2-R2 补洞 | **X1a** | W1 可派（§4.1） |
 | P0-2 TM 校准 | **X4**（选型按 D1 改 AgX vs Neutral） | W3，G1 解除 defer 后 |
 | P0-3 V1 definitive-shot 批 | 拆解：前景景框→X2 · stagger→X3 · poster 重拍→X6 | 按 D6/D7/D3，独立「V1 批」不立项 |
@@ -82,7 +82,7 @@ RS §2.3-2 的 MRT emissive 选择性 bloom（three.js 官方样例 `webgpu_post
 
 ### 4.1 ① X1a · CC-VIS-X1A-BL2R2
 
-- **目标**：销 [#43](https://github.com/rayw-lab/mywebsite/pull/43) 复审 §9 四条，V4 过 72–75 门。scope 白名单：`tools/blender/generate-concept-garage.py` + `public/models/concept-garage/` + 资产台账；**禁碰**相机注册值、楼位、poster、调色、其他道具（RS §6.1 归因隔离原文）。
+- **目标**：销 [#43](https://github.com/rayw-lab/website/pull/43) 复审 §9 四条，V4 过 72–75 门。scope 白名单：`tools/blender/generate-concept-garage.py` + `public/models/concept-garage/` + 资产台账；**禁碰**相机注册值、楼位、poster、调色、其他道具（RS §6.1 归因隔离原文）。
 - **先行动作**：程序化占位块在 `?poi=work-gallery` 1440×900 整帧做**轮廓预演**（零资产成本验证构图，BR X1 风险条），预演过再开 Blender。
 - **复审 §9 四条转录**：① 固定场地正常整帧直读「塔身/螺旋带 + 屋顶阶差」组合轮廓（不许只靠顶缘裁切冠弧）；② settled 同参 pre/post 整帧取证，放大裁切只作辅助；③ GLB 字节变化即重跑资产解析/复现 + fresh Q0/Q2/abort + 全量 e2e + exact-port LHCI；④ 新候选 SHA 含 24 张历史取证 PNG 回滚，原锁定 `fcdfcb5` 不得复用。
 - **审计**：AL 复审专项（V4 净增益门 72–75）；任务书**写入 D10 潜分收账条款**（V5 按 AL-TRANS-FX GO 建议 74，FXN-C3 进站 tween 与 C4 探索 chip 一并复评归因）——若 ② 先合流则该条款移挂 ② 的审计，两处只执行一次。
@@ -107,14 +107,14 @@ RS §2.3-2 的 MRT emissive 选择性 bloom（three.js 官方样例 `webgpu_post
 
 ## 6. 不变式重申
 
-- PR [#43](https://github.com/rayw-lab/mywebsite/pull/43) BL2 NO-GO **禁止合流**；X1a 是其唯一合法后继路径。
+- PR [#43](https://github.com/rayw-lab/website/pull/43) BL2 NO-GO **禁止合流**；X1a 是其唯一合法后继路径。
 - poster：`public/posters/` blob/tree zero-diff + `ritual_idle` 注册值逐值恒等为除 ⑬ 外全部批次硬门；desktop 余量 <0.5KB，⑬ 重拍当场复核三处 ≤40KB。
 - BR §1 红线 R1–R9 全承接（R2 按 §2.1 修订注记）；rubric v1.1 秤不动、`availableWeight=1`、`missing=[]`；评分恒归独立审计、帧优先、反通胀、与上轮分差 ≥±10 必写差异说明。
 - 同文件跨轨串行：`Rendering.ts`（X4/X17 × O5/O6/O8）· `Quality.ts`（X4 取证与 X8 梯退表 × PERF-C2 B1，B1 在途 `ecf30a1`）· `NeonMaterials/NeonFacade`（X4/X15 × O14）· `scene.environment`（X15 × O7 同批裁决）· 装配段（X5 × O1/O4）。
 
 ## 7. 引用
 
-**必读正本**：PR [#73](https://github.com/rayw-lab/mywebsite/pull/73) `cyber-city-visual-l8-gap-survey.md`（RS）· PR [#77](https://github.com/rayw-lab/mywebsite/pull/77) `cyber-city-visual-l8-optimization-features.md`（BR）。
+**必读正本**：PR [#73](https://github.com/rayw-lab/website/pull/73) `cyber-city-visual-l8-gap-survey.md`（RS）· PR [#77](https://github.com/rayw-lab/website/pull/77) `cyber-city-visual-l8-optimization-features.md`（BR）。
 
 **复核**：`cyber-city-visual-rubric.md` v1.1 · `cyber-city-visual-rubric-score.json`（71，AL-CAM）· `cyber-city-rendering-gaps-consult.md`（CC-L6-TM 施工合同）· `loop-bl2-reaudit.md`（复审 §9）· `cyber-city-score-loop-orchestration.md`（Loop 8 板）· main 事实核对：VEH-E2E-FIX 已合 `4c1e37f`（销 RS P0-0）；PERF-C2 B0 已合 `a1353dc`/`21b20d1`（不触 `Rendering.ts`）；PERF-C2 B1 在途 `ecf30a1`（触 `Quality.ts`/`index.ts`，⑤ 取证前须合流）。
 
