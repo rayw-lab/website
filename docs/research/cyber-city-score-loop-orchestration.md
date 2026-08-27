@@ -7,7 +7,7 @@
 | 审计模型 | `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
-| 生产 tip | `main` @ `3a27282` |
+| 生产 tip | `main` @ `157f4b3` |
 
 ### 登记矩阵（**每次编排 Delta / 定时器回复必输出此表**）
 
@@ -178,7 +178,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | 脑暴 BR | ✅ `cyber-city-gameplay-features.md` | ✅ `cyber-city-perf-optimization-features.md` [#60](https://github.com/rayw-lab/website/pull/60) 已合 | 特性清单 |
 | 设计思考 ADV | ✅ `cyber-city-fxn-advisor-consult.md` | ⚠️ 顾问 §3 镜像 | 架构裁决 |
 | 设计确认 DES | ✅ `cyber-city-function-rubric.md` + OBS spec | 🔄 [PERF-DES](bc-11dc483e-8b4e-5368-83b4-58df3962fe23) | rubric 正本 |
-| 测试方案 | 🔄 [FXN-TEST](bc-85ec5dab-c8e7-577c-bd6f-7470dd9fa139) | 🔄 PERF-DES 含 CITY-PERF-01 | 四层分工 |
+| 测试方案 | ✅ `cyber-city-function-test-plan.md` [#61](https://github.com/rayw-lab/website/pull/61) · [FXN-TEST](bc-85ec5dab-c8e7-577c-bd6f-7470dd9fa139) | 🔄 PERF-DES 含 CITY-PERF-01 | 四层分工 |
 | 开发 IMPL | 🔄 C1 · ✅ C2 · ✅ OBS-C1/C2 | ⏳ CITY-PERF-01 e2e 待 DES | 单 PR 单主题 |
 | 审计登记 | ⏳ CC-AL-FXN | ⏳ CC-AL-PERF + human-gate | 独立 Sol |
 
@@ -186,10 +186,12 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 | ID | Agent | 分支 | 状态 |
 |----|-------|------|------|
-| CC-PERF-RS | [PERF-RS](bc-23f6f84a-834f-561a-b326-7e086235d631) | `cursor/cc-perf-rs-survey-1d6f` | 🔄 |
-| CC-PERF-BR | [PERF-BR](bc-59fb04e6-1012-59ad-9b69-52b6803886f0) | `cursor/cc-perf-br-brainstorm-1d6f` | 🔄 |
+| CC-PERF-RS | [PERF-RS](bc-23f6f84a-834f-561a-b326-7e086235d631) | `cursor/cc-perf-rs-survey-1d6f` | ✅ [#59](https://github.com/rayw-lab/website/pull/59) 已合 |
+| CC-PERF-BR | [PERF-BR](bc-59fb04e6-1012-59ad-9b69-52b6803886f0) | `cursor/cc-perf-br-brainstorm-1d6f` | ✅ [#60](https://github.com/rayw-lab/website/pull/60) 已合 |
 | CC-PERF-DES | [PERF-DES](bc-11dc483e-8b4e-5368-83b4-58df3962fe23) | `cursor/cc-perf-des-spec-1d6f` | 🔄 |
-| CC-FXN-TEST-DES | [FXN-TEST](bc-85ec5dab-c8e7-577c-bd6f-7470dd9fa139) | `cursor/cc-fxn-test-plan-1d6f` | 🔄 |
+| CC-FXN-TEST-DES | [FXN-TEST](bc-85ec5dab-c8e7-577c-bd6f-7470dd9fa139) | `cursor/cc-fxn-test-plan-1d6f` | ✅ [#61](https://github.com/rayw-lab/website/pull/61) 已合 |
+| CC-FXN-C1 | [FXN-C1](bc-381d8d0c-46c4-5469-93dd-4ac3a6380a25) | `cursor/cc-fxn-c1-hint-guidance-1d6f` | 🔄 [#62](https://github.com/rayw-lab/website/pull/62) draft |
+| CC-VEH-C2 | [VEH-C2](bc-e84176cc-bfe8-5851-bffd-148da6598df2) | `cursor/cc-veh-c2-drive-shots-1d6f` | 🔄 [#63](https://github.com/rayw-lab/website/pull/63) draft |
 
 ## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流 · 待机至 Loop 6 后重审）
 
