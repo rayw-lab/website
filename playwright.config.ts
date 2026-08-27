@@ -54,7 +54,9 @@ export default defineConfig({
       // cyber-city（`/` 世界剧本）随 CC-E7 绿灯移入 world-chromium 串行 project；
       // e2e/visual/（视觉取证）归 visual-chromium 殿后 project
       name: 'desktop-chromium',
-      testIgnore: /mobile\.spec\.ts|world-spike.*\.spec\.ts|cyber-city\.spec\.ts|visual[\\/].*\.spec\.ts/,
+      // cyber-city.*：城市世界剧本族（cyber-city / cyber-city-feedback…）整族归
+      // world-chromium 串行 project，本组一律忽略（并发 3D 上下文挤兑纪律）
+      testIgnore: /mobile\.spec\.ts|world-spike.*\.spec\.ts|cyber-city.*\.spec\.ts|visual[\\/].*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
     {
@@ -73,7 +75,7 @@ export default defineConfig({
       // 依赖前两个 project 跑完后独占机器执行——4 核 CPU 上任何并发 3D 上下文
       // 都会把驾驶腿饿死（batch 1 已实测并发挤兑结论，此处更甚）。
       name: 'world-chromium',
-      testMatch: /world-spike\.spec\.ts|cyber-city\.spec\.ts/,
+      testMatch: /world-spike\.spec\.ts|cyber-city.*\.spec\.ts/,
       dependencies: ['desktop-chromium', 'mobile-375'],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },

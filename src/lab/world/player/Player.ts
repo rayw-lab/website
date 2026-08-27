@@ -20,6 +20,17 @@ import type { Game } from '../core/Game';
 export type SuspensionState = 'low' | 'mid' | 'high';
 
 /**
+ * [CC-FXN-C2] 重生原因（观测规格 §3.4 respawn 行同一枚举）：'key' = R 键 /
+ * 'fall' = killElevation 坠落兜底；'unstuck' 预留（屏上按钮未移植）。
+ * 随 player 'respawn' 事件透传给 DriveFeedback toast（null = 装配/软复位，不出提示）。
+ */
+export type RespawnReason = 'key' | 'fall' | 'unstuck';
+
+/** [CC-FXN-C2] 翻车自救延时（秒，真实时基随 Ticker 走）——folio L345 的 3s 原值。
+ *  export 仅为 DriveFeedback 倒计时进度条单源消费（防常量双写漂移）。 */
+export const RESCUE_DELAY = 3;
+
+/**
  * 底盘参考系离地净高 m（静态平衡口径）= low 档 restLength 0.88 + 物理轮半径 0.4
  * − 静态下沉 0.36（弹簧平衡：底盘 2.5 质量 ÷ 4 轮 ÷ 刚度 20 ≈ 0.31 理论 +
  * 阻尼余项，Rapier 实测悬停 0.92——E1 浏览器实测反推，teardown §5.2 参数推论）。
@@ -87,6 +98,12 @@ export class Player {
   private nippleJumpTimeout: ReturnType<typeof setTimeout> | null = null;
   /** [CC-OBS-C1] boost-first 沿检测已打（观测规格 §3.4：每会话至多 1 条） */
   private boostLogged = false;
+  /**
+   * [CC-FXN-C2] 翻车自救可视化倒计时（秒；null = 不在自救窗口）。
+   * 与 setUnstuck 的 Ticker.delay 同拍镜像（同一 delta 递减，暂停即冻结），
+   * 只读消费方 = index.ts HUD 节拍 → DriveFeedback 倒计时件；flipJump 重试即回充。
+   */
+  rescueCountdown: number | null = null;
 
   constructor(game: Game) {
     this.game = game;
@@ -150,7 +167,7 @@ export class Player {
         // [CC-OBS-C1] R 键重生（观测规格 §3.4 respawn 行：调用点区分 reason；
         // 'unstuck' 枚举预留——屏上 unstuck 按钮未移植）
         this.game.session.log('respawn', { reason: 'key' });
-        this.respawn();
+        this.respawn(null, null, 'key');
       }
     });
 
@@ -192,10 +209,15 @@ export class Player {
     let delay: ReturnType<Ticker['delay']> | null = null;
 
     const waitAndTest = (): void => {
-      delay = this.game.ticker.delay(3, () => {
+      // [CC-FXN-C2] 倒计时镜像回充：与 delay 同起点（HUD 可视化消费）
+      this.rescueCountdown = RESCUE_DELAY;
+      delay = this.game.ticker.delay(RESCUE_DELAY, () => {
         delay = null;
 
-        if (this.state !== Player.STATE_DEFAULT) return;
+        if (this.state !== Player.STATE_DEFAULT) {
+          this.rescueCountdown = null;
+          return;
+        }
 
         // 仍是四脚朝天/侧翻 → 拧回来；再等一轮防一次没成功
         if (vehicle.upsideDownActive) {
@@ -203,6 +225,8 @@ export class Player {
           this.game.session.log('flip-jump');
           vehicle.flipJump();
           waitAndTest();
+        } else {
+          this.rescueCountdown = null;
         }
       });
     };
@@ -210,6 +234,8 @@ export class Player {
     vehicle.events.on('rightSideUp', () => {
       delay?.kill();
       delay = null;
+      // [CC-FXN-C2] 翻正即收窗（含 flipJump 成功与 R 重生两条来路）
+      this.rescueCountdown = null;
     });
 
     vehicle.events.on('upsideDown', () => {
@@ -220,7 +246,16 @@ export class Player {
     });
   }
 
-  respawn(respawnName: string | null = null, callback: (() => void) | null = null): void {
+  /**
+   * [CC-FXN-C2] reason 透传（'key'/'fall' = 用户可感失败恢复 → DriveFeedback toast；
+   * null = 装配对齐 / Game.reset 软复位，不出提示）——事件面加参不破既有订阅方
+   * （objects.resetAll 订阅零参消费）。
+   */
+  respawn(
+    respawnName: string | null = null,
+    callback: (() => void) | null = null,
+    reason: RespawnReason | null = null,
+  ): void {
     // folio 经 Overlay 遮罩过渡（L469-488）——Overlay 未移植，直接瞬移
     callback?.();
 
@@ -236,10 +271,15 @@ export class Player {
     }
 
     this.state = Player.STATE_DEFAULT;
-    this.events.trigger('respawn', [respawn]);
+    this.events.trigger('respawn', [respawn, reason]);
   }
 
   private updatePrePhysics(): void {
+    // [CC-FXN-C2] 自救倒计时镜像递减：与 Ticker.delay 同一 delta（delays 先于
+    // tick 订阅方结算，两钟同步不漂），0 封底防显示负数
+    if (this.rescueCountdown !== null)
+      this.rescueCountdown = Math.max(0, this.rescueCountdown - this.game.ticker.delta);
+
     this.accelerating = 0;
     this.steering = 0;
     this.boosting = 0;
@@ -323,7 +363,7 @@ export class Player {
       if (this.position.y < this.game.world.killElevation) {
         // [CC-OBS-C1] 坠落兜底重生（观测规格 §3.4 respawn 行 → reason 'fall'）
         this.game.session.log('respawn', { reason: 'fall' });
-        this.respawn();
+        this.respawn(null, null, 'fall');
       }
     }
     this.position2 = new THREE.Vector2(this.position.x, this.position.z);

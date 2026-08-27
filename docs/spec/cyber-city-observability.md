@@ -100,7 +100,7 @@ interface SessionDump {
   dropped: number;             // 溢出丢弃条数（0 = 未溢出）
   counters: {
     respawns: number;          // respawn 事件次数
-    coneHits: number;          // 最新 cone-hit.total（与 HUD [data-ws-cones] 同源，非事件条数）
+    coneHits: number;          // 最新 cone-hit.total（锥桶+隔离墩合计，[CC-FXN-C2] §3.4 随行修订；灰盒与 HUD [data-ws-cones] 同源，非事件条数）
     poiEnters: number;         // poi-bounding-in 次数
     poiInteracts: number;      // world-poi 次数
     transforms: number;        // world-transform 次数
@@ -143,7 +143,7 @@ interface SessionDump {
 | ritual | `world-transform` | `{to}` | 镜像 [to]→`{to}` · TransformSystem.finish() | P0 |
 | drive | `world-drive-start` | — | 镜像 · TransformSystem（首个驾驶输入） | P0 |
 | drive | `respawn` | `{reason: 'key' \| 'fall' \| 'unstuck'}` | 显式 · Player.ts 两调用点：R 键 handler → `'key'`；killElevation 兜底（updatePostPhysics）→ `'fall'`（`'unstuck'` 枚举预留：屏上 unstuck 按钮未移植） | P0 |
-| drive | `cone-hit` | `{total}` | 沿检测 · index.ts HUD 0.25s 节拍：`knockedConeCount()` 较上帧增大即打（total = 当前值） | P0 |
+| drive | `cone-hit` | `{total}` | 沿检测 · index.ts HUD 0.25s 节拍：`knockedConeCount() + StreetProps.hitCount` 较上拍增大即打（total = 当前合计）。[CC-FXN-C2] 随行修订（加法不升版）：城市档锥桶撤场（World 城市模式零锥桶）、隔离墩 fixed 刚体不位移，`StreetProps.hitCount`（接触力事件 ≥15 + 0.6s 冷却合并）承接「撞道具」真值并入 total——语义「撞到道具的累计数」与 data 键不变；灰盒无城市时两口径逐拍等值 | P0 |
 | drive | `boost-first` | — | 沿检测 · Player.updatePrePhysics 一次性（首次 `boosting === 1`；每会话至多 1 条） | P0 |
 | drive | `upside-down` | — | 显式 · Player.setUnstuck 内 `vehicle.events.on('upsideDown')` 既有订阅处 +1 行 | P0 |
 | drive | `flip-jump` | — | 显式 · Player.setUnstuck waitAndTest 内 `vehicle.flipJump()` 调用点 | P0 |
