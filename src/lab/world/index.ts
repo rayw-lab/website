@@ -12,6 +12,8 @@
 //   robot=1   机器人英雄演示挂点（CC-E5）；
 //   ritual=1  首幕全流程（CC-E6：城市+机器人+TransformSystem+Reveal——D4 变形后即开）；
 //   quality=0|1|2 画质档（M9 转正，CC-E7）：经 GameOptions.quality 注入 Quality 构造器；
+//             [CC-PERF-C2-B1] 显式深链同时禁用 O1 FPS 自动降档——取证与 e2e
+//             可复现性优先（perf rubric §3.2 复现协议）；非法值 = 未显式，自动档照常；
 //   poi=slug  POI 深链（CC-E9 / SRD §12.7.8 出口⑧）：隐含挂城 + 挂 POI 系统，
 //             出生点改写到对应楼 parkingBay（ritual 模式仅挂 POI，出生锚点归首幕）；
 //             无 ?poi/?city 时 areas 分包零字节（与 city 同纪律）。
@@ -265,6 +267,30 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   let idleClock = 0;
   let idleLogged = false;
 
+  // ————— [CC-PERF-C2-B1] O1 FPS 自动降档（PERF-BR O1 / perf-impl-plan §2 PR-B B1）—————
+  // 三档梯退的裁决者接线：FpsMeter 滑窗读数 → 滞回窗 + 只降不升 + 冷却 →
+  // Quality.changeLevel 降一档（0→1→2 阶梯；bloom/DPR/阴影/反射/粒子全链
+  // quality 'change' 事件级切换既有，Rendering.applyQuality 等消费方零改动）。纪律：
+  //   · `?quality=` 显式深链禁用自动档（文件头参数注记）；
+  //   · 仅 ritual driving 态评估——robot_idle/transforming 恒等合同零涉及（poster
+  //     逐字节 / 变形四拍墙钟），灰盒 /world-spike/（无 ritual）不接线，WS-PERF-01
+  //     采样基线零污染；
+  //   · 滞回窗/冷却用 Ticker 设计秒累计（idle-30s / TOAST_DURATION 同时基，
+  //     SwiftShader 慢放同倍——CI 软渲染下触发天然限频）；FpsMeter 读数本身恒为
+  //     墙钟真值（wallDt 双轨纪律）；
+  //   · Q0→Q1 降档瞬间的全场景阴影重编译尖峰：取 BR O1 缓解案「接受一次性尖峰 +
+  //     toast 同拍归因」（另一案「缓期到遮蔽窗」driving 态无稳定遮蔽窗，不取）；
+  //   · 只降不升——升档归 B2（O2 初判校准）且只在非驾驶态执行。
+  const autoQualityDrop = quality === undefined;
+  /** 连续低帧滞回窗（设计秒）：avg<30 或 low1<20 持续此窗才降（BR O1 参数） */
+  const AUTO_DROP_WINDOW = 3;
+  /** 两次降档最小间隔（设计秒）：防抖——Q0→Q1→Q2 阶梯至多每 20s 一步 */
+  const AUTO_DROP_COOLDOWN = 20;
+  const AUTO_DROP_AVG_FPS = 30;
+  const AUTO_DROP_LOW1_FPS = 20;
+  let lowFpsClock = 0;
+  let dropCooldown = 0;
+
   const speedKmh = (): number => {
     const vehicle = game.physicalVehicle;
     if (!vehicle) return 0;
@@ -285,10 +311,13 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       hudClock = 0;
 
       if (hudSpeed) hudSpeed.textContent = String(Math.round(speedKmh()));
+      // [CC-PERF-C2-B1] 读数上提：HUD 与自动降档裁决共用同一拍 read()（零新 tick）
+      const fpsReading = fps.read();
       if (hudFps) {
-        const reading = fps.read();
         hudFps.textContent =
-          reading.avg > 0 ? `${reading.avg.toFixed(0)} / ${reading.low1.toFixed(0)}` : '—';
+          fpsReading.avg > 0
+            ? `${fpsReading.avg.toFixed(0)} / ${fpsReading.low1.toFixed(0)}`
+            : '—';
       }
       const coneCount = game.world.knockedConeCount();
       if (hudCones) hudCones.textContent = String(coneCount);
@@ -327,6 +356,36 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
           idleLogged = true;
           game.session.log('idle-30s');
         }
+      }
+
+      // [CC-PERF-C2-B1] O1 自动降档裁决（接线纪律见上方常量块注记）：
+      // 滞回窗 = 连续低帧持续 AUTO_DROP_WINDOW 才降（读数健康即清零）；
+      // 冷却 = 两次降档间隔 ≥ AUTO_DROP_COOLDOWN（窗照常累计，冷却到期即可再降）；
+      // avg=0（样本未热，<10 帧）不计——挂载/恢复瞬间零误判。
+      if (dropCooldown > 0) dropCooldown -= beatElapsed;
+      if (autoQualityDrop && game.quality.level < 2 && transformSystem?.state === 'driving') {
+        const lowFps =
+          fpsReading.avg > 0 &&
+          (fpsReading.avg < AUTO_DROP_AVG_FPS || fpsReading.low1 < AUTO_DROP_LOW1_FPS);
+        lowFpsClock = lowFps ? lowFpsClock + beatElapsed : 0;
+        if (lowFps && lowFpsClock >= AUTO_DROP_WINDOW && dropCooldown <= 0) {
+          const from = game.quality.level;
+          const to = (from + 1) as QualityLevel;
+          game.quality.changeLevel(to);
+          // 埋点随行（观测规格 §3.4 perf 族，本 PR 落白名单）：读数一位小数控噪
+          game.session.log('quality-auto-drop', {
+            from,
+            to,
+            avg: Math.round(fpsReading.avg * 10) / 10,
+            low1: Math.round(fpsReading.low1 * 10) / 10,
+          });
+          // R8 反馈闭环：降档瞬间 toast 确认层（独立 chip，respawn toast 零竞态）
+          driveFeedback.qualityDropToast(to);
+          lowFpsClock = 0;
+          dropCooldown = AUTO_DROP_COOLDOWN;
+        }
+      } else {
+        lowFpsClock = 0;
       }
 
       if (hudHint && !hintDismissed) {

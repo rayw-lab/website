@@ -17,7 +17,7 @@
 
 1. **SessionTimeline 挂 `Game` 构造器**（`game.session`，`src/lab/world/core/SessionTimeline.ts`）：每个 Game 实例恒有一枚、系统一行接线 `this.game.session.log(type, data)` 无空判断；`index.ts` 装配段只负责 window 导出面、HUD 节拍沿检测埋点（cone-hit / idle-30s）与 deep-link 首打。
 2. **dump schema v1 冻结**（§3.2）：ring buffer 500 条 + `dropped` 计数；`funnel` 七步首达壁钟毫秒；`counters` 六项聚合**独立于 ring**（溢出不失真；[CC-PERF-C2-B0] 随行加法后**七项**——增 `longFrames` 长帧计数，§3.4 尾注）；`seq` 全局单调（含被丢弃条目）。破坏性变更 `schemaVersion` +1，加法不升版。
-3. **事件白名单 v1 冻结**（§3.4，27 个 type、7 族；[CC-FXN-C1] 随行加法后 28 个——ux 族 `hint-recall`；[CC-FXN-C4] 随行加法后 **31 个 type、8 族**——新增 goal 族 `explore-restore` / `explore-progress` / `explore-complete`，F6 探索计数 n/12）：既有 `game.events` 总线 `world-*` 事件走**镜像订阅**（args 映射表冻结）；非总线事件走显式 `session.log`（接线点逐一定位到文件/函数）；壳侧（ESC 菜单）经 **`world-obs` CustomEvent 桥**（§3.5）过族白名单进 timeline——壳零 import、window 导出面保持只读。
+3. **事件白名单 v1 冻结**（§3.4，27 个 type、7 族；[CC-FXN-C1] 随行加法后 28 个——ux 族 `hint-recall`；[CC-FXN-C4] 随行加法后 **31 个 type、8 族**——新增 goal 族 `explore-restore` / `explore-progress` / `explore-complete`，F6 探索计数 n/12；[CC-PERF-C2-B1] 随行加法后 **32 个 type、9 族**——新增 perf 族 `quality-auto-drop`，PERF-BR O1 自动降档取证）：既有 `game.events` 总线 `world-*` 事件走**镜像订阅**（args 映射表冻结）；非总线事件走显式 `session.log`（接线点逐一定位到文件/函数）；壳侧（ESC 菜单）经 **`world-obs` CustomEvent 桥**（§3.5）过族白名单进 timeline——壳零 import、window 导出面保持只读。
 4. **dispose 导出合同**（§4）：`SessionTimeline.dispose()` 幂等三步（`dispose` 事件入 ring → `console.table` funnel+counters 摘要**一次** → 摘除监听），由 `Game.dispose()` **首段**调用（各系统仍在、读数完整）；`window.__worldSession` 与 `__worldSpike` 同段挂载/删除；bfcache 快照离页不触发（facade `event.persisted` 既有语义），**e2e 取证必须在卸载前 dump**。
 5. **function-smoke 是哨兵不是登记分**（§6.2）：漏斗七步齐 70%（非 null + 单调顺序）+ 交互面四事件存在性 30%；**不掺任何时长/帧率**（SwiftShader 下时长无意义）；首个 Loop 软门（OBS annotation），稳定后再议转硬。`quality-score.json` 增只读 `northStar` 块（§6.4），综合分五维权重**零改动**。
 
@@ -159,6 +159,7 @@ interface SessionDump {
 | goal | `explore-restore` | `{n, total}` | 显式 · `areas/ExploreProgress` 构造器（localStorage `world-explore-v1` 跨会话进度还原为非零时挂载即打）。[CC-FXN-C4] 随行加法：新增 goal 族承载 F6 探索计数 n/12（rubric F6 / FXN-BR G5 先遣版），schemaVersion 不动 | P0 |
 | goal | `explore-progress` | `{id, n, total}` | 显式 · `areas/ExploreProgress.discover()`（Areas boundingIn 接线：首次发现某 POI 触发圈去重后计数 +1，chip 呈现同拍；重复进圈/已持久点零事件） | P0 |
 | goal | `explore-complete` | `{total}` | 显式 · 同 discover()（n 达 total 的跨越沿至多一次；还原到满值不补打） | P0 |
+| perf | `quality-auto-drop` | `{from, to, avg, low1}` | 显式 · index.ts 装配段 HUD 节拍（O1 滞回窗触发点：FpsMeter 滑窗连续 3 设计秒 avg<30 或 low1<20 → `Quality.changeLevel` 降一档，只降不升 + 20s 冷却；仅 ritual driving 态评估——robot_idle/transforming 恒等合同零涉及；`?quality=` 显式深链禁用自动档，事件不可能出现；avg/low1 为触发拍读数，一位小数）。[CC-PERF-C2-B1] 随行加法：新增 perf 族承载自动降档取证（PERF-BR O1 / perf rubric P5 确认层随 DriveFeedback `[data-world-quality]` toast 同拍），schemaVersion 不动 | P0 |
 | ux | `hint-shown` | — | 显式 · Reveal.showHint()（car_ready 自动浮现） | P0 |
 | ux | `hint-dismissed` | `{by: 'timeout' \| 'input'}` | 显式 · Reveal.hideHint() 两类调用点区分：HINT_FADE_DELAY 到期 → `'timeout'`；用户/状态收回（H/「键位」按钮收起、robot_idle/transforming）→ `'input'`。[CC-FXN-C1] 随行修订：driving 不再即隐——首驶重开一个完整阅读窗后走 `'timeout'` | P0 |
 | ux | `hint-recall` | `{via: 'key' \| 'button'}` | 显式 · Reveal.toggleHint()（键位卡再唤出：H/? 键 → `'key'`；`[data-world-hint-recall]` 按钮 → `'button'`）。[CC-FXN-C1] 随行加法（GAP-08 键位召回），schemaVersion 不动 | P0 |
