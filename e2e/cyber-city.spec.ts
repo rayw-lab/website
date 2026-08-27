@@ -305,6 +305,10 @@ test.describe('科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium �
   //   VEH-01 driving 态 V 往返：fpv → third → fpv → third 硬切（每次按键即时生效）。
   // ---------------------------------------------------------------------------
   test('CITY-VEH-01/02/03/04/06 驾驶双视角：robot_idle 门禁 → car_ready 切 FPV 不触发 driving → FPV 驾驶 → V 往返', async ({ page }) => {
+    // 全链旅程 = 挂载 + 变形仪式 + 驾驶接管 + 多次 V 往返，是本 describe 最长用例；
+    // SwiftShader 满载机上实测 >7m，超 describe 级 420s——对齐 world-spike 重型
+    // 用例惯例（WS-E2E-03/07 等）单独放宽至 600s
+    test.setTimeout(600_000);
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
 
