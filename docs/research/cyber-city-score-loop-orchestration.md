@@ -71,7 +71,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | CC-CAM-RS | 已合 main | [CAM-RS](bc-115e402d-4831-5b34-9afd-3b050370bfd2) | ✅ PR [#44](https://github.com/rayw-lab/website/pull/44) 已合 |
 | CC-CAM-DES | 已合 main | [CAM-DES](bc-05fd2270-ca68-58c7-a2d1-51e136e167e2) | ✅ PR [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | CC-CAM-DATA | `cursor/cc-cam-shot-data-probe-1d6f` @ `f8c46cb` | [CAM-DATA](bc-030bfcdd-043c-56ed-b2ca-9376e06b1615) | ✅ IDLE · 已并入 [#45](https://github.com/rayw-lab/website/pull/45) |
-| CC-CAM-VIEW | `cursor/cc-cam-view-poi-framing-1d6f` @ **`e44aa49`** | [CAM-VIEW](bc-48fe6c93-f96f-595b-85bc-0da189dfdff0) | ✅ **已 push** · 已并入 PR [#45](https://github.com/rayw-lab/website/pull/45) draft |
+| CC-CAM-VIEW | `cursor/cc-cam-view-poi-framing-1d6f` @ **`78ff9b7`** | [CAM-VIEW](bc-48fe6c93-f96f-595b-85bc-0da189dfdff0) | ✅ IDLE · 已并入 [#45](https://github.com/rayw-lab/website/pull/45) · visual e2e 4/4 |
 
 ### 合流主线序（父代理执行 · RS/DES 可先 doc-only 合 main）
 
@@ -143,8 +143,8 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
 | CC-FXN-ADV | 已合 main | [FXN-ADV](bc-063957b8-f8d7-57f2-a1de-0486b94ff78e) | ✅ PR [#47](https://github.com/rayw-lab/website/pull/47) 已合 |
-| CC-FXN-RS | 本 PR 合入 | [FXN-RS](bc-c76a8773-232a-5259-9be1-b443c8b670f5) | ✅ IDLE · `cyber-city-gameplay-gap-audit.md` |
-| CC-FXN-BR | 本 PR 合入 | [FXN-BR](bc-3484cd88-8f28-5a98-80a9-4ddcedaef026) | ✅ IDLE · `cyber-city-gameplay-features.md` |
+| CC-FXN-RS | PR [#48](https://github.com/rayw-lab/website/pull/48) | [FXN-RS](bc-c76a8773-232a-5259-9be1-b443c8b670f5) | ✅ IDLE · P0×8 缺口清单 |
+| CC-FXN-BR | PR [#48](https://github.com/rayw-lab/website/pull/48) | [FXN-BR](bc-3484cd88-8f28-5a98-80a9-4ddcedaef026) | ✅ IDLE · G1–G16 脑暴 |
 | CC-FXN-DES | `cursor/cc-fxn-function-rubric-1d6f` | [FXN-DES](bc-436336c8-9fc8-5833-ae57-064e5eab2fc9) | 🔄 RUNNING |
 | CC-OBS-DES | `cursor/cc-obs-observability-spec-1d6f` | [OBS-DES](bc-fecc56ff-7db5-577f-b0a8-0f9e4aab6b02) | 🔄 RUNNING |
 
@@ -152,7 +152,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 | 步 | 内容 |
 |----|------|
-| ① | ✅ ADV [#47](https://github.com/rayw-lab/website/pull/47) + RS/BR doc-only（本 PR） |
+| ① | ✅ ADV [#47](https://github.com/rayw-lab/website/pull/47) · RS/BR doc [#48](https://github.com/rayw-lab/website/pull/48) 待合 |
 | ② | OBS 规格 + 功能 rubric 规格 |
 | ③ | CC-OBS-C1（SessionTimeline / 埋点 / `#debug`） |
 | ④ | CC-FXN-C1…（P0 交互，单 PR 单主题） |
