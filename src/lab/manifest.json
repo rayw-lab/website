@@ -51,7 +51,7 @@
     "budgetClass": "world",
     "budget": { "lazyJsKbGzip": 500, "assetsMb": 12 },
     "capabilities": { "webgpu": "preferred", "webgl2": "fallback", "audio": false, "pointerFine": true },
-    "deepLinkParams": ["gl", "vehicle", "city", "robot", "ritual", "quality", "poi"],
+    "deepLinkParams": ["gl", "vehicle", "city", "robot", "ritual", "quality", "poi", "shot"],
     "viewTransitionName": "world-entry",
     "techChips": ["WebGPU", "Rapier", "TSL", "变形仪式", "12 楼 POI"],
     "relatedWork": ["llm-capability-layering"],

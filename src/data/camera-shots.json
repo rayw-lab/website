@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "task": "CC-CAM-DATA",
+  "updatedAt": "2026-08-27",
+  "sources": {
+    "design": "docs/research/cyber-city-camera-poi-research.md §3.1 草案（DES 规格 docs/spec/cyber-city-camera-shots.md 合入后对齐字段命名）",
+    "buildings": "src/data/cyber-city-buildings.json",
+    "cameraTruth": "src/lab/world/view/View.ts（city 档；ritual_idle 为其静止收敛态快照，本文件不改 View）",
+    "audit": "tools/camera/audit-shot-ndc.mjs（复现命令见 tools/camera/README.md）"
+  },
+  "conventions": {
+    "coordinateSystem": "同 buildings JSON：three.js 右手系 +X=东 +Z=南 +Y=上；地面 y=0",
+    "spherical": "THREE.setFromSphericalCoords 口径：phiDeg=极角（自 +Y 起，90−俯角），thetaDeg=方位角（自 +Z 起绕 +Y）；offset=(r·sinφ·sinθ, r·cosφ, r·sinφ·cosθ)，机位=锚点+offset+lateral 右向平移",
+    "lateral": "机位与视线目标同步沿相机右向 (cosθ, 0, −sinθ) 平移（View.ts CC-L1 A4 偏轴构图，纯屏幕平移）",
+    "radiusProfile": "对象形 radius 按 View.ts 静止收敛态解算：radius = lerp(edges.min, edges.max + ratioOverflow×nonIdealRatioOffset, 1−baseRatio)，其中 ratioOverflow = max(1, idealRatio/viewportRatio)−1；数字形 radius 为预设定值",
+    "ndcAudit": "楼体 bounding box（footprint w×d × 高 h，中心 position，y∈[0,h]）八角点经 PerspectiveCamera 投影至 NDC；位于相机前方且 |x|≤1、|y|≤1、z∈[−1,1] 记为入帧"
+  },
+  "camera": {
+    "fov": 42,
+    "near": 0.1,
+    "far": 200,
+    "idealRatio": 1.7777777777777777,
+    "referenceViewport": {
+      "width": 1440,
+      "height": 900,
+      "note": "AL-BL2/PLUS 审计协议视口；aspect 1.6 下水平半视场 = atan(tan(21°)×1.6) ≈ ±31.6°"
+    }
+  },
+  "shots": {
+    "ritual_idle": {
+      "mode": "ritual",
+      "status": "current-snapshot",
+      "posterContract": "frozen",
+      "anchor": { "type": "spawn" },
+      "spherical": {
+        "phiDeg": 75,
+        "thetaDeg": 25,
+        "thetaDriftDeg": 1.1,
+        "radius": { "edges": { "min": 16, "max": 26 }, "baseRatio": 0.6, "nonIdealRatioOffset": 9 }
+      },
+      "lookAtHeight": 3.4,
+      "lateral": 4.2,
+      "notes": "View.ts city 档现状快照（dollyIn=0/shakeY=0 恒等通道，thetaDrift 取 0 基准位）；poster 协议 B 合同帧，禁改。东向 x≥110 楼体在该机位物理不可入帧（AL-BL2 §2.1 / PLUS 复审 §2.1 投影实测），解法为 poi_showcase-* 预设镜头而非改本机位。",
+      "projectionAudit": {
+        "buildings": ["agent-nexus", "autodrive-lab", "concept-garage", "work-gallery"],
+        "gates": [
+          {
+            "building": "concept-garage",
+            "type": "outOfFrame",
+            "note": "东向不可达文档化：八角点全部出画（右侧 |ndc.x|>1），机器可验证"
+          },
+          {
+            "building": "work-gallery",
+            "type": "outOfFrame",
+            "note": "位于机位后方（+Z 南侧）或右侧出画，同样不可达"
+          }
+        ]
+      }
+    },
+    "poi_showcase-concept-garage": {
+      "mode": "poi",
+      "status": "proposal",
+      "anchor": { "type": "building", "buildingId": "concept-garage" },
+      "spherical": { "phiDeg": 75, "thetaDeg": -67, "radius": 90 },
+      "lookAtHeight": 7,
+      "lateral": 0,
+      "notes": "沿霓虹大街东段自西向东的高位 3/4 展示帧：机位悬于大街上空（约 (60.0, 23.3, −10.0)），60m 宽楼体沿视深展开；视线避开 autodrive-lab（z≤−34）与 work-gallery（z≥28）体块。八角点 |NDC x|≤0.85 由探针把门。",
+      "projectionAudit": {
+        "buildings": ["concept-garage"],
+        "gates": [
+          { "building": "concept-garage", "type": "maxAbsNdcX", "limit": 0.85 },
+          { "building": "concept-garage", "type": "inFrame" }
+        ]
+      }
+    },
+    "poi_showcase-autodrive-lab": {
+      "mode": "poi",
+      "status": "proposal",
+      "anchor": { "type": "building", "buildingId": "autodrive-lab" },
+      "spherical": { "phiDeg": 73, "thetaDeg": -40, "radius": 118 },
+      "lookAtHeight": 27,
+      "lateral": 0,
+      "notes": "自十字路口西南上空的 3/4 展示帧（约 (−20.5, 34.5, 34.4)）：呼应 parkingBay 进站朝向，南面+西面同时可读，60m 塔身整高入帧。",
+      "projectionAudit": {
+        "buildings": ["autodrive-lab"],
+        "gates": [
+          { "building": "autodrive-lab", "type": "maxAbsNdcX", "limit": 0.85 },
+          { "building": "autodrive-lab", "type": "inFrame" }
+        ]
+      }
+    },
+    "corridor_neon-boulevard-east": {
+      "mode": "poi",
+      "status": "current-snapshot",
+      "anchor": {
+        "type": "corridor",
+        "corridorId": "neon-boulevard-east",
+        "point": { "x": 140, "z": 18 },
+        "pointSource": "work-gallery parkingBay（既有 ?poi=work-gallery 出生点，AL-BL2 PLUS §2.2 认可的沿街证据场地）"
+      },
+      "spherical": {
+        "phiDeg": 75,
+        "thetaDeg": 25,
+        "thetaDriftDeg": 1.1,
+        "radius": { "edges": { "min": 16, "max": 26 }, "baseRatio": 0.6, "nonIdealRatioOffset": 9 }
+      },
+      "lookAtHeight": 3.4,
+      "lateral": 4.2,
+      "notes": "work-gallery 沿街帧现状快照：玩家立于 (140,18)，同 View.ts city 跟随档收敛态。概念车库西侧立面可读，东侧近角裁出右缘（塔冠/东段裁切正是 PLUS NO-GO 的取景根因）——showcase shot 的动机文档化。",
+      "projectionAudit": {
+        "buildings": ["concept-garage", "autodrive-lab", "work-gallery"],
+        "gates": [
+          {
+            "building": "concept-garage",
+            "type": "partiallyInFrame",
+            "note": "沿街可读部分立面，但整楼不满足 |x|≤0.85——整楼展示见 poi_showcase-concept-garage"
+          }
+        ]
+      }
+    }
+  }
+}

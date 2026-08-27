@@ -254,8 +254,9 @@ const heroTowers = buildings.filter((b) => b.hero);
    *  opts.params 透传给 mount，其余一律忽略且不回写 URL。
    *  gl=1 强制 WebGL 2 · vehicle=kinematic 运动学回退档 · city=1 灰盒挂城 ·
    *  robot=1 机器人演示 · ritual=1 首幕全流程 · quality=0|1|2 画质档（M9，
-   *  引擎侧 Quality 不再兜底 location.search）· poi=<id> 楼宇深链（id=buildings JSON slug） */
-  const PARAM_ALLOWLIST = ['gl', 'vehicle', 'city', 'robot', 'ritual', 'quality', 'poi'] as const;
+   *  引擎侧 Quality 不再兜底 location.search）· poi=<id> 楼宇深链（id=buildings JSON slug）·
+   *  shot=<id> 镜头预设深链（CC-CAM-VIEW，仅与 poi 组合生效；id 白名单 = camera-shots.json 注册表） */
+  const PARAM_ALLOWLIST = ['gl', 'vehicle', 'city', 'robot', 'ritual', 'quality', 'poi', 'shot'] as const;
 
   /** 自动挂载静置一拍（ms）：load 后给「秒点跳过」的访客让路——跳过路径
    *  全程零 world 字节（SRD §12.7.8 出口①，CITY-E2E-02 断言口径） */
