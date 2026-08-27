@@ -1,9 +1,11 @@
 // [CC-BL1] hero 楼实模层：Blender 实模 GLB 热替换程序化 ThemeTowers 体块视觉。
 //
-// 数据驱动：buildings JSON 条目带 `heroGlb`（public/ 相对路径）即入册——在册两栋：
+// 数据驱动：buildings JSON 条目带 `heroGlb`（public/ 相对路径）即入册——在册三栋：
 //   · autodrive-lab（CC-BL1，tools/blender/generate-autodrive-lab.py，Draco+KTX2 154KB）
 //   · concept-garage（CC-BL2 沿街扩展 + CC-BL2-PLUS 西端天际线段补洞，
-//     tools/blender/generate-concept-garage.py，Draco+KTX2 145KB）——台账见
+//     tools/blender/generate-concept-garage.py，Draco+KTX2 145KB）
+//   · voice-pod（CC-VIS-X1B 第三栋 hero，tools/blender/generate-voice-pod.py，
+//     Draco+KTX2 166KB；零随楼道具——PROP_COLLIDERS 无条目即零碰撞体）——台账见
 //     各自 public/models/*/README.md + asset-ledger。
 //
 // 回退合同（任务书「保留程序化路径作加载失败 / Q2 fallback」）：

@@ -104,6 +104,7 @@
       "priority": "P0",
       "unlockPhase": 0,
       "lodProfile": "hero",
+      "heroGlb": "models/voice-pod/VoicePod.glb",
       "parkingBay": { "x": 12, "z": 28, "heading": 135, "radius": 6 }
     },
     {
