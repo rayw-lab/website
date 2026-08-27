@@ -28,6 +28,7 @@ import type { LabInstance, LabMountOptions } from '../contracts';
 import type { Areas } from './areas';
 import type { City } from './city';
 import type { HeroRobot } from './city/HeroRobot';
+import type { DebugPanel } from './debug/DebugPanel';
 import type { TransformSystem } from './player/TransformSystem';
 import type { Reveal } from './world/Reveal';
 import type { QualityLevel } from './core/Quality';
@@ -321,9 +322,20 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   // [CC-OBS-C1] 会话取证面（观测规格 §4.1）：只读单方法，与 __worldSpike 同段挂载
   window.__worldSession = { dump: () => game.session.dump() };
 
+  // [CC-OBS-C2] #debug 只读面板 v0（观测规格 §5.1）：沿用既有 hash 判断分支，
+  // 动态 import 独立 chunk——无 #debug 的生产路径零请求零字节（CITY-OBS-05 断言）；
+  // v0 仅挂载时判定（__worldSpikeGame 同口径），hashchange 动态开合归 Phase B。
+  // 面板故障不得影响游戏路径（§5.3 红线 3）：加载失败仅告警。
+  let debugPanel: DebugPanel | null = null;
   if (location.hash.includes('debug')) {
     window.__worldSpikeGame = game;
     if (transformSystem) window.__worldTransform = transformSystem;
+    try {
+      const { DebugPanel: DebugPanelClass } = await import('./debug/DebugPanel');
+      debugPanel = new DebugPanelClass({ game, fps });
+    } catch (error) {
+      console.warn('[debug] 面板加载失败，静默降级（游戏路径零影响）', error);
+    }
   }
 
   // M5：ritual 模式跳过 await revealed（TransformSystem 自行 intro→driving）
@@ -341,6 +353,8 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       game.resume();
     },
     dispose() {
+      debugPanel?.dispose();
+      debugPanel = null;
       areas?.dispose();
       areas = null;
       reveal?.dispose();
