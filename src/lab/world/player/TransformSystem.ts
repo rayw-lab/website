@@ -204,6 +204,10 @@ export class TransformSystem {
     // [CC-TRANS-FX] 粒子层（三段炫技随四拍节奏走；Q2/reduced-motion 关断见其头注）
     this.particles = this.reducedMotion ? null : new TransformParticles(game, { anchor: this.anchor });
 
+    // [CC-VEH-VIEW] 状态镜像推送给 View.driveView.gate（spec §5.1 冗余门 +
+    // lookahead 状态门的数据源；灰盒无变形系统时 View 缺省 'none' 恒闭）
+    this.game.view.driveView.gate = this._state;
+
     // order 4（视觉同步段）：时间轴推进在意图/物理（1–3）后、车辆 post/相机（5–7）前
     this.game.ticker.events.on('tick', this.tickHandler, 4);
     // car_ready → driving：首个驾驶输入即接管（终裁 D4 第一拍）
@@ -233,6 +237,11 @@ export class TransformSystem {
     if (this.ritual) return this.ritual.promise;
     if (to === 'car' && this._state !== 'robot_idle') return Promise.resolve();
     if (to === 'robot' && this._state === 'robot_idle') return Promise.resolve();
+
+    // [CC-VEH-VIEW] 仪式期与 FPV 互斥（spec §5.1）：ritualCam 推镜按第三人称斜距
+    // 标定、光幕 billboard 面向输出相机——启动帧强制回 third（robot→car 主路径
+    // 来路本就是 third，空操作幂等；实际生效面 = car→robot 回变）
+    this.game.view.setDriveViewMode('third');
 
     this.setState('transforming');
     // [CC-OBS-C1] 漏斗步③：变形入口（观测规格 §3.4 ritual/transform-start 行）
@@ -272,6 +281,10 @@ export class TransformSystem {
     // [CC-L4 B5] 运镜通道归零：仪式/微震中途卸载不得在相机上留残余偏移
     this.game.view.ritualCam.dollyIn = 0;
     this.game.view.ritualCam.shakeY = 0;
+    // [CC-VEH-VIEW] 强制回 third + 关门（spec §5.1/§8.3 dispose 收口）：FOV/焦点
+    // 跟踪恢复基线，gate 回 'none' 后 V 与 lookahead 全闭
+    this.game.view.setDriveViewMode('third');
+    this.game.view.driveView.gate = 'none';
     this.ringMesh.removeFromParent();
     this.veilMesh.removeFromParent();
     for (const geometry of this.ownedGeometries) geometry.dispose();
@@ -285,6 +298,9 @@ export class TransformSystem {
   private setState(state: TransformState): void {
     if (this._state === state) return;
     this._state = state;
+    // [CC-VEH-VIEW] 先推镜像再广播：订阅方（Reveal data-drive-view 挂载等）
+    // 读到的 View 门与状态机同帧一致
+    this.game.view.driveView.gate = state;
     this.events.trigger('stateChange', [state]);
   }
 

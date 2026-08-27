@@ -135,6 +135,11 @@ export class Player {
       { name: 'brake',       categories: ['wandering', 'racing', 'driving'],              keys: ['Keyboard.Space', 'Keyboard.KeyB', 'Keyboard.ControlLeft'] },
       { name: 'respawn',     categories: ['wandering', 'driving'],                        keys: ['Keyboard.KeyR'] },
       { name: 'suspensions', categories: ['wandering', 'racing', 'driving'],              keys: ['Keyboard.KeyF'] },
+      // [CC-VEH-VIEW] V = 第三人称 ↔ 车内 FPV 硬切（spec §8.1 冻结行）。categories
+      // 只有 'driving'：灰盒 wandering/racing 不放行（spike 试车道无 FPV 需求，
+      // 零回归）、intro 下被闸门拦截（robot_idle 恒等保证 #1）。消费在 View
+      // （相机归相机）；不进 TransformSystem DRIVE_ACTIONS（切视角 ≠ 驾驶意图）
+      { name: 'toggleDriveView', categories: ['driving'],                                 keys: ['Keyboard.KeyV'] },
     ]);
 
     // Respawn

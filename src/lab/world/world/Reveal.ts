@@ -32,7 +32,7 @@ const STATUS_TEXT: Record<TransformState, string> = {
   robot_idle: '机器人形态 · 座舱 AI 就位——点击「变形 · 巡航态」或按 Space',
   transforming: '变形中 · 光幕遮蔽热交换，量产载体落地十字路口…',
   car_ready: '巡航态 · CarConcept 已落地十字路口——WASD 即刻可开',
-  driving: '驾驶中 · WASD/方向键转向，Shift 加速，R 回到路口',
+  driving: '驾驶中 · WASD/方向键转向，Shift 加速，V 切换视角，R 回到路口',
 };
 
 export interface RevealOptions {
@@ -77,6 +77,15 @@ export class Reveal {
     else this.startRobotTick();
   };
 
+  /**
+   * [CC-VEH-VIEW] data-drive-view 镜像（spec §5.2）：消费 'world-drive-view'
+   * [mode] 埋点（world-transform 先例同机制）。属性挂载窗 = car_ready 起
+   * （applyState 落初值）；robot_idle 期间属性缺席——DOM 面恒等。
+   */
+  private readonly driveViewHandler = (mode: 'third' | 'fpv'): void => {
+    this.host.dataset.driveView = mode;
+  };
+
   constructor(game: Game, options: RevealOptions) {
     this.game = game;
     this.host = options.host;
@@ -92,6 +101,7 @@ export class Reveal {
       this.applyState(state);
     });
     this.transformSystem.events.on('swap', this.swapHandler);
+    this.game.events.on('world-drive-view', this.driveViewHandler);
 
     // CTA 键触发：Space 仅在 intro 上下文有效（filters 天然闸门——
     // driving 后 Space 归还给刹车，悬挂跳在 KeyF；动作表见 Player.setInputs / A2 M7-M8）
@@ -118,9 +128,11 @@ export class Reveal {
     this.hintFade?.kill();
     this.unsubscribeState();
     this.transformSystem.events.off('swap', this.swapHandler);
+    this.game.events.off('world-drive-view', this.driveViewHandler);
     this.game.inputs.events.off('transform', this.transformActionHandler);
     this.root.remove();
     delete this.host.dataset.worldState;
+    delete this.host.dataset.driveView;
   }
 
   /* ———————————————————— 演出编排 ———————————————————— */
@@ -152,6 +164,8 @@ export class Reveal {
         this.cta.hidden = false;
         this.cta.disabled = false;
         this.hideHint('input');
+        // [CC-VEH-VIEW] 回变落地：属性摘除（robot_idle DOM 面恒等，spec §6.3 #5）
+        delete this.host.dataset.driveView;
         break;
       case 'transforming':
         // CITY-05 验收：变形期间按钮 disabled + 进度可见（进度条随 host 态由 CSS 驱动）
@@ -160,6 +174,8 @@ export class Reveal {
       case 'car_ready':
         this.cta.hidden = true;
         this.showHint();
+        // [CC-VEH-VIEW] data-drive-view 从 car_ready 起挂载（V 生效窗同帧打开）
+        this.host.dataset.driveView = this.game.view.driveView.mode;
         break;
       case 'driving':
         // 再次按键即隐（实施方案 §1.2）
@@ -235,8 +251,9 @@ export class Reveal {
     this.hint = document.createElement('p');
     this.hint.className = 'world-ritual-hint';
     this.hint.dataset.worldHint = '';
+    // [CC-VEH-VIEW] 文案冻结（spec §8.2）：「V 切换视角」插入刹车之后
     this.hint.textContent =
-      'W/A/S/D 或方向键驾驶 · Shift 加速 · Space/B 刹车 · F 悬挂跳 · R 回到路口';
+      'W/A/S/D 或方向键驾驶 · Shift 加速 · Space/B 刹车 · V 切换视角 · F 悬挂跳 · R 回到路口';
     this.hint.hidden = true;
 
     this.root.append(this.status, this.cta, progress, this.hint);
