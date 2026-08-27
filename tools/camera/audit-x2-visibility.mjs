@@ -1,14 +1,21 @@
 #!/usr/bin/env node
 // CC-VIS-X2-FACADE-R2 — 可见楼清单 NDC 取证（设计确认 ④ 前置：只给首幕与主动线可见的楼做立面）。
 // 口径 = tools/camera/audit-shot-ndc.mjs（同一解算式，viewport 1440×900），扩展为全楼遍历：
-//   ① ritual_idle 首幕机位：全部 12 栋 bbox 八角点投影 → 入帧计数 + ndc 范围；
-//   ② 主干道驾驶动线（两条主轴路）：逐楼判定临街面（面向最近道路的立面）与楼-路缘距离。
-// 只读 src/data，两个 JSON 均零改动。
+//   ① ritual_idle 首幕机位：全部 12 栋 bbox 八角点投影 → 入帧计数 + ndc 范围
+//      （消费方 = CityBlocks.FACADE_PLAN 首幕远读面 + 屋顶剪影投资判定）；
+//   ② 主干道驾驶动线（两条主轴路）：逐楼判定临街面（面向最近道路的立面）与楼-路缘距离
+//      （消费方 = FACADE_PLAN 临街面全套构件判定）；
+//   ③ 前景管线桥 NDC 预演（ForegroundFraming 桥位/桥面带/腿柱 + 机器人零遮挡自查）。
+// 复跑：node tools/camera/audit-x2-visibility.mjs（只读 src/data，两个 JSON 均零改动）。
 import { readFileSync } from 'node:fs';
 import { PerspectiveCamera, Vector3 } from 'three';
 
-const shotsDoc = JSON.parse(readFileSync('/workspace/src/data/camera-shots.json', 'utf8'));
-const buildingsDoc = JSON.parse(readFileSync('/workspace/src/data/cyber-city-buildings.json', 'utf8'));
+const shotsDoc = JSON.parse(
+  readFileSync(new URL('../../src/data/camera-shots.json', import.meta.url), 'utf8'),
+);
+const buildingsDoc = JSON.parse(
+  readFileSync(new URL('../../src/data/cyber-city-buildings.json', import.meta.url), 'utf8'),
+);
 
 const viewport = { width: 1440, height: 900 };
 const aspect = viewport.width / viewport.height;
