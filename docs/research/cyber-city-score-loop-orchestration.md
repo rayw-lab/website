@@ -8,7 +8,7 @@
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
-| 生产 tip | `main` @ `6bd9ca6`（登记 **92.5/70**，复审 NO-GO 未变） |
+| 生产 tip | `main` @ `4f616e5`（登记 **92.5/70**） |
 
 ## Loop 5 — ✅ 有条件放行
 
