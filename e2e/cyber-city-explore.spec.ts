@@ -21,8 +21,9 @@
 //     只断存在性/顺序性/计数，零时长阈值。
 //
 // 运行编排：world-chromium 串行 project（playwright.config testMatch
-// cyber-city.*\.spec\.ts 泛化，零配置改动）；驾驶走 OBS-01 同款遥测闭环
-// driveTo（真实 CDP 键盘输入，禁止 evaluate 直改物理状态）。
+// cyber-city.*\.spec\.ts 泛化，零配置改动）；驾驶全走真实 CDP 键盘输入（禁止
+// evaluate 直改物理状态）——EXP-01 纯直线踏板腿（吞吐鲁棒），EXP-02 走
+// OBS-01 同款遥测闭环 driveTo（卡死自救改倒车，R 在深链语义下会传送回泊位）。
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { u } from './helpers';
@@ -44,10 +45,17 @@ const cityMap = JSON.parse(
 const ALL_IDS = pois.pois.map((p) => p.buildingId);
 const TOTAL = ALL_IDS.length;
 
-/** EXP-01 出生点 = autodrive-lab（?poi= 深链落触发圈内，CITY-PA 同款）；
- *  第二探索点 = agent-nexus（内环镜像位 (-28,-28)，OBS-01 走廊路线的对称腿） */
-const SPAWN_POI = 'autodrive-lab';
-const SECOND_POI = 'agent-nexus';
+/** EXP-01 出生点 = concept-garage（?poi= 深链落触发圈内，CITY-PA 同款机制）；
+ *  第二探索点 = work-gallery。选点依据（全 12 泊位两两测距最短的直线对）：
+ *  两泊位同在 x=140 竖线上相距 36m，中间只有东西大街路面（隔离墩阵限于原点
+ *  十字路口 |x|,|z|≲18，灯杆线距 ≥10m，楼排边线 z≤-26 / z≥28）——且出生朝向
+ *  heading=0（车头朝北面楼），目标恰在正后方：全程纯倒车直线，零转向零掉头
+ *  （SwiftShader 慢动作下转向收敛是最大时耗与不确定源，直线腿对吞吐鲁棒）。 */
+const SPAWN_POI = 'concept-garage';
+const SECOND_POI = 'work-gallery';
+/** EXP-02 末点 = autodrive-lab：原点变形出发 → (0,-24) 走廊 → 泊位 (28,-28)，
+ *  与 CITY-OBS-01 的已验证驾驶动线逐点同路（途径点/半径同款） */
+const LAST_POI = 'autodrive-lab';
 
 /** localStorage 持久键（ExploreProgress STORAGE_KEY 契约） */
 const STORAGE_KEY = 'world-explore-v1';
@@ -133,29 +141,43 @@ async function readSpike(page: Page): Promise<SpikeState> {
 const wrapAngle = (a: number): number => Math.atan2(Math.sin(a), Math.cos(a));
 
 /**
- * 倒车脱困/出泊位（S=backward，Player 倒车扇区油门转向同反转）：直线倒车至
- * 位移 ≥ meters 或超时。深链出生泊位朝建筑角（parkingBay.heading 面楼），
- * 原地掉头会蹭墙角卡死；且 R 重生锚点=泊位本身（传送回陷阱），故一律倒车脱身。
+ * 单踏板直线腿（w=前进 / s=倒车，无转向输入）：按住至谓词满足或超时。
+ * SwiftShader 慢动作 + 共享 VM 竞争下，墙钟速率可在 0.01~0.2 m/s 间波动
+ * （物理时钟按渲染帧推进）——直线腿只依赖净位移方向，对吞吐任意放缓鲁棒；
+ * 倒车腿另有语义：R 重生锚点=深链泊位本身（传送回出生位），脱离泊位一律用倒车。
  */
+async function pedalUntil(
+  page: Page,
+  key: 'w' | 's',
+  pred: (s: SpikeState) => boolean,
+  capMs: number,
+): Promise<{ ok: boolean; state: SpikeState }> {
+  let state = await readSpike(page);
+  await page.keyboard.down(key);
+  try {
+    const deadline = Date.now() + capMs;
+    while (Date.now() < deadline) {
+      state = await readSpike(page);
+      if (pred(state)) return { ok: true, state };
+      await page.waitForTimeout(500);
+    }
+    return { ok: false, state };
+  } finally {
+    await page.keyboard.up(key).catch(() => {});
+  }
+}
+
+const distTo = (s: SpikeState, p: { x: number; z: number }): number =>
+  Math.hypot(p.x - s.x, p.z - s.z);
+
+/** 倒车脱困（driveTo 卡死自救用；语义见 pedalUntil 头注） */
 async function reverseBy(
   page: Page,
   meters: number,
   capMs: number,
 ): Promise<{ ok: boolean; state: SpikeState }> {
   const origin = await readSpike(page);
-  let state = origin;
-  await page.keyboard.down('s');
-  try {
-    const deadline = Date.now() + capMs;
-    while (Date.now() < deadline) {
-      state = await readSpike(page);
-      if (Math.hypot(state.x - origin.x, state.z - origin.z) >= meters) return { ok: true, state };
-      await page.waitForTimeout(500);
-    }
-    return { ok: false, state };
-  } finally {
-    await page.keyboard.up('s').catch(() => {});
-  }
+  return pedalUntil(page, 's', (s) => Math.hypot(s.x - origin.x, s.z - origin.z) >= meters, capMs);
 }
 
 /** 遥测闭环自动驾驶（CITY-OBS-01 同款：真实键盘输入 + 0.5s 遥测节拍 + 卡死倒车自救） */
@@ -220,13 +242,18 @@ const progressEvents = (dump: SessionDump): SessionEventEntry[] =>
 test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 project）', () => {
   // 3D 挂载单例互斥（cyber-city.spec.ts 同纪律）；长用例单独 setTimeout 放宽
   test.describe.configure({ mode: 'serial', timeout: 420_000 });
+  // SwiftShader 像素瓶颈：960×540 = 1440×900 的 40% 像素 → 渲染帧率（=物理时钟
+  // 推进速率）约 2.5×。本 spec 断言只涉 chip 文本/属性与 dump 事件，与分辨率无关；
+  // 驾驶腿是全套 e2e 的墙钟大头，降采样直接转化为吞吐余量（共享 VM 竞争防波动）
+  test.use({ viewport: { width: 960, height: 540 } });
 
   // ---------------------------------------------------------------------------
   // CITY-EXP-01 探索计数闭环（?poi= 深链非 ritual 腿，无 data-world-state ⇒
   // 样式门恒放行，chip 挂载即见——FB-06 灰盒同构口径）：
-  //   ① 深链出生落 autodrive-lab 触发圈 → 发现第 1 点：chip 1/12 ⇔
+  //   ① 深链出生落 concept-garage 触发圈 → 发现第 1 点：chip 1/12 ⇔
   //      explore-progress{id,n:1,total}（呈现 ⇔ 埋点互证）；
-  //   ② 遥测闭环驾驶至 agent-nexus 触发圈 → 2/12 ⇔ explore-progress{n:2}；
+  //   ② 倒车直线腿至 work-gallery 触发圈（36m 竖线泊位对，零转向）→ 2/12 ⇔
+  //      explore-progress{n:2}；
   //   ③ 去重：驶出再驶入同一触发圈（poi-bounding-in 第二次入账）→ 计数不动、
   //      explore-progress 恒两条且 id 互异；
   //   ④ 非强制负断言：chip pointer-events:none + 零模态弹层；
@@ -265,19 +292,11 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     expect(pointerEvents, 'chip 必须全层穿透（不遮 CTA/HUD/摇杆热区）').toBe('none');
     await expect(page.locator('dialog[open]'), '探索计数不得弹任何模态').toHaveCount(0);
 
-    // —— ② 驾驶至第 2 个探索点（agent-nexus = 56m 最近邻，直线走廊 z∈[-24,-28]
-    //    全程避开隔离墩阵 |x|,|z|≲18 / 灯杆线 ≥8m / 楼排 z≤-32——坐标实测核对）。
-    //    出泊位先倒车 5m：出生朝向 = parkingBay.heading（面建筑角），原地掉头
-    //    必蹭墙角；倒退线 (28,-28)→(24.5,-24.5) 后左转弧线已避开楼角（x≥30 墙面）。
-    //    倒车实测 ~0.04m/s 墙钟 → 5m ≈ 120s，予 300s 余量
-    const escaped = await reverseBy(page, 5, 300_000);
-    expect(
-      escaped.ok,
-      `应能倒车退出泊位（实测 x=${escaped.state.x.toFixed(1)} z=${escaped.state.z.toFixed(1)}）`,
-    ).toBe(true);
+    // —— ② 倒车直线腿至第 2 个探索点（选点依据见 SPAWN_POI 头注：36m 竖线泊位对，
+    //    目标在出生朝向正后方 → 纯 S 直线，零转向零掉头，吞吐鲁棒）
     const target = bayOf(SECOND_POI);
-    const leg = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 600_000 });
-    expect(leg.ok, `泊车位 (${target.x},${target.z}) 应可达（实测 x=${leg.state.x.toFixed(1)} z=${leg.state.z.toFixed(1)}）`).toBe(true);
+    const leg = await pedalUntil(page, 's', (s) => distTo(s, target) <= 5.5, 1_200_000);
+    expect(leg.ok, `泊车位 (${target.x},${target.z}) 应可倒车直达（实测 x=${leg.state.x.toFixed(1)} z=${leg.state.z.toFixed(1)}）`).toBe(true);
 
     const second = await pollDump(
       page,
@@ -288,8 +307,9 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     await expect(count).toHaveText(`2/${TOTAL}`);
     await page.screenshot({ path: 'test-results/explore-second-discover.png' });
 
-    // —— ③ 去重：驶出触发圈（bounding-out 入账）再驶回（bounding-in 第二次入账）
-    const out = await driveTo(page, { x: target.x + 14, z: target.z + 2 }, { radius: 4, timeoutMs: 300_000 });
+    // —— ③ 去重：驶出触发圈（bounding-out 入账）再驶回（bounding-in 第二次入账）。
+    //    车头仍朝北（倒车腿不改朝向）：W 前进即沿原直线退出圈，S 再倒回——同为零转向
+    const out = await pedalUntil(page, 'w', (s) => distTo(s, target) > 7.5, 600_000);
     expect(out.ok, '应能驶出触发圈').toBe(true);
     const bounded = await pollDump(
       page,
@@ -297,7 +317,7 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
       60_000,
     );
     expect(bounded.ok, '驶出应记 poi-bounding-out').toBe(true);
-    const back = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 300_000 });
+    const back = await pedalUntil(page, 's', (s) => distTo(s, target) <= 5.5, 600_000);
     expect(back.ok, '应能驶回触发圈').toBe(true);
     const reentered = await pollDump(
       page,
@@ -353,9 +373,9 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     const errors = trackErrors(page);
     await page.emulateMedia({ reducedMotion: 'reduce' });
 
-    // 预置 11/12（除 agent-nexus 外全量）：完成腿的确定性布局——把「集齐」压缩为
+    // 预置 11/12（除 autodrive-lab 外全量）：完成腿的确定性布局——把「集齐」压缩为
     // 一段可驾驶的末点动线（12 圈全走在 SwiftShader 下不可行；写读闭环由 EXP-01 ⑤ 承担）
-    const seeded = ALL_IDS.filter((id) => id !== SECOND_POI);
+    const seeded = ALL_IDS.filter((id) => id !== LAST_POI);
     await page.addInitScript(
       ([key, value]) => {
         try {
@@ -397,15 +417,15 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     await expect(chip).not.toHaveAttribute('data-complete', '1');
     await page.screenshot({ path: 'test-results/explore-rm-restored.png' });
 
-    // —— ③ 完成闭环：驾驶至最后一个未发现点（agent-nexus，途径点走廊同 EXP-01）
+    // —— ③ 完成闭环：驾驶至最后一个未发现点（autodrive-lab——原点出发经 (0,-24)
+    //    途径点再进泊位 (28,-28)，与 CITY-OBS-01 已验证驾驶动线逐点同路）
     await page.keyboard.down('w');
     try {
       await expect(host).toHaveAttribute('data-world-state', 'driving', { timeout: 60_000 });
     } finally {
       await page.keyboard.up('w');
     }
-    // 原点出圈仍留 (0,-24) 途径点（OBS-01 同款：先出隔离墩阵再入西走廊直线）
-    const target = bayOf(SECOND_POI);
+    const target = bayOf(LAST_POI);
     const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 6, timeoutMs: 480_000 });
     expect(leg1.ok, `途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`).toBe(true);
     const leg2 = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 600_000 });
@@ -419,7 +439,7 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     expect(completed.ok, '末点集齐应记 explore-complete').toBe(true);
 
     const dump = completed.dump;
-    const lastProgress = progressEvents(dump).find((e) => e.data?.id === SECOND_POI);
+    const lastProgress = progressEvents(dump).find((e) => e.data?.id === LAST_POI);
     expect(lastProgress?.data?.n, `末点应为第 ${TOTAL} 个探索点`).toBe(TOTAL);
     const completeEvent = dump.events.find((e) => e.type === 'explore-complete');
     expect(completeEvent?.data?.total).toBe(TOTAL);
