@@ -254,6 +254,9 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   }
 
   const fps = new FpsMeter();
+  // [CC-PERF-C2-B0] O10 常驻长帧阈值（秒）：>50ms 计入 counters.longFrames——
+  // 与 WS-PERF-01/CITY-PERF-01 采样 STALL_MS=50 同源口径（跨证据面可互证）
+  const LONG_FRAME_S = 0.05;
   let hudClock = 0;
   let hintDismissed = false;
   // [CC-OBS-C1] HUD 节拍沿检测状态（观测规格 §3.4 cone-hit / idle-30s 行）
@@ -272,7 +275,9 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   game.ticker.events.on(
     'tick',
     () => {
-      fps.tick(performance.now());
+      // [CC-PERF-C2-B0] 长帧计数（O10 常驻轻量层）：复用 FpsMeter 墙钟间隔，
+      // 一次比较零分配；首帧/pause 后 dt=0 天然不计（FpsMeter.reset 纪律）
+      if (fps.tick(performance.now()) > LONG_FRAME_S) game.session.countLongFrame();
 
       hudClock += game.ticker.delta;
       if (hudClock < 0.25) return;

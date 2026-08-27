@@ -16,7 +16,7 @@
 ## 0. 结论先行
 
 1. **SessionTimeline 挂 `Game` 构造器**（`game.session`，`src/lab/world/core/SessionTimeline.ts`）：每个 Game 实例恒有一枚、系统一行接线 `this.game.session.log(type, data)` 无空判断；`index.ts` 装配段只负责 window 导出面、HUD 节拍沿检测埋点（cone-hit / idle-30s）与 deep-link 首打。
-2. **dump schema v1 冻结**（§3.2）：ring buffer 500 条 + `dropped` 计数；`funnel` 七步首达壁钟毫秒；`counters` 六项聚合**独立于 ring**（溢出不失真）；`seq` 全局单调（含被丢弃条目）。破坏性变更 `schemaVersion` +1，加法不升版。
+2. **dump schema v1 冻结**（§3.2）：ring buffer 500 条 + `dropped` 计数；`funnel` 七步首达壁钟毫秒；`counters` 六项聚合**独立于 ring**（溢出不失真；[CC-PERF-C2-B0] 随行加法后**七项**——增 `longFrames` 长帧计数，§3.4 尾注）；`seq` 全局单调（含被丢弃条目）。破坏性变更 `schemaVersion` +1，加法不升版。
 3. **事件白名单 v1 冻结**（§3.4，27 个 type、7 族；[CC-FXN-C1] 随行加法后 28 个——ux 族 `hint-recall`；[CC-FXN-C4] 随行加法后 **31 个 type、8 族**——新增 goal 族 `explore-restore` / `explore-progress` / `explore-complete`，F6 探索计数 n/12）：既有 `game.events` 总线 `world-*` 事件走**镜像订阅**（args 映射表冻结）；非总线事件走显式 `session.log`（接线点逐一定位到文件/函数）；壳侧（ESC 菜单）经 **`world-obs` CustomEvent 桥**（§3.5）过族白名单进 timeline——壳零 import、window 导出面保持只读。
 4. **dispose 导出合同**（§4）：`SessionTimeline.dispose()` 幂等三步（`dispose` 事件入 ring → `console.table` funnel+counters 摘要**一次** → 摘除监听），由 `Game.dispose()` **首段**调用（各系统仍在、读数完整）；`window.__worldSession` 与 `__worldSpike` 同段挂载/删除；bfcache 快照离页不触发（facade `event.persisted` 既有语义），**e2e 取证必须在卸载前 dump**。
 5. **function-smoke 是哨兵不是登记分**（§6.2）：漏斗七步齐 70%（非 null + 单调顺序）+ 交互面四事件存在性 30%；**不掺任何时长/帧率**（SwiftShader 下时长无意义）；首个 Loop 软门（OBS annotation），稳定后再议转硬。`quality-score.json` 增只读 `northStar` 块（§6.4），综合分五维权重**零改动**。
@@ -105,6 +105,8 @@ interface SessionDump {
     poiInteracts: number;      // world-poi 次数
     transforms: number;        // world-transform 次数
     driveViewToggles: number;  // world-drive-view 次数（VEH-VIEW 合流前恒 0）
+    longFrames: number;        // [CC-PERF-C2-B0] 墙钟帧间隔 >50ms 的帧数（O10 常驻层；
+                               // 非事件不入 ring，装配段 tick 一次比较递增，§3.4 尾注）
   };
   funnel: {                    // 关键路径首达 t（ms；未达 = null）
     reveal: number | null;           // world-reveal
@@ -124,7 +126,7 @@ interface SessionDump {
 2. **聚合独立**：`funnel`/`counters` 在 `log()` 入口更新，**不依赖 ring 内容**——溢出后漏斗与计数依旧精确。
 3. **funnel 只记首达**：对应事件再次出现不覆盖；`carReady` 只认 `world-transform` 且 `data.to === 'car'`（回变机器人不写）。
 4. **`dump()` 纯快照**：返回全新 JSON-safe 平面对象（events 逐条浅拷贝；无 THREE/DOM 引用），任意时刻可调、可反复调、`JSON.stringify` 恒成功；dispose 后调用返回终态（含 `dispose` 事件）。
-5. **公开 API 最小面**：`log(type, data?)` · `attach(events)` · `dump()` · `dispose()`；无删改/回放/订阅面（#debug 面板 tail 经内部只读游标 `tail(n)`，仅 world 分包内消费，不上 window）。
+5. **公开 API 最小面**：`log(type, data?)` · `attach(events)` · `dump()` · `dispose()`；无删改/回放/订阅面（#debug 面板 tail 经内部只读游标 `tail(n)`，仅 world 分包内消费，不上 window）。[CC-PERF-C2-B0] 随行加法：`countLongFrame()`——`counters.longFrames` 专用递增口（§3.4 尾注），仍不上 window、不开订阅面。
 6. **健壮性**：`log()` 永不抛错（白名单外丢弃告警、data 非法值剔除）；埋点故障不得影响游戏路径。
 
 ### 3.4 事件白名单 v1 + 接线表（冻结；改动纪律见 §3.6）
@@ -164,6 +166,8 @@ interface SessionDump {
 | ux | `idle-30s` | — | 沿检测 · index.ts 装配段低频节拍：driving 态连续 30s 零驾驶意图（accelerating/steering/braking/boosting 全 0 且 nipple 非 active）打一条；有输入即重置计时，可再打（每静默期至多 1 条） | P0 |
 | error | `pageerror` | `{message}` | 显式 · SessionTimeline 自挂 `window` `error` + `unhandledrejection` 监听（message 截 200 字符；dispose 摘除） | P0 |
 | error | `context-lost` | — | 显式 · SessionTimeline 自挂 canvas `webglcontextlost`（canvas 经 attach 参数传入；WebGPU device.lost 接线归 §9 开放问题） | P0 |
+
+> **[CC-PERF-C2-B0] counters 随行修订（PERF-BR O10 常驻层，加法不升版）**：`counters.longFrames` = 墙钟帧间隔 >50ms 的帧数（阈值与 WS-PERF-01 / CITY-PERF-01 采样 `STALL_MS = 50` 同源，跨证据面可互证）。**不是事件 type**——不占本表白名单、不入 ring（逐帧 log 会灌爆 ring：SwiftShader 下每帧都是长帧），由装配段 tick（index.ts，复用 FpsMeter 墙钟间隔）一次比较后经 `session.countLongFrame()` 直接递增；跨暂停超长间隔经 `FpsMeter.reset()` 天然不计。dump / dispose `console.table` 自然承载。O10 的 #debug 门控层（分段帧时剖析）见 §5.2 随行行。
 
 ### 3.5 壳桥：`world-obs` CustomEvent（冻结）
 
@@ -234,6 +238,7 @@ facade（pagehide 非 bfcache / astro:before-swap / 显式卸载）
 |----|------|--------|------|
 | 状态行 | `state`（host `data-world-state`，无 ritual 显示 `—`）· `drive-view`（host `data-drive-view`，缺席 `—`）· `shot`（当前 shot id，CAM 合流前 `—` 留位） | DOM 属性 / View | 0.25s |
 | 性能行 | `fps avg / 1% low` · `drawCalls` · `triangles` | FpsMeter.read() · renderer.info | 0.25s |
+| 分段帧时行 | [CC-PERF-C2-B0] 随行加法（PERF-BR O10 #debug 门控层）：`frame ms`（全帧）+ 7 段（anim / physics / sync / camera / areas / render / hud，按 tick order 段表）各显 `avg / max`（ms，0.25s 窗）——卡顿归因到段（physics 3 / render 998 含 Q0 reflector 镜像 / POI 检测 8–10） | FrameProfiler（`debug/FrameProfiler.ts`：tick 总线 order 检查点 + performance.mark/measure，随 debug 分包，生产路径零字节；measure 发完即清缓冲） | 0.25s |
 | 玩家行 | `speed`（km/h，HUD 同公式）· `pos x/y/z`（一位小数） | game.player | 0.25s |
 | 事件 tail | 最近 **10** 条：`#seq t(ms) type {data}`（新在下） | `session.tail(10)`（§3.3 内部游标） | 事件驱动 + 0.25s 兜底 |
 | 导出 | `[data-debug-export]` 按钮：`JSON.stringify(session.dump(), null, 2)` → Blob 下载 `session-<sessionId 前 8 位>.json` | session.dump() | 点击 |
