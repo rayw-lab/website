@@ -7,18 +7,18 @@
 | 审计模型 | `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
-| 生产 tip | `main` @ `79c3614` |
+| 生产 tip | `main` @ 见 git tip |
 
 ### 登记矩阵（**每次编排 Delta / 定时器回复必输出此表**）
 
-| 维度 | 北极星 | 生产登记 | Δ | 登记来源 |
-|------|--------|----------|---|----------|
-| **综合** | **98** | **92.8** | +5.2 | AL-CAM 综合建议 + `scripts/score-loop.mjs` 五维 |
-| **视觉** | **98** | **71** | +27 | `cyber-city-visual-rubric-score.json`（AL-CAM 独立） |
-| **功能** | **90** | **—**（未登记） | — | OBS-C1 未合前禁止登记；正本 `cyber-city-function-rubric.md` |
-| **性能** | **85** | **—**（未登记） | — | 真机 human-gate §5.4 权威；正本见功能 rubric §7 |
+| 维度 | 北极星 | 生产登记 | Δ | 说明 |
+|------|--------|----------|---|------|
+| **综合** | **98** | **80** | +18 | 五维计分器（LHCI+e2e+视觉+smoke）；**不含**功能/性能维 |
+| **视觉** | **98** | **71** | +27 | AL-CAM 独立 · `cyber-city-visual-rubric-score.json` |
+| **功能** | **90** | **—** | +90 | **未登记** · 正本 `cyber-city-function-rubric.md` · **OBS-C1 合 main 后**方可 AL-FXN 登记 · F7 埋点硬门 |
+| **性能** | **85** | **—** | +85 | **未登记** · 运行时 FPS/帧时权威 = 真机 human-gate §5.4 · **与 LHCI 分立** · 正本见功能 rubric §7 |
 
-> **口径**：综合 98 / 视觉 98 / 功能 90 / 性能 85 为并列北极星；**禁止**用综合分或 LHCI 冒充功能/性能登记。旧定时器文案「登记 92.0/68」已作废。
+> **口径**：北极星四数 **98 / 98 / 90 / 85** 并列；生产登记只认审计独立分。**禁止**用 LHCI 或综合分冒充功能/性能。旧文案「登记 92.0/68」「综合 92.8」已作废。
 
 | **指挥官约束** | CC-CAM 已合 main；功能/性能须独立 rubric + 可观测证据登记 |
 
@@ -120,7 +120,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | CC-VEH-VIEW | `cursor/cc-veh-fpv-view-1d6f` @ **`d1565e6`** | [VEH-VIEW](bc-0f2b223e-fe77-56a6-b276-d4c92371d2ad) | 🔄 RUNNING · **FPV 代码+e2e 已 push** |
 | CC-TRANS-FX-RS | 已合 main | [TRANS-RS](bc-27662958-c425-5337-99fb-173b1bafbaf5) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | CC-TRANS-FX-DES | 已合 main | [TRANS-DES](bc-ac0c5a7d-056f-527a-8180-b00a4d9e4bc3) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
-| CC-TRANS-FX-IMPL | `cursor/cc-trans-fx-impl-1d6f` @ **`e7f908b`** | [TRANS-IMPL](bc-c24bb880-b5a7-513d-8c17-343a86ea9e84) | 🔄 RUNNING · SwiftShader 调参 |
+| CC-TRANS-FX-IMPL | 待合 PR | [TRANS-IMPL](bc-c24bb880-b5a7-513d-8c17-343a86ea9e84) | ✅ IDLE · e2e 52/52 · `TransformParticles.ts` |
 
 ### 合流主线序
 
@@ -178,7 +178,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | CC-AL-BL2 首次 | `cursor/cc-al-bl2-audit-1d6f` @ `7a5dffa`（已合 main） | — | [AL-BL2](bc-102414b6-9132-5de4-8de5-83580124910d) | ✅ NO-GO 71/92.8 |
 | CC-AL-BL2 复审 | `cursor/cc-al-bl2-audit-1d6f` @ **`8d8b604`** | — | [AL-BL2-R2](bc-57c16013-d459-513b-a2dc-7b622c1d00bc) | ✅ **NO-GO** 仍 **71/92.8**（V4=71<72） |
 
-| 登记 | 生产 **71/92.8**（AL-CAM GO）；PR #43 **仍禁止合流**直至 CC-BL2-CAM |
+| 登记 | 生产 **80/71**（综合/视觉）；功能/性能 **—** 待 OBS-C1 + AL-FXN；PR #43 **仍禁止合流** |
 
 ### AL-BL2 复审结论（`fcdfcb5` 候选）
 - 天际线/沿街整帧有像素变化，但 **work-gallery 固定帧仍无法读出完整新轮廓**（冠环被裁切）
@@ -214,7 +214,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 ```text
 自动驾驶全马力编排（禁止降级：实现 Fable5 xhigh，审计 Sol xhigh-fast）。
 北极星：综合 98 · 视觉 98 · 功能 90 · 性能 85。
-生产登记：综合 92.8 · 视觉 71 · 功能 — · 性能 —（以 cyber-city-score-loop-orchestration.md 登记矩阵为准）。
+生产登记：综合 80 · 视觉 71 · 功能 — · 性能 —（以 cyber-city-score-loop-orchestration.md 登记矩阵为准）。
 按看板：1) git fetch；2) 监控在途子代理与分支；3) 过门/合流/登记；4) 缺依赖先调研 docs/spec；5) 输出 Delta（必含四维度表）。
 ```
 
