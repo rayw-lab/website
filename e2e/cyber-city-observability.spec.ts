@@ -147,54 +147,94 @@ async function saveDump(testInfo: TestInfo, path: string, dump: SessionDump): Pr
 
 const wrapAngle = (a: number): number => Math.atan2(Math.sin(a), Math.cos(a));
 
+interface Waypoint {
+  x: number;
+  z: number;
+  radius: number;
+}
+
 /**
- * 遥测闭环自动驾驶（world-spike pollState 先例的转向扩展）：按住 W，每 0.5s 读
- * __worldSpike.state()，按目标方位差压/放 A/D（rotationY 约定：正 = 左转 = KeyA，
- * Player.steering += 1 / PhysicsVehicle steeringTarget 正左）。卡死自救：速度贴地
- * 超 45s → R 重生重跑（respawn 事件入 timeline 属合法动线，计数互证不受影响）。
+ * 遥测闭环路径导航（world-spike pollState 先例的转向扩展）：按住 W，每 0.5s 读
+ * __worldSpike.state()，按当前途径点方位差压/放 A/D（rotationY 约定：正 = 左转 =
+ * KeyA，Player.steering += 1 / PhysicsVehicle steeringTarget 正左）。
+ * 健壮性（SwiftShader 慢动作 + CI 负载抖动标定）：
+ *   · 卡死检测用「位移 < 2m 持续 75s」而非速度阈值——起步加速期在慢动作下可长达
+ *     数十秒墙钟，速度阈值会误判；卡死 → R 重生并把路径重置回首个途径点
+ *     （重生点 = 首幕出生锚点；respawn 事件入 timeline 属合法动线，计数互证不受影响）；
+ *   · 终点途径点进近段（<9m）超速则松油 + 点刹（Space=brake），防高速穿圈滑出。
  */
-async function driveTo(
+async function navigate(
   page: Page,
-  target: { x: number; z: number },
-  opts: { radius: number; timeoutMs: number },
+  path: Waypoint[],
+  totalTimeoutMs: number,
 ): Promise<{ ok: boolean; state: SpikeState }> {
   let steering: 'a' | 'd' | null = null;
+  let throttle = false;
+  let braking = false;
+  let index = 0;
   let state = await readSpike(page);
-  await page.keyboard.down('w');
+  let lastPos = { x: state.x, z: state.z };
+  let lastMoveAt = Date.now();
+
+  const setKeys = async (wantThrottle: boolean, wantBrake: boolean, wantSteer: 'a' | 'd' | null) => {
+    if (wantThrottle !== throttle) {
+      await (wantThrottle ? page.keyboard.down('w') : page.keyboard.up('w'));
+      throttle = wantThrottle;
+    }
+    if (wantBrake !== braking) {
+      await (wantBrake ? page.keyboard.down('Space') : page.keyboard.up('Space'));
+      braking = wantBrake;
+    }
+    if (wantSteer !== steering) {
+      if (steering) await page.keyboard.up(steering);
+      if (wantSteer) await page.keyboard.down(wantSteer);
+      steering = wantSteer;
+    }
+  };
+
   try {
-    const deadline = Date.now() + opts.timeoutMs;
-    let stuckSince = Date.now();
+    const deadline = Date.now() + totalTimeoutMs;
     while (Date.now() < deadline) {
       state = await readSpike(page);
-      const dx = target.x - state.x;
-      const dz = target.z - state.z;
-      if (Math.hypot(dx, dz) <= opts.radius) return { ok: true, state };
 
-      const desired = Math.atan2(-dz, dx); // forward = (cos r, 0, -sin r) 反解
-      const diff = wrapAngle(desired - state.yaw);
-      const want: 'a' | 'd' | null = diff > 0.12 ? 'a' : diff < -0.12 ? 'd' : null;
-      if (want !== steering) {
-        if (steering) await page.keyboard.up(steering);
-        if (want) await page.keyboard.down(want);
-        steering = want;
+      // 途径点推进（到达即切下一个；全部到达 = 成功）
+      while (
+        index < path.length &&
+        Math.hypot(path[index].x - state.x, path[index].z - state.z) <= path[index].radius
+      ) {
+        index++;
       }
+      if (index >= path.length) return { ok: true, state };
 
-      if (state.speedKmh > 3) stuckSince = Date.now();
-      else if (Date.now() - stuckSince > 45_000) {
-        if (steering) {
-          await page.keyboard.up(steering);
-          steering = null;
-        }
-        await page.keyboard.up('w');
+      const target = path[index];
+      const distance = Math.hypot(target.x - state.x, target.z - state.z);
+      const desired = Math.atan2(-(target.z - state.z), target.x - state.x); // forward=(cos r,0,-sin r) 反解
+      const diff = wrapAngle(desired - state.yaw);
+      const steer: 'a' | 'd' | null = diff > 0.12 ? 'a' : diff < -0.12 ? 'd' : null;
+
+      // 终点进近：超速则松油点刹（防穿圈滑出）；其余段全油门
+      const finalLeg = index === path.length - 1;
+      const overspeed = finalLeg && distance < 9 && state.speedKmh > 12;
+      await setKeys(!overspeed, overspeed, steer);
+
+      // 位移型卡死自救：R 重生（回首幕出生锚点）+ 路径重置
+      if (Math.hypot(state.x - lastPos.x, state.z - lastPos.z) > 2) {
+        lastPos = { x: state.x, z: state.z };
+        lastMoveAt = Date.now();
+      } else if (Date.now() - lastMoveAt > 75_000) {
+        await setKeys(false, false, null);
         await page.keyboard.press('r');
-        await page.waitForTimeout(3_000);
-        await page.keyboard.down('w');
-        stuckSince = Date.now();
+        await page.waitForTimeout(4_000);
+        index = 0;
+        state = await readSpike(page);
+        lastPos = { x: state.x, z: state.z };
+        lastMoveAt = Date.now();
       }
       await page.waitForTimeout(500);
     }
     return { ok: false, state };
   } finally {
+    await page.keyboard.up('Space').catch(() => {});
     if (steering) await page.keyboard.up(steering).catch(() => {});
     await page.keyboard.up('w').catch(() => {});
   }
@@ -266,11 +306,14 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     const respawned = await pollDump(page, (d) => d.counters.respawns >= 1, 30_000);
     expect(respawned.ok, 'R 重生应记入 respawn 事件').toBe(true);
 
-    // 遥测闭环驾驶：沿路走位（避开路口隔离墩）→ autodrive-lab 触发圈
-    const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 4, timeoutMs: 360_000 });
-    expect(leg1.ok, `途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`).toBe(true);
-    const leg2 = await driveTo(page, { x: 28, z: -28 }, { radius: 4.5, timeoutMs: 360_000 });
-    expect(leg2.ok, `泊车位 (28,-28) 应可达（实测 x=${leg2.state.x.toFixed(1)} z=${leg2.state.z.toFixed(1)}）`).toBe(true);
+    // 遥测闭环驾驶：沿路途径点走位（先北上 (0,-24) 避开路口隔离墩再东折）→
+    // autodrive-lab 泊车位。卡死自救重生后回首途径点重走（重生点 = 首幕锚点 (0,0)）。
+    const BAY_PATH: Waypoint[] = [
+      { x: 0, z: -24, radius: 5 },
+      { x: 28, z: -28, radius: 4.5 },
+    ];
+    const drive = await navigate(page, BAY_PATH, 900_000);
+    expect(drive.ok, `泊车位 (28,-28) 应可达（实测 x=${drive.state.x.toFixed(1)} z=${drive.state.z.toFixed(1)}）`).toBe(true);
 
     // 触发圈进入（poi-bounding-in → firstPoiIn 首达）
     const entered = await pollDump(page, (d) => d.funnel.firstPoiIn !== null, 60_000);
@@ -283,7 +326,7 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     while (Date.now() < deadline && !interacted) {
       const s = await readSpike(page);
       if (Math.hypot(28 - s.x, -28 - s.z) > 5.4) {
-        await driveTo(page, { x: 28, z: -28 }, { radius: 4, timeoutMs: 120_000 });
+        await navigate(page, [{ x: 28, z: -28, radius: 4 }], 180_000);
       }
       await page.keyboard.press('e');
       const hit = await pollDump(page, (d) => d.funnel.firstPoiInteract !== null, 5_000);
