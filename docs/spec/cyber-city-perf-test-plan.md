@@ -53,7 +53,9 @@
 
 ### 1.3 project 拓扑冻结（案 B · config diff 三处）
 
-**改判依据**（对 PERF-RS §3.5 案 A 的修正）：Playwright 的 `fullyParallel: false` 只保证**同一文件内**用例按序同 worker 执行；不同 spec 文件是独立的调度组，全局 `workers: 2` 下 `world-spike-perf.spec.ts` 与 `cyber-city-perf.spec.ts` 若同属一个 project 仍可能双 worker 并跑——两个 3D 上下文互相挤兑（batch 1 实测结论），双方采样全废。project 间 `dependencies` 是唯一的跨文件强序原语，故取 RS 自列的案 B（「语义最显式」）。
+**改判依据**（对 PERF-RS §3.5 案 A 的修正）：Playwright 的 `fullyParallel: false` 只保证**同一文件内**用例按序同 worker 执行；不同 spec 文件是独立的调度组，全局 `workers: 2` 下 `world-spike-perf.spec.ts` 与 `cyber-city-perf.spec.ts` 若同属一个 project 仍会双 worker 并跑——两个 3D 上下文互相挤兑（batch 1 实测结论），双方采样全废。**一手实验实证**（2026-08-27，仓库同版 `@playwright/test`）：单 project 双 spec 文件 + project 级 `fullyParallel: false` + 全局 `workers: 2` → 两文件时间戳完全重叠并跑（B 先 A 97ms 起步、双双 3s 全程重叠）——案 A 的「文件间按字母序串行」预期实测不成立。project 间 `dependencies` 是唯一的跨文件强序原语，故取 RS 自列的案 B（「语义最显式」）。
+
+> 旁注（观察项，非本批交付）：`visual-chromium` 块内既有注释「fullyParallel=false 钉死单 worker 顺序执行」是同一误解——该 project 4 个 spec 文件在全量跑时同样可能两两并跑；对截图基线的影响由容差吸收未曾显性，登记为 §7 观察项供 OBS/维护批次复核。
 
 **冻结 diff（PR-A 照抄，恰好三处）**：
 
@@ -79,7 +81,7 @@ dependencies: ['city-perf-chromium'],                // 原 ['world-perf-chromiu
 
 执行序（全量 e2e）：desktop-chromium + mobile-375 → world-chromium → world-perf-chromium → **city-perf-chromium** → visual-chromium。perf 双 project 采样期均整机独占；visual 基线截图仍殿后（既有语义不变）。
 
-**命名纪律**：新 spec 文件名 `e2e/cyber-city-perf.spec.ts`（功能测试方案 §2-1 家族命名沿用）；正因家族名撞 `cyber-city.*` 泛匹配，① 的 testIgnore 是必须行——实现时若发现该文件在 world-chromium 里被 `--list` 列出即为配置错误。
+**命名纪律**：新 spec 文件名 `e2e/cyber-city-perf.spec.ts`（功能测试方案 §2-1 家族命名沿用）。双重依据：① RS 案 A 提议的 `city-perf.spec.ts` 不命中 desktop-chromium 既有 testIgnore（`cyber-city.*` 前缀不匹配），会泄漏进桌面并行池，采样纪律直接破产——家族前缀保住该 ignore；② 正因家族名撞 world-chromium 的 `cyber-city.*` 泛匹配，上文 diff 第 ① 处 testIgnore 是必须行。实现时用 `--list` 验证：该文件**只**出现在 city-perf-chromium（§6-7 验收条）。
 
 ### 1.4 冻结时点执行底座盘点（PR-A 零依赖的证据）
 
@@ -237,6 +239,7 @@ dependencies: ['city-perf-chromium'],                // 原 ['world-perf-chromiu
 3. **分档采样矩阵**（`?quality=0|1|2` × 后端）：CI 单腿纪律下不做矩阵；PR-B（Quality 优化）若需分档对照，优先真机轨/本地带 GPU 环境执行，CI 侧按需加档位参数化用例（届时回本文件改 §1.3 预算）。
 4. **重试轮 jsonl 多行**（§2.4）：趋势脚本消费时取同 commit 最后一行；若未来做自动趋势工具，归 OBS 批次。
 5. **FXN-C1/VEH-C2 合流时序**：两 draft PR 若先合流，e2e 计数基线上移，本文件 §6-1 按「全量不降」语义自适应，数字不回改（功能测试方案 §5 注 1 同构）。
+6. **visual-chromium 并行注释勘误**（§1.3 旁注）：该 project 的「单 worker 顺序」注释与 Playwright 实测语义不符；是否需要为视觉基线补依赖链/单 worker 保证，归 OBS/维护批次按截图稳定性数据裁决，本正本只登记观察。
 
 ---
 
