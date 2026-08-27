@@ -7,7 +7,7 @@
 | 审计模型 | `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
-| 生产 tip | `main` @ `92e7f2d` |
+| 生产 tip | `main` @ `5598b0b` |
 
 ### 登记矩阵（**每次编排 Delta / 定时器回复必输出此表**）
 
@@ -127,7 +127,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | ① | doc | `main` | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合（含 VEH-RS） |
 | ② | **CC-TRANS-FX-C1** | ✅ PR [#52](https://github.com/rayw-lab/website/pull/52) 已合 |
 | ③ | **CC-VEH-C1** | ✅ PR [#54](https://github.com/rayw-lab/website/pull/54) 已合 |
-| ④ | **CC-AL-TRANS-FX** / **CC-AL-VEH** | 🔄 已派 Sol [AL-VEH](bc-4efdff28-0347-5335-a080-2e3e23d333ec) · [AL-TRANS-FX](bc-fc956329-ed74-5cb2-b073-408cf1cee12a) |
+| ④ | **CC-AL-TRANS-FX** / **CC-AL-VEH** | ✅ AL-TRANS-FX **GO** V5 **74** · [#55](https://github.com/rayw-lab/website/pull/55) 已合 · AL-VEH 🔄 |
 | ⑤ | 登记 | V5 专项门过门后更新诊断分（非生产视觉登记主路径） |
 
 ### 硬门
@@ -165,7 +165,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | ① | ✅ ADV [#47](https://github.com/rayw-lab/website/pull/47) + RS/BR [#48](https://github.com/rayw-lab/website/pull/48) 已合 |
 | ② | ✅ rubric [#49](https://github.com/rayw-lab/website/pull/49) + OBS [#51](https://github.com/rayw-lab/website/pull/51) 已合 |
 | ③ | ✅ OBS-C1 [#53](https://github.com/rayw-lab/website/pull/53) 已合 |
-| ④ | **CC-OBS-C2** [OBS-C2](bc-176d19c0-2b1a-5f78-80f8-4c68673a994c) 🔄 · **CC-FXN-C2** 驾驶反馈 [FXN-C2](bc-8a588416-7e21-5a33-a98e-a4a1fd6c62ed) 🔄 · **CC-FXN-C1** hint 包待机（VEH 已合，Reveal 热点排队） |
+| ④ | **CC-OBS-C2** PR [#57](https://github.com/rayw-lab/website/pull/57) draft · e2e 验收中 · **CC-FXN-C2** PR [#56](https://github.com/rayw-lab/website/pull/56) draft · **CC-FXN-C1** hint 包待机 |
 | ⑤ | CC-AL-FXN + 性能 human-gate 回填 |
 
 ## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流 · 待机至 Loop 6 后重审）
