@@ -111,6 +111,8 @@ interface RitualRun {
   clock: number;
   /** waitFor 尚未 resolve：充能环峰值处保持旋转（环多转一圈语义） */
   holding: boolean;
+  /** [CC-OBS-C1] transform-hold 已打（观测规格 §3.4：每次 run 至多 1 条） */
+  holdLogged: boolean;
   swapped: boolean;
   resolve: () => void;
   promise: Promise<void>;
@@ -213,6 +215,8 @@ export class TransformSystem {
     if (to === 'robot' && this._state === 'robot_idle') return Promise.resolve();
 
     this.setState('transforming');
+    // [CC-OBS-C1] 漏斗步③：变形入口（观测规格 §3.4 ritual/transform-start 行）
+    this.game.session.log('transform-start', { to });
 
     // reduced-motion：instant swap + 文字状态切换（Reveal 呈现），零动画窗
     if (this.reducedMotion) {
@@ -225,7 +229,15 @@ export class TransformSystem {
     const promise = new Promise<void>((resolve) => {
       resolveRun = resolve;
     });
-    this.ritual = { to, clock: 0, holding: false, swapped: false, resolve: resolveRun, promise };
+    this.ritual = {
+      to,
+      clock: 0,
+      holding: false,
+      holdLogged: false,
+      swapped: false,
+      resolve: resolveRun,
+      promise,
+    };
     this.ringSpin.value = 0;
     return promise;
   }
@@ -326,6 +338,11 @@ export class TransformSystem {
     // 充能环兼资产进度：峰值处等待 waitFor（环保持旋转，时钟不进光幕段）
     if (run.clock >= RING_IN && !run.swapped && !this.carAssetsReady) {
       run.holding = true;
+      // [CC-OBS-C1] holding 置 true 沿（观测规格 §3.4 transform-hold：每次 run 至多 1 条）
+      if (!run.holdLogged) {
+        run.holdLogged = true;
+        this.game.session.log('transform-hold');
+      }
     } else {
       run.holding = false;
       run.clock += dt;

@@ -129,6 +129,8 @@ export class Reveal {
     if (this.disposed) return;
     this.ctaArmed = true;
     this.applyState('robot_idle');
+    // [CC-OBS-C1] 漏斗步②：CTA armed（观测规格 §3.4 lifecycle/robot-idle 行）
+    this.game.session.log('robot-idle');
     console.info(
       '[reveal] 首幕就绪：robot_idle——CTA「变形 · 巡航态」可用（点击或 Space），' +
         `reduced-motion=${this.reducedMotion}`,
@@ -149,7 +151,7 @@ export class Reveal {
       case 'robot_idle':
         this.cta.hidden = false;
         this.cta.disabled = false;
-        this.hideHint();
+        this.hideHint('input');
         break;
       case 'transforming':
         // CITY-05 验收：变形期间按钮 disabled + 进度可见（进度条随 host 态由 CSS 驱动）
@@ -161,21 +163,31 @@ export class Reveal {
         break;
       case 'driving':
         // 再次按键即隐（实施方案 §1.2）
-        this.hideHint();
+        this.hideHint('input');
         break;
     }
   }
 
   private showHint(): void {
     this.hint.hidden = false;
+    // [CC-OBS-C1] ux/hint-shown（观测规格 §3.4）
+    this.game.session.log('hint-shown');
     this.hintFade?.kill();
-    this.hintFade = this.game.ticker.delay(HINT_FADE_DELAY, () => this.hideHint());
+    this.hintFade = this.game.ticker.delay(HINT_FADE_DELAY, () => this.hideHint('timeout'));
   }
 
-  private hideHint(): void {
+  /**
+   * [CC-OBS-C1] by 区分两类调用点（观测规格 §3.4 hint-dismissed 行）：
+   * HINT_FADE_DELAY 到期 → 'timeout'；applyState 驱动（driving/robot_idle）→ 'input'。
+   * 仅在提示确实可见时打点（初始 hidden 的空调用不算 dismiss）。
+   */
+  private hideHint(by: 'timeout' | 'input'): void {
     this.hintFade?.kill();
     this.hintFade = null;
-    this.hint.hidden = true;
+    if (!this.hint.hidden) {
+      this.hint.hidden = true;
+      this.game.session.log('hint-dismissed', { by });
+    }
   }
 
   private startRobotTick(): void {

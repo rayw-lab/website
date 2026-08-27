@@ -85,6 +85,8 @@ export class Player {
   rotationY = 0;
 
   private nippleJumpTimeout: ReturnType<typeof setTimeout> | null = null;
+  /** [CC-OBS-C1] boost-first 沿检测已打（观测规格 §3.4：每会话至多 1 条） */
+  private boostLogged = false;
 
   constructor(game: Game) {
     this.game = game;
@@ -139,7 +141,12 @@ export class Player {
     this.game.inputs.events.on('respawn', (action: { active: boolean }) => {
       if (this.state !== Player.STATE_DEFAULT) return;
 
-      if (action.active) this.respawn();
+      if (action.active) {
+        // [CC-OBS-C1] R 键重生（观测规格 §3.4 respawn 行：调用点区分 reason；
+        // 'unstuck' 枚举预留——屏上 unstuck 按钮未移植）
+        this.game.session.log('respawn', { reason: 'key' });
+        this.respawn();
+      }
     });
 
     // 悬挂（四轮齐跳；逐轮花活留给 Phase B）
@@ -187,6 +194,8 @@ export class Player {
 
         // 仍是四脚朝天/侧翻 → 拧回来；再等一轮防一次没成功
         if (vehicle.upsideDownActive) {
+          // [CC-OBS-C1] 自救翻跳（观测规格 §3.4 flip-jump 行：flipJump 调用点）
+          this.game.session.log('flip-jump');
           vehicle.flipJump();
           waitAndTest();
         }
@@ -199,6 +208,8 @@ export class Player {
     });
 
     vehicle.events.on('upsideDown', () => {
+      // [CC-OBS-C1] 翻覆沿（观测规格 §3.4 upside-down 行：既有订阅处一行接线）
+      this.game.session.log('upside-down');
       delay?.kill();
       waitAndTest();
     });
@@ -246,6 +257,12 @@ export class Player {
      * Boosting
      */
     if (actions.get('boost')?.active) this.boosting = 1;
+
+    // [CC-OBS-C1] boost-first 沿检测：首次 boosting === 1（观测规格 §3.4）
+    if (this.boosting === 1 && !this.boostLogged) {
+      this.boostLogged = true;
+      this.game.session.log('boost-first');
+    }
 
     /**
      * Braking（刹车压过油门）
@@ -298,7 +315,11 @@ export class Player {
 
       // 掉出世界兜底（folio 水面重生语义的折叠版）：底盘不进 Objects 注册表
       //（防 resetAll 覆盖重生位），低于 killElevation 由这里就近重生
-      if (this.position.y < this.game.world.killElevation) this.respawn();
+      if (this.position.y < this.game.world.killElevation) {
+        // [CC-OBS-C1] 坠落兜底重生（观测规格 §3.4 respawn 行 → reason 'fall'）
+        this.game.session.log('respawn', { reason: 'fall' });
+        this.respawn();
+      }
     }
     this.position2 = new THREE.Vector2(this.position.x, this.position.z);
 
