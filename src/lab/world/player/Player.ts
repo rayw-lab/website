@@ -98,6 +98,8 @@ export class Player {
   private nippleJumpTimeout: ReturnType<typeof setTimeout> | null = null;
   /** [CC-OBS-C1] boost-first 沿检测已打（观测规格 §3.4：每会话至多 1 条） */
   private boostLogged = false;
+  /** [CC-FXN-C6] brake-first 沿检测已打（boost-first 同构：每会话至多 1 条） */
+  private brakeLogged = false;
   /**
    * [CC-FXN-C2] 翻车自救可视化倒计时（秒；null = 不在自救窗口）。
    * 与 setUnstuck 的 Ticker.delay 同拍镜像（同一 delta 递减，暂停即冻结），
@@ -315,6 +317,13 @@ export class Player {
     if (actions.get('brake')?.active) {
       this.accelerating = 0;
       this.braking = 1;
+    }
+
+    // [CC-FXN-C6] brake-first 沿检测：首次 braking === 1（boost-first 同构一次性；
+    // F2 确认层的埋点面——DriveFeedback 刹车徽标走 index.ts 'brake' 双沿纯呈现）
+    if (this.braking === 1 && !this.brakeLogged) {
+      this.brakeLogged = true;
+      this.game.session.log('brake-first');
     }
 
     /**

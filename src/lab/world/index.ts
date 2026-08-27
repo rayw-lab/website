@@ -219,6 +219,29 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
     driveFeedback.setBoost(action.active);
   });
 
+  // [CC-FXN-C6] ⑥ 刹车徽标（loop8-fxn-audit §6-4 确认层补齐）：'brake'（Space/B/
+  // Ctrl）双沿即按即亮——boost ③ 同构；brake-first 埋点在 Player 意图结算沿打
+  //（本处纯呈现零埋点），intro filter/样式门双保险同上
+  game.inputs.events.on('brake', (action: { active: boolean }) => {
+    driveFeedback.setBrake(action.active);
+  });
+
+  // [CC-FXN-C6] ⑦ 悬挂跳脉冲 + suspension-jump 埋点：'suspensions'（F）激活沿——
+  // 呈现与埋点同源同拍；埋点节流 ≥1 设计秒（按住/连按只按沿计，防灌 ring；
+  // 观测规格 §3.4 随行加法行）。触屏降级轨：摇杆内环点按跳不经 'suspensions'
+  // 动作（Player 直写悬挂档），补订 nipple 'tap' 同一确认口——两来路共用节流
+  let lastJumpLogAt = -Infinity;
+  const onSuspensionJump = (): void => {
+    driveFeedback.suspensionPulse();
+    if (game.ticker.elapsed - lastJumpLogAt < 1) return;
+    lastJumpLogAt = game.ticker.elapsed;
+    game.session.log('suspension-jump');
+  };
+  game.inputs.events.on('suspensions', (action: { active: boolean }) => {
+    if (action.active) onSuspensionJump();
+  });
+  game.inputs.nipple.events.on('tap', onSuspensionJump);
+
   // CC-E9：POI 系统（12 楼触发圈 + 标点 + ?poi= 深链出生）——城市就位才挂载，
   // 独立分包默认零字节；ritual 模式触发圈照挂、深链出生让位首幕锚点（M3 纪律）
   let areas: Areas | null = null;

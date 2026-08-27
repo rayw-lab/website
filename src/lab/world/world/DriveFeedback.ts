@@ -11,6 +11,13 @@
 //   ⑤ 自动降档 toast（PERF-BR O1 确认层——quality-auto-drop 事件的呈现面）：
 //      独立 chip（[data-world-quality]）不与 respawn toast 共元素，两类 toast
 //      并发时纵向堆叠互不覆盖（CITY-FB-02 断言面零竞态）。
+// [CC-FXN-C6] 追加第六/七件（loop8-fxn-audit §6-4「F/刹车确认层无同等级证据」补齐，
+// 与 boost/cone-hit 同等级的专属可感确认）：
+//   ⑥ 刹车徽标（Space/B/Ctrl，[data-world-brake]）：'brake' 动作双沿即按即亮
+//      （boost 同构，青主轴色区分品红 boost）；与 boost 同排并列（底部徽标行），
+//      Shift+Space 并发时互不覆盖；
+//   ⑦ 悬挂跳脉冲（F，[data-world-jump]）：激活沿一次性 chip（碰撞脉冲同构驻留），
+//      与 suspension-jump 埋点同源同拍（index.ts 接线）。
 //
 // 纪律红线：
 //   · ritual_idle 恒等：样式层显式门控——host[data-world-state] 为 robot_idle /
@@ -18,8 +25,10 @@
 //     拦、物理体冻结，此门是恒等合同的机器兜底）；
 //   · CITY-03 循环动画配额：全部呈现为一次性事件驱动（pop 动画单次播完即静止、
 //     暗角/进度条走 transition），零 infinite 关键帧——不占 ≤2 处 idle 循环配额；
-//   · 埋点随行 = 复用：本层零新增白名单事件——cone-hit / respawn / boost-first /
-//     upside-down / flip-jump 均已在 OBS-C1 接线，本层只是这些既有事件的呈现面；
+//   · 埋点随行 = 复用：本层自身零事件调用——cone-hit / respawn / boost-first /
+//     upside-down / flip-jump 均已在 OBS-C1 接线，本层只是这些事件的呈现面；
+//     [CC-FXN-C6] ⑥⑦ 对应的 brake-first / suspension-jump 为同 PR 白名单加法
+//     （接线在 Player.ts 意图沿 / index.ts 装配段，本层仍纯呈现零埋点）；
 //   · reduced-motion：动画/过渡压至 0.01ms（状态指示保留——boost 徽标 / 倒计时
 //     是操作性信息而非动效，不因偏好剥夺）；
 //   · 样式内联注入（Reveal.injectStyles 先例），壳静态段零字节、LHCI 零影响；
@@ -49,6 +58,8 @@ export class DriveFeedback {
   private toast!: HTMLElement;
   private quality!: HTMLElement;
   private boost!: HTMLElement;
+  private brake!: HTMLElement;
+  private jump!: HTMLElement;
   private flip!: HTMLElement;
   private flipCount!: HTMLElement;
   private flipBar!: HTMLElement;
@@ -56,7 +67,9 @@ export class DriveFeedback {
   private toastFade: { kill(): void } | null = null;
   private qualityFade: { kill(): void } | null = null;
   private pulseFade: { kill(): void } | null = null;
+  private jumpFade: { kill(): void } | null = null;
   private boostActive = false;
+  private brakeActive = false;
   /** 倒计时显示缓存（0.1s 量化）：仅变化帧写 DOM，防 0.25s 节拍空写 */
   private rescueShown: number | null = null;
   private disposed = false;
@@ -124,6 +137,29 @@ export class DriveFeedback {
     }
   }
 
+  /** ⑥ [CC-FXN-C6] 刹车徽标（'brake' 动作双沿即按即亮；boost ③ 同构确认层） */
+  setBrake(active: boolean): void {
+    if (this.disposed || active === this.brakeActive) return;
+    this.brakeActive = active;
+    if (active) {
+      this.brake.hidden = false;
+      this.pop(this.brake);
+    } else {
+      this.brake.hidden = true;
+    }
+  }
+
+  /** ⑦ [CC-FXN-C6] 悬挂跳脉冲（'suspensions' 激活沿一次性；碰撞脉冲 ① 同构驻留） */
+  suspensionPulse(): void {
+    if (this.disposed) return;
+    this.jump.hidden = false;
+    this.pop(this.jump);
+    this.jumpFade?.kill();
+    this.jumpFade = this.game.ticker.delay(PULSE_DURATION, () => {
+      this.jump.hidden = true;
+    });
+  }
+
   /** ④ 翻车自救倒计时（Player.rescueCountdown 镜像；null = 收窗） */
   setRescue(remaining: number | null): void {
     if (this.disposed) return;
@@ -149,6 +185,7 @@ export class DriveFeedback {
     this.toastFade?.kill();
     this.qualityFade?.kill();
     this.pulseFade?.kill();
+    this.jumpFade?.kill();
     // 壳 HUD 元素归壳所有：撤走本层挂的属性，不留残迹
     if (this.speedEl) delete this.speedEl.dataset.boost;
     this.root.remove();
@@ -194,13 +231,33 @@ export class DriveFeedback {
     this.quality.dataset.worldQuality = '';
     this.quality.hidden = true;
 
-    stack.append(this.collision, this.toast, this.quality);
+    // ⑦ 悬挂跳脉冲 chip：样式全复用 .world-fb-chip（碰撞脉冲同构，零新关键帧）
+    this.jump = document.createElement('p');
+    this.jump.className = 'world-fb-chip world-fb-jump';
+    this.jump.dataset.worldJump = '';
+    this.jump.textContent = '悬挂弹跳';
+    this.jump.hidden = true;
+
+    stack.append(this.collision, this.toast, this.quality, this.jump);
+
+    // 底部徽标行：boost（品红）与 brake（青）并列——Shift+Space 并发互不覆盖
+    const badges = document.createElement('div');
+    badges.className = 'world-fb-badges';
 
     this.boost = document.createElement('p');
-    this.boost.className = 'world-fb-boost';
+    this.boost.className = 'world-fb-badge world-fb-boost';
     this.boost.dataset.worldBoost = '';
     this.boost.textContent = 'BOOST';
     this.boost.hidden = true;
+
+    // ⑥ 刹车徽标（Space/B）：boost 同构双沿确认，青主轴色
+    this.brake = document.createElement('p');
+    this.brake.className = 'world-fb-badge world-fb-brake';
+    this.brake.dataset.worldBrake = '';
+    this.brake.textContent = 'BRAKE';
+    this.brake.hidden = true;
+
+    badges.append(this.brake, this.boost);
 
     this.flip = document.createElement('div');
     this.flip.className = 'world-fb-flip';
@@ -232,7 +289,7 @@ export class DriveFeedback {
 
     this.flip.append(flipTitle, flipNum, flipTrack, flipHint);
 
-    this.root.append(vignette, stack, this.boost, this.flip);
+    this.root.append(vignette, stack, badges, this.flip);
     stage.appendChild(this.root);
   }
 
@@ -252,8 +309,11 @@ export class DriveFeedback {
 .world-fb-chip{margin:0;font-size:.85rem;letter-spacing:.06em;color:#eafffb;background:rgba(8,13,19,.78);border:1px solid rgba(73,197,182,.55);border-radius:999px;padding:.42em 1.25em;text-shadow:0 0 8px rgba(73,197,182,.55);box-shadow:0 0 14px rgba(73,197,182,.22)}
 .world-fb-chip[hidden]{display:none}
 .world-fb-collision{color:#ffe6d9;border-color:rgba(255,150,64,.6);text-shadow:0 0 8px rgba(255,150,64,.6);box-shadow:0 0 14px rgba(255,150,64,.25)}
-.world-fb-boost{position:absolute;left:50%;bottom:6.4rem;transform:translateX(-50%);margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92rem;font-weight:700;letter-spacing:.34em;padding:.4em 1.3em .4em 1.55em;color:#ffe9f4;background:rgba(24,7,16,.72);border:1px solid rgba(255,62,145,.75);border-radius:999px;text-shadow:0 0 12px rgba(255,62,145,.9);box-shadow:0 0 20px rgba(255,62,145,.35),inset 0 0 10px rgba(255,62,145,.22)}
-.world-fb-boost[hidden]{display:none}
+.world-fb-badges{position:absolute;left:50%;bottom:6.4rem;transform:translateX(-50%);display:flex;gap:.55rem}
+.world-fb-badge{margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92rem;font-weight:700;letter-spacing:.34em;padding:.4em 1.3em .4em 1.55em;border-radius:999px}
+.world-fb-badge[hidden]{display:none}
+.world-fb-boost{color:#ffe9f4;background:rgba(24,7,16,.72);border:1px solid rgba(255,62,145,.75);text-shadow:0 0 12px rgba(255,62,145,.9);box-shadow:0 0 20px rgba(255,62,145,.35),inset 0 0 10px rgba(255,62,145,.22)}
+.world-fb-brake{color:#eafffb;background:rgba(7,20,22,.72);border:1px solid rgba(73,197,182,.75);text-shadow:0 0 12px rgba(73,197,182,.9);box-shadow:0 0 20px rgba(73,197,182,.35),inset 0 0 10px rgba(73,197,182,.22)}
 [data-ws-speed][data-boost='1']{color:#ffe9f4!important;text-shadow:0 0 16px rgba(255,62,145,.95)!important}
 .world-fb-flip{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:15.5rem;padding:.9rem 1.2rem 1rem;background:rgba(8,12,19,.82);border:1px solid rgba(73,197,182,.6);border-radius:14px;box-shadow:0 0 26px rgba(73,197,182,.25)}
 .world-fb-flip[hidden]{display:none}

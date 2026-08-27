@@ -29,6 +29,7 @@ import { BuildingSigns } from './BuildingSigns';
 import { AdBoards } from './AdBoards';
 import { armSignageIgnition } from './SignageIgnition';
 import { StreetLamps } from './StreetLamps';
+import { SpeedTrap } from './SpeedTrap';
 import { FlightTrails } from './FlightTrails';
 import { applyNeonQuality } from './NeonFacade';
 
@@ -53,6 +54,8 @@ export interface City {
   adBoards: AdBoards;
   /** 街道灯杆 + 沿街广告灯箱 10 件（CC-L2-B2） */
   streetLamps: StreetLamps;
+  /** [CC-FXN-C6] G9 测速标牌（霓虹大街东段；TextCanvas 实时读数 + world-speedtrap 埋点） */
+  speedTrap: SpeedTrap;
   /** 中远景飞行光轨 3 航线（CC-L3-B3：CITY-03 配额第 3 席，≤800 点） */
   flightTrails: FlightTrails;
 }
@@ -85,6 +88,7 @@ export function mountCity(game: Game, options: CityOptions = {}): City {
   const buildingSigns = new BuildingSigns(game, map);
   const adBoards = new AdBoards(game);
   const streetLamps = new StreetLamps(game, map);
+  const speedTrap = new SpeedTrap(game, map);
   const flightTrails = new FlightTrails(game);
 
   // [CC-VIS-X3] stagger 点亮（楼序 = litChannels 距出生点近→远，广告板尾拍）
@@ -151,6 +155,8 @@ export function mountCity(game: Game, options: CityOptions = {}): City {
       } 面，图集合并每栋 2 draw call）· 全息广告板 ${adBoards.spots.length} 块` +
       `（静帧零配额，1 draw call）· stagger 点亮=${options.revealStagger ? 'reveal 后 150ms 逐楼' : '直出终态'}` +
       ` · 街道灯杆 ${streetLamps.spots.length} 杆（灯箱色族=路轴 neon 单源）` +
+      ` · [CC-FXN-C6] G9 测速牌就位（霓虹大街东段 (${speedTrap.position.x}, ${speedTrap.position.z})，` +
+      `实时 km/h + SPEED DEMON ≥90 + 会话纪录，3 draw call 静态小件）` +
       `· 剪影填充增密至 ${silhouette.instanceCount - silhouette.slotColliders.length}（高度方差三档）` +
       `；[CC-L3-ATM] 分层大气就位：双坡距离雾+近地雾床+方位辉光染雾（fogNode）· 地平线低云带（静态）` +
       `——Q0 全效/Q1 简化/Q2 线性雾兜底` +
@@ -172,6 +178,7 @@ export function mountCity(game: Game, options: CityOptions = {}): City {
     buildingSigns,
     adBoards,
     streetLamps,
+    speedTrap,
     flightTrails,
   };
 }
@@ -211,6 +218,7 @@ export {
 } from './SignageAtlas';
 export type { AtlasRegion, BuildingSignAtlas, SignIconKind } from './SignageAtlas';
 export { StreetLamps } from './StreetLamps';
+export { SpeedTrap } from './SpeedTrap';
 export { FlightTrails, setFlightTrails } from './FlightTrails';
 export {
   applyNeonQuality,
