@@ -2,8 +2,9 @@
 //
 // 数据驱动：buildings JSON 条目带 `heroGlb`（public/ 相对路径）即入册——在册两栋：
 //   · autodrive-lab（CC-BL1，tools/blender/generate-autodrive-lab.py，Draco+KTX2 154KB）
-//   · concept-garage（CC-BL2 沿街扩展，tools/blender/generate-concept-garage.py，
-//     Draco+KTX2 143KB）——台账见各自 public/models/*/README.md + asset-ledger。
+//   · concept-garage（CC-BL2 沿街扩展 + CC-BL2-PLUS 西端天际线段补洞，
+//     tools/blender/generate-concept-garage.py，Draco+KTX2 145KB）——台账见
+//     各自 public/models/*/README.md + asset-ledger。
 //
 // 回退合同（任务书「保留程序化路径作加载失败 / Q2 fallback」）：
 //   · Q2 挂载：**不发起加载**（止损档零 GLB 字节零解码），程序化体块原样；
