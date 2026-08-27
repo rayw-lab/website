@@ -8,7 +8,7 @@
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
-| 生产 tip | `main` @ `1ab3bb2`（登记 **92.5/70**） |
+| 生产 tip | `main` @ `7e59c64`（登记 **92.5/70**） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -57,12 +57,12 @@ BL2 沿街扩展（**PR #43 NO-GO 待机**）→ **CC-CAM 镜头/POI 多路** �
 | 模型 | **Fable5 xhigh** ×4 并行；审计待 **CC-AL-CAM**（Sol） |
 | PR #43 | **仍禁止合流**；相机批次与 BL2 解耦，过门后可 **CC-BL2-CAM 重审** |
 
-| ID | 分支（待建） | Agent | 状态 |
-|----|-------------|-------|------|
-| CC-CAM-RS | `cursor/cc-cam-github-survey-1d6f` | 派发中 | 🔄 GitHub 深搜 |
-| CC-CAM-DES | `cursor/cc-cam-shot-registry-design-1d6f` | 派发中 | 🔄 Shot schema 设计 |
-| CC-CAM-DATA | `cursor/cc-cam-shot-data-probe-1d6f` | 派发中 | 🔄 JSON + NDC 探针 |
-| CC-CAM-VIEW | `cursor/cc-cam-view-poi-framing-1d6f` | 派发中 | 🔄 View/Areas 接线 |
+| ID | 分支 | Agent | 状态 |
+|----|------|-------|------|
+| CC-CAM-RS | `cursor/cc-cam-github-survey-1d6f` | [CAM-RS](bc-115e402d-4831-5b34-9afd-3b050370bfd2) | 🔄 RUNNING |
+| CC-CAM-DES | `cursor/cc-cam-shot-registry-design-1d6f` | [CAM-DES](bc-05fd2270-ca68-58c7-a2d1-51e136e167e2) | 🔄 RUNNING |
+| CC-CAM-DATA | `cursor/cc-cam-shot-data-probe-1d6f` | [CAM-DATA](bc-030bfcdd-043c-56ed-b2ca-9376e06b1615) | 🔄 RUNNING |
+| CC-CAM-VIEW | `cursor/cc-cam-view-poi-framing-1d6f` | [CAM-VIEW](bc-48fe6c93-f96f-595b-85bc-0da189dfdff0) | 🔄 RUNNING |
 
 ## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流）
 
