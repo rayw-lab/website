@@ -127,7 +127,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | 步 | PR | 内容 |
 |----|-----|------|
 | ① | doc | `main` | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合（含 VEH-RS） |
-| ② | **CC-TRANS-FX-C1** | 变形窗粒子层（`TransformSystem` 节拍不变） |
+| ② | **CC-TRANS-FX-C1** | ✅ PR [#52](https://github.com/rayw-lab/website/pull/52) 已合 |
 | ③ | **CC-VEH-C1** | V 键 FPV + focus 策略（`View.ts` + `Inputs` + `Player`） |
 | ④ | **CC-AL-TRANS-FX** / **CC-AL-VEH** | Sol 独立审计 + 时间维证据 |
 | ⑤ | 登记 | V5 专项门过门后更新诊断分（非生产视觉登记主路径） |
