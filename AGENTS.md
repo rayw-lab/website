@@ -85,6 +85,10 @@
 每段收口即更新，禁止多处重复登记。测试跑法单源 = `docs/research/cyber-city-test-framework.md`；
 视觉打分单源 = `docs/research/cyber-city-visual-rubric.md`（帧优先协议见其 §4）。
 
+**编排 Delta / 定时器 `loop-cyber-city-orchestrate` 每次回复必输出登记矩阵四行**：
+综合 **98**、视觉 **98**、功能 **90**、性能 **85**（北极星）vs 当前生产登记（见看板「登记矩阵」表）。
+禁止沿用旧口径「登记 92.0/68」；功能/性能未登记时显式写 **—**。
+
 ## Cursor Cloud specific instructions
 
 本仓库是个人网站工程（Astro + TypeScript + MDX，部署到 GitHub Pages），总纲见 `docs/website-plan/master-plan.md`（第 7 章为技术实现）。Cloud Agent 环境由 `.cursor/environment.json` 定义：install 阶段运行 `.cursor/install.sh`（确保 Node 20+ / pnpm / git 并安装依赖），`astro-dev` 终端由 `.cursor/dev-server.sh` 启动 dev server。

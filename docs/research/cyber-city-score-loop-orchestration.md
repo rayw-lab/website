@@ -7,9 +7,20 @@
 | 审计模型 | `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
-| 北极星 | 综合 **98** · **视觉 98** · **功能 90** · **性能 85**（登记 **92.8/71**，Δ 见下） |
-| **指挥官约束** | CC-CAM 已合 main；**功能/性能须独立 rubric + 可观测证据登记** |
-| 生产 tip | `main` @ `c5b80e6`（视觉 **71/92.8** 已登记 · OBS-C1 RUNNING） |
+| 生产 tip | `main` @ `b80c67d` |
+
+### 登记矩阵（**每次编排 Delta / 定时器回复必输出此表**）
+
+| 维度 | 北极星 | 生产登记 | Δ | 登记来源 |
+|------|--------|----------|---|----------|
+| **综合** | **98** | **92.8** | +5.2 | AL-CAM 综合建议 + `scripts/score-loop.mjs` 五维 |
+| **视觉** | **98** | **71** | +27 | `cyber-city-visual-rubric-score.json`（AL-CAM 独立） |
+| **功能** | **90** | **—**（未登记） | — | OBS-C1 未合前禁止登记；正本 `cyber-city-function-rubric.md` |
+| **性能** | **85** | **—**（未登记） | — | 真机 human-gate §5.4 权威；正本见功能 rubric §7 |
+
+> **口径**：综合 98 / 视觉 98 / 功能 90 / 性能 85 为并列北极星；**禁止**用综合分或 LHCI 冒充功能/性能登记。旧定时器文案「登记 92.0/68」已作废。
+
+| **指挥官约束** | CC-CAM 已合 main；功能/性能须独立 rubric + 可观测证据登记 |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -80,7 +91,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | ① | doc | `main` | ✅ [#44](https://github.com/rayw-lab/website/pull/44)+[#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | ② | **CC-CAM-C1** | `main` | ✅ PR [#45](https://github.com/rayw-lab/website/pull/45) 已合 · e2e 52/52 · NDC 7/7 |
 | ③ | **CC-AL-CAM** | — | ✅ [AL-CAM](bc-a940fd9e-7869-57be-b1d9-990196d405c1) **GO** 独立视觉 **71** / 综合 **92.8** · 报告待合 |
-| ④ | 登记 | `main` | 🔄 父代理写入 **71/92.8**（AL-CAM GO） |
+| ④ | 登记 | `main` | ✅ **71/92.8** 已写入 `cyber-city-visual-rubric-score.json` |
 | ⑤ | CC-BL2-CAM | `cursor/cc-bl2-street-extension-1d6f` | CAM 镜头 + BL2 栈重审；过门后父代理合 PR #43 |
 
 ### 硬门（CC-CAM-C1）
@@ -185,7 +196,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 ## 纪律
 
-- 登记只认审计独立分（当前 **71/92.8** 待 JSON 落盘）
+- 登记只认审计独立分（见上表 **登记矩阵**，每次 Delta 必复述四维度）
 - **禁止降级模型**；缺依赖先调研再实现
 - tone mapping **等 Blender 路径验证后再开**
 - poster 永远排批次最后
@@ -193,3 +204,30 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 ## 定时器
 
 `loop-cyber-city-orchestrate` · 300s · 自动驾驶全马力
+
+### 定时器播报口径（**禁止再用「登记 92.0/68」**）
+
+编排代理每次回复须**首段**输出登记矩阵四行（综合/视觉/功能/性能：北极星 vs 生产登记 vs Δ），再写本窗口 Delta。
+
+**推荐 automation 文案**（与上表对齐）：
+
+```text
+自动驾驶全马力编排（禁止降级：实现 Fable5 xhigh，审计 Sol xhigh-fast）。
+北极星：综合 98 · 视觉 98 · 功能 90 · 性能 85。
+生产登记：综合 92.8 · 视觉 71 · 功能 — · 性能 —（以 cyber-city-score-loop-orchestration.md 登记矩阵为准）。
+按看板：1) git fetch；2) 监控在途子代理与分支；3) 过门/合流/登记；4) 缺依赖先调研 docs/spec；5) 输出 Delta（必含四维度表）。
+```
+
+### Delta 输出模板（父代理强制）
+
+```markdown
+## 登记矩阵
+| 维度 | 北极星 | 生产登记 | Δ |
+| 综合 | 98 | （当前） | … |
+| 视觉 | 98 | （当前） | … |
+| 功能 | 90 | （当前或 —） | … |
+| 性能 | 85 | （当前或 —） | … |
+
+## 本窗口 Delta
+（合流 / 子代理 / 下一拍）
+```
