@@ -14,6 +14,9 @@ const MOUNT_TIMEOUT = 100_000;
 // 本文件每个用例都要完整挂载一次 3D 引擎：
 // 1) 退出 fullyParallel（mode: default = 单 worker 按序执行），避免两个 SwiftShader
 //    3D 上下文并发挤兑 4 核 CPU（实测并发时帧时间恶化至用例饿死超时/页面无响应）；
+//    [CC-VEH-E2E-FIX] 文件内串行挡不住跨 project 并发（MOB-E2E-03 也有一次完整
+//    car 3D 挂载）——本文件已收编进 playwright.config 的 car-chromium 独占 project，
+//    mode:'default' 保留作为配置漂移的兜底；
 // 2) 整体放宽超时。
 test.describe.configure({ mode: 'default', timeout: 180_000 });
 
@@ -30,6 +33,24 @@ async function tap(page: Page, selector: string): Promise<void> {
   await btn.dispatchEvent('click');
 }
 
+/**
+ * 停掉展台自转（走 OrbitControls 'start' 的既有用户接管路径：真实指针拖拽）。
+ * 根因（CAR-E2E-01/05 180s 超时，AL-VEH-R2 阻断项）：autoRotate 让 SwiftShader
+ * 软渲染以 ~3s/帧 连续重绘，测试每次 CDP/JS 往返都要排队等当前帧渲完——
+ * 实测每步固定 3-6s，几十步断言累计被推过 180s 线（DEBUG=pw:api 取证）。
+ * 停转后 needsRender 归静，断言回到毫秒级。真 GPU 上自转无此问题，非站点缺陷。
+ */
+async function stopShowcaseRotation(page: Page): Promise<void> {
+  const box = await page.locator('[data-cfg-canvas]').boundingBox();
+  if (!box) throw new Error('canvas 不可见，无法停止展台自转');
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2;
+  await page.mouse.move(cx, cy);
+  await page.mouse.down();
+  await page.mouse.move(cx + 24, cy, { steps: 3 });
+  await page.mouse.up();
+}
+
 test.describe('3D 车辆配置器', () => {
   test('CAR-E2E-01 facade → ready：canvas 呈现、HUD 揭示、后端徽标显示实际渲染后端', async ({ page, request }) => {
     // SSR 合同：idle 态 + 控制坞 inert + poster
@@ -42,6 +63,7 @@ test.describe('3D 车辆配置器', () => {
     await expectImageLoaded(page.locator('.lab-poster'));
 
     const host = await waitLabReady(page, MOUNT_TIMEOUT);
+    await stopShowcaseRotation(page);
 
     // canvas 有真实绘制尺寸
     const canvas = page.locator('[data-cfg-canvas]');
@@ -104,6 +126,7 @@ test.describe('3D 车辆配置器', () => {
   test('CAR-E2E-05 交互链路：车漆/分区 Tab/轮毂切换 + URL 回写与默认值清理', async ({ page }) => {
     await page.goto(PAGE_URL);
     await waitLabReady(page, MOUNT_TIMEOUT);
+    await stopShowcaseRotation(page);
 
     // 车漆：熔岩红 → aria-pressed 迁移 + HUD + URL
     await tap(page, '[data-cfg-paint="crimson"]');
