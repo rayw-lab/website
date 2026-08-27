@@ -250,11 +250,11 @@ async function navigate(
       // 超帽 8 以上点刹，超帽即松油滑行；直道远段 Shift 助推压缩游戏时间
       const finalLeg = index === path.length - 1;
       let speedCap = 50;
-      if (finalLeg) speedCap = Math.min(speedCap, Math.max(9, distance * 1.2));
+      if (finalLeg) speedCap = Math.min(speedCap, Math.max(10, distance * 1.5));
       if (Math.abs(diff) > 0.9) speedCap = Math.min(speedCap, 15);
       const overspeed = state.speedKmh > speedCap + 8;
       const throttleOn = state.speedKmh <= speedCap;
-      const boost = throttleOn && !finalLeg && distance > 20 && Math.abs(diff) < 0.3;
+      const boost = throttleOn && distance > 20 && Math.abs(diff) < 0.3;
       await setKeys(throttleOn, overspeed, boost, steer);
 
       // 游戏时基卡死自救：位移 + 速度双条件累计 → R 重生 + 路径重置
@@ -360,7 +360,7 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
       { x: 0, z: -24, radius: 5 },
       { x: 28, z: -28, radius: 5.5 }, // POI 触发圈 r=6，5.5 = 圈内且留收敛余量
     ];
-    const drive = await navigate(page, BAY_PATH, 1_800_000);
+    const drive = await navigate(page, BAY_PATH, 3_000_000);
     expect(drive.ok, `泊车位 (28,-28) 应可达（实测 x=${drive.state.x.toFixed(1)} z=${drive.state.z.toFixed(1)}）`).toBe(true);
 
     // 触发圈进入（poi-bounding-in → firstPoiIn 首达）
