@@ -165,7 +165,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 |----|------|
 | ① | ✅ ADV [#47](https://github.com/rayw-lab/website/pull/47) + RS/BR [#48](https://github.com/rayw-lab/website/pull/48) 已合 |
 | ② | ✅ rubric [#49](https://github.com/rayw-lab/website/pull/49) + OBS [#51](https://github.com/rayw-lab/website/pull/51) 已合 |
-| ③ | **CC-OBS-C1** — [OBS-C1](bc-e4a0b429-3131-5993-a53e-a69eb0e4bce4) 🔄 RUNNING |
+| ③ | **CC-OBS-C1** — [OBS-C1](bc-e4a0b429-3131-5993-a53e-a69eb0e4bce4) 🔄 RUNNING · 已 push `1a79fee` |
 | ④ | CC-FXN-C1…（P0 交互，单 PR 单主题） |
 | ⑤ | CC-AL-FXN + 性能 human-gate 回填 |
 
