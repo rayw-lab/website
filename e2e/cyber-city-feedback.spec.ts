@@ -1,12 +1,18 @@
 // `/`（Full Entry 科技城）驾驶反馈包 + 键位卡/引导 e2e —— FXN 功能族随行断言：
-//   describe ①（CC-FXN-C2）驾驶反馈四件；
+//   describe ①（CC-FXN-C2 四件 + CC-FXN-C6 两件 + G9 测速牌）驾驶反馈；
 //   describe ②③（CC-FXN-C1）键位卡再唤出/首驶引导/触屏分文案（文件尾）。
 //
-// 被测面 = world/DriveFeedback.ts 四件反馈（功能 rubric F2「反馈闭环」确认层）：
+// 被测面 = world/DriveFeedback.ts 反馈件（功能 rubric F2「反馈闭环」确认层）：
 //   ① 碰撞脉冲（锥桶/隔离墩统一 total，HUD 节拍沿检测同源同拍）；
 //   ② respawn toast（reason 随 player 'respawn' 事件透传：key/fall）；
 //   ③ boost 徽标 + 速度数字辉光（'boost' 动作双沿即按即亮）；
-//   ④ 翻车自救可视化倒计时（Player.rescueCountdown 镜像，R 立即复位提示）。
+//   ④ 翻车自救可视化倒计时（Player.rescueCountdown 镜像，R 立即复位提示）；
+//   ⑥ 刹车徽标（[CC-FXN-C6] loop8-fxn-audit §6-4：Space/B 'brake' 双沿即按即亮，
+//      boost 同构确认层 + brake-first 埋点互证）；
+//   ⑦ 悬挂跳脉冲（[CC-FXN-C6]：F 'suspensions' 激活沿一次性 chip +
+//      suspension-jump 埋点互证）。
+// 另 [CC-FXN-C6] G9 测速牌（city/SpeedTrap.ts）：牌面是世界内 canvas 纹理
+//（DOM 不可断言），驶越取证走 world-speedtrap 埋点 + 截图（FB-09）。
 //
 // 纪律断言（与 cyber-city.spec.ts 同一套硬门）：
 //   - ritual_idle 恒等：robot_idle / transforming 期反馈层整层 display:none（样式门）；
@@ -39,6 +45,8 @@ const SEL = {
   collision: '[data-world-collision]',
   toast: '[data-world-toast]',
   boost: '[data-world-boost]',
+  brake: '[data-world-brake]',
+  jump: '[data-world-jump]',
   flip: '[data-world-flip]',
   flipCount: '[data-world-flip-count]',
 } as const;
@@ -57,26 +65,45 @@ async function dumpSession(page: Page): Promise<{
   });
 }
 
-test.describe('科技城驾驶反馈包（CC-FXN-C2 · world-chromium 串行 project）', () => {
+/** __worldSpike.state()（既有遥测钩子；FB-09 驶越进度读数用） */
+async function spikeState(page: Page): Promise<{ x: number; z: number; speedKmh: number }> {
+  return page.evaluate(() => {
+    const spike = (window as unknown as {
+      __worldSpike?: { state(): { x: number; z: number; speedKmh: number } };
+    }).__worldSpike;
+    if (!spike) throw new Error('__worldSpike 未挂载');
+    return spike.state();
+  });
+}
+
+test.describe('科技城驾驶反馈包（CC-FXN-C2/C6 · world-chromium 串行 project）', () => {
   // 挂载成本纪律同 cyber-city.spec.ts：串行 + 文件级超时给足余量
   test.describe.configure({ mode: 'serial', timeout: 420_000 });
 
   // ---------------------------------------------------------------------------
-  // CITY-FB-01/02/03/04 单例全链（一次 ritual 挂载串四件断言，挂载成本纪律
+  // CITY-FB-01…04 + 07/08/09 单例全链（一次 ritual 挂载串全部断言，挂载成本纪律
   // 同 CITY-VEH-01..06 先例）：
   //   FB-01 ritual_idle 恒等门：反馈层挂载即存在，但 robot_idle / transforming
-  //         全程 display:none（样式门机器兜底）；car_ready 放行后四件待机隐藏；
+  //         全程 display:none（样式门机器兜底）；car_ready 放行后六件待机隐藏；
   //   FB-03 boost：Shift 即按即亮（徽标可见 + [data-ws-speed] 辉光通道挂
   //         data-boost），松开即灭（双沿事件驱动，非节拍轮询）；
+  //   FB-07 [CC-FXN-C6] 刹车徽标：Space 即按即亮/松开即灭（boost 同构双沿）+
+  //         dump 里 brake-first 事件（埋点随行互证）；
+  //   FB-08 [CC-FXN-C6] 悬挂跳脉冲：F 激活沿 chip 呈现 + dump 里
+  //         suspension-jump 事件；
   //   FB-02 respawn toast：R 复位 → 「已复位」toast 呈现 + dump 里 respawn
   //         事件带 reason='key'（埋点随行互证）；
   //   FB-04 翻车倒计时：#debug 句柄置车体四脚朝天 → upsideDown 沿 → 倒计时件
   //         呈现（数字 ∈ [0,3] 一位小数）+ dump 里 upside-down 事件；R 复位
-  //         翻正 → 收窗即藏。
+  //         翻正 → 收窗即藏；
+  //   FB-09 [CC-FXN-C6] G9 测速牌驶越：#debug 句柄摆位测速区西侧朝东 → 持续 W
+  //         穿越（牌位 (68,-14.8)，进 30m/出 34m 滞回）→ 驶离沿
+  //         world-speedtrap{kmh,isRecord} 埋点互证（OBS 纪律：只断存在性/
+  //         数据形状，不对 t/速度绝对值设阈——kmh 只要求 >0 的数字）。
   // ---------------------------------------------------------------------------
-  test('CITY-FB-01/02/03/04 反馈全链：恒等门 → boost 双沿 → respawn toast → 翻车倒计时', async ({ page }) => {
-    // 全链 = 挂载 + 变形 + 三段交互；对齐 CITY-VEH 全链先例放宽至 600s
-    test.setTimeout(600_000);
+  test('CITY-FB-01…09 反馈全链：恒等门 → boost/刹车双沿 → 悬挂跳脉冲 → respawn toast → 翻车倒计时 → 测速牌驶越', async ({ page }) => {
+    // 全链 = 挂载 + 变形 + 五段交互 + 测速区驶越；CITY-VEH 先例 600s 上再留驶越余量
+    test.setTimeout(900_000);
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
 
@@ -97,9 +124,9 @@ test.describe('科技城驾驶反馈包（CC-FXN-C2 · world-chromium 串行 pro
     await expect(feedback).toBeHidden();
     await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 120_000 });
 
-    // —— FB-01b car_ready 放行：样式门打开，但零事件时四件反馈全部待机隐藏
+    // —— FB-01b car_ready 放行：样式门打开，但零事件时六件反馈全部待机隐藏
     await expect(feedback).toBeVisible();
-    for (const sel of [SEL.collision, SEL.toast, SEL.boost, SEL.flip]) {
+    for (const sel of [SEL.collision, SEL.toast, SEL.boost, SEL.brake, SEL.jump, SEL.flip]) {
       await expect(page.locator(sel)).toBeHidden();
     }
 
@@ -117,6 +144,36 @@ test.describe('科技城驾驶反馈包（CC-FXN-C2 · world-chromium 串行 pro
     }
     await expect(boost).toBeHidden();
     await expect(page.locator('[data-ws-speed]')).not.toHaveAttribute('data-boost', '1');
+
+    // —— FB-07 [CC-FXN-C6] 刹车徽标双沿：Space 即按即亮（boost 同构；car_ready 后
+    // Space 已归还刹车——CTA 仅 intro 上下文）+ brake-first 埋点互证
+    const brake = page.locator(SEL.brake);
+    await page.keyboard.down('Space');
+    try {
+      await expect(brake).toBeVisible({ timeout: 15_000 });
+      await expect(brake).toHaveText('BRAKE');
+      await page.screenshot({ path: 'test-results/feedback-brake.png' });
+    } finally {
+      await page.keyboard.up('Space').catch(() => {});
+    }
+    await expect(brake).toBeHidden();
+    const dumpAfterBrake = await dumpSession(page);
+    expect(
+      dumpAfterBrake.events.some((e) => e.type === 'brake-first'),
+      '刹车徽标呈现必须与 brake-first 埋点同证（OBS §3.4 随行加法行）',
+    ).toBe(true);
+
+    // —— FB-08 [CC-FXN-C6] 悬挂跳脉冲：F 激活沿一次性 chip + suspension-jump 埋点
+    const jump = page.locator(SEL.jump);
+    await page.keyboard.press('f');
+    await expect(jump).toBeVisible({ timeout: 15_000 });
+    await expect(jump).toContainText('悬挂弹跳');
+    await page.screenshot({ path: 'test-results/feedback-jump.png' });
+    const dumpAfterJump = await dumpSession(page);
+    expect(
+      dumpAfterJump.events.some((e) => e.type === 'suspension-jump'),
+      '悬挂跳脉冲呈现必须与 suspension-jump 埋点同证',
+    ).toBe(true);
 
     // —— FB-02 respawn toast：R 复位（key 来路）→ toast 呈现 + 埋点互证
     await page.keyboard.press('r');
@@ -177,6 +234,59 @@ test.describe('科技城驾驶反馈包（CC-FXN-C2 · world-chromium 串行 pro
     await page.keyboard.press('r');
     await expect(flip).toBeHidden({ timeout: 60_000 });
 
+    // —— FB-09 [CC-FXN-C6] G9 测速牌驶越：#debug 句柄把车摆到霓虹大街东段测速区
+    // 西侧 (30,-6) 朝东（identity 四元数 = forward +X），持续 W 直行穿越——
+    // 进区（距牌 (68,-14.8) ≤30m）牌面实时读数，驶离（≥34m，x≈101）打
+    // world-speedtrap{kmh,isRecord}。牌面是世界内 canvas 纹理（DOM 不可断言），
+    // 埋点是唯一机读证据面；速度绝对值不设阈（SwiftShader 纪律），只断 >0 数字。
+    await page.evaluate(() => {
+      const game = (window as unknown as {
+        __worldSpikeGame?: {
+          physicalVehicle: {
+            chassis: {
+              physical: {
+                body: {
+                  setTranslation(t: { x: number; y: number; z: number }, wake: boolean): void;
+                  setRotation(q: { x: number; y: number; z: number; w: number }, wake: boolean): void;
+                  setLinvel(v: { x: number; y: number; z: number }, wake: boolean): void;
+                  setAngvel(v: { x: number; y: number; z: number }, wake: boolean): void;
+                };
+              };
+            };
+          } | null;
+        };
+      }).__worldSpikeGame;
+      const body = game?.physicalVehicle?.chassis.physical.body;
+      if (!body) throw new Error('#debug 句柄或物理车缺席');
+      // 离地净高 0.92 + 0.18 落差防穿地（moveTo 同口径）
+      body.setTranslation({ x: 30, y: 1.1, z: -6 }, true);
+      body.setRotation({ x: 0, y: 0, z: 0, w: 1 }, true);
+      body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+    });
+
+    await page.keyboard.down('w');
+    try {
+      // 途中取证：车已深入测速区（x>45）拍一帧（牌面入画，人读证据）
+      await expect
+        .poll(async () => (await spikeState(page)).x, { timeout: 120_000 })
+        .toBeGreaterThan(45);
+      await page.screenshot({ path: 'test-results/feedback-speedtrap.png' });
+      // 驶离沿埋点（SwiftShader 慢动作下持续直行至事件出现）
+      await expect
+        .poll(
+          async () => (await dumpSession(page)).events.some((e) => e.type === 'world-speedtrap'),
+          { timeout: 240_000 },
+        )
+        .toBe(true);
+    } finally {
+      await page.keyboard.up('w').catch(() => {});
+    }
+    const trapEvent = (await dumpSession(page)).events.find((e) => e.type === 'world-speedtrap');
+    expect(typeof trapEvent?.data?.kmh, 'kmh 应为数字').toBe('number');
+    expect((trapEvent?.data?.kmh as number) > 0, '通过最高速应 > 0').toBe(true);
+    expect(trapEvent?.data?.isRecord, '会话首次通过必刷新纪录（isRecord=true）').toBe(true);
+
     expect(errors, '反馈全链零未捕获异常').toEqual([]);
   });
 
@@ -212,6 +322,16 @@ test.describe('科技城驾驶反馈包（CC-FXN-C2 · world-chromium 串行 pro
       await page.keyboard.up('Shift').catch(() => {});
     }
     await expect(boost).toBeHidden();
+
+    // [CC-FXN-C6] 刹车徽标同为操作性信息：RM 腿照常呈现（仅动画压 0）
+    const brake = page.locator(SEL.brake);
+    await page.keyboard.down('Space');
+    try {
+      await expect(brake).toBeVisible({ timeout: 15_000 });
+    } finally {
+      await page.keyboard.up('Space').catch(() => {});
+    }
+    await expect(brake).toBeHidden();
 
     // toast 照常呈现
     await page.keyboard.press('r');

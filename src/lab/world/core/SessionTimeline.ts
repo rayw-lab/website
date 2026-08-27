@@ -31,12 +31,13 @@ type EventFamily =
   | 'poi'
   | 'camera'
   | 'goal'
+  | 'challenge'
   | 'perf'
   | 'ux'
   | 'error';
 
 /**
- * 事件白名单 v1（§3.4 冻结，32 type / 9 族；空格分隔紧凑编码控体积。
+ * 事件白名单 v1（§3.4 冻结，37 type / 10 族；空格分隔紧凑编码控体积。
  * [CC-FXN-C1] ux 族随行加法：hint-recall {via: 'key' | 'button'}——键位卡再唤出。
  * [CC-FXN-C4] goal 族随行加法（F6 探索计数 n/12）：explore-restore {n, total}
  * （localStorage 跨会话进度还原）· explore-progress {id, n, total}（首次发现某
@@ -48,16 +49,21 @@ type EventFamily =
  * world-quest {action: 'shown'|'reached'|'chain-complete'|'collapsed'|'expanded',
  * step, targetId, elapsedMs}（主链首两分钟流失点漏斗）· ux 族 idle-nudge
  * {targetId}（idle-30s 消费——空闲主动引导的可观测面，QuestLine.idleNudge()）。
+ * [CC-FXN-C6] 随行加法（loop8-fxn-audit §6-4 F2 确认层 + G9 测速牌，37 type / 10 族）：
+ * drive 族 brake-first（首次 braking===1，boost-first 同构一次性）· suspension-jump
+ * （F/摇杆点按激活沿，装配段节流 ≥1 设计秒）；新增 challenge 族 world-speedtrap
+ * {kmh, isRecord}（测速区驶离沿，每次通过至多 1 条 + 5 设计秒冷却）。
  * 改动纪律（§3.6）：加法（新增 type / data 字段）同 PR 修订规格表、
  * schemaVersion 不动；破坏性（改名/删除/改语义）schemaVersion +1 且消费方同 PR 适配。
  */
 const WHITELIST: Readonly<Record<EventFamily, string>> = {
   lifecycle: 'mount ready world-reveal robot-idle dispose',
   ritual: 'transform-start transform-hold world-transform',
-  drive: 'world-drive-start respawn cone-hit boost-first upside-down flip-jump',
+  drive: 'world-drive-start respawn cone-hit boost-first brake-first suspension-jump upside-down flip-jump',
   poi: 'poi-bounding-in poi-bounding-out world-poi deep-link',
   camera: 'world-drive-view shot-apply shot-interrupt',
   goal: 'explore-restore explore-progress explore-complete world-quest',
+  challenge: 'world-speedtrap',
   perf: 'quality-auto-drop',
   ux: 'hint-shown hint-dismissed hint-recall esc-menu-open idle-30s idle-nudge',
   error: 'pageerror context-lost',
