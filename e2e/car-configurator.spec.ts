@@ -34,21 +34,19 @@ async function tap(page: Page, selector: string): Promise<void> {
 }
 
 /**
- * 停掉展台自转（走 OrbitControls 'start' 的既有用户接管路径：真实指针拖拽）。
+ * 停掉展台自转：点一次当前已选中的「车漆」分区 Tab——tab 点击 handler 的产品
+ * 行为就是 `controls.autoRotate = false`（+950ms flyTo 归位补间），一次
+ * dispatchEvent 往返即生效，对选中态/面板断言零干扰。
  * 根因（CAR-E2E-01/05 180s 超时，AL-VEH-R2 阻断项）：autoRotate 让 SwiftShader
  * 软渲染以 ~3s/帧 连续重绘，测试每次 CDP/JS 往返都要排队等当前帧渲完——
  * 实测每步固定 3-6s，几十步断言累计被推过 180s 线（DEBUG=pw:api 取证）。
  * 停转后 needsRender 归静，断言回到毫秒级。真 GPU 上自转无此问题，非站点缺陷。
+ * 注意不要用 canvas 指针拖拽停转（OrbitControls 'start' 路径）：trace 实测
+ * ① 每个鼠标事件都走 CDP 输入管线排队等渲染帧（4 事件 ≈ 60s）；② enableDamping
+ * 动量按 (1-0.08)^n 衰减需 ~150 帧归零，软渲染下等于再连续重绘数分钟。
  */
 async function stopShowcaseRotation(page: Page): Promise<void> {
-  const box = await page.locator('[data-cfg-canvas]').boundingBox();
-  if (!box) throw new Error('canvas 不可见，无法停止展台自转');
-  const cx = box.x + box.width / 2;
-  const cy = box.y + box.height / 2;
-  await page.mouse.move(cx, cy);
-  await page.mouse.down();
-  await page.mouse.move(cx + 24, cy, { steps: 3 });
-  await page.mouse.up();
+  await tap(page, '[data-cfg-tab="paint"]');
 }
 
 test.describe('3D 车辆配置器', () => {
