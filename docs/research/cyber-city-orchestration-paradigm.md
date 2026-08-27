@@ -32,11 +32,11 @@
 | 角色 | model slug | 备注 |
 |------|-----------|------|
 | 父代理（编排） | 产品/账号设置决定 | 不受本表限制（AGENTS.md §1） |
-| 实现子代理（Fable5） | `claude-fable-5-thinking-xhigh` | W1–W7 全部实现 Task 实战验证 |
-| 审计子代理（Sol） | `gpt-5.6-sol-xhigh-fast` | **L0 起为审计标准配置**（异族模型，避免同族自证偏差） |
-| （历史）波次审计 | `claude-fable-5-thinking-xhigh` | W1–W4 的 CC-A1~A4 由 Fable5 独立 Task 承担；L0 起已切换为 Sol，新 Loop 不再沿用 |
+| **全部子代理 Task**（实现 / 审计 / 顾问 / 调研 / 脑暴 / 文档 / 测试） | `claude-fable-5-thinking-xhigh` | **L8 起标准配置**（2026-08-27 决策）；编排思路、独立审计、登记 JSON 均走 Fable5 |
+| （历史）L0–L7 审计 | `gpt-5.6-sol-xhigh-fast` | L0–L7 曾用 Sol 异族审计；**已停派**，历史审计分仍有效 |
+| （宽限）在途 Sol Task | `gpt-5.6-sol-xhigh-fast` | **已派单未中止的 Sol 可跑完**，登记分与放行结论照常采纳（如 CC-AL-FXN → 功能 84） |
 
-降级遵循 AGENTS.md §3 明示降级规则；子代理回复第一行自报实际 slug。
+**L8+ 纪律**：新派 Task 一律 Fable5 xhigh；审计仍须独立分支、零业务代码、fresh 取证，纪律不变，仅执行模型统一。降级遵循 AGENTS.md §3；子代理回复第一行自报实际 slug。
 
 ## 2. 七段实战范式（W1–W4 + L0–L2）
 
@@ -194,7 +194,7 @@
 3. [ ] 裁决批次边界并写死：本 Loop 做什么、明确不做什么（后置项点名）；执行中禁止扩批。
 4. [ ] 裁决串并行与 PR 形态：默认单 PR 串行；三件套式正交基建才并行；补洞/清账才开栈（登记栈序与 base）。
 5. [ ] 按 §4.2 骨架写实现 Task prompt，派 `claude-fable-5-thinking-xhigh`。
-6. [ ] 实现完成 → 看板登记（分支/PR/自评分/综合分）→ 按 §4.3 骨架派审计 Task（`gpt-5.6-sol-xhigh-fast`）。
+6. [ ] 实现完成 → 看板登记（分支/PR/自评分/综合分）→ 按 §4.3 骨架派审计 Task（`claude-fable-5-thinking-xhigh`；在途 Sol 宽限见 §1.2）。
 7. [ ] 审计放行 → 父代理按指定顺序/解法合并 → 更新看板与生产 tip；有条件放行 → 条件清账后合并。
 8. [ ] 审计卡门 → 按审计点名缺口开定向补洞段（回到 5），不降门、不硬闯、不推倒重来。
 9. [ ] Loop 收口：AL* 的下轮建议登记为下个 Loop 进入条件；核对 poster 等「批次最后」项已真正执行。
@@ -266,4 +266,4 @@ Full Repository Path: /workspace (https://github.com/rayw-lab/website)
 
 ---
 
-*CC-orchestration-paradigm · 2026-08-26 — 只读归纳 + 文档交付，零业务代码改动；精华版见 `AGENTS.md`「提分 Loop 编排范式」小节。*
+*CC-orchestration-paradigm · 2026-08-26（§1.2 模型表 2026-08-27 更新：L8 起全栈 Fable5）— 只读归纳 + 文档交付，零业务代码改动；精华版见 `AGENTS.md`「提分 Loop 编排范式」小节。*
