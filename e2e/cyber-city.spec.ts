@@ -70,6 +70,13 @@ const SEL = {
   backend: '[data-world-backend]',
 } as const;
 
+/**
+ * [CC-VEH-VIEW] 驾驶双视角 DOM 契约（spec cyber-city-vehicle-camera.md §5.2）：
+ * host `data-drive-view` = third|fpv（Reveal 镜像 'world-drive-view' 埋点）；
+ * **car_ready 起才挂属性**，robot_idle 期间属性缺席（DOM 面恒等）。
+ */
+const DRIVE_VIEW_ATTR = 'data-drive-view';
+
 /** 状态机等待（SwiftShader 校准，文件头⑤）：自动挂载静置 1.8s + 资产加载 + 引擎
  *  初始化 + Reveal 光柱落定（设计 ≈1.15s → 慢动作 ~40s 墙钟），实测全链 ~75-110s */
 const MOUNT_TIMEOUT = 210_000;
@@ -281,5 +288,109 @@ test.describe('科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium �
     // 占位：真机门禁 ≤2.5s（Fast 4G 桌面）由 human-gate-checklist §5 承接；
     // CI 软渲染读数仅采集留档为下界参考，不做阈值阻断（口径同 WS-PERF-01）
     test.info().annotations.push({ type: 'metric', description: `load→robot 可见 ${revealMs}ms（真机门禁 ≤2.5s，CI 采集不阻断）` });
+  });
+
+  // ---------------------------------------------------------------------------
+  // CITY-VEH-01/02/03/04/06 驾驶双视角单例全链（CC-VEH-VIEW）
+  // 条款：docs/spec/cyber-city-vehicle-camera.md §11 验收点表——五个 ID 共享一次
+  //       3D 挂载串成完整旅程（world-chromium 串行 project 的挂载成本纪律：每次
+  //       ritual 挂载 ~75-110s 墙钟，逐 ID 独立挂载会把批次拖长 ~10min 无信息量）。
+  //       既有 52 用例零改动（spec §11 头注）。
+  //   VEH-02 robot_idle 门禁：按 V 状态恒 robot_idle、data-drive-view 属性缺席
+  //          （闸门机器保证的 DOM 面证据，恒等清单 §6.3 #1/#5）；
+  //   VEH-06 键位提示：car_ready 后 [data-world-hint] 文案含「V 切换视角」（§8.2 冻结）；
+  //   VEH-03 car_ready 按 V：data-drive-view=fpv 且 data-world-state 恒 car_ready
+  //          （V ∉ DRIVE_ACTIONS 的行为证据）；
+  //   VEH-04 FPV 驾驶冒烟：fpv 态按住 W → driving 接管、视角保持 fpv、零未捕获异常；
+  //   VEH-01 driving 态 V 往返：fpv → third → fpv → third 硬切（每次按键即时生效）。
+  // ---------------------------------------------------------------------------
+  test('CITY-VEH-01/02/03/04/06 驾驶双视角：robot_idle 门禁 → car_ready 切 FPV 不触发 driving → FPV 驾驶 → V 往返', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+
+    await page.goto(PAGE_URL);
+    const host = page.locator(SEL.host);
+    await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 120_000 });
+
+    // —— CITY-VEH-02：robot_idle 门禁（恒等）——V 被 filters 闸门物理拦截
+    await page.keyboard.press('v');
+    await page.waitForTimeout(1_000);
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle');
+    expect(
+      await host.getAttribute(DRIVE_VIEW_ATTR),
+      'robot_idle 期间 data-drive-view 属性必须缺席（DOM 面恒等）',
+    ).toBeNull();
+
+    // 变形至 car_ready（慢动作校准同 CITY-E2E-03）
+    await page.locator(SEL.transform).click();
+    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 120_000 });
+    // 属性从 car_ready 起挂载，初值 third（spec §5.2）
+    await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'third');
+
+    // —— CITY-VEH-06：键位提示含 V（car_ready 浮现窗内断言；文案 §8.2 冻结）
+    await expect(host.locator('[data-world-hint]')).toContainText('V 切换视角');
+
+    // —— CITY-VEH-03：car_ready 按 V → 切 fpv 且不触发 driving（V ∉ DRIVE_ACTIONS）
+    await page.keyboard.press('v');
+    await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'fpv');
+    await expect(host).toHaveAttribute('data-world-state', 'car_ready');
+
+    // —— CITY-VEH-04：FPV 驾驶冒烟——fpv 态按住 W → driving 接管、视角保持 fpv
+    await page.keyboard.down('w');
+    try {
+      await expect(host).toHaveAttribute('data-world-state', 'driving', { timeout: 60_000 });
+      await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'fpv');
+      // 持续驾驶窗（慢动作下 ≥3 设计秒量级）：FPV rig 持续解算 + lookahead 激活期
+      await page.waitForTimeout(6_000);
+      await page.screenshot({ path: 'test-results/veh-fpv-driving.png' });
+      // 引擎侧真值互证（DOM 镜像之外的第二口径）
+      expect(
+        await page.evaluate(() => (window as any).__worldSpike.state().view),
+        '遥测 view 应与 DOM 镜像一致',
+      ).toBe('fpv');
+
+      // —— CITY-VEH-01：driving 态 V 往返（硬切即时生效，D3）
+      await page.keyboard.press('v');
+      await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'third');
+      await page.screenshot({ path: 'test-results/veh-third-driving.png' });
+      await page.keyboard.press('v');
+      await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'fpv');
+      await page.keyboard.press('v');
+      await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'third');
+      // 往返期间驾驶态不受视角切换扰动
+      await expect(host).toHaveAttribute('data-world-state', 'driving');
+    } finally {
+      await page.keyboard.up('w').catch(() => {});
+    }
+
+    expect(errors, '双视角全链零未捕获异常').toEqual([]);
+  });
+
+  // ---------------------------------------------------------------------------
+  // CITY-VEH-05 reduced-motion：V 硬切仍可用（spec §10——切换是操作性功能而非动效，
+  // 不因偏好剥夺；PUBG 原版即硬切，reduced-motion 下天然同形。FPV 侧降级为
+  // 地平线锁定 + FOV 恒 58 + lookahead 关，由引擎分支保证，此处验收行为面）
+  // ---------------------------------------------------------------------------
+  test('CITY-VEH-05 reduced-motion：instant swap 至 car_ready 后 V 切换仍可往返', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+
+    await page.goto(PAGE_URL);
+    const host = page.locator(SEL.host);
+    await expect(host).toHaveAttribute('data-blocked', 'reduced-motion');
+    await host.locator('[data-world-enter]').click();
+    await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 30_000 });
+
+    // instant swap（CITY-E2E-04 同口径）→ car_ready 即挂 data-drive-view=third
+    await page.locator(SEL.transform).click();
+    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 15_000 });
+    await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'third');
+
+    // V 硬切往返（无动画窗，即按即换）
+    await page.keyboard.press('v');
+    await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'fpv');
+    await page.keyboard.press('v');
+    await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'third');
   });
 });
