@@ -174,6 +174,35 @@ if (available === 0) {
 }
 const composite = weighted / available;
 
+// ---------- northStar 只读汇总（CC-OBS-C2，可观测规格 §6.4 冻结） ----------
+// 功能/性能是与综合分**并列**的北极星维度，不折算进五维（权重 25/15/20/25/15 零改动）；
+// 各读对应登记 JSON 的 score，缺失 = null + sources 注记「（缺失）」——缺失明示、
+// 禁止填估值；FUNCTION_SMOKE 冒烟分不出现在本块（哨兵不入登记面，§6.5）。
+const NORTH_STAR_SOURCES = {
+  visual: 'docs/research/cyber-city-visual-rubric-score.json',
+  function: 'docs/research/cyber-city-function-rubric-score.json',
+  perf: 'docs/research/cyber-city-perf-rubric-score.json',
+};
+
+/** 登记 JSON 的 score 读取（缺失/非法 = null；northStar 恒读登记面，不受 CLI 覆盖影响） */
+function readRegisteredScore(path) {
+  if (!existsSync(path)) return null;
+  try {
+    const parsed = JSON.parse(readFileSync(path, 'utf8'));
+    return typeof parsed.score === 'number' ? parsed.score : null;
+  } catch {
+    return null;
+  }
+}
+
+const northStar = { visual: null, function: null, perf: null, composite: null, sources: {} };
+for (const [dim, source] of Object.entries(NORTH_STAR_SOURCES)) {
+  northStar[dim] = readRegisteredScore(source);
+  northStar.sources[dim] = northStar[dim] === null ? `${source}（缺失）` : source;
+}
+// composite = 本文件 composite 字段镜像（单块自足，供父代理一眼四数）
+northStar.composite = Number(composite.toFixed(2));
+
 // ---------- 输出 ----------
 console.log('══════ 综合分（cyber-city-score-loop-orchestration.md 口径） ══════');
 for (const [key, { weight, label }] of Object.entries(WEIGHTS)) {
@@ -203,6 +232,7 @@ writeFileSync(
           { label, weight, score: dims[key] ?? null },
         ]),
       ),
+      northStar,
       inputs: { lhciRuns: lhci.runs, e2e: e2e.detail, visualSource: visual.source },
     },
     null,
@@ -210,6 +240,12 @@ writeFileSync(
   ) + '\n',
 );
 console.log(`  明细 JSON → ${OUT}`);
+// northStar 四数一行（视觉/功能/性能登记分 + 综合分镜像；缺失显式 —，禁止估值）
+const northStarCell = (v) => (v === null ? '—' : String(v));
+console.log(
+  `  northStar：visual ${northStarCell(northStar.visual)} / function ${northStarCell(northStar.function)}` +
+    ` / perf ${northStarCell(northStar.perf)} / composite ${northStar.composite}`,
+);
 console.log(`COMPOSITE_SCORE=${composite.toFixed(1)}`);
 
 if (MIN !== null && composite < Number(MIN)) {
