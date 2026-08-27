@@ -31,6 +31,7 @@ import type { HeroRobot } from './city/HeroRobot';
 import type { TransformSystem } from './player/TransformSystem';
 import type { Reveal } from './world/Reveal';
 import type { QualityLevel } from './core/Quality';
+import type { SessionDump } from './core/SessionTimeline';
 import { Game } from './core/Game';
 import { FpsMeter } from './utils/FpsMeter';
 
@@ -60,6 +61,11 @@ declare global {
       fps: () => { avg: number; low1: number };
       info: () => { drawCalls: number; triangles: number };
     };
+    /**
+     * [CC-OBS-C1] 只读单方法导出面（观测规格 §4.1）：e2e/CI/审计经 dump() 取证
+     * （可 JSON.stringify）；与 __worldSpike 同段挂载/删除——取证必须在卸载前调用。
+     */
+    __worldSession?: { dump(): SessionDump };
     __worldSpikeGame?: Game;
     __worldTransform?: TransformSystem | null;
   }
@@ -110,6 +116,10 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   });
 
   await game.init();
+
+  // [CC-OBS-C1] deep-link 首打（观测规格 §3.4 poi 族：?poi= 非 null 时挂载即打；
+  // shot 字段随 CAM 深链同点补传——无 ?shot= 时 null 由 log() 扁平清洗自然剔除）
+  if (poiSlug !== null) game.session.log('deep-link', { poi: poiSlug, shot: shotId });
 
   // ————— CC-E6 首幕全流程（?ritual=1）：城市 + 机器人 + 变形仪式 + Reveal 编排 —————
   let heroRobot: HeroRobot | null = null;
@@ -216,6 +226,10 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   const fps = new FpsMeter();
   let hudClock = 0;
   let hintDismissed = false;
+  // [CC-OBS-C1] HUD 节拍沿检测状态（观测规格 §3.4 cone-hit / idle-30s 行）
+  let lastConeCount = 0;
+  let idleClock = 0;
+  let idleLogged = false;
 
   const speedKmh = (): number => {
     const vehicle = game.physicalVehicle;
@@ -231,6 +245,7 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
 
       hudClock += game.ticker.delta;
       if (hudClock < 0.25) return;
+      const beatElapsed = hudClock;
       hudClock = 0;
 
       if (hudSpeed) hudSpeed.textContent = String(Math.round(speedKmh()));
@@ -239,17 +254,37 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
         hudFps.textContent =
           reading.avg > 0 ? `${reading.avg.toFixed(0)} / ${reading.low1.toFixed(0)}` : '—';
       }
-      if (hudCones) hudCones.textContent = String(game.world.knockedConeCount());
+      const coneCount = game.world.knockedConeCount();
+      if (hudCones) hudCones.textContent = String(coneCount);
+
+      // [CC-OBS-C1] cone-hit 沿检测：计数较上拍增大即打（total = 当前值，HUD 同源；
+      // respawn 重置后计数回落，lastConeCount 跟随不打点）
+      if (coneCount > lastConeCount) game.session.log('cone-hit', { total: coneCount });
+      lastConeCount = coneCount;
+
+      const player = game.player;
+      const driveIntent =
+        player.accelerating !== 0 ||
+        player.steering !== 0 ||
+        player.braking !== 0 ||
+        player.boosting !== 0 ||
+        game.inputs.nipple.active;
+
+      // [CC-OBS-C1] idle-30s 沿检测：driving 态连续 30s 零驾驶意图打一条；
+      // 有输入即重置计时，可再打（每静默期至多 1 条）
+      if (transformSystem?.state !== 'driving' || driveIntent) {
+        idleClock = 0;
+        idleLogged = false;
+      } else {
+        idleClock += beatElapsed;
+        if (!idleLogged && idleClock >= 30) {
+          idleLogged = true;
+          game.session.log('idle-30s');
+        }
+      }
 
       if (hudHint && !hintDismissed) {
-        const player = game.player;
-        if (
-          player.accelerating !== 0 ||
-          player.steering !== 0 ||
-          player.braking !== 0 ||
-          player.boosting !== 0 ||
-          game.inputs.nipple.active
-        ) {
+        if (driveIntent) {
           hintDismissed = true;
           hudHint.dataset.dismissed = 'true';
         }
@@ -278,6 +313,9 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       triangles: game.rendering.renderer.info.render.triangles,
     }),
   };
+
+  // [CC-OBS-C1] 会话取证面（观测规格 §4.1）：只读单方法，与 __worldSpike 同段挂载
+  window.__worldSession = { dump: () => game.session.dump() };
 
   if (location.hash.includes('debug')) {
     window.__worldSpikeGame = game;
@@ -308,6 +346,7 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       heroRobot?.dispose();
       heroRobot = null;
       delete window.__worldSpike;
+      delete window.__worldSession;
       delete window.__worldSpikeGame;
       delete window.__worldTransform;
       game.dispose();
