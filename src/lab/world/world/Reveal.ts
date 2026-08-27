@@ -5,15 +5,28 @@
 // 职责边界（与 TransformSystem 分工）：
 //   · TransformSystem 管「形态与物理」（状态机、热交换、filters intro→driving）；
 //   · Reveal 管「演出与 DOM」：机器人光柱开演节奏、CTA「变形 · 巡航态」（点击或
-//     Space，CITY-05 唯一主 CTA）、变形期间 disabled + 进度可见、键位提示浮现
-//     3s 后淡出（再次按键即隐）、data-world-state 状态镜像（e2e SEL 契约 +
+//     Space，CITY-05 唯一主 CTA）、变形期间 disabled + 进度可见、键位卡浮现与
+//     再唤出（下详）、data-world-state 状态镜像（e2e SEL 契约 +
 //     CC-E7 壳 CSS 钩子）、aria-live 文字状态提示（reduced-motion 验收）。
 //
+// [CC-FXN-C1] 键位卡/引导人性化（GAP-08/GAP-18，功能 rubric F1/F5）：
+//   · 键位卡可再唤出：H（或 ?/Slash）与「键位」按钮 [data-world-hint-recall] toggle——
+//     动作 categories 只有 'driving'（filters 热切后 = car_ready 起放行；robot_idle/
+//     transforming 被 intro 闸门物理拦截，ritual_idle 恒等零旁路）；唤出为常显
+//     （用户显式索取不再自动淡出，由 H/按钮/状态收回关闭）；
+//   · 首驶引导：car_ready 浮现的键位卡在 driving 接管时不再即隐——重开一个完整
+//     HINT_FADE_DELAY 阅读窗（刹车/E 进站/Esc 在首驶 5 秒内仍可读）；
+//   · 触屏分文案：matchMedia('(pointer: coarse)')（SessionTimeline env.touch 同口径）
+//     选 hint/status 触屏变体（键盘键位对触屏用户是噪声，GAP-18）；
+//   · 埋点随行：hint-shown（car_ready 自动浮现）/ hint-recall {via: key|button}（再唤出）/
+//     hint-dismissed {by: timeout|input}（观测规格 §3.4 ux 族，hint-recall 为随行加法）。
+//
 // DOM 契约（e2e/cyber-city.spec.ts SEL 常量区对齐；CC-E7 壳可整体复用）：
-//   host[data-world-state]     robot_idle | transforming | car_ready | driving
-//   [data-world-transform]     主 CTA（transforming 期间 disabled；car_ready 后隐藏）
-//   [data-world-status]        role="status" aria-live 文字状态（reduced-motion 口径）
-//   [data-world-hint]          键位提示（car_ready 浮现，driving/超时淡出）
+//   host[data-world-state]      robot_idle | transforming | car_ready | driving
+//   [data-world-transform]      主 CTA（transforming 期间 disabled；car_ready 后隐藏）
+//   [data-world-status]         role="status" aria-live 文字状态（reduced-motion 口径）
+//   [data-world-hint]           键位卡（car_ready 浮现、超时淡出、H/按钮可再唤出）
+//   [data-world-hint-recall]    键位卡唤出按钮（car_ready 起可见；触屏召回入口）
 // 埋点：首幕开演 game.events.trigger('world-reveal')（实施方案 §1.1 幕②）。
 //
 // 循环动画配额（CITY-03 ≤2 处）：机器人 idle 呼吸灯由本类驱动 update()；
@@ -28,11 +41,32 @@ const ROBOT_REVEAL_DURATION = 1.15;
 /** 键位提示自动淡出（实施方案 §1.2「操作提示浮现 3s 后淡出」，留读完余量） */
 const HINT_FADE_DELAY = 4;
 
+/**
+ * [CC-FXN-C1] 键位卡文案（GAP-08 修复：E 进站 / Esc 菜单补进卡片——此前首驶
+ * 5 秒后对玩家永久失明）。「V 切换视角」位次维持 VEH spec §8.2 冻结序
+ * （插入刹车之后）；串尾加法随行注记见该 spec §8.2。
+ */
+const HINT_TEXT =
+  'W/A/S/D 或方向键驾驶 · Shift 加速 · Space/B 刹车 · V 切换视角 · F 悬挂跳 · R 回到路口 · E 进站 · Esc 菜单';
+/** 触屏键位卡（GAP-18：Nipple = 拖动摇杆转向加速 + 点按跳；POI = 点按标点进站；
+ *  复位走壳 HUD「回到路口 (R)」按钮——键盘口径对触屏用户是噪声，整卡换稿） */
+const HINT_TEXT_TOUCH =
+  '拖动屏幕摇杆驾驶转向 · 点按屏幕跳跃 · 驶近光圈点按标点进站 · 「回到路口」按钮复位';
+
 const STATUS_TEXT: Record<TransformState, string> = {
   robot_idle: '机器人形态 · 座舱 AI 就位——点击「变形 · 巡航态」或按 Space',
   transforming: '变形中 · 光幕遮蔽热交换，量产载体落地十字路口…',
   car_ready: '巡航态 · CarConcept 已落地十字路口——WASD 即刻可开',
-  driving: '驾驶中 · WASD/方向键转向，Shift 加速，V 切换视角，R 回到路口',
+  // [CC-FXN-C1] 常驻行补键位卡召回入口（GAP-08：卡片淡出后 status 是唯一常显文字面）
+  driving: '驾驶中 · WASD/方向键转向，Shift 加速，V 切换视角，R 回到路口——按 H 重看键位',
+};
+
+/** [CC-FXN-C1] 触屏状态行（GAP-18 分文案；transforming 无键位语，双模同稿） */
+const STATUS_TEXT_TOUCH: Record<TransformState, string> = {
+  robot_idle: '机器人形态 · 座舱 AI 就位——点按「变形 · 巡航态」启动',
+  transforming: STATUS_TEXT.transforming,
+  car_ready: '巡航态 · CarConcept 已落地十字路口——拖动屏幕摇杆即刻可开',
+  driving: '驾驶中 · 拖动摇杆转向加速，点按屏幕跳跃——点「操作说明」重看操作',
 };
 
 export interface RevealOptions {
@@ -56,10 +90,15 @@ export class Reveal {
   private cta!: HTMLButtonElement;
   private status!: HTMLElement;
   private hint!: HTMLElement;
+  /** [CC-FXN-C1] 键位卡唤出按钮（触屏召回入口；car_ready 起可见） */
+  private recallBtn!: HTMLButtonElement;
 
   private ctaArmed = false;
   private robotTicking = false;
   private hintFade: { kill(): void } | null = null;
+  /** [CC-FXN-C1] 触屏检测（构造时快照，SessionTimeline env.touch 同口径） */
+  private readonly touch = matchMedia('(pointer: coarse)').matches;
+  private readonly statusText: Record<TransformState, string>;
   private readonly unsubscribeState: () => void;
   private disposed = false;
 
@@ -69,6 +108,11 @@ export class Reveal {
 
   private readonly transformActionHandler = (action: { active: boolean }): void => {
     if (action.active) this.requestTransform();
+  };
+
+  /** [CC-FXN-C1] H/? 键位卡 toggle（isToggle 语义：按下翻转一次，长按不连发） */
+  private readonly hintToggleHandler = (action: { active: boolean }): void => {
+    if (action.active) this.toggleHint('key');
   };
 
   private readonly swapHandler = (to: 'robot' | 'car'): void => {
@@ -92,6 +136,7 @@ export class Reveal {
     this.robot = options.robot;
     this.transformSystem = options.transformSystem;
     this.reducedMotion = options.reducedMotion ?? false;
+    this.statusText = this.touch ? STATUS_TEXT_TOUCH : STATUS_TEXT;
 
     this.setDom(options.stage);
     this.startRobotTick();
@@ -104,11 +149,17 @@ export class Reveal {
     this.game.events.on('world-drive-view', this.driveViewHandler);
 
     // CTA 键触发：Space 仅在 intro 上下文有效（filters 天然闸门——
-    // driving 后 Space 归还给刹车，悬挂跳在 KeyF；动作表见 Player.setInputs / A2 M7-M8）
+    // driving 后 Space 归还给刹车，悬挂跳在 KeyF；动作表见 Player.setInputs / A2 M7-M8）。
+    // [CC-FXN-C1] hintToggle：H 主键 + Slash（?/ 同码）副键；categories 只有
+    // 'driving' —— car_ready 帧 filters 已热切（TransformSystem.finish），robot_idle/
+    // transforming 被 intro 闸门物理拦截（ritual_idle 恒等）。不进 DRIVE_ACTIONS
+    // （看键位 ≠ 驾驶意图，与 V 键同纪律）。
     this.game.inputs.addActions([
       { name: 'transform', categories: ['intro'], keys: ['Keyboard.Space'] },
+      { name: 'hintToggle', categories: ['driving'], keys: ['Keyboard.KeyH', 'Keyboard.Slash'] },
     ]);
     this.game.inputs.events.on('transform', this.transformActionHandler);
+    this.game.inputs.events.on('hintToggle', this.hintToggleHandler);
 
     // 首幕开演：等 shader 编译落地几拍（Game 坑④节奏，E5 同款）再起光柱
     this.game.ticker.wait(6, () => {
@@ -130,6 +181,7 @@ export class Reveal {
     this.transformSystem.events.off('swap', this.swapHandler);
     this.game.events.off('world-drive-view', this.driveViewHandler);
     this.game.inputs.events.off('transform', this.transformActionHandler);
+    this.game.inputs.events.off('hintToggle', this.hintToggleHandler);
     this.root.remove();
     delete this.host.dataset.worldState;
     delete this.host.dataset.driveView;
@@ -157,7 +209,10 @@ export class Reveal {
 
   private applyState(state: TransformState): void {
     this.host.dataset.worldState = state;
-    this.status.textContent = STATUS_TEXT[state];
+    this.status.textContent = this.statusText[state];
+    // [CC-FXN-C1] 键位卡唤出按钮：car_ready 起可见（与 hint/data-drive-view 同窗；
+    // robot_idle/transforming 隐藏 = ritual_idle 恒等的 DOM 面保证）
+    this.recallBtn.hidden = state !== 'car_ready' && state !== 'driving';
 
     switch (state) {
       case 'robot_idle':
@@ -170,6 +225,9 @@ export class Reveal {
       case 'transforming':
         // CITY-05 验收：变形期间按钮 disabled + 进度可见（进度条随 host 态由 CSS 驱动）
         this.cta.disabled = true;
+        // [CC-FXN-C1] 回变窗同样收卡（hint 在 transforming 隐藏；正向路径来路
+        // robot_idle 已收，此处为空调用不打点）
+        this.hideHint('input');
         break;
       case 'car_ready':
         this.cta.hidden = true;
@@ -178,8 +236,10 @@ export class Reveal {
         this.host.dataset.driveView = this.game.view.driveView.mode;
         break;
       case 'driving':
-        // 再次按键即隐（实施方案 §1.2）
-        this.hideHint('input');
+        // [CC-FXN-C1] 首驶引导（GAP-08 修复，替换原「再次按键即隐」）：键位卡若
+        // 还在自动淡出窗内则重开一个完整阅读窗——刹车/E 进站/Esc 在首驶头几秒
+        // 仍可读；用户 H 唤出的常显卡（hintFade === null）不受扰动
+        if (!this.hint.hidden && this.hintFade) this.armHintFade();
         break;
     }
   }
@@ -188,13 +248,36 @@ export class Reveal {
     this.hint.hidden = false;
     // [CC-OBS-C1] ux/hint-shown（观测规格 §3.4）
     this.game.session.log('hint-shown');
+    this.armHintFade();
+  }
+
+  /** 自动淡出窗（car_ready 浮现 / driving 首驶各一窗） */
+  private armHintFade(): void {
     this.hintFade?.kill();
     this.hintFade = this.game.ticker.delay(HINT_FADE_DELAY, () => this.hideHint('timeout'));
   }
 
   /**
+   * [CC-FXN-C1] 键位卡再唤出/收起（GAP-08）：H（或 ?）键与「键位」按钮共用一个
+   * toggle。唤出为常显（用户显式索取，不自动淡出——由 H/按钮再按或状态收回关闭）；
+   * 埋点 hint-recall {via}（ux 族随行加法，观测规格 §3.4）。
+   */
+  private toggleHint(via: 'key' | 'button'): void {
+    if (this.disposed) return;
+    if (this.hint.hidden) {
+      this.hint.hidden = false;
+      this.hintFade?.kill();
+      this.hintFade = null;
+      this.game.session.log('hint-recall', { via });
+    } else {
+      this.hideHint('input');
+    }
+  }
+
+  /**
    * [CC-OBS-C1] by 区分两类调用点（观测规格 §3.4 hint-dismissed 行）：
-   * HINT_FADE_DELAY 到期 → 'timeout'；applyState 驱动（driving/robot_idle）→ 'input'。
+   * HINT_FADE_DELAY 到期 → 'timeout'；用户/状态收回 → 'input'（[CC-FXN-C1] 随行
+   * 修订：driving 不再即隐——'input' 来路 = H/按钮收起、robot_idle/transforming）。
    * 仅在提示确实可见时打点（初始 hidden 的空调用不算 dismiss）。
    */
   private hideHint(by: 'timeout' | 'input'): void {
@@ -251,12 +334,29 @@ export class Reveal {
     this.hint = document.createElement('p');
     this.hint.className = 'world-ritual-hint';
     this.hint.dataset.worldHint = '';
-    // [CC-VEH-VIEW] 文案冻结（spec §8.2）：「V 切换视角」插入刹车之后
-    this.hint.textContent =
-      'W/A/S/D 或方向键驾驶 · Shift 加速 · Space/B 刹车 · V 切换视角 · F 悬挂跳 · R 回到路口';
+    // [CC-VEH-VIEW] 「V 切换视角」位次冻结（spec §8.2：插入刹车之后）；
+    // [CC-FXN-C1] 串尾加 E 进站/Esc 菜单（GAP-08）+ 触屏整卡换稿（GAP-18）
+    this.hint.textContent = this.touch ? HINT_TEXT_TOUCH : HINT_TEXT;
     this.hint.hidden = true;
 
-    this.root.append(this.status, this.cta, progress, this.hint);
+    // [CC-FXN-C1] 键位卡唤出按钮：键盘用户有 H/?，本按钮 = 触屏召回入口 +
+    // 桌面可发现性锚（GAP-08「召回入口：H/? 键或 HUD 按钮」）。car_ready 前隐藏。
+    this.recallBtn = document.createElement('button');
+    this.recallBtn.type = 'button';
+    this.recallBtn.className = 'world-ritual-recall';
+    this.recallBtn.dataset.worldHintRecall = '';
+    this.recallBtn.setAttribute('aria-keyshortcuts', 'KeyH');
+    this.recallBtn.setAttribute('aria-label', '键位卡：唤出或收起操作提示');
+    this.recallBtn.innerHTML = this.touch ? '操作说明' : '键位 <kbd>H</kbd>';
+    this.recallBtn.hidden = true;
+    this.recallBtn.addEventListener('click', () => {
+      this.toggleHint('button');
+      // 焦点即还：Keyboard 只拦 Space 的按钮激活（keyup preventDefault），Enter/E
+      // 进站键仍会二次激活聚焦按钮——点按后归还焦点，驾驶键位零误触
+      this.recallBtn.blur();
+    });
+
+    this.root.append(this.status, this.cta, progress, this.hint, this.recallBtn);
     stage.appendChild(this.root);
   }
 
@@ -281,8 +381,12 @@ export class Reveal {
 [data-world-state='transforming'] .world-ritual-progress i{animation:world-ritual-charge 1.05s linear forwards}
 .world-ritual-hint{margin:0;font-size:.8rem;color:#dfe2e7;background:rgba(12,13,17,.66);border-radius:999px;padding:.4em 1.2em;transition:opacity .4s}
 .world-ritual-hint[hidden]{display:none}
+.world-ritual-recall{pointer-events:auto;font:inherit;font-size:.68rem;letter-spacing:.14em;color:#9fb6b1;cursor:pointer;padding:.34em 1em;border-radius:999px;border:1px solid rgba(73,197,182,.32);background:rgba(12,13,17,.6);transition:color .25s,border-color .25s}
+.world-ritual-recall:hover,.world-ritual-recall:focus-visible{color:#eafffb;border-color:rgba(73,197,182,.7)}
+.world-ritual-recall[hidden]{display:none}
+.world-ritual-recall kbd{font:inherit;font-size:.9em;letter-spacing:.1em;padding:.1em .5em;margin-left:.35em;border:1px solid rgba(234,255,251,.35);border-radius:6px;background:rgba(234,255,251,.08)}
 @keyframes world-ritual-charge{from{width:0}to{width:100%}}
-@media (prefers-reduced-motion:reduce){.world-ritual-cta{transition:none}[data-world-state='transforming'] .world-ritual-progress i{animation:none;width:100%}}
+@media (prefers-reduced-motion:reduce){.world-ritual-cta,.world-ritual-recall{transition:none}[data-world-state='transforming'] .world-ritual-progress i{animation:none;width:100%}}
 `;
     document.head.appendChild(style);
   }

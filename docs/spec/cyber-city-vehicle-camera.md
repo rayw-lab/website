@@ -241,6 +241,12 @@ W/A/S/D 或方向键驾驶 · Shift 加速 · Space/B 刹车 · V 切换视角 �
 
 （现状串插入「· V 切换视角」于刹车之后；`[data-world-hint]` 机制不动——car_ready 浮现 4s 淡出。）
 
+> [CC-FXN-C1] 随行注记（GAP-08/GAP-18 键位人性化包）：本条冻结的核心 =「V 切换视角」
+> 位次（插入刹车之后），该序**不变**；串尾追加「· E 进站 · Esc 菜单」为加法。机制面
+> 修订：car_ready 浮现 4s 淡出保留，driving 改为重开一个完整阅读窗（不再即隐），
+> 且 H/?/`[data-world-hint-recall]` 按钮可再唤出；触屏（pointer: coarse）整卡换稿。
+> 正本见 `Reveal.ts` 头注与观测规格 §3.4 ux 族（`hint-recall` 随行加法）。
+
 ### 8.3 实现落点建议（CC-VEH-VIEW 参考，非强制）
 
 - **View 内聚**：`driveView = { mode, toggle(), setMode() }` 子对象 + 私有 `updateFpv()` 分支（预估 ~120 行）——与 `ritualCam` 通道先例一致，不建新类防输出相机所有权分裂；`update()` 尾段现状「输出到最终相机」直通处开分支。
