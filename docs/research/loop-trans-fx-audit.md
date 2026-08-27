@@ -19,12 +19,12 @@
 1. 120 Hz 受控 Ticker 的状态机时间戳为
    `0 → 0.3583 → 0.6083 → 0.7667 → 0.9083 → 1.0583s`，
    `transforming → car_ready` 落在 1.0–1.2s 门内；
-2. reduced-motion 的 `CITY-E2E-04` 通过，构造分支为 `particles=null`，即 instant
-   swap 且不创建粒子 mesh；
-3. 同一 veil/swap 帧 `setParticles(1|0)` A/B 的近白占比分别为 **0.6104% /
-   0.5506%**，增量 **+0.0598pp**，同时通过 `≤1.9%` 与 `≤+0.5pp`；
+2. reduced-motion 的 `CITY-E2E-04` 通过；fresh runtime 的 instant swap 为 **0.8ms**，
+   前后均无 particle handle/mesh；
+3. phase-locked swap 帧 `setParticles(1|0)` A/B 的近白占比分别为 **1.3033% /
+   1.2006%**，增量 **+0.1027pp**，同时通过 `≤1.9%` 与 `≤+0.5pp`；
 4. PR #52 exact test tree 为 **52/52**；审计对象因随后合入 VEH 用例，实际合同已扩为
-   54 项，不能把它误写成仍只有 52 项；
+   **54/54**，不能把它误写成仍只有 52 项；
 5. PR merge 前后 `public/posters/` tree id 完全一致，VIS-03 通过；fresh runtime
    `robot_idle` 中粒子 mesh `visible=false`、贡献 0 draw call；
 6. CITY-03 已有“变形窗粒子层 = 瞬态 0 席”书面登记，台账保持 3/3；
@@ -38,9 +38,9 @@
 | # | 硬门 | 独立证据 | 判定 |
 |---:|---|---|:---:|
 | 1 | 四拍 1.0–1.2s 不变 | 外置探针暂停 Game 后以 `1/120s` 步进同一 Ticker，记录 `stateChange`、`hotSwap`、`completeRun`；终点 `1.058333s`。PR #52 相对第一父提交只把 `RING_IN/VEIL_IN/VEIL_OUT/RING_RADIUS` 改为 export，数值 `0.35/0.25/0.30/4` 未变，`DROP=0.45` 未变 | ✅ |
-| 2 | reduced-motion instant swap，零粒子 | `CITY-E2E-04` 通过；`TransformSystem` 构造式 `this.reducedMotion ? null : new TransformParticles(...)`，instant 分支只执行 `hotSwap()` + `finish()`，不建立 ritual，也不存在 particle handle/mesh | ✅ |
-| 3 | 变形帧不白爆 | phase-matched veil/swap A/B（标题条裁掉后 1024×506 有效画面）：on `3217/527040 = 0.6104%`，off `2902/527040 = 0.5506%`，Δ `+0.0598pp`；门为 on `≤1.9%` 且 Δ `≤+0.5pp`，余量分别 `1.2896pp`、`0.4402pp` | ✅ |
-| 4 | e2e 52/52 | PR #52 exact merge `f672d64`：`playwright test --list` 为 52 tests / 10 files，完整日志为 `52 passed (28.5m)`、exit 0；审计对象 `daec44c` 已额外合入 VEH 测试，当前计数为 54，指定的原 52 项仍在其超集中 | ✅ |
+| 2 | reduced-motion instant swap，零粒子 | `CITY-E2E-04` 通过；fresh runtime 变形调用耗时 `0.8ms`，状态 `transforming → car_ready`，前后 `handleExists=false`、`meshExists=false`；构造式 `this.reducedMotion ? null : new TransformParticles(...)` 与运行时相符 | ✅ |
+| 3 | 变形帧不白爆 | phase-locked 五关键拍 A/B 中，swap 帧 on `7854/602640 = 1.3033%`、off `7235/602640 = 1.2006%`、Δ `+0.1027pp`；五拍最高增量为 charge 的 `+0.2670pp`。on 峰值 `<1.9%` 且增量峰值 `<+0.5pp` | ✅ |
+| 4 | e2e 52/52 | PR #52 exact merge `f672d64`：`playwright test --list` 为 52 tests / 10 files，完整日志为 `52 passed (28.5m)`、exit 0；审计对象 `daec44c` 的 no-retry 全量回归因 VEH 合入扩为 **54 passed (34.7m)**、exit 0，指定原 52 项仍在其超集中 | ✅ |
 | 5 | `robot_idle` 逐字节恒等 / VIS-03 | `public/posters/` 在 `f672d64^1..f672d64` 的 tree id 均为 `09a04c0b8ee1e5d6e1a56e856bb9a1ba02d7f9fd`；VIS-03 通过；runtime 初态为 `robot_idle`、mesh 存在但 `visible=false`、particle draw-call contribution=0 | ✅ |
 | 6 | CITY-03 配额书面登记 | `docs/spec/cyber-city-transform-fx.md` §4 有独立登记行：“变形窗粒子层，instance uniform，瞬态 0 席”，并写明三项瞬态条件；`TransformParticles.ts` 头注再次登记，持续席仍为 3/3 | ✅ |
 | 7 | V5 四拍时间证据 | §2 状态机实测表 + 充能/光幕/落地三关键帧 + 13.33s/30fps 动态 walkthrough；粒子 `frame()` 只读取同帧 `clock/ringSpin/ring/veil/settle`，没有独立 Ticker 或 await | ✅ |
@@ -85,27 +85,28 @@ state:transforming@0
 
 ## 3. 白爆 A/B
 
-取证对为：
+外置探针冻结 `TransformSystem.update()` 的自动订阅，只以 `1/30s` 手动推进原方法到
+`charge/swap/touchdown/veilOut/carReady` 五个里程碑；每个里程碑不再推进 transform
+clock，依次调用 `setParticles(0)` 与 `setParticles(1)` 截取 1080×558 canvas。swap 对：
 
-- FX on：`fx-beat2-veil.png`，SHA-256
-  `e30ba0d5a5f0d75ec2ebfa5ef344cd8b464b491388ce1f4fabbab8032c57bc52`；
-- FX off：`fx-ab-off.png`，SHA-256
-  `23a18bdac3b9b4a6d682d4d54058156a3d3aaa0ea233f10b8e074fe3a8d85017`。
+- FX off：SHA-256
+  `501a43ca24a78979a6084805f0ef485e5e202f7c63af44a6eee8cd9d1494f609`；
+- FX on：SHA-256
+  `5cab07e31095dde3e500a9523dadd2559473b9f3d725a05ff05644c46984dbdc`；
+- metadata：`clock=0.6000`、`swapped=true`、`ringOpacity=1`、`veilOpacity=1`、
+  `meshVisible=true`、`meshCount=300`。
 
-两图是同一机位、同一 veil/swap 拍，差量由
-`scene.userData.transformFx.setParticles(1|0)` 控制。图上方 70px 为取证后加的标题条，
-不属于 WebGL canvas，统计时剔除；其余 HUD 保留且两图同构。
+| 里程碑 | clock | FX off 近白 | FX on 近白 | Δ |
+|---|---:|---:|---:|---:|
+| charge | 0.3667s | 0.2003% | 0.4673% | **+0.2670pp** |
+| **swap** | **0.6000s** | **1.2006%** | **1.3033%** | **+0.1027pp** |
+| touchdown | 0.7667s | 0.0405% | 0.0408% | +0.0003pp |
+| veil-out | 0.9000s | 0.0010% | 0.0385% | +0.0375pp |
+| car-ready | 1.0667s | 0.0126% | 0.0139% | +0.0013pp |
 
-| 指标 | FX off | FX on | Δ / 门 |
-|---|---:|---:|---:|
-| `min(r,g,b) >= 240` 像素 | 2,902 | 3,217 | +315 |
-| 近白占比 | 0.5506% | **0.6104%** | **+0.0598pp ≤ +0.5pp** |
-| 绝对近白占比 | — | **0.6104%** | **≤1.9%** |
-| mean luma | 139.8613 | 140.8538 | +0.9925 |
-| p99 luma | 247.9842 | 248.7594 | +0.7752 |
-
-画面判读与数值一致：FX on 增加的是离散青/品红软点，不是新的全屏白层；光幕自身仍是
-青→品红渐变。落地余烬也保持为小面积点状高光。
+`min(r,g,b) >= 240` 的绝对峰值是 swap FX-on **1.3033% ≤1.9%**；五里程碑增量峰值是
+charge **+0.2670pp ≤+0.5pp**。画面判读与数值一致：FX-on 增加的是离散青/品红软点，
+不是新的全屏白层；光幕自身仍是青→品红渐变，落地余烬也保持小面积点状高光。
 
 ## 4. reduced-motion、idle 与配额闭合
 
@@ -126,8 +127,22 @@ transform():
 ```
 
 所以 reduced-motion 下没有 `TransformParticles` 构造、scene mesh、300 实例 attribute、
-NodeMaterial 或 `scene.userData.transformFx` 句柄。完整 e2e 的 `CITY-E2E-04` 同时验证
-零 world 字节的显式进入前段、instant swap、`car_ready` 与 aria-live 文字提示。
+NodeMaterial 或 `scene.userData.transformFx` 句柄。fresh runtime 结果为：
+
+```json
+{
+  "durationMs": 0.8,
+  "states": ["transforming", "car_ready"],
+  "swaps": ["car"],
+  "handleBefore": false,
+  "meshBefore": false,
+  "handleAfter": false,
+  "meshAfter": false
+}
+```
+
+完整 e2e 的 `CITY-E2E-04` 同时验证零 world 字节的显式进入前段、instant swap、
+`car_ready` 与 aria-live 文字提示。
 
 ### 4.2 `robot_idle` / VIS-03
 
@@ -141,12 +156,15 @@ NodeMaterial 或 `scene.userData.transformFx` 句柄。完整 e2e 的 `CITY-E2E-
   "meshExists": true,
   "visible": false,
   "count": 300,
-  "particleDrawCalls": 0
+  "rendererDrawCalls": 113
 }
 ```
 
 结合 VIS-03 PASS 与 poster Git tree id 零变化，idle 的像素/资产合同闭合。`count=300`
-只是 draw range 上限；`visible=false` 时对象不会进入渲染列表。
+只是 draw range 上限；`visible=false` 时对象不会进入渲染列表，因此粒子结构性贡献为
+0 draw call。两次 screenshot 之间城市常驻 shader 与 Reveal 仍在推进，不能拿 PNG
+文件 hash 直接冒充 idle byte identity；本门采用 VIS-03 + poster blob identity +
+mesh visibility 三层证据。
 
 ### 4.3 CITY-03
 
@@ -218,8 +236,10 @@ reduced-motion 粒子的 GO 裁决。
 | `git diff --exit-code f672d64 daec44c -- TransformParticles.ts` | exit 0；粒子实现到审计对象未再变化 |
 | exact merge `playwright test --list` | 52 tests in 10 files |
 | exact merge full e2e | `52 passed (28.5m)`，exit 0；CITY-E2E-03/04/05、VIS-03 全过 |
+| subject `daec44c` full e2e (`--retries=0`) | `54 passed (34.7m)`，exit 0；扩容后的 CITY/VEH/VIS 合同全过 |
 | 受控 runtime timing probe | `car_ready@1.058333s`，七事件有序，无 page error |
-| Pillow A/B 分析 | 近白 on 0.6104%，off 0.5506%，Δ +0.0598pp |
+| phase-locked A/B 分析 | swap 近白 on 1.3033%，off 1.2006%，Δ +0.1027pp；五拍最大 Δ +0.2670pp |
+| reduced-motion runtime probe | 0.8ms instant swap；前后 handle/mesh 均不存在；无 page error |
 | walkthrough | H.264，1080×558，30fps，400 帧 / 13.33s |
 
 ---
