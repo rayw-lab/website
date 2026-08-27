@@ -355,6 +355,58 @@ export function createNeonGlowMaterial(
 }
 
 /**
+ * [CC-FXN-C5] G4 目标线 v0 目标站标记材质组（光柱 + 光圈提亮 halo）。
+ * 纪律：
+ *   · 静态发光零时间项——CITY-03 循环动画配额零占用（Q2 冻结逐值无感）；
+ *   · 链推进换色走共享 tint uniform（setColor 一次写入两材质），零材质重建
+ *     零 shader 重编译（R1 缓解案同构——驾驶中切站不产生编译毛刺）；
+ *   · 亮度台账：光柱峰值 <1 恒阈下（64m 大件入 bloom 会糊画面，「光柱是导视
+ *     不是光源」——假室内映射同一裁决语义）；halo 3.4 对齐 ?poi= 深链高亮光圈
+ *     既有档位（同一时刻至多一个目标站，阈上名额语义不变）。
+ */
+export interface QuestMarkerMaterials {
+  /** 光柱（加色半透明，底亮顶隐；DoubleSide 环内外可见） */
+  beam: THREE.MeshBasicNodeMaterial;
+  /** 泊车位提亮圈（intensity 3.4 = 深链高亮同档） */
+  halo: THREE.MeshStandardNodeMaterial;
+  /** 链推进换色（hex 按 sRGB 读入，内部转线性——linearColorNode 同口径） */
+  setColor(hex: string): void;
+  dispose(): void;
+}
+
+export function createQuestMarkerMaterials(beamHeight: number): QuestMarkerMaterials {
+  const tint = uniform(new THREE.Color(NEON.cyan).convertSRGBToLinear());
+
+  const beam = new THREE.MeshBasicNodeMaterial({
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+  // 几何以柱体中心为原点：yNorm 0=柱底 → 1=柱顶；透明度自底向上二次衰减
+  const yNorm = positionGeometry.y.add(beamHeight * 0.5).div(beamHeight).clamp();
+  const fade = float(1).sub(yNorm);
+  beam.colorNode = tint.mul(0.85);
+  beam.opacityNode = fade.mul(fade).mul(0.5);
+
+  const halo = new THREE.MeshStandardNodeMaterial({ roughness: 0.4, metalness: 0 });
+  halo.colorNode = vec3(0.02, 0.02, 0.025);
+  halo.emissiveNode = tint.mul(3.4);
+
+  return {
+    beam,
+    halo,
+    setColor(hex: string): void {
+      tint.value.set(hex).convertSRGBToLinear();
+    },
+    dispose(): void {
+      beam.dispose();
+      halo.dispose();
+    },
+  };
+}
+
+/**
  * [CC-VIS-X3] 招牌点亮系数 uniform 工厂（stagger 逐楼点亮的一次性瞬态通道）：
  * 每楼一支，楼内三层招牌材质共用——终态恒为 1（emissive 与未点亮版逐值恒等，
  * R2 纪律：不改 threshold=1 与 strength，阈上/阈下归属由 intensity 常量决定）。

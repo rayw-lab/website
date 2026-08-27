@@ -9,6 +9,7 @@
 //   InteractivePoints  POI 标点（菱形圈 + TextCanvas 标签 + E 键帽 + 开合状态机）
 //   RayCursor          射线悬停/点按（inputs/，与 Nipple 共存，不占任何键位）
 //   ExploreProgress    [CC-FXN-C4] 探索计数 n/12 chip（F6 轻目标 + goal 族埋点）
+//   QuestLine          [CC-FXN-C5] G4 目标线 v0（下一站 chip + 光柱 + idle 引导）
 // 资产台账：外部资产 0 字节（标签/键帽全 canvas 程序化，光圈复用 NeonMaterials）。
 import type { Game } from '../core/Game';
 import type { CyberCityMap } from '../city/CityMap';
@@ -36,3 +37,5 @@ export type {
 export { PoiArrival } from './PoiArrival';
 export type { PoiArrivalRequest } from './PoiArrival';
 export { ExploreProgress } from './ExploreProgress';
+export { QuestLine } from './QuestLine';
+export type { QuestLineOptions } from './QuestLine';

@@ -44,6 +44,10 @@ type EventFamily =
  * [CC-PERF-C2-B1] perf 族随行加法（PERF-BR O1 自动降档取证）：quality-auto-drop
  * {from, to, avg, low1}——装配段滞回窗触发点显式 log（仅 driving 态评估、
  * 只降不升；`?quality=` 显式深链禁用自动档，事件不可能出现）。
+ * [CC-FXN-C5] 随行加法（G4 目标线 v0 + idle-30s 消费，34 type / 9 族）：goal 族
+ * world-quest {action: 'shown'|'reached'|'chain-complete'|'collapsed'|'expanded',
+ * step, targetId, elapsedMs}（主链首两分钟流失点漏斗）· ux 族 idle-nudge
+ * {targetId}（idle-30s 消费——空闲主动引导的可观测面，QuestLine.idleNudge()）。
  * 改动纪律（§3.6）：加法（新增 type / data 字段）同 PR 修订规格表、
  * schemaVersion 不动；破坏性（改名/删除/改语义）schemaVersion +1 且消费方同 PR 适配。
  */
@@ -53,9 +57,9 @@ const WHITELIST: Readonly<Record<EventFamily, string>> = {
   drive: 'world-drive-start respawn cone-hit boost-first upside-down flip-jump',
   poi: 'poi-bounding-in poi-bounding-out world-poi deep-link',
   camera: 'world-drive-view shot-apply shot-interrupt',
-  goal: 'explore-restore explore-progress explore-complete',
+  goal: 'explore-restore explore-progress explore-complete world-quest',
   perf: 'quality-auto-drop',
-  ux: 'hint-shown hint-dismissed hint-recall esc-menu-open idle-30s',
+  ux: 'hint-shown hint-dismissed hint-recall esc-menu-open idle-30s idle-nudge',
   error: 'pageerror context-lost',
 };
 

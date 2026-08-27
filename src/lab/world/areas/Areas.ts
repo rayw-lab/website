@@ -16,6 +16,9 @@
 // showcase 条目的楼保持 Phase 1 直跳（数据驱动开关，见 PoiArrival 头注）。
 // 探索计数（[CC-FXN-C4] rubric F6）：首次 boundingIn 某触发圈 = 发现一个探索点，
 // ExploreProgress chip（n/12）+ goal 族埋点随行；非强制轻目标，见组件头注。
+// 目标线 v0（[CC-FXN-C5] rubric F6/F3，FXN-BR G4 冻结稿）：world-pois.json quest
+// 扩展段驱动五站城区序主链——「下一站」chip + 目标站光柱/光圈提亮 + idle-30s
+// 空闲引导消费；boundingIn 同拍 quest.visit() 链推进；非强制可折叠，见 QuestLine 头注。
 import * as THREE from 'three/webgpu';
 import poisRaw from '../../../data/world-pois.json';
 import type { Game } from '../core/Game';
@@ -27,6 +30,7 @@ import { Area } from './Area';
 import { ExploreProgress } from './ExploreProgress';
 import { InteractivePoints } from './InteractivePoints';
 import { PoiArrival } from './PoiArrival';
+import { QuestLine } from './QuestLine';
 
 /** world-pois.json 条目（id 一经发布不变；buildingId 必须存在于 buildings JSON） */
 export interface WorldPoiEntry {
@@ -51,6 +55,11 @@ export interface WorldPoisConfig {
   deepLink: { param: string; slugField: string; entryUrlField: string };
   interaction: { keys: string[]; keyLabel: string; prompt: { zh: string; en: string } };
   point: { hoverHeight: number };
+  /**
+   * [CC-FXN-C5] G4 目标线 v0 扩展段（加法，schemaVersion 不动）：chain = 城区
+   * 顺序主链（building id，各城区取 1 栋）；缺席/空链 = 目标线整件不挂载。
+   */
+  quest?: { docs?: string; label: { zh: string; en: string }; chain: string[] };
   pois: WorldPoiEntry[];
 }
 
@@ -60,6 +69,12 @@ export interface AreasOptions {
    * ritual 模式传 null——首幕出生锚点归 TransformSystem（变形落点），触发圈照常挂载。
    */
   deepLinkPoi?: string | null;
+  /**
+   * [CC-FXN-C5] ritual 模式传 true：目标线激活（光柱入场 + 首个 shown 事件）
+   * 推迟到首个 world-transform to='car'——robot_idle poster 恒等（光柱不进首幕
+   * 视锥）。缺省 false = 挂载即激活（非 ritual 腿无状态机，FB-06 同构口径）。
+   */
+  deferQuestUntilCarReady?: boolean;
 }
 
 interface PoiRecord {
@@ -78,6 +93,8 @@ export class Areas {
   readonly arrival: PoiArrival;
   /** [CC-FXN-C4] 探索计数 n/12（F6 轻目标：boundingIn 首次发现 → chip + goal 埋点） */
   readonly explore: ExploreProgress;
+  /** [CC-FXN-C5] G4 目标线 v0（quest 扩展段缺席/站点全不在册时 null——整件不挂载） */
+  readonly quest: QuestLine | null;
   readonly records: PoiRecord[] = [];
 
   constructor(game: Game, map: CyberCityMap, options: AreasOptions = {}) {
@@ -179,6 +196,9 @@ export class Areas {
         // [CC-FXN-C4] 探索计数：首次发现该探索点 → chip +1 + explore-progress 埋点
         // （组件内去重，重复进圈零副作用）
         this.explore.discover(building.id);
+        // [CC-FXN-C5] 目标线链推进：进任一未完成主链站即打钩（组件内去重 +
+        // 顺序外到站合法——自由探索优先，非主链楼零副作用）
+        this.quest?.visit(building.id);
         point.pinned = true;
         point.reveal();
         console.info(
@@ -200,6 +220,28 @@ export class Areas {
     this.explore = new ExploreProgress(game, {
       poiIds: this.records.map((record) => record.building.id),
     });
+
+    // [CC-FXN-C5] 目标线 v0：quest 扩展段 → 城区序主链（在册站点过滤 + 告警；
+    // boundingIn handler 消费同 explore 纪律——装配完成前零 tick）
+    let quest: QuestLine | null = null;
+    const questConfig = this.config.quest;
+    if (questConfig && questConfig.chain.length > 0) {
+      const stations: Building[] = [];
+      for (const id of questConfig.chain) {
+        const building = buildingById.get(id);
+        const registered = this.records.some((record) => record.building.id === id);
+        if (building && registered) stations.push(building);
+        else console.warn(`[areas] quest.chain 引用未在册楼/POI：${id}（跳过该站）`);
+      }
+      if (stations.length > 0) {
+        quest = new QuestLine(game, {
+          label: questConfig.label,
+          stations,
+          deferUntilCarReady: options.deferQuestUntilCarReady ?? false,
+        });
+      }
+    }
+    this.quest = quest;
 
     // ———— ?poi= 深链出生（非 ritual）————
     if (highlightPoi) this.applyDeepLink(highlightPoi, buildingById);
@@ -242,6 +284,7 @@ export class Areas {
   /** 纹理等非场景资源释放（几何/材质归 Game.dispose 场景遍历；zones/tick 随 Game 停摆） */
   dispose(): void {
     this.arrival.dispose();
+    this.quest?.dispose();
     this.explore.dispose();
     this.points.dispose();
   }

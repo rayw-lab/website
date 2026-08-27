@@ -130,7 +130,19 @@ scripts/score-loop.mjs ── northStar 只读汇总 ←────────
 | AL-FXN | F6 取证增量：F6 由「30-45 段（纯沙盒零目标）」升「50-65+ 段」候选（轻目标可发现可完成 + 显式进度呈现）——登记轮须有 chip 发现 / 进度 +1 / 完成态三段录屏时间码 + 对应 goal 族 dump 事件（seq/t）；空闲引导缺口按 F6 锚点「空闲引导弱」如实计 |
 | 埋点随行核对 | OBS §3.4 表新增 goal 族三行（`explore-restore`/`explore-progress`/`explore-complete`）随本 PR 落地——新增族属加法，schemaVersion 不动；`quality-score.json`/smoke 零改动 |
 
-### 3.5 批次 × rubric 维 × 脚本腿 对照总表
+### 3.5 CC-FXN-C5 目标线 v0 + 空闲主动引导（已落地——84→90 顾问路径刀 1，实现 + e2e 随行 PR 交付）
+
+交付面（90 路径顾问 `docs/research/cyber-city-fxn-90-path-advisor.md` §3 开发 1 行；形态照抄 FXN-BR G4 冻结稿）：**①「下一站」目标线**——`world-pois.json` quest 扩展段驱动五站城区序主链（东城出行 → 南口语言 → 北城 AI → 东南作品 → 西南个人 各取 1 栋），HUD 顶部 chip（`[data-world-quest]`：楼名 `[data-world-quest-name]` + 实时距离 `[data-world-quest-distance]` + 步进 `[data-world-quest-step]` + 城区色点）+ 目标站 parkingBay 提亮圈（深链高亮同档 3.4）+ 静态霓虹光柱（64m，tint uniform 换色零重编译，零时间项不占 CITY-03 配额）；到站（Areas boundingIn 同拍）链上下一站，顺序外到站合法照打；五站集齐转完成态。**② `idle-30s` 消费**（C4 悬置腿收口，OBS §9-3 注记回填）——入账同拍 `QuestLine.idleNudge()`：chip 脉冲 + 「往光柱方向开」nudge 行（`[data-world-quest-nudge]`），驻留至下一个驾驶意图收起。实现 = `src/lab/world/areas/QuestLine.ts`（随 areas 分包，默认路径零字节）。**非强制**（G4 红线）：主链不锁任何楼、容器 pointer-events:none 全穿透——唯一交互件 = 折叠按钮 `[data-world-quest-toggle]`（localStorage `world-quest-collapsed-v1` 记忆偏好）。**恒等双保险**：DOM 面 robot_idle/transforming 样式门整层 display:none（C4 同构）；场景面 ritual 腿光柱与首个 shown 事件推迟到首个 `world-transform to='car'`——poster 逐字节恒等。**四降级轨**：reduced-motion 动画压 0、文字照常；触屏按钮可点按、文案零键位词；quality=2 材质零时间项冻结无感；KinematicFallback 走 Zones 零物理依赖。事件回填（OBS §3.4 加法，schemaVersion 不动）：goal 族 `world-quest {action: 'shown'|'reached'|'chain-complete'|'collapsed'|'expanded', step, targetId, elapsedMs}` + ux 族 `idle-nudge {targetId}`。
+
+| 层 | 新增断言 |
+|----|----------|
+| e2e | `e2e/cyber-city-explore.spec.ts` 扩展（同文件同 project，driveTo/pollDump 基建复用）：**CITY-QST-01 目标线闭环**——`?poi=` 深链出生落链首站触发圈 → `world-quest` shown(step1) → reached(step1) → shown(step2)（seq 序断言，禁时长阈值）⇔ chip 步进 `2/5` 呈现互证 → 距离读数 ≈ 站-1→站-2 泊位平面距 → 非强制负断言（容器穿透 + 按钮 auto + 零模态）→ 折叠一键收起 + localStorage 记忆 + `collapsed`/`expanded` 埋点互证；**CITY-QST-02 恒等门 + 激活 + idle 消费**——robot_idle 期 chip 整层不可见且零 `world-quest` 事件（激活推迟合同）→ RM instant swap car_ready 后 chip 可见 + shown(step1) → driving 撒手空闲 30 设计秒 → `idle-30s` 先入账、`idle-nudge` 随后（seq 序）⇔ nudge 行呈现互证 → 驾驶意图恢复 nudge 即收 |
+| smoke | 分母零改动（`world-quest`/`idle-nudge` 不进 coverage 四项，§0-3）；漏斗七步语义不变 |
+| playtest | S-2 全程「目标感」升级观察点：0:08 chip/光柱可见性、到站链推进可感知、复位绕行是否消失（审计 §6-3 缺口对治项）；S-5 **L7 空闲腿由「记录性观察」转必测**（消费已落地——空闲 30 设计秒须观察到 nudge 呈现） |
+| AL-FXN | F6「空闲主动引导缺席」判词的对治证据：登记轮须有 idle-30s→idle-nudge dump 事件对（seq/t）+ nudge 呈现录屏时间码；F3「为找圈而复位绕行」对治：S-2 腿观察目标线指向下的自然寻路 |
+| 埋点随行核对 | OBS §3.4 表新增 goal 族 `world-quest` 行 + ux 族 `idle-nudge` 行随本 PR 落地（加法，schemaVersion 不动）；`idle-30s` 行加消费方注记（语义不变）；§9-3 注记回填闭环 |
+
+### 3.6 批次 × rubric 维 × 脚本腿 对照总表
 
 | 批次 | 状态 | 主计分维 | e2e 增量 | 脚本腿变化 |
 |------|------|----------|----------|------------|
@@ -138,6 +150,7 @@ scripts/score-loop.mjs ── northStar 只读汇总 ←────────
 | FXN-C1 | RUNNING | F1 F5 | CITY-GD-01…05（建议） | S-5 L3 转必过 |
 | FXN-C3 | 实现 + e2e 随行 PR 交付 | F4 | CITY-PA-01…04（已落 spec；OBS-01 适配 abort('aborted')，§3.3 留痕行回填） | §4.4 前奏条件腿转正 |
 | FXN-C4 | 实现 + e2e 随行 PR 交付（拍板收窄为探索计数 n/12） | F6 | CITY-EXP-01…02（已落 spec；目标线/空闲引导腿悬置留痕 §3.4） | S-2 驾驶段增目标感观察点；L7 维持记录性观察 |
+| FXN-C5 | 实现 + e2e 随行 PR 交付（G4 目标线 v0 + idle-30s 消费，84→90 刀 1） | F6 F3 F4 | CITY-QST-01…02（同 spec 文件扩展，§3.5） | S-2 目标感升级观察点；**L7 转必测**（空闲引导已落地） |
 
 ---
 
