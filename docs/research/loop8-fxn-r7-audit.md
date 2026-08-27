@@ -46,4 +46,15 @@
 
 funnel 前五步齐（reveal 29426 / robotIdle 29426 / transformStart 53762 / carReady 53763 / driveStart 81456）；dropped 0；零 pageerror。
 
-（L5–L7、逐维打分、双 Pass 合议与裁决随取证增量回填。）
+### 2.2 L5 触屏（375×812 · hasTouch · isMobile · dpr2，CDP 真触摸）
+
+**两段全通过**：
+
+| 段 | 观察 | dump 锚点 |
+|---|---|---|
+| A 摇杆驾驶（ritual 全链） | 375 视口 `data-blocked="viewport"` 不自动挂载 → 显式进入；状态行触屏分稿「点按『变形 · 巡航态』启动」（零键盘键位）；点按 CTA → car_ready + chip 同拍激活；CDP 真触摸中心持杆上右拖 → `nippleActive=true, progress=1.00, speedKmh=29.2`，`data-world-state=driving` | env `{touch:true, viewport:375×812}`；`transform-start #4/t85574` → `world-transform #6/t125170` → `world-quest{shown,step:1} #7/t125190` → `world-drive-start #8/t143398`；dump `session-dump-s5-l5a-touch-joystick-20260827.json`；截图 `fxn_r7_l5a_04_joystick_driving.png`；录屏 `fxn_r7_l5a_touch_joystick_20260827.webm` 02:07–02:35 |
+| B 点标点进站（`?poi=concept-garage` 深链） | 出生落圈（链首站到站 + 顺位推进 2/5「座舱语音舱」与 R5 L1 同判）；相机就位后标点摆入屏内 (93,577)，**持按标点** → `world-poi` → 前奏 shot → 导航落 `/website/lab/car-configurator/`（楼=分区映射正确）；counters poiEnters/poiInteracts 双 1 | `deep-link #2/t4108` → `poi-bounding-in #5/t19540` → `explore-progress{n:1} #6` → `world-quest{reached,step:1} #7` → `world-quest{shown,step:2,voice-pod} #8` → `world-poi{concept-garage} #9/t66046` → `shot-apply{poi_showcase-concept-garage} #10/t66048`；funnel firstPoiIn 19540 / firstPoiInteract 66046；dump `session-dump-s5-l5b-touch-poi-20260827.json`；截图 `fxn_r7_l5b_r3_round0_before_tap.png` / `fxn_r7_l5b_02_after_entry.png`；录屏 `fxn_r7_l5b_touch_poi_entry_20260827.webm` 00:38–01:57 |
+
+方法留痕（诚实入账）：① 瞬时 `touchscreen.tap` 在软渲染 ~1–3fps 下 touchstart/touchend 整体落在相邻两 tick 之间，`Pointer.update()` 观测不到 down 沿——**环境伪影非产品缺陷**（真机 60fps 下 tap 天然跨多帧；`Pointer.ts` 双缓冲 tick 结算为既有设计），取证改用「持按 ~3s 再抬手」的环境等价操作（位移 <25px 点击阈值内，`RayCursor.ts` click 判定原样走通）；② 标点屏幕坐标经 `#debug` 只读句柄相机投影获得（R5 L2 `#debug` 置位判例同构，只读不改状态）；③ dump 抢存于导航前轮询（Astro View Transitions SPA 换页不触发 pagehide，R5 pagehide 暂存法在本路径失效——方法修正留痕）。
+
+（L6–L7、逐维打分、双 Pass 合议与裁决随取证增量回填。）
