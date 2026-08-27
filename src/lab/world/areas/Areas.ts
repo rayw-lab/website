@@ -156,6 +156,8 @@ export class Areas {
       area.addHideable(point.group);
 
       area.events.on('boundingIn', () => {
+        // [CC-OBS-C1] 漏斗步⑥：首次触发圈进入（观测规格 §3.4 poi-bounding-in 行）
+        game.session.log('poi-bounding-in', { id: building.id });
         point.pinned = true;
         point.reveal();
         console.info(
@@ -164,6 +166,7 @@ export class Areas {
         );
       });
       area.events.on('boundingOut', () => {
+        game.session.log('poi-bounding-out', { id: building.id });
         point.pinned = false;
         point.conceal();
       });

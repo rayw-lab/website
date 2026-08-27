@@ -9,6 +9,7 @@
 //       Rapier 仍走动态 import（wasm ~1.5MB 与资源加载并行，不进入口 chunk）。
 import * as THREE from 'three/webgpu';
 import { Events } from './Events';
+import { SessionTimeline } from './SessionTimeline';
 import { Ticker } from './Ticker';
 import { Viewport } from './Viewport';
 import { Quality, type QualityLevel } from './Quality';
@@ -69,6 +70,11 @@ export class Game {
   /** 相机取景档（View 消费；构造期落定，不支持运行时切换） */
   readonly cameraFraming: 'greybox' | 'city';
   readonly events = new Events();
+  /**
+   * [CC-OBS-C1] 会话时间线（可观测规格 §3.1）：每个 Game 实例恒有一枚——
+   * ritual/灰盒/world-spike 全路径一致，系统一行接线 game.session.log(...) 无空判断。
+   */
+  readonly session: SessionTimeline;
   /** dispose 一键解绑全部 DOM 监听（SRD §9.2 mount 契约） */
   private readonly abortController = new AbortController();
   private readonly options: GameOptions;
@@ -106,12 +112,24 @@ export class Game {
 
   revealed = false;
   private disposed = false;
+  /** [CC-OBS-C1] 后端已落定（init setRenderer 后）——session env 'pending' 判据 */
+  private backendResolved = false;
 
   constructor(options: GameOptions) {
     this.options = options;
     this.domElement = options.domElement;
     this.canvasElement = options.canvasElement;
     this.cameraFraming = options.cameraFraming ?? 'greybox';
+
+    // [CC-OBS-C1] SessionTimeline 构造帧 = 会话起点（观测规格 §3.1）；
+    // env 活值经闭包回读（backend/vehicle init 前 = 'pending'），
+    // 镜像订阅 + canvas context-lost 经 attach 接线（§3.4）
+    this.session = new SessionTimeline(() => ({
+      backend: this.backendResolved ? (this.rendering.isWebGPU ? 'webgpu' : 'webgl2') : 'pending',
+      vehicle: this.vehicleKind ?? 'pending',
+      quality: this.quality?.level ?? 0,
+    }));
+    this.session.attach(this.events, options.canvasElement);
   }
 
   async init(): Promise<void> {
@@ -132,6 +150,7 @@ export class Game {
     this.rendering = new Rendering(this);
     // ★ 第一个 await：从这行起 tick 总线开始跳动（setAnimationLoop → ticker.update）
     await this.rendering.setRenderer({ forceWebGL: this.options.forceWebGL ?? false });
+    this.backendResolved = true;
     this.options.onBackend?.(this.rendering.isWebGPU ? 'webgpu' : 'webgl2');
 
     // ★ 第二个 await：首批资源（灰盒 Spike 零资产，空清单直通；
@@ -232,6 +251,10 @@ export class Game {
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true;
+
+    // [CC-OBS-C1] dispose 合同首段（观测规格 §4.2）：各系统仍在、读数完整时收尾——
+    // dispose 事件入 ring → console 摘要一次 → 摘除全部监听（幂等）
+    this.session.dispose();
 
     this.abortController.abort(); // 解绑 resize/keyboard/pointer 全部监听
     this.inputs.dispose();

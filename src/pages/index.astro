@@ -385,8 +385,14 @@ const heroTowers = buildings.filter((b) => b.hero);
     window.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape' || e.repeat) return;
       e.preventDefault();
-      if (escMenu.open) escMenu.close();
-      else escMenu.showModal();
+      if (escMenu.open) {
+        escMenu.close();
+      } else {
+        escMenu.showModal();
+        // [CC-OBS-C1] 壳桥埋点（观测规格 §3.5）：壳零 import world——SessionTimeline
+        // 监听 world-obs（仅放行 ux/error 族）；world 未挂载时无人监听自然丢失（可接受）
+        window.dispatchEvent(new CustomEvent('world-obs', { detail: { type: 'esc-menu-open' } }));
+      }
     });
     escMenu
       .querySelector('[data-world-esc-close]')
