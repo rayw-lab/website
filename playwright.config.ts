@@ -78,6 +78,9 @@ export default defineConfig({
       // （观测规格 §7：OBS 用例入 world-chromium 串行 project，同款 3D 独占纪律）
       name: 'world-chromium',
       testMatch: /world-spike\.spec\.ts|cyber-city.*\.spec\.ts/,
+      // [CC-PERF-C1] perf spec 排除（perf 测试方案 §1.3 ①）：cyber-city.*\.spec\.ts
+      // 泛匹配会误收编 cyber-city-perf.spec.ts——该 spec 独归 city-perf-chromium
+      testIgnore: /cyber-city-perf\.spec\.ts/,
       dependencies: ['desktop-chromium', 'mobile-375'],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
@@ -91,6 +94,17 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
     {
+      // CITY-PERF-01/02 城市档证据包（CC-PERF-C1；perf 测试方案 §1.3 ② 案 B）：
+      // project 间 dependencies 是 Playwright 唯一的跨文件强序原语——依赖
+      // world-perf-chromium 保证 WS-PERF-01 采样完毕后才开跑，双 perf 采样期
+      // 均整机独占互不污染。
+      name: 'city-perf-chromium',
+      testMatch: /cyber-city-perf\.spec\.ts/,
+      fullyParallel: false, // 文件内两用例（01→02）按序单 worker
+      dependencies: ['world-perf-chromium'], // WS-PERF-01 采样完毕后才开跑
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+    },
+    {
       // 视觉/3D 冒烟取证（CC-L0-setup，e2e/visual/）：canvas 像素取证 + toHaveScreenshot
       // 基线 + @smoke3d 计分维度。含完整 3D 挂载 → 依赖链殿后（全量跑时整机独占）；
       // fullyParallel=false 钉死单 worker 顺序执行且用例相互独立（非 serial——
@@ -99,7 +113,7 @@ export default defineConfig({
       name: 'visual-chromium',
       testMatch: /visual[\\/].*\.spec\.ts/,
       fullyParallel: false,
-      dependencies: ['world-perf-chromium'],
+      dependencies: ['city-perf-chromium'], // [CC-PERF-C1] 依赖链改指新殿后节点（§1.3 ③）
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
   ],
