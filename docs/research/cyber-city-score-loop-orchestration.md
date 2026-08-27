@@ -9,7 +9,7 @@
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98** · **视觉 98** · **功能 90** · **性能 85**（登记 **92.5/70**，Δ 见下） |
 | **指挥官约束** | 无 CC-CAM → 视觉登记封顶 **70**；**功能/性能须独立 rubric + 可观测证据登记** |
-| 生产 tip | `main` @ `23efccf`（登记 **92.5/70** · 功能/性能 rubric 待建） |
+| 生产 tip | `main` @ `6949a62`（登记 **92.5/70** · ADV [#47](https://github.com/rayw-lab/website/pull/47) 已合 · rubric/OBS 规格在写） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -78,7 +78,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | 步 | PR | base | 内容 |
 |----|-----|------|------|
 | ① | doc | `main` | ✅ [#44](https://github.com/rayw-lab/website/pull/44)+[#46](https://github.com/rayw-lab/website/pull/46) 已合 |
-| ② | **CC-CAM-C1** | `main` | PR [#45](https://github.com/rayw-lab/website/pull/45) draft · CI ✅ · 本地 e2e **~45/52** 跑关中 |
+| ② | **CC-CAM-C1** | `main` | PR [#45](https://github.com/rayw-lab/website/pull/45) draft · **e2e 52/52 ✅** · NDC **7/7 PASS** · 待父代理合流 |
 | ③ | **CC-AL-CAM** | — | Sol 独立审计：NDC 入帧、e2e 52/52、ritual 恒等合同 |
 | ④ | 登记 | `main` | 审计独立分写入登记（仅 GO/有条件放行） |
 | ⑤ | CC-BL2-CAM | `cursor/cc-bl2-street-extension-1d6f` | CAM 镜头 + BL2 栈重审；过门后父代理合 PR #43 |
@@ -142,17 +142,17 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
-| CC-FXN-ADV | `cursor/cc-fxn-advisor-consult-1d6f` @ `6448442` | [FXN-ADV](bc-063957b8-f8d7-57f2-a1de-0486b94ff78e) | ✅ IDLE · doc PR 待发 |
-| CC-FXN-RS | `cursor/cc-fxn-gameplay-gap-audit-1d6f` | [FXN-RS](bc-c76a8773-232a-5259-9be1-b443c8b670f5) | 🔄 RUNNING |
-| CC-FXN-BR | `cursor/cc-fxn-gameplay-features-1d6f` | [FXN-BR](bc-3484cd88-8f28-5a98-80a9-4ddcedaef026) | 🔄 RUNNING |
-| CC-FXN-DES | `cursor/cc-fxn-function-rubric-1d6f` | 待派发 | ⏳ 待 ADV 后 |
-| CC-OBS-DES | `cursor/cc-obs-observability-spec-1d6f` | 待派发 | ⏳ 待 ADV 后 |
+| CC-FXN-ADV | 已合 main | [FXN-ADV](bc-063957b8-f8d7-57f2-a1de-0486b94ff78e) | ✅ PR [#47](https://github.com/rayw-lab/website/pull/47) 已合 |
+| CC-FXN-RS | 本 PR 合入 | [FXN-RS](bc-c76a8773-232a-5259-9be1-b443c8b670f5) | ✅ IDLE · `cyber-city-gameplay-gap-audit.md` |
+| CC-FXN-BR | 本 PR 合入 | [FXN-BR](bc-3484cd88-8f28-5a98-80a9-4ddcedaef026) | ✅ IDLE · `cyber-city-gameplay-features.md` |
+| CC-FXN-DES | `cursor/cc-fxn-function-rubric-1d6f` | [FXN-DES](bc-436336c8-9fc8-5833-ae57-064e5eab2fc9) | 🔄 RUNNING |
+| CC-OBS-DES | `cursor/cc-obs-observability-spec-1d6f` | [OBS-DES](bc-fecc56ff-7db5-577f-b0a8-0f9e4aab6b02) | 🔄 RUNNING |
 
 ### 合流序
 
 | 步 | 内容 |
 |----|------|
-| ① | ADV 报告 + RS 缺口清单 + BR 脑暴（doc-only） |
+| ① | ✅ ADV [#47](https://github.com/rayw-lab/website/pull/47) + RS/BR doc-only（本 PR） |
 | ② | OBS 规格 + 功能 rubric 规格 |
 | ③ | CC-OBS-C1（SessionTimeline / 埋点 / `#debug`） |
 | ④ | CC-FXN-C1…（P0 交互，单 PR 单主题） |
