@@ -153,14 +153,30 @@ interface Waypoint {
   radius: number;
 }
 
+/** state + fps 单次 evaluate 合并读（轮询开销减半；fps 供游戏时间推进率折算） */
+async function readTelemetry(page: Page): Promise<{ state: SpikeState; fpsAvg: number }> {
+  return page.evaluate(() => {
+    const ws = (
+      window as unknown as { __worldSpike?: { state(): unknown; fps(): { avg: number } } }
+    ).__worldSpike;
+    if (!ws) throw new Error('__worldSpike 未挂载');
+    return { state: ws.state() as SpikeState, fpsAvg: ws.fps().avg };
+  });
+}
+
 /**
  * 遥测闭环路径导航（world-spike pollState 先例的转向扩展）：按住 W，每 0.5s 读
  * __worldSpike.state()，按当前途径点方位差压/放 A/D（rotationY 约定：正 = 左转 =
- * KeyA，Player.steering += 1 / PhysicsVehicle steeringTarget 正左）。
- * 健壮性（SwiftShader 慢动作 + CI 负载抖动标定）：
- *   · 卡死检测用「位移 < 2m 持续 75s」而非速度阈值——起步加速期在慢动作下可长达
- *     数十秒墙钟，速度阈值会误判；卡死 → R 重生并把路径重置回首个途径点
- *     （重生点 = 首幕出生锚点；respawn 事件入 timeline 属合法动线，计数互证不受影响）；
+ * KeyA，Player.steering += 1 / PhysicsVehicle steeringTarget 正左）；直道
+ * （方位差 < 0.35 且距目标 > 15m）加 Shift 助推，压缩所需游戏时间。
+ *
+ * 时基纪律（上轮实测教训）：CI 负载抖动下帧率可跌破 1fps，Ticker maxDelta=1/30
+ * 使游戏时间推进率 ≈ min(fps,30)/30 游戏秒/墙秒（10×+ 慢放）——一切「卡死」判定
+ * 必须以游戏时间累计（fps 取 __worldSpike.fps() 实测），任何墙钟阈值在慢放下都是
+ * 系统性误报（上轮 75s 位移阈值把正常起步误判成卡死，反复重生拽回原点）。
+ *   · 卡死 = 位移 < 2m 且 speedKmh < 5 持续 ≥ 8 游戏秒（速度条件与 fps 滑窗滞后
+ *     解耦：慢放起步 1 游戏秒内速度即爬过 5，永不累计；顶墙车速≈0 才累计）
+ *     → R 重生（回首幕出生锚点）并把路径重置回首途径点重走；
  *   · 终点途径点进近段（<9m）超速则松油 + 点刹（Space=brake），防高速穿圈滑出。
  */
 async function navigate(
@@ -171,12 +187,19 @@ async function navigate(
   let steering: 'a' | 'd' | null = null;
   let throttle = false;
   let braking = false;
+  let boosting = false;
   let index = 0;
-  let state = await readSpike(page);
+  let { state } = await readTelemetry(page);
   let lastPos = { x: state.x, z: state.z };
-  let lastMoveAt = Date.now();
+  let stuckGameSec = 0;
+  let lastTickAt = Date.now();
 
-  const setKeys = async (wantThrottle: boolean, wantBrake: boolean, wantSteer: 'a' | 'd' | null) => {
+  const setKeys = async (
+    wantThrottle: boolean,
+    wantBrake: boolean,
+    wantBoost: boolean,
+    wantSteer: 'a' | 'd' | null,
+  ) => {
     if (wantThrottle !== throttle) {
       await (wantThrottle ? page.keyboard.down('w') : page.keyboard.up('w'));
       throttle = wantThrottle;
@@ -184,6 +207,10 @@ async function navigate(
     if (wantBrake !== braking) {
       await (wantBrake ? page.keyboard.down('Space') : page.keyboard.up('Space'));
       braking = wantBrake;
+    }
+    if (wantBoost !== boosting) {
+      await (wantBoost ? page.keyboard.down('Shift') : page.keyboard.up('Shift'));
+      boosting = wantBoost;
     }
     if (wantSteer !== steering) {
       if (steering) await page.keyboard.up(steering);
@@ -195,7 +222,14 @@ async function navigate(
   try {
     const deadline = Date.now() + totalTimeoutMs;
     while (Date.now() < deadline) {
-      state = await readSpike(page);
+      const now = Date.now();
+      const wallDtSec = (now - lastTickAt) / 1000;
+      lastTickAt = now;
+      const telemetry = await readTelemetry(page);
+      state = telemetry.state;
+      // 游戏时间推进率：fps<30 时每帧推进恒 1/30s → rate=fps/30；样本不足（read()
+      // 返回 0）时取保守下限 0.05fps——宁可少计（推迟自救）不可多计（误报重生）
+      const rate = Math.min(Math.max(telemetry.fpsAvg, 0.05), 30) / 30;
 
       // 途径点推进（到达即切下一个；全部到达 = 成功）
       while (
@@ -212,29 +246,35 @@ async function navigate(
       const diff = wrapAngle(desired - state.yaw);
       const steer: 'a' | 'd' | null = diff > 0.12 ? 'a' : diff < -0.12 ? 'd' : null;
 
-      // 终点进近：超速则松油点刹（防穿圈滑出）；其余段全油门
+      // 终点进近：超速则松油点刹（防穿圈滑出）；直道远段 Shift 助推；其余全油门
       const finalLeg = index === path.length - 1;
       const overspeed = finalLeg && distance < 9 && state.speedKmh > 12;
-      await setKeys(!overspeed, overspeed, steer);
+      const boost = !overspeed && distance > 15 && Math.abs(diff) < 0.35;
+      await setKeys(!overspeed, overspeed, boost, steer);
 
-      // 位移型卡死自救：R 重生（回首幕出生锚点）+ 路径重置
+      // 游戏时基卡死自救：位移 + 速度双条件累计 → R 重生 + 路径重置
       if (Math.hypot(state.x - lastPos.x, state.z - lastPos.z) > 2) {
         lastPos = { x: state.x, z: state.z };
-        lastMoveAt = Date.now();
-      } else if (Date.now() - lastMoveAt > 75_000) {
-        await setKeys(false, false, null);
-        await page.keyboard.press('r');
-        await page.waitForTimeout(4_000);
-        index = 0;
-        state = await readSpike(page);
-        lastPos = { x: state.x, z: state.z };
-        lastMoveAt = Date.now();
+        stuckGameSec = 0;
+      } else if (state.speedKmh < 5) {
+        stuckGameSec += wallDtSec * rate;
+        if (stuckGameSec >= 8) {
+          await setKeys(false, false, false, null);
+          await page.keyboard.press('r');
+          await page.waitForTimeout(4_000);
+          index = 0;
+          ({ state } = await readTelemetry(page));
+          lastPos = { x: state.x, z: state.z };
+          stuckGameSec = 0;
+          lastTickAt = Date.now();
+        }
       }
       await page.waitForTimeout(500);
     }
     return { ok: false, state };
   } finally {
     await page.keyboard.up('Space').catch(() => {});
+    await page.keyboard.up('Shift').catch(() => {});
     if (steering) await page.keyboard.up(steering).catch(() => {});
     await page.keyboard.up('w').catch(() => {});
   }
@@ -271,7 +311,7 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
   //       导航请求保住 JS 上下文（页面原地存续），「跳转前取证」确定性成立。
   // ---------------------------------------------------------------------------
   test('CITY-OBS-01 漏斗全走 @funnel：ritual 动线 + V 往返 + R 重生 + 驾驶进 POI + E 进站取证', async ({ page }, testInfo) => {
-    test.setTimeout(1_500_000); // SwiftShader 慢动作下 56m 遥测闭环驾驶 ~4-8min 墙钟
+    test.setTimeout(2_700_000); // SwiftShader + CI 负载抖动：52m 闭环驾驶最坏 10×+ 慢放
     const errors = trackErrors(page);
 
     // 进站目标 = autodrive-lab（parkingBay (28,-28) r6，deepLink /work/——
@@ -297,13 +337,13 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
 
     // V 往返 ×2：world-drive-view 覆盖（fpv → third 回位，动线其余段视角不变）
     await page.keyboard.press('v');
-    await expect(host).toHaveAttribute('data-drive-view', 'fpv');
+    await expect(host).toHaveAttribute('data-drive-view', 'fpv', { timeout: 30_000 });
     await page.keyboard.press('v');
-    await expect(host).toHaveAttribute('data-drive-view', 'third');
+    await expect(host).toHaveAttribute('data-drive-view', 'third', { timeout: 30_000 });
 
     // R 重生（reason 'key'）：出生点即首幕锚点，随后从原点起跑
     await page.keyboard.press('r');
-    const respawned = await pollDump(page, (d) => d.counters.respawns >= 1, 30_000);
+    const respawned = await pollDump(page, (d) => d.counters.respawns >= 1, 90_000);
     expect(respawned.ok, 'R 重生应记入 respawn 事件').toBe(true);
 
     // 遥测闭环驾驶：沿路途径点走位（先北上 (0,-24) 避开路口隔离墩再东折）→
@@ -312,24 +352,24 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
       { x: 0, z: -24, radius: 5 },
       { x: 28, z: -28, radius: 4.5 },
     ];
-    const drive = await navigate(page, BAY_PATH, 900_000);
+    const drive = await navigate(page, BAY_PATH, 1_800_000);
     expect(drive.ok, `泊车位 (28,-28) 应可达（实测 x=${drive.state.x.toFixed(1)} z=${drive.state.z.toFixed(1)}）`).toBe(true);
 
     // 触发圈进入（poi-bounding-in → firstPoiIn 首达）
-    const entered = await pollDump(page, (d) => d.funnel.firstPoiIn !== null, 60_000);
+    const entered = await pollDump(page, (d) => d.funnel.firstPoiIn !== null, 120_000);
     expect(entered.ok, '进入 parkingBay 触发圈应记 poi-bounding-in').toBe(true);
 
     // E 进站（world-poi → location.assign 被 route abort 拦下，上下文存续）；
     // 溜出触发圈则低速回靠再按（boundingOut 收合 activeItem 的兜底）
-    const deadline = Date.now() + 240_000;
+    const deadline = Date.now() + 600_000;
     let interacted = false;
     while (Date.now() < deadline && !interacted) {
       const s = await readSpike(page);
       if (Math.hypot(28 - s.x, -28 - s.z) > 5.4) {
-        await navigate(page, [{ x: 28, z: -28, radius: 4 }], 180_000);
+        await navigate(page, [{ x: 28, z: -28, radius: 4 }], 480_000);
       }
       await page.keyboard.press('e');
-      const hit = await pollDump(page, (d) => d.funnel.firstPoiInteract !== null, 5_000);
+      const hit = await pollDump(page, (d) => d.funnel.firstPoiInteract !== null, 10_000);
       interacted = hit.ok;
     }
     expect(interacted, 'E 进站应记 world-poi（进站跳转已被 route 拦截取证）').toBe(true);
@@ -379,7 +419,7 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
   // CITY-OBS-06 按 §6.2 多 dump 并集合并计分。
   // ---------------------------------------------------------------------------
   test('CITY-OBS-01b 锥桶补充取证：灰盒直线撞桩 → cone-hit 事件 + coneHits 计数互证', async ({ page }, testInfo) => {
-    test.setTimeout(900_000);
+    test.setTimeout(1_500_000);
     const errors = trackErrors(page);
 
     await page.goto(SPIKE_URL);
@@ -388,18 +428,24 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     await page.locator('[data-ws-start]').click();
     await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
 
-    // 直线撞桩（WS-E2E-04 同款三次重试）：出生 (0,0) 朝北，锚点桩 (0,-4.5)
+    // 直线撞桩（WS-E2E-04 同款三次重试）：出生 (0,0) 朝北，锚点桩 (0,-4.5)。
+    // 每次尝试以游戏时间封顶（navigate 同款时基纪律：慢放下墙钟阈值必误报），
+    // z < -14 = 冲过桩位带（提前止损重试）。
     let knocked = 0;
     for (let attempt = 1; attempt <= 3 && knocked === 0; attempt++) {
       await page.keyboard.down('w');
-      const deadline = Date.now() + 150_000;
-      while (Date.now() < deadline) {
-        const s = await readSpike(page);
+      let attemptGameSec = 0;
+      let lastTickAt = Date.now();
+      while (attemptGameSec < 20) {
+        const { state: s, fpsAvg } = await readTelemetry(page);
         if (s.cones > 0) {
           knocked = s.cones;
           break;
         }
         if (s.z < -14) break;
+        const now = Date.now();
+        attemptGameSec += ((now - lastTickAt) / 1000) * (Math.min(Math.max(fpsAvg, 0.05), 30) / 30);
+        lastTickAt = now;
         await page.waitForTimeout(300);
       }
       await page.keyboard.up('w');
@@ -410,8 +456,8 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     }
     expect(knocked, '灰盒直线驾驶必须实际撞倒锥桶').toBeGreaterThan(0);
 
-    // cone-hit 沿检测在 HUD 0.25 游戏秒节拍（慢动作 ~数秒墙钟）——轮询等事件落账
-    const logged = await pollDump(page, (d) => d.counters.coneHits >= 1, 60_000);
+    // cone-hit 沿检测在 HUD 0.25 游戏秒节拍（慢动作 ~数十秒墙钟）——轮询等事件落账
+    const logged = await pollDump(page, (d) => d.counters.coneHits >= 1, 180_000);
     expect(logged.ok, 'cone-hit 事件应随 HUD 节拍落入 timeline').toBe(true);
 
     const dump = logged.dump;
