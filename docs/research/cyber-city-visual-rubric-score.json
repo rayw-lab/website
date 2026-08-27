@@ -1,60 +1,60 @@
 {
   "schemaVersion": "1.1.0",
-  "score": 70,
+  "score": 71,
   "target": 85,
-  "subject": "CC-BL1 Blender 路径首段独立审计对象：PR #42 cursor/cc-bl1-hero-corner-blender-1d6f@81a85e2，相对锁定 main@71f89a6；autodrive-lab 单栋 Draco+KTX2 实模 GLB + 十字路口东北角充电/试车/标定/设备道具簇，Q0/Q1 实模、Q2/加载失败 ThemeTowers 回退。",
+  "subject": "CC-BL2 Blender 沿街扩展独立审计对象：PR #43 cursor/cc-bl2-street-extension-1d6f@0c66684，相对锁定 main@1274dad；在 BL1 autodrive-lab 之上增加 concept-garage 第二栋 Draco+KTX2 hero GLB、展厅/维修门/配置器前场叙事层与碰撞体，保留 Q2/加载失败 ThemeTowers 回退。",
   "rubric": "docs/research/cyber-city-visual-rubric.md",
-  "scoredAt": "2026-08-26",
-  "scoredBy": "CC-AL-BL1 独立审计（gpt-5.6-sol-xhigh-fast；exact integration tree b5ce8bc95541484db0f93be0a07a2ba098facc69；沿用 rubric v1.1 原秤，fresh candidate/main Q0 WebGL robot-idle + autodrive-lab POI 帧优先）",
+  "scoredAt": "2026-08-27",
+  "scoredBy": "CC-AL-BL2 独立审计（gpt-5.6-sol-xhigh-fast；exact integration tree 17b6974e4e84a8c09b60be60b116d3f31bafb4cc；沿用 rubric v1.1 原秤，fresh exact/main Q0 WebGL robot-idle + concept-garage/autodrive-lab POI 帧优先）",
   "evidence": {
-    "protocolA": "exact tree 独占 preview 全量 e2e 52/52、VIS-02/03/04 smoke3d 3/3；LHCI 7 URL×3 collect/assert exit 0，`/` 与 `/home/` 四项中位数全 100；同 SHA CI run 33019188266 green，lighthouse-results artifact digest sha256:8ccf309d03ce6b462638636034232d57959eb70e4a1985091b05c92e52e73077。",
-    "protocolB": "1440×900 fresh 对照：cc-al-bl1-candidate-robot-idle.png vs cc-al-bl1-main-robot-idle.png；cc-al-bl1-candidate-autodrive-poi.png vs cc-al-bl1-main-autodrive-poi.png。首幕收益集中画面右缘，POI 才清晰显示逐窗幕墙、层间梁、收分塔身、暖光展厅、门廊/场坪与智驾物件，按帧折扣而非按代码清单满额。",
-    "crossChecks": "GLB 157,444 B、4,622 indexed tris、13/13 primitive Draco、3/3 image KTX2；world asset pool 5.3/12MB。运行时 probe：Q0 hero visible + ThemeTowers visual hidden；Q2 GLB requests=[] 且 ThemeTowers visible；主动 abort GLB 后 ThemeTowers visible、世界 ready。astro check 129 files、0 errors/0 warnings/58 hints。",
-    "delta": "AL5 独立 raw 68.00 → AL-BL1 独立 raw 70.20（+2.20）；整数 68 → 70。"
+    "protocolA": "detached exact tree 063cbd0/tree 17b6974 独占端口全量 e2e 52/52、VIS-02/03/04 smoke3d 3/3；LHCI 7 URL×3 collect/assert exit 0，`/` 与 `/home/` 四项中位数全 100；candidate SHA CI run 33027068118 green，lighthouse-results artifact digest sha256:4d8e1d209a0d2d892ff5a2b1c53a8f5f2dbdad4c1e8a765220066236d09912a7。",
+    "protocolB": "1440×900 fresh 对照：cc-al-bl2-exact-robot-idle.png vs cc-al-bl2-main-robot-idle.png；cc-al-bl2-exact-concept-poi.png vs cc-al-bl2-main-concept-poi.png；另以 exact autodrive POI 比较两栋 hero 实模。concept POI 升级显著，但 robot-idle 中新楼仍在极右缘且同旧楼包络，whole-frame 没有可读新轮廓。",
+    "crossChecks": "ConceptGarage.glb 146,464 B、2,586 indexed tris、13/13 primitive Draco、3/3 image KTX2（1024²/256²/1024²），Blender→ETC1S→Draco fresh 重建 SHA 完全一致；world asset pool 5.5/12MB。Q0 两栋 hero visible/tower hidden；Q2 两栋 heroGlb requests=[] 且 towers visible；主动 abort concept 后其 tower visible、autodrive hero 不受影响。",
+    "delta": "AL-BL1 独立 raw 70.20 → AL-BL2 独立 raw 70.60（+0.40）；整数 70 → 71。V4 70→71，仍低于 BL2 72–75 专项目标。"
   },
   "dimensions": {
     "v1FirstFrame": {
       "label": "首幕构图与第一印象",
       "weight": 0.2,
       "score": 65,
-      "evidence": "AL5 独立 65 持平：相机、主体、poster、HUD 零改；robot-idle 新实模只在画面右缘形成局部新轮廓，不能当新 definitive shot。"
+      "evidence": "AL-BL1 65 持平：相机、主体、poster、HUD 零改；concept-garage 在 robot-idle 极右缘且保持旧楼包络，whole-frame 无可读新轮廓，不能当新 definitive shot。"
     },
     "v2LightingMaterial": {
       "label": "光照·材质·后处理",
       "weight": 0.2,
-      "score": 74,
-      "evidence": "AL5 独立 71→74：POI 帧中 KTX2 幕墙/窗内景/工具 atlas、PBR 金属、暖光展厅真实摆脱程序化平涂；只覆盖一栋，亮展厅仍有均匀白块，全局 IBL/tone mapping 未做。"
+      "score": 75,
+      "evidence": "AL-BL1 74→75：第二栋把 KTX2 幕墙/窗内景、PBR 金属与暖光展厅扩到 concept POI；但整帧覆盖仍小，均匀亮块仍在，全局 IBL/tone mapping 未做。"
     },
     "v3PaletteAtmosphere": {
       "label": "色彩体系与氛围一致性",
       "weight": 0.15,
       "score": 69,
-      "evidence": "AL5 独立 69 持平：橙/青/暖白沿用既有色轴，没有改变全城综合色相或明暗节奏。"
+      "evidence": "AL-BL1 69 持平：蓝只进身份线/信标，窗格仍收敛暖白/青/暗三族；没有改变全城综合色相或明暗节奏。"
     },
     "v4SceneDensity": {
       "label": "场景密度与世界可信度",
       "weight": 0.15,
-      "score": 70,
-      "evidence": "AL5 独立 60→70：关键 autodrive POI 已同时具备实模楼体层级、入口/展厅、充电/试车/标定/设备叙事道具，达到 70–85 段下沿；但首幕只见右缘局部、沿街覆盖仅一角且小道具部分被 HUD/构图遮挡，证据不足以给 71+。"
+      "score": 71,
+      "evidence": "AL-BL1 70→71：concept 成为第二个具备逐窗立面、展厅/入口/维修门、展车/kiosk/杂件层的完整 POI，覆盖有净增；但固定 whole-frame 仍无法辨认新楼，收益几乎只在近景，证据不足以跨入本轮 72–75 门。"
     },
     "v5MotionTransition": {
       "label": "动效与转场工艺",
       "weight": 0.15,
       "score": 70,
-      "evidence": "AL5 独立 70 持平：无新动画、运镜或转场节拍。"
+      "evidence": "AL-BL1 70 持平：无新动画、运镜或转场节拍。"
     },
     "v6UiHudIntegration": {
       "label": "DOM UI/HUD 视觉整合",
       "weight": 0.1,
       "score": 73,
-      "evidence": "AL5 独立 73 持平：DOM/HUD/poster 零改，壳像素基线未更新。"
+      "evidence": "AL-BL1 73 持平：DOM/HUD/poster 零改；POI 的 CARCONCEPT GARAGE 牌与交互提示为既有系统，不重复计入 BL2。"
     },
     "v7ThematicOriginality": {
       "label": "主题原创性与叙事贴合",
       "weight": 0.05,
-      "score": 75,
-      "evidence": "AL5 独立 73→75：试车台、展车、充电设施和标定板把“智驾实验楼”从楼名推进为可见叙事物件；仍是单点，城市总体叙事未换代。"
+      "score": 76,
+      "evidence": "AL-BL1 75→76：三展厅展车、配置器 kiosk、维修卷帘门和前场杂件把“3D 汽车配置器车库”变成第二个可见产品 POI；仍主要依赖近景，城市总体叙事未换代。"
     }
   },
-  "notes": "CC-AL-BL1 独立总分 70/100 = 65×.20+74×.20+69×.15+70×.15+70×.15+73×.10+75×.05 = raw 70.20 → 70。V4=70：若专项门为 >=70 则到线通过；严格 >70 则不通过，不登记 71+。提交方目标带 V4 68–72 / 整体 71–74，与独立值的保守最大差分别 2/4，满足 ±5。生产仅登记审计独立分；裁决和当前受保护 scripts 非零差异/资产台账缺口见 docs/research/loop-bl1-audit.md。"
+  "notes": "CC-AL-BL2 独立总分 71/100 = 65×.20+75×.20+69×.15+71×.15+70×.15+73×.10+76×.05 = raw 70.60 → 71；统一综合 raw 92.75 → 92.8。V4=71 未到 72–75，whole-frame 新轮廓不可读，裁决 NO-GO。PR 只有 V4 目标带 72–75（与独立差 1–4），没有总分/七维自评，因此总分 |自评-独立|≤5 不可验证。生产仅登记审计独立分；exact tree、治理缺口和补洞条件见 docs/research/loop-bl2-audit.md。"
 }
