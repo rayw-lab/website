@@ -8,7 +8,7 @@
 | 分支 | `cursor/cc-fxn-next-90-1d6f`（base：`main` @ `771b1e4`，独立 worktree） |
 | 日期 | 2026-08-27 |
 | 性质 | 顾问/预案：**不改秤、不改门、不写代码**——功能秤恒为 `docs/spec/cyber-city-function-rubric.md` v1.0（S-2/S-5 v1.0）；本文件只做封顶复核、逐维决策规则与派单菜单；`src/`、e2e、config 零改动 |
-| 输入 | `cyber-city-fxn-90-path-advisor.md`（84→90 顾问，封顶定理与杠杆表正本）· `loop8-fxn-audit.md`（84 首登 + §6 四缺口）· C5 已合事实（PR [#90](https://github.com/rayw-lab/mywebsite/pull/90) `b42405c`）· C6 已合事实（PR [#91](https://github.com/rayw-lab/mywebsite/pull/91) `5fc9533`）· R5 在途快照（`cursor/cc-al-fxn-r5-1d6f` @ `eeb78bc`，仅作校准，非终局） |
+| 输入 | `cyber-city-fxn-90-path-advisor.md`（84→90 顾问，封顶定理与杠杆表正本）· `loop8-fxn-audit.md`（84 首登 + §6 四缺口）· C5 已合事实（PR [#90](https://github.com/rayw-lab/website/pull/90) `b42405c`）· C6 已合事实（PR [#91](https://github.com/rayw-lab/website/pull/91) `5fc9533`）· R5 在途快照（`cursor/cc-al-fxn-r5-1d6f` @ `eeb78bc`，仅作校准，非终局） |
 | 消费方 | 父代理（R5 落分后的第一个 tick 按 §2 决策规则判读情景 + 派单）· 指挥官（真机 S-2 窗口排期）· 可能的 wave2 实现 Task（W1–W5）· CC-AL-FXN-R6（下一登记轮） |
 | 红线 | **AL-FXN-R5 并行取证中**：本篇及任何 wave2 后续动作在 R5 登记落地前不得触碰 `cyber-city-function-rubric-score.json` 与 `loop8-fxn-r5-audit.md`；本篇 §1/§4 的封顶向量与预测区间为诊断参考，禁止写入登记 JSON（rubric 禁止清单第 8 条） |
 
@@ -33,8 +33,8 @@
 
 | 刀 | 合入 | 交付面 | 对应杠杆（顾问 §2.1） |
 |----|------|--------|----------------------|
-| CC-FXN-C5-R3 | PR [#90](https://github.com/rayw-lab/mywebsite/pull/90) `b42405c` | `QuestLine.ts`（426 行）：5 站主链「下一站」chip（楼名+距离+n/5，可折叠非强制）+ parkingBay 光柱（`NeonMaterials` 静态发光，不占 CITY-03 席）+ 链推进（boundingIn 消费）+ **`idle-30s` nudge 消费**；OBS 加法 `world-quest` 族；e2e CITY-QST-01/02 | B（F6 75→90）· C（F3 75→85）· E 的代码半 |
-| CC-FXN-C6 | PR [#91](https://github.com/rayw-lab/mywebsite/pull/91) `5fc9533` | `DriveFeedback` 刹车徽标（双沿即按即亮）+ 悬挂跳 chip；`SpeedTrap.ts`（261 行）：实时 km/h · 驶离最高速 · SPEED DEMON · 慢车吐槽；埋点 `brake-first`/`suspension-jump`/`world-speedtrap`；e2e FB-07/08/09 | F 的代码半（F2 最后半价项清零）· D 的代码半（F3 玩点） |
+| CC-FXN-C5-R3 | PR [#90](https://github.com/rayw-lab/website/pull/90) `b42405c` | `QuestLine.ts`（426 行）：5 站主链「下一站」chip（楼名+距离+n/5，可折叠非强制）+ parkingBay 光柱（`NeonMaterials` 静态发光，不占 CITY-03 席）+ 链推进（boundingIn 消费）+ **`idle-30s` nudge 消费**；OBS 加法 `world-quest` 族；e2e CITY-QST-01/02 | B（F6 75→90）· C（F3 75→85）· E 的代码半 |
+| CC-FXN-C6 | PR [#91](https://github.com/rayw-lab/website/pull/91) `5fc9533` | `DriveFeedback` 刹车徽标（双沿即按即亮）+ 悬挂跳 chip；`SpeedTrap.ts`（261 行）：实时 km/h · 驶离最高速 · SPEED DEMON · 慢车吐槽；埋点 `brake-first`/`suspension-jump`/`world-speedtrap`；e2e FB-07/08/09 | F 的代码半（F2 最后半价项清零）· D 的代码半（F3 玩点） |
 
 R5 在途快照（`eeb78bc`，校准用非终局）已实证：S-2 主腿 chip 随 car_ready 激活、BRAKE 徽标双沿、悬挂跳 chip、V/R/E 三段闭环、三问原文直接引用「下一站」chip；L1 深链链推进 2/5；L2 三路径恢复 + fall 专属 toast；L3 ESC 双出口。**L4–L7（含决定 F5/F6 段位的 L6/L7）尚未回填。**
 
