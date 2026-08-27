@@ -2,7 +2,7 @@
 
 > 执行模型自报：**claude-fable-5-thinking-xhigh**
 
-> ⏳ 取证进行中（本文件随复审推进增量提交；最终登记以 `cyber-city-function-rubric-score.json` 为准）。
+> ⛔ **R4 已终止（2026-08-27）**：会话在骨架提交后约 70 分钟无增量产出被 stop。本文件保留为 R4 环境事实与陈旧 preview 事故的留痕正本；取证与登记由 **CC-AL-FXN-R5**（`loop8-fxn-r5-audit.md`，分支 `cursor/cc-al-fxn-r5-1d6f`）在 `main@dc3f56b`（追加 X3 e2e #93）上重做，R4 零证据入账。
 
 | 项 | 审计事实 |
 |---|---|
