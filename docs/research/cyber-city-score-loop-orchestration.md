@@ -54,7 +54,7 @@ BL2 沿街扩展 → tone mapping（实模密度到位后）→ poster 三面收
 |----|------|-----|-------|------|
 | CC-BL2 | 已合入 PLUS 分支栈 | [#43](https://github.com/rayw-lab/website/pull/43) draft | [BL2](bc-3f4061c8-bf7c-58f5-b540-5e1a932d60ae) | ✅ 交付完成 |
 | CC-AL-BL2 | `cursor/cc-al-bl2-audit-1d6f` @ `7a5dffa`（已合 main） | — | [AL-BL2](bc-102414b6-9132-5de4-8de5-83580124910d) | ✅ **NO-GO** 首次 71/92.8（V4=71<72） |
-| CC-BL2-PLUS | `cursor/cc-bl2-street-extension-1d6f` @ **`a1362b4`** | — | [BL2-PLUS](bc-a8ca6d06-9f46-5728-86df-7ab43cd8a630) | 🔄 RUNNING · **全量 e2e ~35/52**（CITY-E2E-03 已过） |
+| CC-BL2-PLUS | `cursor/cc-bl2-street-extension-1d6f` @ **`a1362b4`** | — | [BL2-PLUS](bc-a8ca6d06-9f46-5728-86df-7ab43cd8a630) | 🔄 RUNNING · **全量 e2e ~42/52**（world 段进行中） |
 
 报告：`docs/research/loop-bl2-audit.md` · 实现记录 `docs/research/cyber-city-bl2-plus-implementation.md`（已 push） · **登记不变**（仍 BL1 70/92.5）
 
