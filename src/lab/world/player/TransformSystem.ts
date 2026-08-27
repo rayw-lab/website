@@ -22,8 +22,11 @@
 // [CC-L4 B5] 变形运镜（rubric Tier B5）：充能段推镜蓄力→光幕峰值定格→落地段回放
 //   归零 + 落地帧垂直微震/roll 微滚（常量区 SHAKE_*/LANDING_ROLL_KICK；消费通道 =
 //   View.ritualCam，时间轴四拍与状态机零改动）。
+// [CC-TRANS-FX] 变形窗粒子炫技层（TransformParticles，Loop 7 指挥官追加）：充能段
+//   能量喷发/环向碎屑 → 光幕段体积光尘 → 落地段余烬消散，与 ring/veil 叠加而非
+//   替换——同样只是既有节拍的粒子注解（帧末 uniform 同步），时间轴与状态机零改动。
 // prefers-reduced-motion：instant swap（零动画热交换 + 文字状态提示由 Reveal 呈现；
-//   不建 ritual 时间轴 → 运镜通道恒 0，全程不动镜）。
+//   不建 ritual 时间轴 → 运镜通道恒 0，全程不动镜；粒子层不构造 = 零粒子）。
 // 补间一律 Ticker + 手写缓动（第 6 章 gsap 禁令）。
 //
 // 物理插入点（CC-E1 交底，wave1-notes §E1「契约」）：
@@ -40,18 +43,28 @@ import { Fn, atan, mix, smoothstep, uniform, uv, vec3 } from 'three/tsl';
 import { Events } from '../core/Events';
 import type { Game } from '../core/Game';
 import type { HeroRobot } from '../city/HeroRobot';
+import { TransformParticles } from './TransformParticles';
 import type { PlayerVehicle } from './Player';
 
 export type TransformForm = 'robot' | 'car';
 export type TransformState = 'robot_idle' | 'transforming' | 'car_ready' | 'driving';
 
-/** 时间轴常量（秒；总长 = RING_IN + VEIL_IN + DROP = 1.05s，验收窗 1.0–1.2s） */
-const RING_IN = 0.35;
-const VEIL_IN = 0.25;
-const VEIL_OUT = 0.3;
+/** 时间轴常量（秒；总长 = RING_IN + VEIL_IN + DROP = 1.05s，验收窗 1.0–1.2s。
+ *  [CC-TRANS-FX] export 仅为 TransformParticles 单源消费（防常量双写漂移），
+ *  数值与四拍语义零改动） */
+export const RING_IN = 0.35;
+export const VEIL_IN = 0.25;
+export const VEIL_OUT = 0.3;
 const DROP = 0.45;
 const DROP_HEIGHT = 2;
-const RING_RADIUS = 4;
+export const RING_RADIUS = 4;
+
+/**
+ * [CC-TRANS-FX] 余烬触地门控：easeOutBack 首达 1（车轮首次触地）在 drop 进度
+ * 1 − c1/c3 ≈ 0.37 处——余烬自触地帧起迸散（触地前是光幕/下落拍，不出火星）。
+ * 纯 CPU 侧粒子包络参数，四拍时间轴常量与状态机零改动。
+ */
+const EMBER_TOUCHDOWN = 0.37;
 
 /**
  * [CC-L4 B5] 变形运镜（rubric §6 Tier B5「充能推镜 + 落地微震」；四拍时间轴常量
@@ -137,6 +150,11 @@ export class TransformSystem {
   private readonly ringOpacity = uniform(0);
   private readonly ringSpin = uniform(0);
   private readonly veilOpacity = uniform(0);
+  /**
+   * [CC-TRANS-FX] 变形窗粒子炫技层（与 ring/veil 叠加而非替换）：
+   * reduced-motion 恒 null——instant swap 路径零粒子零改动（CITY-E2E-04 合同）。
+   */
+  private readonly particles: TransformParticles | null;
 
   private readonly ownedGeometries: THREE.BufferGeometry[] = [];
   private readonly ownedMaterials: THREE.Material[] = [];
@@ -181,6 +199,8 @@ export class TransformSystem {
 
     this.setRing();
     this.setVeil();
+    // [CC-TRANS-FX] 粒子层（三段炫技随四拍节奏走；Q2/reduced-motion 关断见其头注）
+    this.particles = this.reducedMotion ? null : new TransformParticles(game, { anchor: this.anchor });
 
     // order 4（视觉同步段）：时间轴推进在意图/物理（1–3）后、车辆 post/相机（5–7）前
     this.game.ticker.events.on('tick', this.tickHandler, 4);
@@ -227,6 +247,8 @@ export class TransformSystem {
     });
     this.ritual = { to, clock: 0, holding: false, swapped: false, resolve: resolveRun, promise };
     this.ringSpin.value = 0;
+    // [CC-TRANS-FX] 起拍放粒（按当前品质档定量；Q2 = 不画）
+    this.particles?.begin(this.game.quality.level);
     return promise;
   }
 
@@ -242,6 +264,8 @@ export class TransformSystem {
     this.veilMesh.removeFromParent();
     for (const geometry of this.ownedGeometries) geometry.dispose();
     for (const material of this.ownedMaterials) material.dispose();
+    // [CC-TRANS-FX] 粒子层闭合（GPU 资源 + 取证句柄零残留）
+    this.particles?.dispose();
   }
 
   /* ———————————————————— 状态机 ———————————————————— */
@@ -372,16 +396,33 @@ export class TransformSystem {
 
     // ③ 收尾：car = 落地弹跳段（easeOutBack，环随落地消散）；robot = 光幕散尽即完成
     const settleClock = veilClock - VEIL_IN;
+    // [CC-TRANS-FX] 余烬归一进度：car 自触地帧（EMBER_TOUCHDOWN）起 0→1；
+    // robot 回变复用为聚形尘（光幕散尽窗 0→1）——纯粒子包络参数，时间轴零改动
+    let emberSettle = 0;
     if (run.swapped && settleClock >= 0) {
       if (run.to === 'car') {
         const dropProgress = Math.min(settleClock / DROP, 1);
+        emberSettle = Math.max((dropProgress - EMBER_TOUCHDOWN) / (1 - EMBER_TOUCHDOWN), 0);
         this.moveVehicle(DROP_HEIGHT * (1 - easeOutBack(dropProgress)));
         this.ringOpacity.value = Math.max(1 - dropProgress, 0);
         if (dropProgress >= 1) this.completeRun(run);
       } else {
+        emberSettle = Math.min(settleClock / VEIL_OUT, 1);
         this.ringOpacity.value = Math.max(1 - settleClock / VEIL_OUT, 0);
         if (settleClock >= VEIL_OUT) this.completeRun(run);
       }
+    }
+
+    // [CC-TRANS-FX] 粒子节拍同步（帧末一次 uniform 写入；completeRun 已收拍则跳过）
+    if (this.ritual) {
+      this.particles?.frame(
+        t,
+        this.ringSpin.value,
+        ringProgress,
+        this.ringOpacity.value,
+        this.veilOpacity.value,
+        emberSettle,
+      );
     }
   }
 
@@ -391,6 +432,8 @@ export class TransformSystem {
     this.veilMesh.visible = false;
     this.ringOpacity.value = 0;
     this.veilOpacity.value = 0;
+    // [CC-TRANS-FX] 粒子收拍：隐藏 + 节拍归零（窗外零贡献合同）
+    this.particles?.end();
     // [CC-L4 B5] 推镜显式归零（收尾段回放的兜底恒等）；car 落地帧起垂直微震 +
     // roll 微滚（既有碰撞弹簧小件复用，~0.5s 自收敛）——robot 回变无落地拍不震
     this.game.view.ritualCam.dollyIn = 0;
