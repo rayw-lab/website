@@ -127,7 +127,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | ① | doc | `main` | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合（含 VEH-RS） |
 | ② | **CC-TRANS-FX-C1** | ✅ PR [#52](https://github.com/rayw-lab/website/pull/52) 已合 |
 | ③ | **CC-VEH-C1** | ✅ PR [#54](https://github.com/rayw-lab/website/pull/54) 已合 |
-| ④ | **CC-AL-TRANS-FX** ✅ GO · **CC-AL-VEH** [AL-VEH](bc-d805a2b5-2700-500b-a065-2afd9bbcc2a9) 🔄 续跑 |
+| ④ | **CC-AL-TRANS-FX** ✅ GO · **CC-AL-VEH** ❌ **NO-GO** [#58](https://github.com/rayw-lab/website/pull/58) 已合 · 待 **CC-VEH-C2** drive shot + rm FPV 硬切 |
 | ⑤ | 登记 | V5 专项门过门后更新诊断分（非生产视觉登记主路径） |
 
 ### 硬门
@@ -156,7 +156,9 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | CC-FXN-BR | 已合 main | [FXN-BR](bc-3484cd88-8f28-5a98-80a9-4ddcedaef026) | ✅ PR [#48](https://github.com/rayw-lab/website/pull/48) 已合 |
 | CC-FXN-DES | 已合 main | [FXN-DES](bc-436336c8-9fc8-5833-ae57-064e5eab2fc9) | ✅ PR [#49](https://github.com/rayw-lab/website/pull/49) 已合 |
 | CC-OBS-DES | 已合 main | [OBS-DES](bc-fecc56ff-7db5-577f-b0a8-0f9e4aab6b02) | ✅ PR [#51](https://github.com/rayw-lab/website/pull/51) 已合 |
-| CC-OBS-C1 | 已合 main | [OBS-C1](bc-e4a0b429-3131-5993-a53e-a69eb0e4bce4) | ✅ PR [#53](https://github.com/rayw-lab/website/pull/53) 已合 · e2e 52/52 |
+| CC-OBS-C1 | 已合 main | [OBS-C1](bc-e4a0b429-3131-5993-a53e-a69eb0e4bce4) | ✅ PR [#53](https://github.com/rayw-lab/website/pull/53) 已合 |
+| CC-OBS-C2 | 已合 main | [OBS-C2](bc-176d19c0-2b1a-5f78-80f8-4c68673a994c) | ✅ PR [#57](https://github.com/rayw-lab/website/pull/57) 已合 |
+| CC-FXN-C2 | 已合 main | [FXN-C2](bc-8a588416-7e21-5a33-a98e-a4a1fd6c62ed) | ✅ PR [#56](https://github.com/rayw-lab/website/pull/56) 已合 |
 
 ### 合流序
 
@@ -223,19 +225,19 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 ## 定时器
 
-`loop-cyber-city-orchestrate` · 300s · 自动驾驶全马力
+`loop-cyber-city-orchestrate` · **600s（10min）** · 自动驾驶全马力 · **每 tick 首段必输出四维度分数面板**
 
-### 定时器播报口径（**禁止再用「登记 92.0/68」**）
+### 定时器播报口径
 
-编排代理每次回复须**首段**输出登记矩阵四行（综合/视觉/功能/性能：北极星 vs 生产登记 vs Δ），再写本窗口 Delta。
+编排代理每次回复须**首段**输出：
 
-**推荐 automation 文案**（与上表对齐）：
-
-```text
-自动驾驶全马力编排（禁止降级：实现 Fable5 xhigh，审计 Sol xhigh-fast）。
-北极星：综合 98 · 视觉 98 · 功能 90 · 性能 85。
-生产登记：综合 80 · 视觉 71 · 功能 — · 性能 —（以 cyber-city-score-loop-orchestration.md 登记矩阵为准）。
-按看板：1) git fetch；2) 监控在途子代理与分支；3) 过门/合流/登记；4) 缺依赖先调研 docs/spec；5) 输出 Delta（必含四维度表）。
+```markdown
+## 分数面板（视觉 · 功能 · 性能 · 综合）
+| 维度 | 北极星 | 生产登记 | Δ | 诊断/在途 |
+| 综合 | 98 | 80 | +18 | score-loop |
+| 视觉 | 98 | 71 | +27 | AL-CAM GO |
+| 功能 | 90 | — | +90 | OBS-C2/FXN-C2 已合 · C1 在途 |
+| 性能 | 85 | — | +85 | PERF-RS/BR/DES 在途 |
 ```
 
 ### Delta 输出模板（父代理强制）
