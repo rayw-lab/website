@@ -17,7 +17,7 @@
 
 1. **SessionTimeline 挂 `Game` 构造器**（`game.session`，`src/lab/world/core/SessionTimeline.ts`）：每个 Game 实例恒有一枚、系统一行接线 `this.game.session.log(type, data)` 无空判断；`index.ts` 装配段只负责 window 导出面、HUD 节拍沿检测埋点（cone-hit / idle-30s）与 deep-link 首打。
 2. **dump schema v1 冻结**（§3.2）：ring buffer 500 条 + `dropped` 计数；`funnel` 七步首达壁钟毫秒；`counters` 六项聚合**独立于 ring**（溢出不失真）；`seq` 全局单调（含被丢弃条目）。破坏性变更 `schemaVersion` +1，加法不升版。
-3. **事件白名单 v1 冻结**（§3.4，27 个 type、7 族）：既有 `game.events` 总线 `world-*` 事件走**镜像订阅**（args 映射表冻结）；非总线事件走显式 `session.log`（接线点逐一定位到文件/函数）；壳侧（ESC 菜单）经 **`world-obs` CustomEvent 桥**（§3.5）过族白名单进 timeline——壳零 import、window 导出面保持只读。
+3. **事件白名单 v1 冻结**（§3.4，27 个 type、7 族；[CC-FXN-C1] 随行加法后 28 个——ux 族 `hint-recall`）：既有 `game.events` 总线 `world-*` 事件走**镜像订阅**（args 映射表冻结）；非总线事件走显式 `session.log`（接线点逐一定位到文件/函数）；壳侧（ESC 菜单）经 **`world-obs` CustomEvent 桥**（§3.5）过族白名单进 timeline——壳零 import、window 导出面保持只读。
 4. **dispose 导出合同**（§4）：`SessionTimeline.dispose()` 幂等三步（`dispose` 事件入 ring → `console.table` funnel+counters 摘要**一次** → 摘除监听），由 `Game.dispose()` **首段**调用（各系统仍在、读数完整）；`window.__worldSession` 与 `__worldSpike` 同段挂载/删除；bfcache 快照离页不触发（facade `event.persisted` 既有语义），**e2e 取证必须在卸载前 dump**。
 5. **function-smoke 是哨兵不是登记分**（§6.2）：漏斗七步齐 70%（非 null + 单调顺序）+ 交互面四事件存在性 30%；**不掺任何时长/帧率**（SwiftShader 下时长无意义）；首个 Loop 软门（OBS annotation），稳定后再议转硬。`quality-score.json` 增只读 `northStar` 块（§6.4），综合分五维权重**零改动**。
 
@@ -154,8 +154,9 @@ interface SessionDump {
 | camera | `world-drive-view` | `{mode}` | 镜像 [mode]→`{mode}` · **镜像表本 PR 即登记**，VEH-VIEW（`toggleDriveView`/KeyV）合流后事件自然入流，零补丁 | 预留 |
 | camera | `shot-apply` | `{id}` | 显式 · FXN-C3（CAM F1 进站运镜）落地时随行 | 预留 |
 | camera | `shot-interrupt` | `{by}` | 显式 · 同上（驾驶输入 0.1s 中断回 drive 处） | 预留 |
-| ux | `hint-shown` | — | 显式 · Reveal.showHint() | P0 |
-| ux | `hint-dismissed` | `{by: 'timeout' \| 'input'}` | 显式 · Reveal.hideHint() 两类调用点区分：HINT_FADE_DELAY 到期 → `'timeout'`；applyState 驱动（driving/robot_idle）→ `'input'` | P0 |
+| ux | `hint-shown` | — | 显式 · Reveal.showHint()（car_ready 自动浮现） | P0 |
+| ux | `hint-dismissed` | `{by: 'timeout' \| 'input'}` | 显式 · Reveal.hideHint() 两类调用点区分：HINT_FADE_DELAY 到期 → `'timeout'`；用户/状态收回（H/「键位」按钮收起、robot_idle/transforming）→ `'input'`。[CC-FXN-C1] 随行修订：driving 不再即隐——首驶重开一个完整阅读窗后走 `'timeout'` | P0 |
+| ux | `hint-recall` | `{via: 'key' \| 'button'}` | 显式 · Reveal.toggleHint()（键位卡再唤出：H/? 键 → `'key'`；`[data-world-hint-recall]` 按钮 → `'button'`）。[CC-FXN-C1] 随行加法（GAP-08 键位召回），schemaVersion 不动 | P0 |
 | ux | `esc-menu-open` | — | **壳桥** · index.astro ESC 菜单 showModal 处 dispatch（§3.5） | P0 |
 | ux | `idle-30s` | — | 沿检测 · index.ts 装配段低频节拍：driving 态连续 30s 零驾驶意图（accelerating/steering/braking/boosting 全 0 且 nipple 非 active）打一条；有输入即重置计时，可再打（每静默期至多 1 条） | P0 |
 | error | `pageerror` | `{message}` | 显式 · SessionTimeline 自挂 `window` `error` + `unhandledrejection` 监听（message 截 200 字符；dispose 摘除） | P0 |

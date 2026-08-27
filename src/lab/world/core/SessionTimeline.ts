@@ -26,7 +26,8 @@ const ERROR_MESSAGE_LIMIT = 200;
 type EventFamily = 'lifecycle' | 'ritual' | 'drive' | 'poi' | 'camera' | 'ux' | 'error';
 
 /**
- * 事件白名单 v1（§3.4 冻结，27 type / 7 族；空格分隔紧凑编码控体积）。
+ * 事件白名单 v1（§3.4 冻结，28 type / 7 族；空格分隔紧凑编码控体积。
+ * [CC-FXN-C1] ux 族随行加法：hint-recall {via: 'key' | 'button'}——键位卡再唤出）。
  * 改动纪律（§3.6）：加法（新增 type / data 字段）同 PR 修订规格表、
  * schemaVersion 不动；破坏性（改名/删除/改语义）schemaVersion +1 且消费方同 PR 适配。
  */
@@ -36,7 +37,7 @@ const WHITELIST: Readonly<Record<EventFamily, string>> = {
   drive: 'world-drive-start respawn cone-hit boost-first upside-down flip-jump',
   poi: 'poi-bounding-in poi-bounding-out world-poi deep-link',
   camera: 'world-drive-view shot-apply shot-interrupt',
-  ux: 'hint-shown hint-dismissed esc-menu-open idle-30s',
+  ux: 'hint-shown hint-dismissed hint-recall esc-menu-open idle-30s',
   error: 'pageerror context-lost',
 };
 

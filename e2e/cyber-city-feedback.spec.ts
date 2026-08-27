@@ -1,4 +1,6 @@
-// `/`（Full Entry 科技城）驾驶反馈包 e2e —— CC-FXN-C2 交付随行断言。
+// `/`（Full Entry 科技城）驾驶反馈包 + 键位卡/引导 e2e —— FXN 功能族随行断言：
+//   describe ①（CC-FXN-C2）驾驶反馈四件；
+//   describe ②③（CC-FXN-C1）键位卡再唤出/首驶引导/触屏分文案（文件尾）。
 //
 // 被测面 = world/DriveFeedback.ts 四件反馈（功能 rubric F2「反馈闭环」确认层）：
 //   ① 碰撞脉冲（锥桶/隔离墩统一 total，HUD 节拍沿检测同源同拍）；
@@ -43,6 +45,7 @@ const SEL = {
 
 /** __worldSession.dump()（观测规格 §4.1 只读单方法；e2e 埋点互证入口） */
 async function dumpSession(page: Page): Promise<{
+  env: { touch: boolean };
   events: Array<{ type: string; data?: Record<string, string | number | boolean> }>;
   counters: Record<string, number>;
 }> {
@@ -250,5 +253,184 @@ test.describe('科技城驾驶反馈包（CC-FXN-C2 · world-chromium 串行 pro
     } finally {
       await page.keyboard.up('w').catch(() => {});
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// CC-FXN-C1 键位卡/引导人性化包（GAP-08/GAP-18，功能 rubric F1/F5）：
+//   被测面 = world/Reveal.ts 键位卡（[data-world-hint]）+ 唤出按钮
+//   （[data-world-hint-recall]）+ 状态行分文案（[data-world-status]）。
+//   埋点随行互证：hint-shown / hint-recall{via} / hint-dismissed{by}
+//   （观测规格 §3.4 ux 族；hint-recall 为本 PR 随行加法）。
+// ---------------------------------------------------------------------------
+const HINT_SEL = {
+  hint: '[data-world-hint]',
+  recall: '[data-world-hint-recall]',
+  status: '[data-world-status]',
+} as const;
+
+test.describe('科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串行 project）', () => {
+  test.describe.configure({ mode: 'serial', timeout: 420_000 });
+
+  // ---------------------------------------------------------------------------
+  // CITY-HINT-01 单例全链（挂载成本纪律同 CITY-VEH/CITY-FB 先例）：
+  //   ① ritual_idle 恒等门：robot_idle 下 hint/召回按钮隐藏，H 被 intro 闸门物理拦截；
+  //   ② car_ready 全键位浮现：刹车/V/R/E 进站/Esc 菜单全在卡上（GAP-08 补盲）+
+  //      召回按钮同窗可见；
+  //   ③ 首驶阅读窗：driving 接管时键位卡不再即隐（重开一个 HINT_FADE_DELAY 窗），
+  //      status 常驻行含「按 H 重看键位」召回入口；
+  //   ④ 自动淡出 → hint-dismissed{by:timeout}；
+  //   ⑤ H 再唤出/收起 toggle → hint-recall{via:key} + hint-dismissed{by:input}；
+  //   ⑥ 按钮再唤出 → hint-recall{via:button}（触屏召回入口的桌面等价路径）。
+  // ---------------------------------------------------------------------------
+  test('CITY-HINT-01 键位卡全链：恒等门 → car_ready 全键位浮现 → 首驶阅读窗 → 淡出 → H/按钮再唤出（埋点互证）', async ({ page }) => {
+    // 全链 = 挂载 + 变形 + 淡出等待（4 设计秒 ≈ 慢动作最长 ~2min 墙钟）+ 多次 toggle，
+    // 对齐 CITY-VEH/CITY-FB 全链先例放宽至 600s
+    test.setTimeout(600_000);
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+
+    await page.goto(PAGE_URL);
+    const host = page.locator(SEL.host);
+    await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 120_000 });
+
+    const hint = page.locator(HINT_SEL.hint);
+    const recall = page.locator(HINT_SEL.recall);
+
+    // —— ① ritual_idle 恒等门：hint/召回按钮隐藏；H 在 intro filter 下物理拦截
+    //（hintToggle categories 只有 'driving'，与 V 键同纪律）
+    await expect(hint).toBeHidden();
+    await expect(recall).toBeHidden();
+    await page.keyboard.press('h');
+    await page.waitForTimeout(1_000);
+    await expect(hint).toBeHidden();
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle');
+
+    // —— ② 变形至 car_ready：键位卡自动浮现 + 全键位文案（GAP-08：E/Esc 补盲）
+    await page.locator(SEL.transform).click();
+    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 120_000 });
+    await expect(hint).toBeVisible();
+    for (const key of ['Space/B 刹车', 'V 切换视角', 'R 回到路口', 'E 进站', 'Esc 菜单']) {
+      await expect(hint, `键位卡应含「${key}」`).toContainText(key);
+    }
+    await expect(recall).toBeVisible();
+    await expect(recall).toContainText('键位');
+    await page.screenshot({ path: 'test-results/hint-card-car-ready.png' });
+
+    // —— ③ 首驶阅读窗：driving 接管时键位卡仍可见（原「即隐」= GAP-08 主诉）
+    await page.keyboard.down('w');
+    try {
+      await expect(host).toHaveAttribute('data-world-state', 'driving', { timeout: 60_000 });
+      await expect(hint, '首驶接管帧键位卡不得即隐（重开阅读窗）').toBeVisible();
+      await expect(page.locator(HINT_SEL.status)).toContainText('按 H 重看键位');
+      await page.screenshot({ path: 'test-results/hint-first-drive.png' });
+    } finally {
+      await page.keyboard.up('w').catch(() => {});
+    }
+
+    // —— ④ 自动淡出（HINT_FADE_DELAY=4 设计秒；SwiftShader 慢动作 ~30-40× 放大）
+    await expect(hint).toBeHidden({ timeout: 210_000 });
+    let dump = await dumpSession(page);
+    expect(
+      dump.events.some((e) => e.type === 'hint-shown'),
+      'car_ready 自动浮现必打 hint-shown（OBS §3.4 ux 族）',
+    ).toBe(true);
+    expect(
+      dump.events.some((e) => e.type === 'hint-dismissed' && e.data?.by === 'timeout'),
+      '自动淡出必打 hint-dismissed{by:timeout}',
+    ).toBe(true);
+
+    // —— ⑤ H 再唤出（driving 态可召回 = GAP-08 修复本体）→ 收起 toggle
+    await page.keyboard.press('h');
+    await expect(hint).toBeVisible();
+    dump = await dumpSession(page);
+    expect(
+      dump.events.some((e) => e.type === 'hint-recall' && e.data?.via === 'key'),
+      'H 唤出必打 hint-recall{via:key}（本 PR 随行加法）',
+    ).toBe(true);
+    await page.keyboard.press('h');
+    await expect(hint).toBeHidden();
+    dump = await dumpSession(page);
+    expect(
+      dump.events.some((e) => e.type === 'hint-dismissed' && e.data?.by === 'input'),
+      'H 收起必打 hint-dismissed{by:input}',
+    ).toBe(true);
+
+    // —— ⑥ 按钮再唤出（[data-world-hint-recall]；触屏召回入口的桌面等价路径）
+    await recall.click();
+    await expect(hint).toBeVisible();
+    dump = await dumpSession(page);
+    expect(
+      dump.events.some((e) => e.type === 'hint-recall' && e.data?.via === 'button'),
+      '按钮唤出必打 hint-recall{via:button}',
+    ).toBe(true);
+    await page.screenshot({ path: 'test-results/hint-recall-driving.png' });
+
+    expect(errors, '键位卡全链零未捕获异常').toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// CITY-HINT-02 触屏分文案（GAP-18）：hasTouch → (pointer: coarse) 命中（宽视口
+// 1440×900 不触发壳 viewport<768 拦截，自动挂载照常）。检测口径与
+// SessionTimeline env.touch 同源，dump 互证。
+// ---------------------------------------------------------------------------
+test.describe('科技城触屏文案分稿（CC-FXN-C1 · pointer: coarse）', () => {
+  test.describe.configure({ mode: 'serial', timeout: 420_000 });
+  test.use({ hasTouch: true });
+
+  test('CITY-HINT-02 触屏分文案：摇杆口径键位卡（零键盘键位）+「操作说明」召回按钮 + env.touch 互证', async ({ page }) => {
+    test.setTimeout(600_000);
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+
+    await page.goto(PAGE_URL);
+    const host = page.locator(SEL.host);
+    await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 120_000 });
+
+    // 检测口径互证：Reveal 分稿与 SessionTimeline env.touch 同一 matchMedia 口径
+    const dump0 = await dumpSession(page);
+    expect(dump0.env.touch, 'pointer: coarse 应命中（hasTouch 上下文）').toBe(true);
+
+    // 状态行触屏稿（robot_idle：不再报 Space 键位）
+    const status = page.locator(HINT_SEL.status);
+    await expect(status).toContainText('点按「变形 · 巡航态」');
+
+    await page.locator(SEL.transform).click();
+    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 120_000 });
+
+    // 键位卡触屏稿：摇杆/点按口径，零键盘键位（GAP-18「键盘口径对触屏是噪声」）
+    const hint = page.locator(HINT_SEL.hint);
+    await expect(hint).toBeVisible();
+    await expect(hint).toContainText('拖动屏幕摇杆');
+    await expect(hint).toContainText('点按标点进站');
+    const hintText = (await hint.textContent()) ?? '';
+    expect(hintText, '触屏稿不得出现键盘键位').not.toMatch(/W\/A\/S\/D|Shift|Space|Esc|悬挂跳/);
+
+    // 状态行触屏稿（car_ready：摇杆口径）
+    await expect(status).toContainText('拖动屏幕摇杆');
+
+    // 召回按钮触屏稿 =「操作说明」；点按收起/再唤出 toggle + 埋点互证
+    const recall = page.locator(HINT_SEL.recall);
+    await expect(recall).toBeVisible();
+    await expect(recall).toHaveText('操作说明');
+    await recall.click();
+    await expect(hint).toBeHidden();
+    await recall.click();
+    await expect(hint).toBeVisible();
+    const dump = await dumpSession(page);
+    expect(
+      dump.events.some((e) => e.type === 'hint-recall' && e.data?.via === 'button'),
+      '触屏点按唤出必打 hint-recall{via:button}',
+    ).toBe(true);
+    expect(
+      dump.events.some((e) => e.type === 'hint-dismissed' && e.data?.by === 'input'),
+      '触屏点按收起必打 hint-dismissed{by:input}',
+    ).toBe(true);
+    await page.screenshot({ path: 'test-results/hint-touch-card.png' });
+
+    expect(errors, '触屏腿零未捕获异常').toEqual([]);
   });
 });
