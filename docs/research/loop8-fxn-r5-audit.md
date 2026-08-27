@@ -46,4 +46,16 @@ R5 开工时根盘 **100% 满（252G/252G，0 可用）**，`pnpm build` 在 vit
 
 S-2 缺口留痕（诚实入账，不伪装 skipped）：① 本腿未撞到道具（`coneHits=0`），cone-hit 锚在后续腿补跑；② `world-poi`/`shot-apply` dump 锚因低帧下前奏窗被压缩 + 导航卸载未采样到，L1 用 pagehide 暂存法补齐。录屏 `s2_full_session_20260827.webm`（30:09）。
 
-（S-5 七腿、逐维打分、双 Pass 合议与裁决随取证增量回填。）
+## 3. S-5 v1.0 七腿
+
+| 腿 | 结果 | dump/状态证据 |
+|---|---|---|
+| L1 深链 | **通过（含链推进新证）**。`?poi=concept-garage` 出生 `(140,-18)` 与 JSON parkingBay 一致（`__worldSpike` 遥测 x140/z-18/yaw1.57/grounded）；非 ritual 挂载即激活 chip；出生即在圈 → 链**顺位推进**至「下一站 座舱语音舱 136m 2/5」；E 进站前奏 shot 生效后导航；pagehide 暂存法补齐 S-2 缺口锚 | `mount #1` → `deep-link{poi:concept-garage} #2/t37504` → `ready #3` → `world-quest{shown,step:1} #4` → `poi-bounding-in #5` → `explore-progress{n:1,total:12} #6` → `world-quest{reached,step:1} #7` → `world-quest{shown,step:2,voice-pod} #8` → `world-poi{concept-garage} #9/t469061` → `shot-apply{poi_showcase-concept-garage} #10/t469061`；funnel firstPoiIn=96927 / firstPoiInteract=469061；截图 `l1_01_deeplink_spawn.png`、`l1_02_arrival_prelude.png` |
+| L2 失败恢复 | **三路径全通过（计时不判）**。①翻车（#debug 句柄置位，e2e FB-04 同口径——软渲染物理翻车不可确定复现）：倒计时件「翻车检测 · 自动翻正 2.8s · R 立即回到路口」呈现 → 3 设计秒自救 `flip-jump`，车体翻正 grounded；②再翻车 + R：`respawn{key}` + toast「已复位 · 回到最近路口」；③置 y=-60 越 killElevation：`respawn{fall}` + **专属 toast「掉出边界 · 已就近重生」**（与 R 复位文案区分，确认层分语义） | `upside-down #9/t214752` → `flip-jump #10/t414874`；`upside-down #11` → `respawn{key} #12/t550632`；`respawn{fall} #13/t574676`；截图 `l2_01_flip_countdown.png`、`l2_03_aim.png`（fall toast + #debug 面板同框） |
+| L3 提示/ESC | **ESC 面通过；H 召回深链会话不适用（ritual 会话 L6 复测）**。ESC 开菜单 `esc-menu-open #14`（壳桥）+ 双出口「招聘方速览→/website/work/」「内容首页→/website/home/」均 200 可达；再按 ESC 关闭成立。深链会话 Reveal 键位卡未挂载（全程无 hint-shown），H 无响应属边界事实非缺陷；S-2 已证 `hint-shown #5`→`hint-dismissed{timeout} #13` 且状态行广告「按 H 重看键位」 | `esc-menu-open #14`；截图 `l3_esc_menu.png`；出口 HTTP 200×2 |
+
+S-2/L2 补锚留痕：撞道具（隔离墩）自然复现三次尝试均未命中——本环境 fps≈0（#debug 读数 fps avg/1% = 0/0，15s 墙钟位移 ~2m），与 e2e CITY-FB-06 文件头判例一致（「物理驾驶撞墩在软渲染下不可确定性复现，真值路径由灰盒锥桶腿代表证明」）；碰撞确认层真值由同 commit e2e FB-06（灰盒撞桩 → 「碰撞 ×N」脉冲 + `[data-ws-cones]` 同拍）承接，`[data-world-collision]` 待机隐藏合同本轮实测成立。**不计成功收益、不作扣分依据**（环境不可判事实）。
+
+F7 随腿取证：`#debug` 面板实时状态（fps/drawCalls 347/triangles 475767/frame ms 分段/pos）+ 事件流镜像 + **EXPORT session JSON 实测下载** `session-7d800a3d.json`（schema 1 · 13 events · dropped 0 · env{webgl2,physics,quality:0,rm:false,1440×900} · counters{respawns:2,poiEnters:1,longFrames:347}）。
+
+（L4–L7、逐维打分、双 Pass 合议与裁决随取证增量回填。）
