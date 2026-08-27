@@ -9,7 +9,7 @@
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98** · **视觉 98** · **功能 90** · **性能 85**（登记 **92.5/70**，Δ 见下） |
 | **指挥官约束** | 无 CC-CAM → 视觉登记封顶 **70**；**功能/性能须独立 rubric + 可观测证据登记** |
-| 生产 tip | `main` @ `3ef208d`（登记 **92.5/70**） |
+| 生产 tip | `main` @ `23efccf`（登记 **92.5/70** · 功能/性能 rubric 待建） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -78,7 +78,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | 步 | PR | base | 内容 |
 |----|-----|------|------|
 | ① | doc | `main` | ✅ [#44](https://github.com/rayw-lab/website/pull/44)+[#46](https://github.com/rayw-lab/website/pull/46) 已合 |
-| ② | **CC-CAM-C1** | `main` | PR [#45](https://github.com/rayw-lab/website/pull/45) draft · CI ✅ · 本地 e2e ~38/52 跑关中 |
+| ② | **CC-CAM-C1** | `main` | PR [#45](https://github.com/rayw-lab/website/pull/45) draft · CI ✅ · 本地 e2e **~45/52** 跑关中 |
 | ③ | **CC-AL-CAM** | — | Sol 独立审计：NDC 入帧、e2e 52/52、ritual 恒等合同 |
 | ④ | 登记 | `main` | 审计独立分写入登记（仅 GO/有条件放行） |
 | ⑤ | CC-BL2-CAM | `cursor/cc-bl2-street-extension-1d6f` | CAM 镜头 + BL2 栈重审；过门后父代理合 PR #43 |
@@ -109,7 +109,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | CC-VEH-VIEW | `cursor/cc-veh-fpv-view-1d6f` | [VEH-VIEW](bc-0f2b223e-fe77-56a6-b276-d4c92371d2ad) | 🔄 RUNNING |
 | CC-TRANS-FX-RS | 已合 main | [TRANS-RS](bc-27662958-c425-5337-99fb-173b1bafbaf5) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | CC-TRANS-FX-DES | 已合 main | [TRANS-DES](bc-ac0c5a7d-056f-527a-8180-b00a4d9e4bc3) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
-| CC-TRANS-FX-IMPL | `cursor/cc-trans-fx-impl-1d6f` | [TRANS-IMPL](bc-c24bb880-b5a7-513d-8c17-343a86ea9e84) | 🔄 RUNNING |
+| CC-TRANS-FX-IMPL | `cursor/cc-trans-fx-impl-1d6f` @ **`4320297`** | [TRANS-IMPL](bc-c24bb880-b5a7-513d-8c17-343a86ea9e84) | 🔄 RUNNING · **TransformParticles 已 push** |
 
 ### 合流主线序
 
