@@ -35,10 +35,10 @@
 //     visible=false——不是调暗而是不画，FlightTrails 同款）；
 //   · prefers-reduced-motion：TransformSystem 不构造本类（instant swap 路径零改动，
 //     零粒子——CITY-E2E-04 合同）；
-//   · 白爆抑制（rubric §6 Tier A6「光幕洗帧」扣分项延伸）：光幕尘峰值强度 0.5
-//     恒阈下（bloom threshold=1）只做体积雾感；火花/余烬硬核 ≈1.2-1.3 仅限
-//     0.1-0.3m 微点（FlightTrails 机头 1.3 同档小光晕）——无整幅 additive 洗帧，
-//     光幕峰值不透明度 0.7 封顶纪律不被叠加突破；
+//   · 白爆抑制（rubric §6 Tier A6「光幕洗帧」扣分项延伸）：光幕尘峰值强度 0.75（软点无硬核，峰值片元 ≈0.86）
+//     恒阈下（bloom threshold=1）只做体积雾感；火花/余烬硬核 ≈1.7 仅限
+//     0.2-0.6m 微点（FlightTrails 机头 1.3 / 调研 §5.3 允限 1.6-2.0 之内）——
+//     无整幅 additive 洗帧，光幕峰值不透明度 0.7 封顶纪律不被叠加突破；
 //   · 色相纪律：NEON.cyan/magenta 双主轴（光幕尘沿用竖幕 青→品红 渐变语义）+
 //     余烬掺暖白（FlightTrails HEAD_WARM_WHITE 同值语义「热金属火星」，零新色相）；
 //   · dispose 闭合：TransformSystem.dispose 链式调用——移除 mesh + 释放几何/材质 +
@@ -155,7 +155,7 @@ export class TransformParticles {
         aArr.set([theta0, t0, life, r0], i * 4);
         // [size, 径向外抛速, 上冲高度（沿 9m 机器人剪影）, 螺旋扭转]
         bArr.set(
-          [0.14 + random() * 0.2, 1.0 + random() * 2.2, 2.2 + random() * 4.6, (random() - 0.5) * 2.4],
+          [0.24 + random() * 0.36, 1.0 + random() * 2.2, 2.2 + random() * 4.6, (random() - 0.5) * 2.4],
           i * 4,
         );
         // 主青 + ~22% 品红点缀（双主轴），掺 15% 暖白读作「能量火花」
@@ -165,7 +165,7 @@ export class TransformParticles {
         aArr.set([theta0, 1.2 + random() * 1.8, 4 + random() * 5, 0.86 + random() * 0.22], i * 4);
         // [size, 起伏振幅, 基础高度, 翻滚速度]
         bArr.set(
-          [0.16 + random() * 0.18, 0.06 + random() * 0.12, 0.12 + random() * 0.55, 2 + random() * 6],
+          [0.26 + random() * 0.26, 0.06 + random() * 0.12, 0.12 + random() * 0.55, 2 + random() * 6],
           i * 4,
         );
         color.copy(cyan); // 环带同源色（充能环 vec3(0.29,0.78,0.72) 的 token 面）
@@ -173,15 +173,15 @@ export class TransformParticles {
         // 光幕光尘：锚点柱域（r 1.2–6.6m × y 0.6–9m）缓升内旋
         aArr.set([theta0, 1.2 + random() * 5.4, 0.6 + random() * 8.4, 0.8 + random() * 2.4], i * 4);
         // [size, 内旋角速, 闪烁频率, 备用]
-        bArr.set([0.34 + random() * 0.42, (random() - 0.5) * 2.2, 5 + random() * 9, 0], i * 4);
+        bArr.set([0.6 + random() * 0.7, (random() - 0.5) * 2.2, 5 + random() * 9, 0], i * 4);
         // 竖幕同语义 青→品红 双色（逐粒随机相位近似横向渐变的体积化）
         color.copy(cyan).lerp(magenta, random());
       } else {
         // 落地余烬：触地点低角迸散 → 抛物线回落消散
-        aArr.set([theta0, 0.5 + random() * 1.1, 1.6 + random() * 3.4, 0.25 + random() * 1.15], i * 4);
+        aArr.set([theta0, 1.3 + random() * 1.5, 2.5 + random() * 4.5, 0.35 + random() * 1.4], i * 4);
         // [size, 逐粒错拍延迟, 闪烁频率, 切向漂移]
         bArr.set(
-          [0.09 + random() * 0.14, random() * 0.35, 8 + random() * 10, (random() - 0.5) * 1.2],
+          [0.2 + random() * 0.3, random() * 0.35, 8 + random() * 10, (random() - 0.5) * 1.2],
           i * 4,
         );
         // 暖白主导 → 青（热金属火星冷却读法；FlightTrails 机头掺暖白同轴）
@@ -222,7 +222,7 @@ export class TransformParticles {
     const burstR = A.w.add(burstAlpha.mul(B.y));
     const burstY = burstAlpha.mul(B.z).mul(burstAlpha.mul(-0.35).add(1));
     const burstPos = vec3(cos(burstTheta).mul(burstR), burstY, sin(burstTheta).mul(burstR));
-    const burstEnv = smoothstep(0, 0.12, burstAlpha).mul(burstAlpha.oneMinus().pow(2)).mul(1.25);
+    const burstEnv = smoothstep(0, 0.12, burstAlpha).mul(burstAlpha.oneMinus().pow(2)).mul(1.7);
 
     // ————— 充能段 · 环向碎屑（贴环带公转 + 正弦起伏；强度随环出现/消散） —————
     const debrisTheta = A.x.add(this.uSpin.mul(A.y));
@@ -231,7 +231,7 @@ export class TransformParticles {
     const debrisPos = vec3(cos(debrisTheta).mul(debrisR), debrisY, sin(debrisTheta).mul(debrisR));
     const debrisEnv = this.uRing
       .mul(sin(this.uSpin.mul(9).add(A.x.mul(13))).mul(0.28).add(0.72))
-      .mul(0.95);
+      .mul(1.25);
 
     // ————— 光幕段 · 体积光尘（柱域缓升内旋；强度吃光幕不透明度，恒阈下） —————
     const motePhase = clamp(this.uClock.sub(RING_IN).div(VEIL_IN + VEIL_OUT), 0, 1);
@@ -241,7 +241,7 @@ export class TransformParticles {
     const motePos = vec3(cos(moteTheta).mul(moteR), moteY, sin(moteTheta).mul(moteR));
     const moteEnv = this.uVeil
       .mul(sin(this.uSpin.mul(B.z).add(A.x.mul(11))).mul(0.45).add(0.55))
-      .mul(0.5);
+      .mul(0.75);
 
     // ————— 落地段 · 余烬（触地迸散抛物线回落，闪烁衰减消散） —————
     const emberStagger = clamp(this.uSettle.sub(B.y).div(B.y.oneMinus()), 0, 1);
@@ -252,7 +252,7 @@ export class TransformParticles {
     const emberEnv = smoothstep(0, 0.1, emberStagger)
       .mul(emberStagger.oneMinus().pow(1.7))
       .mul(sin(this.uSpin.mul(B.z).add(A.x.mul(23))).mul(0.35).add(0.65))
-      .mul(1.3);
+      .mul(1.7);
 
     // 位置（相对锚点，mesh 落位在 anchor）；四角色 select 链
     this.material.positionNode = select(
