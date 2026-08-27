@@ -9,7 +9,7 @@
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
 | **指挥官约束** | **无 CC-CAM 接入主线 → 视觉登记封顶 70**；CAM 为突破 70 的**必经门控** |
-| 生产 tip | `main` @ `a3926c6`（登记 **92.5/70**） |
+| 生产 tip | `main` @ `ce5e280`（登记 **92.5/70**） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -66,16 +66,16 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
-| CC-CAM-RS | `cursor/cc-cam-github-survey-1d6f` | [CAM-RS](bc-115e402d-4831-5b34-9afd-3b050370bfd2) | 🔄 RUNNING |
-| CC-CAM-DES | `cursor/cc-cam-shot-registry-design-1d6f` | [CAM-DES](bc-05fd2270-ca68-58c7-a2d1-51e136e167e2) | 🔄 RUNNING |
-| CC-CAM-DATA | `cursor/cc-cam-shot-data-probe-1d6f` | [CAM-DATA](bc-030bfcdd-043c-56ed-b2ca-9376e06b1615) | 🔄 RUNNING |
-| CC-CAM-VIEW | `cursor/cc-cam-view-poi-framing-1d6f` | [CAM-VIEW](bc-48fe6c93-f96f-595b-85bc-0da189dfdff0) | 🔄 RUNNING |
+| CC-CAM-RS | `cursor/cc-cam-github-survey-1d6f` @ **`87ad700`** | [CAM-RS](bc-115e402d-4831-5b34-9afd-3b050370bfd2) | ✅ IDLE · doc PR [#44](https://github.com/rayw-lab/website/pull/44) draft |
+| CC-CAM-DES | `cursor/cc-cam-shot-registry-design-1d6f` | [CAM-DES](bc-05fd2270-ca68-58c7-a2d1-51e136e167e2) | 🔄 RUNNING（`docs/spec/cyber-city-camera-shots.md` 待 push） |
+| CC-CAM-DATA | `cursor/cc-cam-shot-data-probe-1d6f` @ **`f8c46cb`** | [CAM-DATA](bc-030bfcdd-043c-56ed-b2ca-9376e06b1615) | 🔄 RUNNING · **JSON+NDC 探针已 push**（分支可集成） |
+| CC-CAM-VIEW | `cursor/cc-cam-view-poi-framing-1d6f` | [CAM-VIEW](bc-48fe6c93-f96f-595b-85bc-0da189dfdff0) | 🔄 RUNNING（`CameraShots.ts` + View/Areas 待 push） |
 
 ### 合流主线序（父代理执行 · RS/DES 可先 doc-only 合 main）
 
 | 步 | PR | base | 内容 |
 |----|-----|------|------|
-| ① | doc | `main` | RS 调研 + DES schema（零 `src/`） |
+| ① | doc | `main` | RS 调研 [#44](https://github.com/rayw-lab/website/pull/44) draft + DES schema（零 `src/`） |
 | ② | **CC-CAM-C1** | `main` | DATA `camera-shots.json` + NDC 探针 + VIEW 接线 + `?shot=` |
 | ③ | **CC-AL-CAM** | — | Sol 独立审计：NDC 入帧、e2e 52/52、ritual 恒等合同 |
 | ④ | 登记 | `main` | 审计独立分写入登记（仅 GO/有条件放行） |
