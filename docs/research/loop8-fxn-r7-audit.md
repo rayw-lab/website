@@ -28,4 +28,22 @@
 | 端口环境事实 | 全新 VM：kickoff 时 `ss -tlnp` 无任何 4xxx 监听，零陈旧 preview；本轮全部取证只指 **4471** |
 | SwiftShader 纪律 | 与 R5 同环境（软渲染）：`t`/墙钟/fps 仅用于排序与存在性判定，全部计时类锚点不判 |
 
-（§2 L4–L7 取证、§3 逐维打分、§4 双 Pass 合议与裁决随取证增量回填。）
+## 2. S-5 v1.0 L4–L7 四腿取证（接续 R5 §2–§3 的 S-2 + L1–L3）
+
+> 每腿全新 browser context（首访清存储实证 ls/ss=0）；SwiftShader 纪律照 §1；录屏/截图/dump 归档 `/opt/cursor/artifacts/`（`fxn_r7_*`）。
+
+### 2.1 L4 reduced-motion（emulateMedia RM，桌面 1440×900）
+
+**通过（五面全证，103s 收口）**：
+
+| 被测项 | 观察 | 证据 |
+|---|---|---|
+| 不自动挂载 | 首帧 `data-blocked="reduced-motion"` + 显式进入按钮「进入科技城」可见可点 | 截图 `fxn_r7_l4_01_rm_blocked.png` |
+| 终态直出 | 显式进入后 `world-reveal #2/t29426` → `robot-idle #3/t29426`（**Δt=0ms** 同拍落定） | dump `session-dump-s5-l4-rm-20260827.json`；env `reducedMotion:true` |
+| 变形 instant swap | CTA 点击 → `transform-start #4/t53762` → `world-transform #6/t53763`（**Δt=1ms**）；chip「下一站 概念车库 141m 1/5」随 car_ready 同拍激活（`world-quest{shown,step:1} #7/t53780`） | 截图 `fxn_r7_l4_03_car_ready_chip.png`；录屏 `fxn_r7_l4_reduced_motion_20260827.webm` 01:07–01:15 |
+| 文字状态可读 | robot_idle「机器人形态 · 座舱 AI 就位——点击『变形 · 巡航态』或按 Space」→ car_ready「巡航态 · CarConcept 已落地十字路口——WASD 即刻可开」两稿接力 | 截图同上 |
+| 核心路径可完成 | W → `world-drive-start #8/t81456`，`data-world-state=driving`；遥测 speedKmh 7.6 / grounded true | 截图 `fxn_r7_l4_04_driving.png`；录屏 01:26–01:42 |
+
+funnel 前五步齐（reveal 29426 / robotIdle 29426 / transformStart 53762 / carReady 53763 / driveStart 81456）；dropped 0；零 pageerror。
+
+（L5–L7、逐维打分、双 Pass 合议与裁决随取证增量回填。）
