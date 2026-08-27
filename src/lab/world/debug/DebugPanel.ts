@@ -15,9 +15,12 @@
 // pointer-events:none、仅导出按钮 auto；[data-debug-tail] 事件尾巴（最近 10 条，
 // 新在下）；[data-debug-cam] CAM F7 留位空容器（CAM 在此扩展，禁止第二块 overlay）。
 // 刷新：ticker tick order 999（HUD 同拍）+ 内部 0.25s 节流。
+// [CC-PERF-C2-B0] §5.2 随行加法：性能行下增分段帧时行（frame + 7 段 avg/max ms，
+// FrameProfiler 供数，O10 归因工具）——纯只读 dt/dd 行，只读红线与既有断言面零变化。
 import type { Game } from '../core/Game';
 import type { FpsMeter } from '../utils/FpsMeter';
 import type { SessionEventEntry } from '../core/SessionTimeline';
+import { FrameProfiler, type SegmentReading } from './FrameProfiler';
 
 export interface DebugPanelOptions {
   game: Game;
@@ -29,6 +32,12 @@ export interface DebugPanelOptions {
 const REFRESH_INTERVAL = 0.25;
 /** 事件尾巴条数（§5.2 冻结：最近 10 条） */
 const TAIL_LIMIT = 10;
+/** [CC-PERF-C2-B0] 分段帧时行（FrameProfiler 段表投影；顺序 = tick order 段序） */
+const PROFILE_SEGMENTS = ['anim', 'physics', 'sync', 'camera', 'areas', 'render', 'hud'] as const;
+
+/** [CC-PERF-C2-B0] 段耗时格式（ms）：量级自适应位数（SwiftShader 段值可达数百 ms） */
+const fmtMs = (v: number): string => (v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2));
+
 const STYLE_ID = 'world-debug-style';
 
 const PANEL_CSS = `
@@ -59,6 +68,8 @@ export class DebugPanel {
   private root: HTMLElement | null = null;
   private values: Record<string, HTMLElement> = {};
   private tailList: HTMLUListElement | null = null;
+  /** [CC-PERF-C2-B0] 分段帧时剖析（O10 #debug 门控层）：随面板同生共死 */
+  private profiler: FrameProfiler | null = null;
   private clock = 0;
   private lastTailSeq = -1;
   private warned = false;
@@ -81,17 +92,24 @@ export class DebugPanel {
       this.refresh(true);
       // tick order 999 = HUD 同拍（index.ts 装配段先例）
       this.game.ticker.events.on('tick', this.tickHandler, 999);
+      // [CC-PERF-C2-B0] 剖析器最后挂：其 c999 检查点后于面板刷新 handler 注册
+      // （同 order 后注册后执行）——面板刷新成本计入 hud 段，帧终点结算完整
+      this.profiler = new FrameProfiler(options.game);
     } catch (error) {
       this.warnOnce(error);
+      this.profiler?.dispose();
+      this.profiler = null;
       this.teardownDom();
     }
   }
 
-  /** instance.dispose() 调用（§5.1）：移除 DOM + tick 订阅（幂等） */
+  /** instance.dispose() 调用（§5.1）：移除 DOM + tick 订阅 + 剖析检查点（幂等） */
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true;
     this.game.ticker.events.off('tick', this.tickHandler);
+    this.profiler?.dispose();
+    this.profiler = null;
     this.teardownDom();
   }
 
@@ -124,6 +142,10 @@ export class DebugPanel {
     row('fps', 'fps avg/1%');
     row('draws', 'drawCalls');
     row('tris', 'triangles');
+    // [CC-PERF-C2-B0] O10 分段帧时行（FrameProfiler，avg/max ms @0.25s 窗）：
+    // frame = 全帧 c0→c999；各段按 tick order 段表（FrameProfiler 文件头）
+    row('frame', 'frame ms');
+    for (const seg of PROFILE_SEGMENTS) row(`seg:${seg}`, `· ${seg}`);
     row('speed', 'speed km/h');
     row('pos', 'pos x/y/z');
 
@@ -185,6 +207,16 @@ export class DebugPanel {
       const info = game.rendering.renderer.info.render;
       set('draws', String(info.drawCalls));
       set('tris', String(info.triangles));
+
+      // [CC-PERF-C2-B0] 分段帧时行：取一窗（≈0.25s）avg/max 并清零；
+      // 窗口零帧（暂停）显示 —
+      if (this.profiler) {
+        const profile = this.profiler.take();
+        const fmtSeg = (seg: SegmentReading): string =>
+          profile.frames > 0 ? `${fmtMs(seg.avgMs)} / ${fmtMs(seg.maxMs)}` : '—';
+        set('frame', fmtSeg(profile.total));
+        for (const seg of profile.segments) set(`seg:${seg.name}`, fmtSeg(seg));
+      }
 
       // 玩家行：速度 HUD 同公式（physics 档 forwardSpeed × Ticker.scale × 3.6）
       const vehicle = game.physicalVehicle;

@@ -7,10 +7,17 @@ export class FpsMeter {
   private samples: number[] = [];
   private last: number | null = null;
 
-  /** 每帧喂墙钟时间戳 ms（tick 回调里传 performance.now()），内部自算帧间隔 */
-  tick(nowMs: number): void {
-    if (this.last !== null) this.push((nowMs - this.last) / 1000);
+  /**
+   * 每帧喂墙钟时间戳 ms（tick 回调里传 performance.now()），内部自算帧间隔。
+   * [CC-PERF-C2-B0] 返回本帧墙钟间隔秒（首帧/reset 后无间隔 = 0）：长帧计数
+   * （counters.longFrames）在装配段复用本读数做一次比较，不另建计时簿记；
+   * 跨暂停超长间隔经 reset() 清 last，天然不外泄。
+   */
+  tick(nowMs: number): number {
+    const dt = this.last !== null ? (nowMs - this.last) / 1000 : 0;
+    if (this.last !== null) this.push(dt);
     this.last = nowMs;
+    return dt;
   }
 
   /** 直接喂帧间隔秒（外部已有 dt 时用；spike 原接口） */

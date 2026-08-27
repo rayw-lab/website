@@ -11,7 +11,8 @@
 //   3. funnel 只记首达；carReady 只认 world-transform 且 data.to === 'car'；
 //   4. dump() 纯快照（全新 JSON-safe 平面对象，任意时刻可反复调）；
 //   5. 公开 API 最小面：log / attach / dump / dispose（tail 仅 world 分包内
-//      #debug 面板消费，不上 window）；
+//      #debug 面板消费，不上 window；[CC-PERF-C2-B0] 随行加法 countLongFrame——
+//      counters.longFrames 专用递增口，非事件不入 ring）；
 //   6. log() 永不抛错——白名单外丢弃 + console.warn 一次/type，data 非法值剔除，
 //      埋点故障不得影响游戏路径。
 // 时基：t = Math.round(performance.now() − t0) 壁钟（§3.1）——game.pause() 不冻结，
@@ -111,6 +112,14 @@ export interface SessionCounters {
   transforms: number;
   /** world-drive-view 次数（VEH-VIEW 合流前恒 0） */
   driveViewToggles: number;
+  /**
+   * [CC-PERF-C2-B0] O10 常驻长帧计数：墙钟帧间隔 >50ms 的帧数（阈值与
+   * WS-PERF-01/CITY-PERF-01 采样 STALL_MS 同源）。非事件——不占白名单 type、
+   * 不入 ring，由装配段 tick 经 countLongFrame() 直接递增（一次比较零分配）；
+   * 判定与阈值在计数点（index.ts LONG_FRAME_S），跨暂停间隔经 FpsMeter.reset()
+   * 天然不计。schemaVersion 不动（§3.6 加法纪律）。
+   */
+  longFrames: number;
 }
 
 /** dump schema v1（§3.2 冻结；破坏性变更 schemaVersion +1，加法不升版） */
@@ -175,6 +184,7 @@ export class SessionTimeline {
     poiInteracts: 0,
     transforms: 0,
     driveViewToggles: 0,
+    longFrames: 0,
   };
   private readonly funnel: SessionFunnel = {
     reveal: null,
@@ -303,6 +313,16 @@ export class SessionTimeline {
   /** 最近 n 条只读游标（§3.3 第 5 条：仅 world 分包内 #debug 面板消费，不上 window） */
   tail(n: number): SessionEventEntry[] {
     return this.ring.slice(-Math.max(n, 0)).map((entry) => this.copyEntry(entry));
+  }
+
+  /**
+   * [CC-PERF-C2-B0] counters.longFrames 递增口（O10 常驻轻量层）：长帧不发事件
+   * ——逐帧 log 会灌爆 ring（SwiftShader 下每帧都是长帧），只走聚合计数。
+   * 阈值判定归调用点（装配段 tick 一次比较），本方法无条件 +1。
+   */
+  countLongFrame(): void {
+    if (this.disposed) return;
+    this.counters.longFrames += 1;
   }
 
   /**
