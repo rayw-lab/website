@@ -234,7 +234,7 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
   //      出生圈 poi-bounding-in 再入账仍零新增 explore-progress（跨会话去重）。
   // ---------------------------------------------------------------------------
   test('CITY-EXP-01 探索计数闭环：深链发现 → 驾驶 +1 → 重复进圈去重 → reload 持久还原（埋点互证）', async ({ page }, testInfo) => {
-    test.setTimeout(2_400_000); // SwiftShader 慢动作 + 共享 VM 竞争：56m 遥测闭环 + 二次挂载
+    test.setTimeout(3_000_000); // SwiftShader 慢动作 + 共享 VM 竞争：对角走廊三腿遥测闭环 + 二次挂载
     const errors = trackErrors(page);
 
     await page.goto(`${PAGE_URL}?poi=${SPAWN_POI}`);
@@ -265,10 +265,16 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     expect(pointerEvents, 'chip 必须全层穿透（不遮 CTA/HUD/摇杆热区）').toBe('none');
     await expect(page.locator('dialog[open]'), '探索计数不得弹任何模态').toHaveCount(0);
 
-    // —— ② 驾驶至第 2 个探索点（agent-nexus = 56m 最近邻，直线走廊 z∈[-24,-28]
-    //    全程避开隔离墩阵 |x|,|z|≲18 / 灯杆线 ≥8m / 楼排 z≤-32——坐标实测核对）。
-    //    出泊位先倒车 5m：出生朝向 = parkingBay.heading（面建筑角），原地掉头
-    //    必蹭墙角；倒退线 (28,-28)→(24.5,-24.5) 后左转弧线已避开楼角（x≥30 墙面）。
+    // —— ② 驾驶至第 2 个探索点。「z∈[-24,-28] 直线走廊」不成立：autodrive-lab
+    //    hero GLB 道具碰撞体（HeroBlenderMesh PROP_COLLIDERS，楼位 (52,-52) 平移）
+    //    中「充电桩排」= 世界系 x∈[16.2,17.8]、z∈[-40.3,-25.3] 的 15m 纵墙，
+    //    直线西行必抵墙死锁（两轮独立实测停点 x≈19.7±0.1 = 墙面 17.8 + 车头半长），
+    //    z=-24 线另有光伏雨棚柱 (14.8,-24.2)/(19.2,-24.2) 封口。
+    //    正确动线 = 建模侧预留的对角走廊（HeroBlenderMesh 文件头「隔离墩缺口→
+    //    泊车位的对角行车走廊已让空」）：泊位 (28,-28) 沿对角线 x=-z 西北向穿
+    //    隔离墩缺口（中点 (15.4,-15.4)，距两墩各 2.55m）入路口，再直驱 agent-nexus。
+    //    出泊位仍先倒车 5m（出生朝向面建筑角，原地掉头必蹭墙角；R 重生锚点=泊位
+    //    本身，传送回陷阱）：倒退线 (28,-28)→(24.5,-24.5) 恰落对角走廊上。
     //    倒车实测 ~0.04m/s 墙钟 → 5m ≈ 120s，予 300s 余量
     const escaped = await reverseBy(page, 5, 300_000);
     expect(
@@ -276,6 +282,13 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
       `应能倒车退出泊位（实测 x=${escaped.state.x.toFixed(1)} z=${escaped.state.z.toFixed(1)}）`,
     ).toBe(true);
     const target = bayOf(SECOND_POI);
+    // wp0 (20,-20)：掉头弧线漂移后先归位对角线（雨棚柱 (19.2,-24.2) 收口前）；
+    // wp1 (10,-10)：整车穿过隔离墩缺口入路口腹地，再转向不致擦墩；
+    // 末段直线 (10,-10)→(-28,-28) 距西侧墩 (-13.6,-17.2) ≥5m、灯杆线 ≥8m 全程净空
+    const wp0 = await driveTo(page, { x: 20, z: -20 }, { radius: 3, timeoutMs: 300_000 });
+    expect(wp0.ok, `对角走廊归位点 (20,-20) 应可达（实测 x=${wp0.state.x.toFixed(1)} z=${wp0.state.z.toFixed(1)}）`).toBe(true);
+    const wp1 = await driveTo(page, { x: 10, z: -10 }, { radius: 3, timeoutMs: 480_000 });
+    expect(wp1.ok, `隔离墩缺口 (10,-10) 应可穿越（实测 x=${wp1.state.x.toFixed(1)} z=${wp1.state.z.toFixed(1)}）`).toBe(true);
     const leg = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 600_000 });
     expect(leg.ok, `泊车位 (${target.x},${target.z}) 应可达（实测 x=${leg.state.x.toFixed(1)} z=${leg.state.z.toFixed(1)}）`).toBe(true);
 
