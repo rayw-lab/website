@@ -13,7 +13,7 @@
 //   Rapier 物理车 + CarConcept rig），经 src/lab/modules/world/index.ts 薄入口进入；
 //   原 ?impl= 分叉与 Phase A spike 装配器已退役（决策记录 world-spike-log.md §10）。
 // 深链参数白名单（M4/M6/M9 转正，与 `/` 壳同表，全部透传给 mount）：
-//   gl · vehicle · city · robot · ritual · quality · poi（见下方脚本注释）。
+//   gl · vehicle · city · robot · ritual · quality · poi · shot（见下方脚本注释）。
 // 性质声明：本页为验证场，全部验证结论 + 参数留档见 docs/research/world-spike-log.md。
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const canonical = new URL(`${base}/`, Astro.site).href;
@@ -132,8 +132,9 @@ const canonical = new URL(`${base}/`, Astro.site).href;
   import type { LabInstance } from '../../lab/contracts';
 
   /** 深链参数白名单（M4）：仅名单内参数透传给 mount，其余一律忽略且不回写 URL；
-   *  poi = CC-E9 POI 深链（隐含挂城 + 出生于对应楼 parkingBay，slug = buildings JSON id） */
-  const PARAM_ALLOWLIST = ['gl', 'vehicle', 'city', 'robot', 'ritual', 'quality', 'poi'] as const;
+   *  poi = CC-E9 POI 深链（隐含挂城 + 出生于对应楼 parkingBay，slug = buildings JSON id）；
+   *  shot = CC-CAM-VIEW 镜头预设（仅与 poi 组合生效，id 白名单 = camera-shots.json 注册表） */
+  const PARAM_ALLOWLIST = ['gl', 'vehicle', 'city', 'robot', 'ritual', 'quality', 'poi', 'shot'] as const;
 
   const host = document.querySelector<HTMLElement>('[data-ws-host]');
   if (host) {

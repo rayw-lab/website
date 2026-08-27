@@ -21,6 +21,36 @@ import type { Game } from '../core/Game';
  */
 const RITUAL_DOLLY_MAX = 0.07;
 
+/**
+ * [CC-CAM-VIEW] 数据驱动镜头预设位姿（camera-shots.json 解析后的世界口径；
+ * 加载/白名单/单位换算归 CameraShots.ts，本类只收最终数值——不引入任何用户相机
+ * 输入，G5 红线）。
+ */
+export interface ViewShotPose {
+  /** 视线锚点地面坐标（米；焦点脱离玩家跟踪，钉在该点） */
+  anchor: { x: number; z: number };
+  /** 极角（弧度，自 +Y；spherical.phi 同口径） */
+  phi: number;
+  /** 方位角（弧度；spherical.theta 同口径） */
+  theta: number;
+  /** 斜距档（米，写入 radius.edges）：定值 shot 传 min=max；跟随档快照 shot 传原 edges */
+  radius: { min: number; max: number };
+  /** 视线目标离地高（米） */
+  lookAtHeight: number;
+  /** 偏轴平移（米；framing.lateral 同口径，0 = 居中构图） */
+  lateral: number;
+}
+
+/** [CC-CAM-VIEW] applyShot 前的取景现场（releaseShot 恢复用；null = 从未应用过 shot） */
+interface ShotBaseline {
+  phi: number;
+  theta: number;
+  radiusMin: number;
+  radiusMax: number;
+  lookAtHeight: number;
+  lateral: number;
+}
+
 export class View {
   private readonly game: Game;
 
@@ -28,8 +58,9 @@ export class View {
   delta = new THREE.Vector3();
   readonly idealRatio: number;
   ratioOverflow: number;
-  /** 视线目标离地高（米）：城市首幕上抬 2.5（9m 机器人构图）；灰盒 0（folio 原样） */
-  private readonly lookAtHeight: number;
+  /** 视线目标离地高（米）：城市首幕上抬 2.5（9m 机器人构图）；灰盒 0（folio 原样）；
+   *  [CC-CAM-VIEW] shot 预设可改写（releaseShot 恢复现场）——去 readonly 仅类型面，运行时零差异 */
+  private lookAtHeight: number;
   private readonly lookAtTarget = new THREE.Vector3();
   /**
    * [CC-L1 A4] 城市首幕构图件（rubric §6 Tier A4「偏轴 1/3 构图 + 慢 yaw 微动」）：
@@ -48,6 +79,13 @@ export class View {
    * （poster 三面免重拍前提）与驾驶接管零残余漂移都由该恒等式机器保证。
    */
   readonly ritualCam = { dollyIn: 0, shakeY: 0 };
+
+  /**
+   * [CC-CAM-VIEW] shot 预设应用前的取景现场（首次 applyShot 采集，releaseShot 恢复）。
+   * 零漂移合同：未指定 ?shot= 时 applyShot/releaseShot 均不被调用，本字段恒 null，
+   * update() 全程零改动——robot_idle 主帧与 main 逐字节一致（poster 免重拍前提）。
+   */
+  private shotBaseline: ShotBaseline | null = null;
 
   /** 输出相机（Rendering 渲染它） */
   camera!: THREE.PerspectiveCamera;
@@ -320,6 +358,63 @@ export class View {
         area.needsUpdate = false;
       },
     };
+  }
+
+  /**
+   * [CC-CAM-VIEW] 应用数据驱动镜头预设（camera-shots.json → CameraShots.ts 解析产物）：
+   * 焦点脱离玩家跟踪钉在锚点（磁吸同关，防镜头被玩家缓慢拉走）+ 球坐标/视线高/偏轴
+   * 整组改写。smoothedPosition 直写 = 深链帧零补间直达（挂载期应用，无在途镜头）。
+   * 玩家跟踪的回归走 releaseShot（CameraShots 在首个驾驶意图动作上接线）——
+   * 本方法不注册任何输入监听，不引入 camera-controls 用户接管（G5 红线）。
+   */
+  applyShot(pose: ViewShotPose): void {
+    if (!this.shotBaseline) {
+      this.shotBaseline = {
+        phi: this.spherical.phi,
+        theta: this.spherical.theta,
+        radiusMin: this.spherical.radius.edges.min,
+        radiusMax: this.spherical.radius.edges.max,
+        lookAtHeight: this.lookAtHeight,
+        lateral: this.framing.lateral,
+      };
+    }
+
+    this.focusPoint.isTracking = false;
+    this.focusPoint.magnet.active = false;
+    this.focusPoint.position.set(pose.anchor.x, 0, pose.anchor.z);
+    this.focusPoint.smoothedPosition.copy(this.focusPoint.position);
+
+    this.spherical.phi = pose.phi;
+    this.spherical.theta = pose.theta;
+    // 定值 shot（min=max）= 静帧展示语义，速度变焦失效；窄屏 nonIdealRatioOffset 回拉照旧
+    this.spherical.radius.edges.min = pose.radius.min;
+    this.spherical.radius.edges.max = pose.radius.max;
+    this.lookAtHeight = pose.lookAtHeight;
+    this.framing.lateral = pose.lateral;
+
+    // 斜距变了 → 视野最优区（Objects 休眠圈 / RayCursor 命中圈）按新机位重算
+    this.optimalArea.needsUpdate = true;
+  }
+
+  /**
+   * [CC-CAM-VIEW] 释放 shot 预设：取景参数恢复 applyShot 前现场 + 焦点回归玩家跟踪
+   * （磁吸复活）。从未应用过 shot 时为空操作（幂等；零漂移合同的另一半）。
+   */
+  releaseShot(): void {
+    const baseline = this.shotBaseline;
+    if (!baseline) return;
+    this.shotBaseline = null;
+
+    this.spherical.phi = baseline.phi;
+    this.spherical.theta = baseline.theta;
+    this.spherical.radius.edges.min = baseline.radiusMin;
+    this.spherical.radius.edges.max = baseline.radiusMax;
+    this.lookAtHeight = baseline.lookAtHeight;
+    this.framing.lateral = baseline.lateral;
+
+    this.focusPoint.magnet.active = true;
+    this.focusPoint.isTracking = true;
+    this.optimalArea.needsUpdate = true;
   }
 
   private resize(): void {
