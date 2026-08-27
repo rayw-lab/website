@@ -55,8 +55,10 @@ export default defineConfig({
       // e2e/visual/（视觉取证）归 visual-chromium 殿后 project
       name: 'desktop-chromium',
       // cyber-city.*：城市世界剧本族（cyber-city / cyber-city-feedback…）整族归
-      // world-chromium 串行 project，本组一律忽略（并发 3D 上下文挤兑纪律）
-      testIgnore: /mobile\.spec\.ts|world-spike.*\.spec\.ts|cyber-city.*\.spec\.ts|visual[\\/].*\.spec\.ts/,
+      // world-chromium 串行 project，本组一律忽略（并发 3D 上下文挤兑纪律）；
+      // [CC-VEH-E2E-FIX] car-configurator 同理移出（归 car-chromium 独占 project）
+      testIgnore:
+        /mobile\.spec\.ts|world-spike.*\.spec\.ts|cyber-city.*\.spec\.ts|car-configurator\.spec\.ts|visual[\\/].*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
     {
@@ -70,18 +72,33 @@ export default defineConfig({
       },
     },
     {
+      // [CC-VEH-E2E-FIX] 3D 车辆配置器独占 project（e2e-test-plan「3D 重负载调度」
+      // 纪律：重 3D spec 一律并入 world-chromium 或复制该模式）。此前该文件留在
+      // desktop-chromium 只靠文件内 mode:'default' 串行，挡不住跨 project 并发——
+      // phase 1 里 MOB-E2E-03 还有一次完整 car 3D 挂载（SwiftShader），实测挤兑下
+      // CAR-E2E-01 164s / CAR-E2E-05 179s，贴着 180s 超时线（AL-VEH-R2 两次全量
+      // 复跑即在此越线）。殿后 desktop+mobile 独占整机后，挂载单次回落 ~13s。
+      name: 'car-chromium',
+      testMatch: /car-configurator\.spec\.ts/,
+      fullyParallel: false,
+      dependencies: ['desktop-chromium', 'mobile-375'],
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+    },
+    {
       // world-spike 驾驶用例 + cyber-city 世界剧本（CC-E7 绿灯移入，文件头④）：
       // 每例完整挂载 3D + 长时驾驶/变形积分（SwiftShader 下 ~1fps），
-      // 依赖前两个 project 跑完后独占机器执行——4 核 CPU 上任何并发 3D 上下文
+      // 依赖前置 project 跑完后独占机器执行——4 核 CPU 上任何并发 3D 上下文
       // 都会把驾驶腿饿死（batch 1 已实测并发挤兑结论，此处更甚）。
       // [CC-OBS-C2] cyber-city.*\.spec\.ts 收编 cyber-city-observability.spec.ts
       // （观测规格 §7：OBS 用例入 world-chromium 串行 project，同款 3D 独占纪律）
+      // [CC-VEH-E2E-FIX] 依赖改指 car-chromium（线性链：desktop+mobile → car →
+      // world → world-perf → city-perf → visual，任意时刻至多一个重 3D 上下文）
       name: 'world-chromium',
       testMatch: /world-spike\.spec\.ts|cyber-city.*\.spec\.ts/,
       // [CC-PERF-C1] perf spec 排除（perf 测试方案 §1.3 ①）：cyber-city.*\.spec\.ts
       // 泛匹配会误收编 cyber-city-perf.spec.ts——该 spec 独归 city-perf-chromium
       testIgnore: /cyber-city-perf\.spec\.ts/,
-      dependencies: ['desktop-chromium', 'mobile-375'],
+      dependencies: ['car-chromium'],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
     {

@@ -42,8 +42,9 @@
 
 - **被测产物 = 生产构建**（`astro build` → `dist/`，`astro preview` 伺服），与 GitHub Pages 行为一致；不测 dev server。
 - `pnpm test:e2e` = `astro build && playwright test`。本地/Cloud Agent 已有 preview（端口 4321）时自动复用；CI 由 `webServer` 拉起。
-- 两个 project：`desktop-chromium`（1440×900）与 `mobile-375`（375×667、DPR 2、触屏、`pointer: coarse`，仅跑 `mobile.spec.ts`）。
-- 并行度封顶 2 worker：SwiftShader 软渲染 3D 挂载单次约 50s 且吃满 CPU，4 worker 时实测 5/7 车配置器用例超时假阴性；`car-configurator.spec.ts` 进一步退出 fullyParallel（文件内按序单 worker），避免两个 3D 上下文并发挤兑 4 核 CPU。
+- 两个并行 project：`desktop-chromium`（1440×900）与 `mobile-375`（375×667、DPR 2、触屏、`pointer: coarse`，仅跑 `mobile.spec.ts`）；重 3D spec 全部走串行依赖链 project（§7「3D 重负载调度」）。
+- 并行度封顶 2 worker：SwiftShader 软渲染 3D 挂载吃满 CPU，4 worker 时实测 5/7 车配置器用例超时假阴性。
+- [CC-VEH-E2E-FIX] `car-configurator.spec.ts` 归 `car-chromium` 独占 project（殿后 desktop+mobile）：此前只靠文件内 mode:'default' 串行，挡不住跨 project 并发——phase 1 里 `MOB-E2E-03` 还有一次完整 car 3D 挂载，挤兑下 CAR-E2E-01/05 实测 164s/179s 贴 180s 超时线（AL-VEH-R2 阻断项即此）。
 - HTML 报告：`pnpm test:e2e:report`；失败自动留 trace + 截图（`test-results/`，已 gitignore）。
 
 ### 环境事实（影响断言口径，已在 spec 内注释）
@@ -51,6 +52,7 @@
 1. **headless Chromium 无 `navigator.gpu`** → three.js `WebGPURenderer` 恒走 WebGL 2 后端。CI 恒验证「回退链路」（徽标断言 `WebGPU|WebGL 2` 二择，`?gl=1` 恒 `WebGL 2`）；WebGPU 正路径留本地 headed + GPU 验证。
 2. **CDP 禁 JS 不改变解析器 scripting flag** → `<noscript>` 子树不会渲染成可见 DOM，noscript 文案以 `textContent` 断言（真机无 JS 时浏览器正常渲染）。
 3. **SwiftShader 满载时 `locator.click` 的收尾等待可能长挂**（handler 内 `history.replaceState` + rAF 渲染循环压满合成器）→ 3D 页挂载后的控制坞交互统一「可见性断言 + `dispatchEvent('click')`」（`car-configurator.spec.ts` 的 `tap()`，附实测依据）。
+4. **展台自转 = 每步往返 3-6s 的排队税**（CC-VEH-E2E-FIX 取证）：`autoRotate` 让 SwiftShader 以 ~3s/帧 连续重绘，测试每次 CDP/JS 往返都排队等当前帧渲完（`DEBUG=pw:api` 实测连读已就位 DOM 属性都要 3s）→ 断言多的用例挂载后先 `stopShowcaseRotation()`（点当前选中 tab，产品行为即 `controls.autoRotate=false`）。**禁用 canvas 拖拽停转**：每个鼠标事件走 CDP 输入管线各排队一帧（4 事件 ≈ 60s），且 OrbitControls `enableDamping` 动量按 (1-0.08)^n 衰减 ~150 帧才归零，软渲染下等于再连续重绘数分钟（trace 实测该方案仍超时）。
 
 ## 4. 覆盖矩阵
 
@@ -99,7 +101,7 @@
 - TTS-E2E-06 reduced-motion：data-blocked、滚动后零新增 JS chunk 请求、显式启动逃生门
 - TTS-E2E-07 无 JS：noscript 文案合同 + 页眉/脚注静态可读 + facade 保持 idle
 
-### 5.4 `e2e/car-configurator.spec.ts` — RB-01
+### 5.4 `e2e/car-configurator.spec.ts` — RB-01（仅 car-chromium 独占 project，CC-VEH-E2E-FIX）
 - CAR-E2E-01 facade→ready：SSR 合同 + canvas 实绘尺寸 + 后端徽标 + HUD 默认配置名 + 控制坞解锁
 - CAR-E2E-02 `?gl=1` 强制 WebGL 2 + 交互回写时 gl 参数保持
 - CAR-E2E-03 深链三参组合（paint/wheels/livery）选中态与 HUD 全生效
@@ -183,7 +185,7 @@ E2E 未并入现有 `gate` job（SwiftShader 3D 挂载使 CI 时长 +4~6 分钟�
 - **选择器契约**：优先 facade/模块的 `data-*` 契约属性（`data-lab-host/-state/-blocked/-start/-gated`、`data-cfg-*`、`data-locale/-scene`、world 的 `data-ws-*` 族），不用样式类名做定位（`.scene-btn` 仅为收窄 `#screen[data-scene]` 属性碰撞）。
 - **白名单同步**：`e2e/helpers.ts` PENDING_ROUTES 与 `scripts/check-links.mjs` 双向同步；两侧都有过期反向阻断（integration 批次已实战走过一轮：`/world-spike/` 交付 → 双侧清退）。
 - **新 Lab 模块接入**：`lab-index.spec.ts` 的 `LIVE_MODULES` 追加一行；facade 生命周期/拦截用例按 tts/car 模板复制并按 `capabilities` 调整（`pointerFine` 决定移动端拦截断言方向）。
-- **3D 重负载调度**：world-spike spec 挂在独立 `world-chromium` project 且 `dependencies: ['desktop-chromium', 'mobile-375']`——4 核 CI 上任何两个 SwiftShader 3D 上下文并发都会把驾驶积分饿死（Batch 1 挤兑结论的加强版）。新增重交互 spec 一律并入该 project 或复制该模式。
+- **3D 重负载调度**：4 核 CI 上任何两个 SwiftShader 3D 上下文并发都会把驾驶积分饿死（Batch 1 挤兑结论的加强版）。重 3D spec 一律走串行依赖链：`desktop-chromium`+`mobile-375`（并行 phase 1）→ `car-chromium` → `world-chromium` → `world-perf-chromium` → `city-perf-chromium` → `visual-chromium`——任意时刻至多一个重 3D 上下文独占整机。新增重交互 spec 一律并入对应 project 或复制该模式（[CC-VEH-E2E-FIX] car-configurator 即因漏此纪律在 phase 1 与 MOB-E2E-03 挤兑超时）。
 - **驾驶断言纪律**：物理量断言只走 `__worldSpike` 遥测轮询（`pollState`），输入只走真实 CDP 事件；禁止 evaluate 直改物理状态“作弊”。世界时间 ≈ 墙钟 × fps × 1/20（dt clamp），等待超时按此换算并留 3× 余量。
 - **UA 异常白名单**：只允许逐条精确放行 + 注释归因 + 报告登记（现仅「Transition was skipped」一条）；禁止模式化放宽 pageerror 断言。
 
