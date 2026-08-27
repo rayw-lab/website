@@ -50,6 +50,7 @@ declare global {
         cones: number;
         nippleActive: boolean;
         nippleProgress: number;
+        view: string;
       };
       fps: () => { avg: number; low1: number };
       info: () => { drawCalls: number; triangles: number };
@@ -254,6 +255,9 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       cones: game.world.knockedConeCount(),
       nippleActive: game.inputs.nipple.active,
       nippleProgress: game.inputs.nipple.progress,
+      // [CC-VEH-VIEW] 驾驶视角遥测（DOM 契约 data-drive-view 之外的引擎侧真值，
+      // e2e 双口径互证）：'third' | 'fpv'
+      view: game.view.driveView.mode,
     }),
     fps: () => fps.read(),
     info: () => ({
