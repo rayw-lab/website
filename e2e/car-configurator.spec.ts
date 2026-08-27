@@ -44,9 +44,11 @@ async function tap(page: Page, selector: string): Promise<void> {
  * 注意不要用 canvas 指针拖拽停转（OrbitControls 'start' 路径）：trace 实测
  * ① 每个鼠标事件都走 CDP 输入管线排队等渲染帧（4 事件 ≈ 60s）；② enableDamping
  * 动量按 (1-0.08)^n 衰减需 ~150 帧归零，软渲染下等于再连续重绘数分钟。
+ * 单次往返即可：waitLabReady 后控制坞已解锁（inert 移除是 ready 的合同断言），
+ * 不再重复 toBeVisible 预检（每省一次往返 = 少排一帧队）。
  */
 async function stopShowcaseRotation(page: Page): Promise<void> {
-  await tap(page, '[data-cfg-tab="paint"]');
+  await page.locator('[data-cfg-tab="paint"]').dispatchEvent('click');
 }
 
 test.describe('3D 车辆配置器', () => {
@@ -87,6 +89,7 @@ test.describe('3D 车辆配置器', () => {
   test('CAR-E2E-02 ?gl=1 强制 WebGL 2 回退（§9.2 保留参数），且交互后参数保持', async ({ page }) => {
     await page.goto(`${PAGE_URL}?gl=1`);
     await waitLabReady(page, MOUNT_TIMEOUT);
+    await stopShowcaseRotation(page);
 
     await expect(page.locator('[data-lab-backend]')).toHaveText('WebGL 2');
 
@@ -99,6 +102,7 @@ test.describe('3D 车辆配置器', () => {
   test('CAR-E2E-03 深链 ?paint=&wheels=&livery= 三参组合：选中态与 HUD 全部生效', async ({ page }) => {
     await page.goto(`${PAGE_URL}?paint=abyss&wheels=stealth&livery=graphite`);
     await waitLabReady(page, MOUNT_TIMEOUT);
+    await stopShowcaseRotation(page);
 
     await expect(page.locator('[data-cfg-paint="abyss"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('[data-cfg-wheel="stealth"]')).toHaveAttribute('aria-pressed', 'true');
@@ -113,6 +117,7 @@ test.describe('3D 车辆配置器', () => {
 
     await page.goto(`${PAGE_URL}?paint=hotpink&wheels=square&livery=none`);
     await waitLabReady(page, MOUNT_TIMEOUT);
+    await stopShowcaseRotation(page);
 
     await expect(page.locator('[data-cfg-paint="livery"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('[data-cfg-wheel="machined"]')).toHaveAttribute('aria-pressed', 'true');
