@@ -9,7 +9,7 @@
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98** · **视觉 98** · **功能 90** · **性能 85**（登记 **92.5/70**，Δ 见下） |
 | **指挥官约束** | 无 CC-CAM → 视觉登记封顶 **70**；**功能/性能须独立 rubric + 可观测证据登记** |
-| 生产 tip | `main` @ `88e1aec`（CAM-C1 已合 · 功能 rubric 正本 [#49](https://github.com/rayw-lab/website/pull/49) 待合） |
+| 生产 tip | `main` @ `a7aa1dc`（功能 rubric v1.0 [#49](https://github.com/rayw-lab/website/pull/49) 已合 · OBS 规格待合） |
 
 ## Loop 5 — ✅ 有条件放行
 
