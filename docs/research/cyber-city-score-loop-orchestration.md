@@ -53,7 +53,7 @@ BL2 沿街扩展 → tone mapping（实模密度到位后）→ poster 三面收
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
 | CC-BL2 | `cursor/cc-bl2-street-extension-1d6f` @ `0c66684` | [#43](https://github.com/rayw-lab/website/pull/43) | [BL2](bc-3f4061c8-bf7c-58f5-b540-5e1a932d60ae) | 🚀 实现已 push，待 AL-BL2 |
-| CC-AL-BL2 | `cursor/cc-al-bl2-audit-1d6f` | Sol | 待 BL2 |
+| CC-AL-BL2 | `cursor/cc-al-bl2-audit-1d6f` | — | [AL-BL2](bc-pending) | 🚀 已派发 |
 
 - **目标**：`concept-garage` 相邻沿街实模（SW 象限，与 autodrive-lab 同框可读）
 - **门**：V4 独立 **72–75**；保留 heroGlb / Q2 零请求 / ThemeTowers 回退
