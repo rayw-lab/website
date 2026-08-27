@@ -9,7 +9,7 @@
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
 | **指挥官约束** | **无 CC-CAM 接入主线 → 视觉登记封顶 70**；CAM 为突破 70 的**必经门控** |
-| 生产 tip | `main` @ `0066e19`（登记 **92.5/70**） |
+| 生产 tip | `main` @ `aa16cf4`（登记 **92.5/70**） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -103,12 +103,12 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
-| CC-VEH-RS | `cursor/cc-veh-github-survey-1d6f` | 待派发 | 🔄 派发中 |
-| CC-VEH-DES | `cursor/cc-veh-camera-design-1d6f` | 待派发 | 🔄 派发中 |
-| CC-VEH-VIEW | `cursor/cc-veh-fpv-view-1d6f` | 待派发 | 🔄 派发中 |
-| CC-TRANS-FX-RS | `cursor/cc-trans-fx-research-1d6f` | 待派发 | 🔄 派发中 |
-| CC-TRANS-FX-DES | `cursor/cc-trans-fx-design-1d6f` | 待派发 | 🔄 派发中 |
-| CC-TRANS-FX-IMPL | `cursor/cc-trans-fx-impl-1d6f` | 待派发 | 🔄 派发中 |
+| CC-VEH-RS | `cursor/cc-veh-github-survey-1d6f` | [VEH-RS](bc-9d7c442e-24b0-5f6d-b962-578f8fc4069e) | 🔄 RUNNING |
+| CC-VEH-DES | `cursor/cc-veh-camera-design-1d6f` | [VEH-DES](bc-3a9962de-2214-5fc5-bc7d-48858b2bba98) | 🔄 RUNNING |
+| CC-VEH-VIEW | `cursor/cc-veh-fpv-view-1d6f` | [VEH-VIEW](bc-待登记) | 🔄 RUNNING |
+| CC-TRANS-FX-RS | `cursor/cc-trans-fx-research-1d6f` | [TRANS-RS](bc-27662958-c425-5337-99fb-173b1bafbaf5) | 🔄 RUNNING |
+| CC-TRANS-FX-DES | `cursor/cc-trans-fx-design-1d6f` | [TRANS-DES](bc-ac0c5a7d-056f-527a-8180-b00a4d9e4bc3) | 🔄 RUNNING |
+| CC-TRANS-FX-IMPL | `cursor/cc-trans-fx-impl-1d6f` | [TRANS-IMPL](bc-待登记) | 🔄 RUNNING |
 
 ### 合流主线序
 
