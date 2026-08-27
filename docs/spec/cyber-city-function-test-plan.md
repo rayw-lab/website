@@ -118,17 +118,17 @@ scripts/score-loop.mjs ── northStar 只读汇总 ←────────
 | AL-FXN | F4 取证增量：进站段录屏须含前奏全程 + 中断一次（Pass A 观察「到达感」，Pass B 对 F4 90-100 锚「进站有前奏与到达感且落点正确」）；dump 引用 `shot-apply`/`shot-interrupt` seq |
 | 埋点随行核对 | OBS §3.4 camera 族两预留行转正（`shot-apply`/`shot-interrupt`），接线点随 C3 PR 落地——预留行机制下零版本变更 |
 
-### 3.4 CC-FXN-C4 目标/进度轻任务（形态待拍板 —— 合同先行）
+### 3.4 CC-FXN-C4 目标/进度轻任务（已落地——形态拍板为探索计数 n/12，实现 + e2e 随行 PR 交付）
 
-交付面（顾问 §4.2 行 5 + FXN-BR G4/G5 底稿）：可选目标线（「下一站」chip + 探索计数 n/12 类）、完成反馈、空闲引导消费 `idle-30s`。**非强制主线**：阻断自由探索的设计按 rubric F6 扣分。事件名全部 *占位*（候选 `quest-shown` / `quest-reached` / `quest-completed`，族名与 data 以 C4 PR 落 OBS §3.4 表为准——新增族属加法）。
+交付面回填（父代理任务书拍板收窄；顾问 §4.2 行 5 + FXN-BR **G5 先遣版**）：**探索计数 n/12**——12 个 POI 触发圈 = 12 个探索点，首次驶入某圈（`poi-bounding-in` 同拍去重）chip +1，localStorage `world-explore-v1` 跨会话持久（隐私模式静默降级为会话内计数），集齐给完成态呈现。实现 = `src/lab/world/areas/ExploreProgress.ts`（随 areas 分包，默认路径零字节；chip `[data-world-explore]` / 计数 `[data-world-explore-count]` / 完成态 `data-complete`，pointer-events 全穿透）。**非强制主线**：纯展示层零输入劫持零楼锁定。事件名回填（OBS §3.4 新增 **goal 族**，加法不升版）：`explore-restore {n, total}` / `explore-progress {id, n, total}` / `explore-complete {total}`。**范围留痕**：「下一站」目标线（G4 chip + 光柱）与空闲引导消费 `idle-30s` **未在本批交付**（建议稿 CITY-GL-01/04 对应腿悬置，归后续批次；OBS §9-3 注记保留）。**待机纪律偏差留痕**（§2-3 第三腿）：chip 是常驻进度指示件（F6「可见可选目标」本体），不适用瞬时反馈件「零事件时隐藏」——恒等门只管 poster 两态（robot_idle / transforming 样式门整层 display:none）。
 
 | 层 | 新增断言 |
 |----|----------|
-| e2e | 新 spec `e2e/cyber-city-goal.spec.ts`，建议用例：**CITY-GL-01 目标呈现**——car_ready 后目标 chip 可见 + dump 含目标呈现事件（*占位*）；**CITY-GL-02 完成闭环**——按 chip 指引进站（driveTo 遥测闭环复用 OBS-01 先例）→ 进度 +1 呈现 + 完成事件入 dump（呈现 ⇔ 埋点互证）；**CITY-GL-03 非强制**——无视目标自由驾驶/进站其他 POI 全程零阻断（负断言：无模态、无输入劫持、`world-poi` 任意 id 可达）；**CITY-GL-04 空闲引导**——driving 态静置至 `idle-30s` 入 dump 后世界给出引导呈现（hint 再现/attract 候选，形态以 PR 为准），有输入即收；**CITY-GL-05 恒等门 + reduced-motion**（§2-3 全套） |
-| smoke | 分母零改动（目标事件不进 coverage）；若 C4 把 `idle-30s` 从「仅记录」升级为「有消费」，OBS §9-3 的观察注记随 PR 清账 |
-| playtest | S-5 **L7 空闲腿**由「记录性观察」转为「引导行为必测」；S-2 0:30–1:30 驾驶段增「目标感」观察点（F3 锚点括注「开着开着不知道干嘛」的对治项） |
-| AL-FXN | F6 取证增量：这是当前唯一从「30-45 段（纯沙盒零目标）」起步的维——登记轮必须有 chip 发现/完成反馈/空闲引导三段录屏时间码 + 对应 dump 事件，否则 F6 仍按现状段位打 |
-| 埋点随行核对 | 新增 type/族 → OBS §3.4 表同 PR 落行 + 本文件本行回填事件名；`quality-score.json`/smoke 零改动 |
+| e2e | 新 spec `e2e/cyber-city-explore.spec.ts`（已落）：**CITY-EXP-01 探索计数闭环**——`?poi=` 深链出生落触发圈 → chip `1/12` ⇔ `explore-progress{id,n:1,total}` 互证 → driveTo 遥测闭环至第 2 圈 → `2/12` ⇔ `{n:2}` → 驶出再驶入同圈（`poi-bounding-out`/`-in` 第二次入账）计数不动、progress 恒两条 id 互异（去重）→ 非强制负断言（pointer-events:none + 零模态）→ reload 重挂载 `explore-restore{n:2}` + chip 还原 + 出生圈重逢零新增 progress（跨会话去重；写读闭环取证）；**CITY-EXP-02 恒等门 + reduced-motion + 完成反馈**——robot_idle 期 chip 整层不可见（样式门；transforming 同一选择器覆盖）→ 预置 11/12（addInitScript 布局完成腿，写入面归 EXP-01）`explore-restore{n:11}` 互证 → RM instant swap 后 chip 照常呈现（操作性信息不剥夺）→ 驾驶发现末点 → `12/12` + `data-complete` ⇔ `explore-progress{n:12}` 与 `explore-complete{total}`（seq 序断言，禁时长阈值） |
+| smoke | 分母零改动（goal 族事件不进 coverage 四项，§0-3）；漏斗七步语义不变；`idle-30s` 维持「仅记录」（本批未消费，OBS §9-3 注记保留） |
+| playtest | S-2 0:30–1:30 驾驶段增「目标感」观察点（chip 可发现、进圈 +1 可感知——F3 锚点括注「开着开着不知道干嘛」的对治项）；S-5 **L7 空闲腿维持「记录性观察」**（空闲引导未落，转必测悬置至后续批次） |
+| AL-FXN | F6 取证增量：F6 由「30-45 段（纯沙盒零目标）」升「50-65+ 段」候选（轻目标可发现可完成 + 显式进度呈现）——登记轮须有 chip 发现 / 进度 +1 / 完成态三段录屏时间码 + 对应 goal 族 dump 事件（seq/t）；空闲引导缺口按 F6 锚点「空闲引导弱」如实计 |
+| 埋点随行核对 | OBS §3.4 表新增 goal 族三行（`explore-restore`/`explore-progress`/`explore-complete`）随本 PR 落地——新增族属加法，schemaVersion 不动；`quality-score.json`/smoke 零改动 |
 
 ### 3.5 批次 × rubric 维 × 脚本腿 对照总表
 
@@ -137,7 +137,7 @@ scripts/score-loop.mjs ── northStar 只读汇总 ←────────
 | FXN-C2 | ✅ 已合（#56） | F2 F3 | CITY-FB-01…06（3 用例，已入 64 基线） | S-2 驾驶段 / S-5 L2 确认层转全额候选 |
 | FXN-C1 | RUNNING | F1 F5 | CITY-GD-01…05（建议） | S-5 L3 转必过 |
 | FXN-C3 | 实现 + e2e 随行 PR 交付 | F4 | CITY-PA-01…04（已落 spec；OBS-01 适配 abort('aborted')，§3.3 留痕行回填） | §4.4 前奏条件腿转正 |
-| FXN-C4 | 待拍板 | F6 | CITY-GL-01…05（建议） | S-5 L7 转必测 |
+| FXN-C4 | 实现 + e2e 随行 PR 交付（拍板收窄为探索计数 n/12） | F6 | CITY-EXP-01…02（已落 spec；目标线/空闲引导腿悬置留痕 §3.4） | S-2 驾驶段增目标感观察点；L7 维持记录性观察 |
 
 ---
 
@@ -198,7 +198,7 @@ scripts/score-loop.mjs ── northStar 只读汇总 ←────────
 **开放问题**：
 
 1. **smoke 转硬时点**（§4.4）：待 ≥1 Loop 观察，父代理拍板；转硬起点 `--min 90` 是建议值非冻结值。
-2. **C4 形态**：待 FXN-BR G4/G5 + 父代理拍板；CITY-GL-01…05 为合同骨架，事件名/SEL 随 PR 冻结。
+2. **C4 形态**：~~待 FXN-BR G4/G5 + 父代理拍板~~ → 已拍板收窄为**探索计数 n/12**（G5 先遣版，§3.4 回填；goal 族事件 + CITY-EXP-01…02 已落）。剩余开放面：「下一站」目标线（G4 chip + 光柱）与空闲引导消费 `idle-30s`（建议稿 CITY-GL-01/04 腿）归后续批次。
 3. **CITY-OBS-01 与 C3 的时序适配**：前奏引入后「跳转前取证」窗口拉长，route abort 机制预计兼容（navigate 仍是终点），实测超窗则按注 2 适配。
 4. **quality-loop smoke 步加法**（§4.3）：归 OBS-C 批次落地，落地前步 ③ 由执行者手工跑（命令已冻结）。
 5. **性能双轨的 CI 证据包**（CITY-PERF-01）：归 OBS/perf 批次，与本四层并列——落地后 §4.2 链上在步 ② 后追加证据包步，属加法。
