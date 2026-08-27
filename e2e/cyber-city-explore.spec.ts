@@ -132,7 +132,33 @@ async function readSpike(page: Page): Promise<SpikeState> {
 
 const wrapAngle = (a: number): number => Math.atan2(Math.sin(a), Math.cos(a));
 
-/** 遥测闭环自动驾驶（CITY-OBS-01 同款：真实键盘输入 + 0.5s 遥测节拍 + 卡死 R 自救） */
+/**
+ * 倒车脱困/出泊位（S=backward，Player 倒车扇区油门转向同反转）：直线倒车至
+ * 位移 ≥ meters 或超时。深链出生泊位朝建筑角（parkingBay.heading 面楼），
+ * 原地掉头会蹭墙角卡死；且 R 重生锚点=泊位本身（传送回陷阱），故一律倒车脱身。
+ */
+async function reverseBy(
+  page: Page,
+  meters: number,
+  capMs: number,
+): Promise<{ ok: boolean; state: SpikeState }> {
+  const origin = await readSpike(page);
+  let state = origin;
+  await page.keyboard.down('s');
+  try {
+    const deadline = Date.now() + capMs;
+    while (Date.now() < deadline) {
+      state = await readSpike(page);
+      if (Math.hypot(state.x - origin.x, state.z - origin.z) >= meters) return { ok: true, state };
+      await page.waitForTimeout(500);
+    }
+    return { ok: false, state };
+  } finally {
+    await page.keyboard.up('s').catch(() => {});
+  }
+}
+
+/** 遥测闭环自动驾驶（CITY-OBS-01 同款：真实键盘输入 + 0.5s 遥测节拍 + 卡死倒车自救） */
 async function driveTo(
   page: Page,
   target: { x: number; z: number },
@@ -161,13 +187,14 @@ async function driveTo(
 
       if (state.speedKmh > 3) stuckSince = Date.now();
       else if (Date.now() - stuckSince > 45_000) {
+        // 卡死自救 = 倒车退离障碍（OBS-01 用 R 重生，但深链会话的重生锚点
+        // = 泊位面楼——传送回陷阱本身，故此处一律倒车 4m 再续航）
         if (steering) {
           await page.keyboard.up(steering);
           steering = null;
         }
         await page.keyboard.up('w');
-        await page.keyboard.press('r');
-        await page.waitForTimeout(3_000);
+        await reverseBy(page, 3, 120_000); // 倒车实测 ~0.04m/s 墙钟（SwiftShader 慢动作）
         await page.keyboard.down('w');
         stuckSince = Date.now();
       }
@@ -238,7 +265,15 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     expect(pointerEvents, 'chip 必须全层穿透（不遮 CTA/HUD/摇杆热区）').toBe('none');
     await expect(page.locator('dialog[open]'), '探索计数不得弹任何模态').toHaveCount(0);
 
-    // —— ② 驾驶至第 2 个探索点（走廊路线镜像 OBS-01：途径点避开路口隔离墩）
+    // —— ② 驾驶至第 2 个探索点（走廊路线镜像 OBS-01：途径点避开路口隔离墩）。
+    //    出泊位先倒车 5m：出生朝向 = parkingBay.heading（面建筑角），原地掉头
+    //    必蹭墙角；倒退线 (28,-28)→(24.5,-24.5) 后左转弧线已避开楼角（x≥30 墙面）
+    //    与隔离墩阵（|x|,|z|≲18）。倒车实测 ~0.04m/s 墙钟 → 5m ≈ 120s，予 300s 余量
+    const escaped = await reverseBy(page, 5, 300_000);
+    expect(
+      escaped.ok,
+      `应能倒车退出泊位（实测 x=${escaped.state.x.toFixed(1)} z=${escaped.state.z.toFixed(1)}）`,
+    ).toBe(true);
     const target = bayOf(SECOND_POI);
     const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 4, timeoutMs: 360_000 });
     expect(leg1.ok, `途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`).toBe(true);
