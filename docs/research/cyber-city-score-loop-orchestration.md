@@ -1,6 +1,6 @@
 # Phase 0 提分 Loop 编排看板
 
-`main` @ `ea968a4` · 2026-08-27 16:15 UTC · 范式 `cyber-city-orchestration-paradigm.md`
+`main` @ `18263b7` · 2026-08-27 16:20 UTC · 范式 `cyber-city-orchestration-paradigm.md`
 
 **模型（L8+）**：全部子代理 Task = `claude-fable-5-thinking-xhigh`；在途 Sol 可跑完（§1.2 宽限）。
 
@@ -28,16 +28,15 @@
 
 | ID | 模型 | 状态 |
 |----|------|------|
-| CC-VIS-L8-W1-X1a | Fable5 xhigh | ⏳ 任务书已合，待实现 |
-| CC-VIS-L8-W1-X3 | Fable5 xhigh | ⏳ 任务书已合，待实现 |
-| CC-AL-VEH-R3 | Fable5 xhigh | ⏳ 75/75 e2e 审计 |
-| CC-VIS-L8-P0-RS | Fable5 xhigh | ⏳ gap 调研 |
-| CC-PERF-C2 后续 | Fable5 xhigh | 按需 O2–O12 |
-| CC-AL-PERF | Fable5 xhigh | 待真机六腿后登记 |
+| CC-FXN-ADV-90 | Fable5 xhigh | 🔄 RUNNING · 功能 84→90 顾问 |
+| CC-PERF-ADV-SCORE-R2 | Fable5 xhigh | 🔄 RUNNING · 性能评分顾问 R2 |
+| CC-VIS-L8-W1-X1a | Fable5 xhigh | 🔄 RUNNING · 实现 |
+| CC-VIS-L8-W1-X3 | Fable5 xhigh | 🔄 RUNNING · 实现 |
+| CC-AL-VEH-R3 | Fable5 xhigh | 🔄 RUNNING · 75/75 e2e 审计 |
 
 ## 下一拍序
 
-1. 派 W1-X1a / W1-X3 实现（Fable5）· AL-VEH-R3 审计
+1. 收 W1-X1a / W1-X3 实现 · AL-VEH-R3 审计 · 双顾问（FXN-ADV-90 / PERF-ADV-SCORE-R2）结论
 2. 指挥官排真机窗口 → human-gate 六腿
 3. AL-PERF 登记性能首分（Fable5）
 4. 功能/性能齐套后重算综合分
