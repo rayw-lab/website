@@ -18,17 +18,19 @@
 2. `third→fpv` 在切换函数内立即把输出相机写到注册表基础 FOV 58°，后续仅
    `0..6°` speed kick 分量低通；reduced-motion 下 kick 目标与驻留均为 0，
    因而 FPV 逐帧恰为 58°；
-3. exact 定向用例 `CITY-VEH-05` + `CITY-VEH-07` 实跑 **2/2**，包含
+3. VEH-C2 exact 定向用例 `CITY-VEH-05` + `CITY-VEH-07` 实跑 **2/2**，包含
    reduced-motion 的切入 58°、2s 稳定 58°、切回 42°以及注册表消费合同；
+   本审计在 `main@bad4f54` 上复跑 `CITY-VEH-07` 亦为 **1/1**；
 4. PR #63 exact CI 的 check/build/links/budget/Lighthouse 全绿，`/` 与 `/home/`
    三轮中位数均为 **100/100/100/100**。
 
 但硬门 #2 要求的是当前合同数的**完整 suite 全绿**，不是定向用例全绿。VEH-C2 exact
 全量实跑当时列出 65 项，结果为 `44 passed / 3 failed / 18 did not run`；当前
 `main@bad4f54` 又合入 FXN-C1 两项，`playwright test --list` 的实际合同已是
-**67 tests / 12 files**，仍无 clean 全绿。已见失败发生在 FXN/OBS/既有 CITY 链且呈
-软渲染超时/行车路线不达，并非两个 VEH-C2 补洞的直接回归，但“与本补洞无关”不能
-替代全量绿证据。故两项原始阻断销账，发布门仍保持关闭。
+**67 tests / 12 files**。本审计 base 的完整重跑也以 `status=failed` 收口，
+`CAR-E2E-01` 与 `CAR-E2E-05` 各触发 180s 超时。已见失败都在非 VEH 链且呈软渲染
+超时/行车路线不达，并非两个 VEH-C2 补洞的直接回归，但“与本补洞无关”不能替代
+全量绿证据。故两项原始阻断销账，发布门仍保持关闭。
 
 重新取得 `retries=0`、`failed=0`、`skipped=0` 的 67/67 后，本报告可原地升为 GO；
 升灯前不写 `cyber-city-vehicle-diag-score.json`，也不写生产 visual/function score。
@@ -38,10 +40,10 @@
 | # | 硬门 | 二轮独立证据 | 判定 |
 |---:|---|---|:---:|
 | 1 | driving 态 V 键 third↔FPV（VEH-01） | 动作仍仅绑定 `Keyboard.KeyV` + `categories:['driving']`；View 冗余门仍只放行 `car_ready/driving`。VEH-C2 未改输入/状态机，只在既有 `setDriveViewMode` 补 FOV；联合旅程保留 `robot_idle` 门禁、`car_ready` 不触发 driving、FPV 驾驶与 driving 往返断言 | ✅ |
-| 2 | e2e 全 suite 绿 | 当前 base 列项为 **67 tests / 12 files**。VEH-C2 exact 的 65 项全量为 `44 passed / 3 failed / 18 did not run`；失败为 `CITY-FB-01…04` 600s 超时、`CITY-OBS-01` 驾驶未达泊车位、`CITY-E2E-03` transforming→car_ready 120s 超时。合入 FXN-C1 后仍无 clean 67/67 | **❌** |
+| 2 | e2e 全 suite 绿 | 当前 base 列项为 **67 tests / 12 files**。VEH-C2 exact 的 65 项全量为 `44 passed / 3 failed / 18 did not run`；本审计 base 全量重跑亦为 `status=failed`，失败项为 `CAR-E2E-01` / `CAR-E2E-05` 180s 超时。合入 FXN-C1 后仍无 clean 67/67 | **❌** |
 | 3 | `ritual_idle` 恒等 | VEH-C2 前后 `public/posters/` tree id 同为 `09a04c0b8ee1e5d6e1a56e856bb9a1ba02d7f9fd`；JSON 的 `ritual_idle` 子树逐字段不变。新增 drive entries 为尾部加法；View 的 robot_idle 门、third 直通与 lookahead `+0` 路径未改 | ✅ |
 | 4 | G5 无 free 漫游 | VEH-C2 未新增相机输入或依赖。`CameraShots.ts` 对 `mode==='drive'` 深链请求直接告警早退；动态 vehicle anchor 不进入 `applyShot`，没有 pointer/wheel→相机姿态映射 | ✅ |
-| 5 | `drive_third` / `drive_fpv` 与注册表对齐 | 两 key 与 §7.1 冻结值已登记；`View.ts` 的 `DRIVE_LOOKAHEAD` / `DRIVE_FPV` 分别直接引用 `cameraShots.shots.drive_third.dynamics.lookahead` 与 `.drive_fpv.rig`。`CITY-VEH-07` 对 key、关键值、消费入口、TODO 清除及 ritual frozen 守卫实跑通过 | ✅ |
+| 5 | `drive_third` / `drive_fpv` 与注册表对齐 | 两 key 与 §7.1 冻结值已登记；`View.ts` 的 `DRIVE_LOOKAHEAD` / `DRIVE_FPV` 分别直接引用 `cameraShots.shots.drive_third.dynamics.lookahead` 与 `.drive_fpv.rig`。`CITY-VEH-07` 对 key、关键值、消费入口、TODO 清除及 ritual frozen 守卫在本审计 base 复跑 **1/1** | ✅ |
 | 6 | LHCI `/` + `/home/` 不降 | PR #63 exact CI [33051490475](https://github.com/rayw-lab/website/actions/runs/33051490475) 成功；artifact 21 份 LHR（7 URL×3）。`/` 与 `/home/` 的 P/A/BP/SEO 三轮及中位数均为 100/100/100/100，相对上轮满分 delta 全 0 | ✅ |
 | 7 | reduced-motion 路径不受影响 | `setDriveViewMode('fpv')` 先写注册表 `fovDeg` 并更新投影；`updateFpv` 只低通 `fpvState.fovKick`，rm 下目标 0。`CITY-VEH-05` exact 通过：切入 58、2s 后仍 58、切回 42；V 往返与 instant transform 同例通过 | ✅ |
 
@@ -113,6 +115,8 @@ fpv → third：camera.fov = 42；立即 updateProjectionMatrix()
 | `pnpm exec playwright test ... --grep 'CITY-VEH-05\|CITY-VEH-07'`（VEH-C2 exact） | **2 passed**，5.5m |
 | `pnpm exec playwright test --list`（`main@bad4f54` + 本 doc-only 分支） | **67 tests / 12 files** |
 | `pnpm test:e2e`（VEH-C2 exact） | **44 passed / 3 failed / 18 did not run**，45.0m；硬门 #2 未闭合 |
+| `pnpm exec playwright test`（本审计 base 全量） | `.last-run.json` 为 `status=failed`；`CAR-E2E-01` / `CAR-E2E-05` 180s 超时 |
+| `pnpm exec playwright test e2e/cyber-city.spec.ts --project=world-chromium --grep CITY-VEH-07 --no-deps --workers=1` | **1 passed**，876ms |
 | PR #63 exact CI | check/build/links/budget/Lighthouse 全绿 |
 | Lighthouse artifact | `/`、`/home/` 三轮 P/A/BP/SEO 全为 100；中位数全 100 |
 
