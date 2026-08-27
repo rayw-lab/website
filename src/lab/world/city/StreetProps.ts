@@ -21,6 +21,14 @@ import type { CyberCityMap } from './CityMap';
 const BOLLARD_RADIUS = 0.22;
 const BOLLARD_HEIGHT = 1.15;
 
+/**
+ * [CC-FXN-C2] 撞击判定（Rapier CONTACT_FORCE_EVENTS，Physics.getPhysical 既有接缝）：
+ * 阈值 = 原始接触力 ≥15（Physics 缺省，folio 碰撞音效同门槛——蹭墙/怠速贴靠不触发）；
+ * 冷却 0.6s（真实秒，ticker.elapsed 时基）合并同一次冲撞的连续接触帧，
+ * 保证「一次撞击 = 一次计数 = 一次 HUD 脉冲」（CITY-03：一次性事件驱动，非循环）。
+ */
+const HIT_COOLDOWN = 0.6;
+
 interface BollardSpot {
   x: number;
   z: number;
@@ -33,8 +41,15 @@ export class StreetProps {
   bollardBody: WorldObject | null = null;
   /** 墩位清单（调试/取证读数用） */
   readonly spots: BollardSpot[] = [];
+  /**
+   * [CC-FXN-C2] 隔离墩累计撞击数（城市档「撞道具」的碰撞真值——fixed 刚体不位移，
+   * knockedConeCount 位移判据天然为 0，这里以接触力事件承接）。消费方 =
+   * index.ts HUD 节拍沿检测：并入 cone-hit 埋点 total 与 HUD 脉冲；单调递增不随 R 复位。
+   */
+  hitCount = 0;
 
   private readonly game: Game;
+  private lastHitAt = -Infinity;
 
   constructor(game: Game, map: CyberCityMap) {
     this.game = game;
@@ -134,6 +149,16 @@ export class StreetProps {
       friction: 0.4,
       restitution: 0.35,
       category: 'object',
+      // [CC-FXN-C2] 接触力事件（阈值取 Physics 缺省 15）：城市档唯一动态体 =
+      // 玩家车，回调即「车撞隔离墩」；冷却合并连续接触帧后计数。消费走
+      // index.ts HUD 节拍沿检测（OBS-C1 cone-hit 同模式），不新增总线事件
+      contactThreshold: 15,
+      onCollision: () => {
+        const now = this.game.ticker.elapsed;
+        if (now - this.lastHitAt < HIT_COOLDOWN) return;
+        this.lastHitAt = now;
+        this.hitCount += 1;
+      },
       colliders: this.spots.map((spot) => ({
         shape: 'cylinder' as const,
         parameters: [BOLLARD_HEIGHT / 2, BOLLARD_RADIUS],

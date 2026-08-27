@@ -29,11 +29,13 @@ import type { Areas } from './areas';
 import type { City } from './city';
 import type { HeroRobot } from './city/HeroRobot';
 import type { DebugPanel } from './debug/DebugPanel';
+import type { RespawnReason } from './player/Player';
 import type { TransformSystem } from './player/TransformSystem';
 import type { Reveal } from './world/Reveal';
 import type { QualityLevel } from './core/Quality';
 import type { SessionDump } from './core/SessionTimeline';
 import { Game } from './core/Game';
+import { DriveFeedback } from './world/DriveFeedback';
 import { FpsMeter } from './utils/FpsMeter';
 
 export interface WorldSpikeInstance extends LabInstance {
@@ -189,6 +191,26 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
     game.objects.resetAll();
   });
 
+  // ————— [CC-FXN-C2] 驾驶反馈层（功能 rubric F2「反馈闭环」确认层）—————
+  // toast/碰撞脉冲/boost/翻车倒计时四件 DOM 反馈：样式内联注入（Reveal 先例，
+  // 壳静态段零字节）、pointer-events 全穿透；robot_idle/transforming 由样式门
+  // 整层 display:none（ritual_idle 恒等合同）。全部一次性事件驱动（CITY-03
+  // 循环动画配额零占用）；埋点零新增——本层只是 OBS-C1 既有事件的呈现面。
+  const driveFeedback = new DriveFeedback(game, { stage, speedEl: hudSpeed });
+
+  // ② respawn toast：reason ∈ key/fall/unstuck 时呈现（R 键/坠落兜底两来路；
+  // null = 装配对齐/Game.reset 软复位，不出提示）。壳复位按钮走合成 KeyR，同路
+  game.player.events.on('respawn', (_respawn: unknown, reason?: RespawnReason | null) => {
+    if (reason) driveFeedback.respawnToast(reason);
+  });
+
+  // ③ boost 徽标+暗角：'boost' 动作双沿（actionStart/End 同名事件）即按即亮——
+  // 不走 0.25s HUD 节拍（按键反馈延迟可感）；intro filter 天然闸门（robot_idle/
+  // transforming 期间动作不触发，与样式门双保险）
+  game.inputs.events.on('boost', (action: { active: boolean }) => {
+    driveFeedback.setBoost(action.active);
+  });
+
   // CC-E9：POI 系统（12 楼触发圈 + 标点 + ?poi= 深链出生）——城市就位才挂载，
   // 独立分包默认零字节；ritual 模式触发圈照挂、深链出生让位首幕锚点（M3 纪律）
   let areas: Areas | null = null;
@@ -229,7 +251,8 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   let hudClock = 0;
   let hintDismissed = false;
   // [CC-OBS-C1] HUD 节拍沿检测状态（观测规格 §3.4 cone-hit / idle-30s 行）
-  let lastConeCount = 0;
+  // [CC-FXN-C2] 口径扩为 锥桶+隔离墩 合计（灰盒无城市时与纯锥桶数逐拍等值）
+  let lastCollisionTotal = 0;
   let idleClock = 0;
   let idleLogged = false;
 
@@ -260,11 +283,21 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       if (hudCones) hudCones.textContent = String(coneCount);
 
       // [CC-OBS-C1] cone-hit 沿检测：计数较上拍增大即打（total = 当前值，HUD 同源；
-      // respawn 重置后计数回落，lastConeCount 跟随不打点）
-      if (coneCount > lastConeCount) game.session.log('cone-hit', { total: coneCount });
-      lastConeCount = coneCount;
+      // respawn 重置后锥桶计数回落，lastCollisionTotal 跟随不打点）。
+      // [CC-FXN-C2] total 口径扩为 锥桶+隔离墩（观测规格 §3.4 随行修订：城市档
+      // 锥桶撤场、隔离墩 fixed 不位移，接触力计数承接「撞道具」真值；灰盒无城市
+      // 时两口径逐拍等值）；沿上同时驱动 HUD 碰撞脉冲（反馈层①，同源同拍）
+      const collisionTotal = coneCount + (city?.streetProps.hitCount ?? 0);
+      if (collisionTotal > lastCollisionTotal) {
+        game.session.log('cone-hit', { total: collisionTotal });
+        driveFeedback.collisionPulse(collisionTotal);
+      }
+      lastCollisionTotal = collisionTotal;
 
       const player = game.player;
+      // [CC-FXN-C2] ④ 翻车自救倒计时喂数（Player.rescueCountdown 镜像；null =
+      // 收窗即藏。0.25s 节拍粒度由进度条 transition 平滑，变化帧才写 DOM）
+      driveFeedback.setRescue(player.rescueCountdown);
       const driveIntent =
         player.accelerating !== 0 ||
         player.steering !== 0 ||
@@ -355,6 +388,7 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
     dispose() {
       debugPanel?.dispose();
       debugPanel = null;
+      driveFeedback.dispose();
       areas?.dispose();
       areas = null;
       reveal?.dispose();
