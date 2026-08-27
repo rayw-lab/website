@@ -46,7 +46,23 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 ### 通往 98（顾问估 3–4 轮）
 
-BL2 沿街扩展 → tone mapping（实模密度到位后）→ poster 三面收口
+BL2 沿街扩展（**PR #43 NO-GO 待机**）→ **CC-CAM 镜头/POI 多路** → tone mapping → poster 三面收口
+
+## CC-CAM — 3D 视角 / POI 机位（🔄 多路并行派发）
+
+| 项 | 内容 |
+|----|------|
+| 根因 | ritual_idle 固定十字路口机位无法覆盖东向 hero 楼；`?poi=` 只改出生不改镜头 |
+| 入口 | `docs/research/cyber-city-camera-poi-research.md` |
+| 模型 | **Fable5 xhigh** ×4 并行；审计待 **CC-AL-CAM**（Sol） |
+| PR #43 | **仍禁止合流**；相机批次与 BL2 解耦，过门后可 **CC-BL2-CAM 重审** |
+
+| ID | 分支（待建） | Agent | 状态 |
+|----|-------------|-------|------|
+| CC-CAM-RS | `cursor/cc-cam-github-survey-1d6f` | 派发中 | 🔄 GitHub 深搜 |
+| CC-CAM-DES | `cursor/cc-cam-shot-registry-design-1d6f` | 派发中 | 🔄 Shot schema 设计 |
+| CC-CAM-DATA | `cursor/cc-cam-shot-data-probe-1d6f` | 派发中 | 🔄 JSON + NDC 探针 |
+| CC-CAM-VIEW | `cursor/cc-cam-view-poi-framing-1d6f` | 派发中 | 🔄 View/Areas 接线 |
 
 ## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流）
 
