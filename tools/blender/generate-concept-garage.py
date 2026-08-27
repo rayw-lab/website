@@ -11,9 +11,13 @@
 #   · Blender X=东、Y=北、Z=上；glTF 导出 Y-up 自动换轴（three: x=bx, y=bz, z=-by）；
 #   · 原点 = 楼体足迹中心地面点；运行时由 HeroBlenderMesh 平移到 building.position (140,-44)；
 #   · footprint w60(X) × d36(Y) —— 物理碰撞体沿用 footprint cuboid h18 合同不变；
-#     视觉包络 [CC-BL2-PLUS]：主体仍 h18 同笼，西端天际线段经 AL-BL2 §8.1 批准上探
-#     （西肩块 21.6 / 螺旋塔 26.05 / 桅杆信标顶 31.55——上探段全部悬空视觉件，
-#     18m 以上无可达路径无碰撞需求；FlightTrails 三航线离本楼 ≥5m 已核）；
+#     视觉包络 [CC-BL2-R2]：主体仍 h18 同笼，西端上探段体量再分布（BL2-R2 补洞：
+#     后场螺旋塔在 ?poi=work-gallery 帧被自家南女儿墙 22.3-24.3m 遮挡线 + 西肩块
+#     遮挡线 ~26.2m 全遮、信标顶 ndc.y=1.04 被帧顶裁切——NDC 探针实测）——
+#     西肩块 21.6 不变 / 螺旋塔迁至南立面西段鼓塔（中心 bx-22.5,by-13.5，r7.5，
+#     塔身 6.26→22.4、冠环 22.9、桅杆信标顶 24.65；南凸 3m 至 by-21 悬空件，
+#     底 6.26m 高于雨棚 4.8m 悬挑先例，18m 以上无可达路径无碰撞需求；
+#     FlightTrails 三航线全部 z≤-110，离本楼 ≥48m 已核）；
 #     BuildingSigns 南立面灯箱挂高 min(25, max(9, 0.34h))=9、挂点 by=-(18+0.35)，
 #     模型侧已留「招牌避让背板区」bx∈[-10.2,10.2] z∈[7.0,11.0]；
 #   · 楼顶全息板（BuildingSigns 单临街楼朝南）：bx∈[-10.5,10.5] × z∈[19.1,21.7] @ by≈0
@@ -327,7 +331,8 @@ def box(buf, cx, cy, z0, sx, sy, sz, yaw=0.0, uv_scale=None, uv_rect=None, faces
         buf.quad(p[3], p[2], p[1], p[0], uvr(sx, sy))  # bottom
 
 
-def cylinder(buf, cx, cy, z0, r_bottom, r_top, height, segments=12, uv_rect=None, cap_top=True):
+def cylinder(buf, cx, cy, z0, r_bottom, r_top, height, segments=12, uv_rect=None, cap_top=True,
+             cap_bottom=False):
     z1 = z0 + height
     pts_b, pts_t = [], []
     for i in range(segments):
@@ -341,6 +346,9 @@ def cylinder(buf, cx, cy, z0, r_bottom, r_top, height, segments=12, uv_rect=None
     if cap_top:
         for i in range(1, segments - 1):
             buf.tri(pts_t[0], pts_t[i], pts_t[i + 1], ((u0, v0), (u1, v0), (u0, v1)))
+    if cap_bottom:  # 法线朝下（悬空件仰视面）
+        for i in range(1, segments - 1):
+            buf.tri(pts_b[0], pts_b[i + 1], pts_b[i], ((u0, v0), (u1, v0), (u0, v1)))
 
 
 def window_cell(kind=None):
@@ -694,30 +702,46 @@ for i in range(3):
     box(BUFS['Metal'], 2, -13 + i * 0.55, H + 0.2 + (i % 2) * 0.18, W * 0.62, 0.26, 0.26, faces='side_top')
 
 # ----------------------------------------------------------------------------
-# ⑤′ [CC-BL2-PLUS] 西端天际线段（AL-BL2 §8.1 定向补洞：whole-frame 可读新轮廓）
-#   三段式体量切分：西肩块（21.6）→ 螺旋塔（26.05 + 蓝 LED 螺旋带）→ 桅杆信标
-#   （顶 31.55）。螺旋带 = 「立体停车螺旋坡道」车库图腾——60-100m 沿街整帧一眼
-#   认楼件（?poi=work-gallery 固定深链帧 / 驾驶推进帧）。
+# ⑤′ [CC-BL2-R2] 西端天际线段——体量再分布（BL2-R2 最小补洞，BR X1「体量再分布」）
+#   两轮 NO-GO 机理（NDC 探针实测，corridor_neon-boulevard-east 机位）：后场螺旋塔
+#   (bx-20,by6) 的 14-26m 塔身被自家南女儿墙（遮挡线 22.3-24.3m）与西肩块南上缘
+#   （遮挡线 ~26.2m）全遮，信标顶 ndc.y=1.04 被帧顶裁切——整帧只剩「顶缘冠环弧」。
+#   帧内真可读区 = 南立面平面（z=-26）：bx∈[-30,+18] 自地面至 ~24.4m 无遮挡直读。
+#   → 螺旋塔迁为「南立面西段鼓塔」：立体停车螺旋坡道鼓楼自展厅带檐口起身，
+#   南凸 3m 出幕墙成弧形湾——塔身/螺旋带/冠环/信标全部落进可读区；
+#   天际线成「主女儿墙 18.9 → 肩块压顶 22.0 → 鼓塔冠环 22.9 + 信标 24.65」三拍阶差。
 #   铁律核对：
 #   · 全息板走廊 bx∈[-10.5,10.5]×|by|<1.8×z∈[19.1,21.7]：肩块东缘 -12.2（压顶
-#     -12.1）、塔东缘 -12.5——全部 |bx|≥12.1 让空，板后天空背景不受遮挡；
-#   · 物理合同不变：footprint cuboid h18 照旧，上探段为悬空视觉件（无碰撞需求）；
-#   · 辉光锚数量不变：原前西角桅杆信标撤销、迁至塔顶（仍是「屋顶信标 + 卷帘门
-#     警灯」两处）；螺旋带 AccentBlue emissive 0.85 ≤1 阈下，不占辉光名额。
+#     -12.1）、鼓塔东缘 -15——全部 |bx|≥12.1 让空，板后天空背景不受遮挡；
+#   · 招牌避让背板区 bx∈[-10.2,10.2] z∈[7.0,11.0]：鼓塔东缘 -15 让空；
+#   · 前场道具（HeroBlenderMesh 碰撞体在册，坐标零改动）：展台 (-19,-24) 距鼓心
+#     9.66m、kiosk (-12.5,-20.5) 12.3m 均在 r7.5 外；旗杆 (-26.5/-24,-21) 杆顶 4.6m
+#     低于鼓底 6.26m ≥1.6m（街面视角旗幅读在鼓面之前，正常街景层叠）；
+#   · 泊车圈 bx∈[-8,8]×by∈[-34,-18] 与卷帘门出入带 bx∈[3.75,18.75] 均让空；
+#   · 物理合同不变：footprint cuboid h18 照旧，鼓塔为悬空视觉件（底 6.26m 高于
+#     雨棚 4.8m 悬挑先例，机器人/车辆不可达；南凸段无立柱 = 雨棚同款无柱悬挑）；
+#   · 辉光锚数量不变：信标随塔迁至鼓顶桅杆（仍是「屋顶信标 + 卷帘门警灯」两处）；
+#     螺旋带 AccentBlue emissive 0.85 ≤1 阈下，不占辉光名额。
 # ----------------------------------------------------------------------------
-print('[bl2] 建模：西端天际线段 …')
-SH_X, SH_W = -21.1, 17.8   # 西肩块 bx∈[-30,-12.2]（南北各退 1m = 阶台读法）
+print('[bl2] 建模：西端天际线段（R2 体量再分布）…')
+SH_X, SH_W = -21.1, 17.8   # 西肩块 bx∈[-30,-12.2]（南北各退 1m = 阶台读法）——R2 不动
 SH_Z1 = 21.6
 box(BUFS['Facade'], SH_X, 0, H - 0.1, SH_W, D - 2.0, SH_Z1 - H + 0.1, uv_scale=PANEL_UV, faces='side_top')
 box(BUFS['FacadeDark'], SH_X, 0, SH_Z1, SH_W + 0.2, D - 1.6, 0.4, faces='side_top')  # 压顶（东缘 -12.1）
 box(BUFS['AccentBlue'], SH_X, -(HD - 1.0) - 0.26, SH_Z1 - 0.42, SH_W - 1.2, 0.07, 0.1, faces='side')
 box(BUFS['AccentBlue'], -HW - 0.26, 0, SH_Z1 - 0.42, 0.07, D - 3.6, 0.1, faces='side')
 
-DR_X, DR_Y, DR_R = -20.0, 6.0, 7.5   # 螺旋塔 bx∈[-27.5,-12.5]、by∈[-1.5,13.5]
-cylinder(BUFS['FacadeDark'], DR_X, DR_Y, 14.0, DR_R, DR_R, 11.9, segments=24)          # 塔身（18 下段藏体内）
-cylinder(BUFS['Metal'], DR_X, DR_Y, SH_Z1 - 0.1, DR_R + 0.22, DR_R + 0.22, 0.5,
-         segments=24, cap_top=False)                                                    # 基座环
-cylinder(BUFS['Metal'], DR_X, DR_Y, 25.5, DR_R + 0.24, DR_R + 0.24, 0.55, segments=24)  # 顶冠环
+# —— 南立面西段鼓塔（R2 迁位）：bx∈[-30,-15]、by∈[-21,-6]，南凸 3m 出幕墙 ——
+DR_X, DR_Y, DR_R = -22.5, -13.5, 7.5
+DR_Z0, DR_Z1 = 6.26, 22.4          # 鼓底檐口上 6cm 反光缝防共面；塔身顶 22.4
+# 塔身（Facade 金属板逐段平铺 = 竖板肋节奏；仰视面封底）
+_seg_arc = 2 * math.pi * DR_R / 24
+cylinder(BUFS['Facade'], DR_X, DR_Y, DR_Z0, DR_R, DR_R, DR_Z1 - DR_Z0, segments=24,
+         uv_rect=(0, 0, _seg_arc * PANEL_UV, (DR_Z1 - DR_Z0) * PANEL_UV), cap_bottom=True)
+cylinder(BUFS['MetalDark'], DR_X, DR_Y, DR_Z0 + 0.04, DR_R + 0.18, DR_R + 0.18, 0.55,
+         segments=24, cap_top=False, cap_bottom=True)                                   # 基座环
+cylinder(BUFS['FacadeDark'], DR_X, DR_Y, DR_Z1, DR_R + 0.25, DR_R + 0.25, 0.5,
+         segments=24, cap_bottom=True)                                                  # 冠环（顶 22.9）
 
 
 def helix_ribbon(buf, cx, cy, r, z0, z1, turns, band_h, seg_per_turn=20, a0=0.0):
@@ -733,12 +757,13 @@ def helix_ribbon(buf, cx, cy, r, z0, z1, turns, band_h, seg_per_turn=20, a0=0.0)
                  (cx + r * math.cos(aa0), cy + r * math.sin(aa0), za0 + band_h))
 
 
-helix_ribbon(BUFS['AccentBlue'], DR_X, DR_Y, DR_R + 0.06, 19.2, 25.0, 2.25, 0.55,
+# 螺旋带 2.5 圈自南（a0=-90°）起坡：南弧三道穿幕墙湾（z≈7.4/12.8/18.2）+ 女儿墙
+# 18.9 以上整圈裸露收顶——「螺旋」在整帧内既有重复弧节奏又有完整缠绕证明
+helix_ribbon(BUFS['AccentBlue'], DR_X, DR_Y, DR_R + 0.07, 7.4, 20.9, 2.5, 0.6,
              a0=math.radians(-90))
 
-cylinder(BUFS['Metal'], DR_X, DR_Y, 26.05, 0.24, 0.13, 5.0, segments=10)  # 桅杆 → 31.05
-box(BUFS['Metal'], DR_X, DR_Y, 29.9, 2.2, 0.14, 0.14, faces='side')       # 横臂
-box(BUFS['BeaconBlue'], DR_X, DR_Y, 31.05, 0.5, 0.5, 0.5, faces='all')    # 信标（顶 31.55）
+cylinder(BUFS['Metal'], DR_X, DR_Y, 22.9, 0.15, 0.09, 1.2, segments=10)   # 桅杆 → 24.1
+box(BUFS['BeaconBlue'], DR_X, DR_Y, 24.1, 0.55, 0.55, 0.55, faces='all')  # 信标（顶 24.65）
 
 # —— 东端书挡块（20.8/压顶 21.1：东段女儿墙上抬一档，天际线「塔-低-挡」三拍）——
 BK_X, BK_W = 26.75, 5.5   # bx∈[24,29.5]：HVAC（x≤23.25）与东女儿墙（x≥29.76）之间
