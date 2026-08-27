@@ -367,8 +367,22 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     const entered = await pollDump(page, (d) => d.funnel.firstPoiIn !== null, 120_000);
     expect(entered.ok, '进入 parkingBay 触发圈应记 poi-bounding-in').toBe(true);
 
-    // E 进站（world-poi → location.assign 被 route abort 拦下，上下文存续）；
-    // 溜出触发圈则低速回靠再按（boundingOut 收合 activeItem 的兜底）
+    // E 进站取证前置：world-poi 同步入账后 Areas 走 location.assign 真实跳转——
+    // route abort 会让主框架导航落成错误页（文档销毁，__worldSession 随 dispose
+    // 删除，上轮实测），改用 beforeunload 取消导航：显式 dialog dismiss = 取消
+    // 离页确认框，文档原地存活（E 键即用户手势，确认框必现）；route abort 保留
+    // 作二道网（万一确认框未现，至少不真离开 origin）
+    page.on('dialog', (dialog) => {
+      dialog.dismiss().catch(() => {});
+    });
+    await page.evaluate(() => {
+      window.addEventListener('beforeunload', (e) => {
+        e.preventDefault();
+        e.returnValue = '';
+      });
+    });
+
+    // E 进站；溜出触发圈则低速回靠再按（boundingOut 收合 activeItem 的兜底）
     const deadline = Date.now() + 600_000;
     let interacted = false;
     while (Date.now() < deadline && !interacted) {
@@ -380,7 +394,7 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
       const hit = await pollDump(page, (d) => d.funnel.firstPoiInteract !== null, 10_000);
       interacted = hit.ok;
     }
-    expect(interacted, 'E 进站应记 world-poi（进站跳转已被 route 拦截取证）').toBe(true);
+    expect(interacted, 'E 进站应记 world-poi（beforeunload 取消跳转取证）').toBe(true);
     await page.screenshot({ path: 'test-results/obs-funnel-poi.png' });
 
     // ———— 取证与全量断言（§7 CITY-OBS-01 断言要点） ————
