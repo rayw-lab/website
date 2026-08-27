@@ -9,7 +9,7 @@
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98** · **视觉 98** · **功能 90** · **性能 85**（登记 **92.5/70**，Δ 见下） |
 | **指挥官约束** | 无 CC-CAM → 视觉登记封顶 **70**；**功能/性能须独立 rubric + 可观测证据登记** |
-| 生产 tip | `main` @ `5152c84`（登记 **92.5/70** · CAM-C1 [#45](https://github.com/rayw-lab/website/pull/45) 已合 · 待 AL-CAM） |
+| 生产 tip | `main` @ `88e1aec`（CAM-C1 已合 · 功能 rubric 正本 [#49](https://github.com/rayw-lab/website/pull/49) 待合） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -145,7 +145,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | CC-FXN-ADV | 已合 main | [FXN-ADV](bc-063957b8-f8d7-57f2-a1de-0486b94ff78e) | ✅ PR [#47](https://github.com/rayw-lab/website/pull/47) 已合 |
 | CC-FXN-RS | 已合 main | [FXN-RS](bc-c76a8773-232a-5259-9be1-b443c8b670f5) | ✅ PR [#48](https://github.com/rayw-lab/website/pull/48) 已合 |
 | CC-FXN-BR | 已合 main | [FXN-BR](bc-3484cd88-8f28-5a98-80a9-4ddcedaef026) | ✅ PR [#48](https://github.com/rayw-lab/website/pull/48) 已合 |
-| CC-FXN-DES | `cursor/cc-fxn-function-rubric-1d6f` | [FXN-DES](bc-436336c8-9fc8-5833-ae57-064e5eab2fc9) | 🔄 RUNNING |
+| CC-FXN-DES | PR [#49](https://github.com/rayw-lab/website/pull/49) | [FXN-DES](bc-436336c8-9fc8-5833-ae57-064e5eab2fc9) | ✅ IDLE · `cyber-city-function-rubric.md` v1.0 |
 | CC-OBS-DES | `cursor/cc-obs-observability-spec-1d6f` | [OBS-DES](bc-fecc56ff-7db5-577f-b0a8-0f9e4aab6b02) | 🔄 RUNNING |
 
 ### 合流序
@@ -153,7 +153,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | 步 | 内容 |
 |----|------|
 | ① | ✅ ADV [#47](https://github.com/rayw-lab/website/pull/47) + RS/BR [#48](https://github.com/rayw-lab/website/pull/48) 已合 |
-| ② | OBS 规格 + 功能 rubric 规格 |
+| ② | OBS 规格（[OBS-DES](bc-fecc56ff-7db5-577f-b0a8-0f9e4aab6b02) RUNNING）+ 功能 rubric [#49](https://github.com/rayw-lab/website/pull/49) 待合 |
 | ③ | CC-OBS-C1（SessionTimeline / 埋点 / `#debug`） |
 | ④ | CC-FXN-C1…（P0 交互，单 PR 单主题） |
 | ⑤ | CC-AL-FXN + 性能 human-gate 回填 |
