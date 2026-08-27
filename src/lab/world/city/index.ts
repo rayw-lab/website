@@ -26,6 +26,8 @@ import { CitySilhouette } from './CitySilhouette';
 import { Sky, SKY_ZENITH_COLOR, applyAtmosphereQuality } from './Sky';
 import { StreetProps } from './StreetProps';
 import { BuildingSigns } from './BuildingSigns';
+import { AdBoards } from './AdBoards';
+import { armSignageIgnition } from './SignageIgnition';
 import { StreetLamps } from './StreetLamps';
 import { FlightTrails } from './FlightTrails';
 import { applyNeonQuality } from './NeonFacade';
@@ -45,12 +47,23 @@ export interface City {
   sky: Sky;
   /** 街角霓虹隔离墩（CC-L1 A2：城市道具层，替换 spike 锥桶） */
   streetProps: StreetProps;
-  /** hero 五栋可读招牌：楼名全息板 + 立面灯箱（CC-L2-B1） */
+  /** hero 五栋三层招牌体系：楼顶主匾 + 楼身竖幅 + 街层产品线灯箱（CC-L2-B1 → CC-VIS-X3） */
   buildingSigns: BuildingSigns;
+  /** [CC-VIS-X3] 全息广告板 4 块（静帧零配额，产品线街面回声） */
+  adBoards: AdBoards;
   /** 街道灯杆 + 沿街广告灯箱 10 件（CC-L2-B2） */
   streetLamps: StreetLamps;
   /** 中远景飞行光轨 3 航线（CC-L3-B3：CITY-03 配额第 3 席，≤800 点） */
   flightTrails: FlightTrails;
+}
+
+export interface CityOptions {
+  /**
+   * [CC-VIS-X3] 首幕 stagger 点亮接线：true = 招牌黑板待燃，world-reveal 后
+   * 150ms 逐楼点亮（一次性瞬态）。仅 ?ritual=1 且非 reduced-motion 时开——
+   * 其余路径（?city=1 / ?poi= / reduced-motion 直出终态）缺省常亮。
+   */
+  revealStagger?: boolean;
 }
 
 /**
@@ -58,7 +71,7 @@ export interface City {
  * 统一释放几何/材质），物理件经 game.objects 注册（physics.free 统一释放）——
  * city 无独立 dispose，生命周期完全随 Game。
  */
-export function mountCity(game: Game): City {
+export function mountCity(game: Game, options: CityOptions = {}): City {
   const map = loadCityMap();
 
   const roads = new Roads(game, map);
@@ -70,8 +83,14 @@ export function mountCity(game: Game): City {
   const sky = new Sky(game);
   const streetProps = new StreetProps(game, map);
   const buildingSigns = new BuildingSigns(game, map);
+  const adBoards = new AdBoards(game);
   const streetLamps = new StreetLamps(game, map);
   const flightTrails = new FlightTrails(game);
+
+  // [CC-VIS-X3] stagger 点亮（楼序 = litChannels 距出生点近→远，广告板尾拍）
+  if (options.revealStagger) {
+    armSignageIgnition(game, [...buildingSigns.litChannels, adBoards.lit]);
+  }
 
   // CC-E4 地表升级：霓虹网格地面（湿地反射三档）接管 plaza 的地表职责——
   // plaza 对象保留（隐藏，回退开关），高度层 0.02 由 Grid 顶替（路面 0.1 仍在其上）
@@ -126,9 +145,12 @@ export function mountCity(game: Game): City {
       `；[CC-E4] 霓虹视觉系统就位：Quality ${game.quality.level} 档` +
       `（bloom/湿地反射/剪影密度/窗格动画四联动，?quality=0|1|2 或 #debug 句柄切档）` +
       `；[CC-L1] 天空穹顶+地平线辉光 · 窗色三族纪律 · 街角隔离墩 ${streetProps.spots.length} 只（锥桶已撤场）` +
-      `；[CC-L2 Tier B] hero 招牌 ${buildingSigns.buildingIds.length} 栋（全息板 + 立面灯箱 ${
+      `；[CC-VIS-X3] hero 招牌叙事 v2：${buildingSigns.buildingIds.length} 栋三层体系` +
+      `（楼顶主匾 + 楼身竖幅 ${buildingSigns.bannerCount} 幅 + 街层产品线灯箱 ${
         buildingSigns.panelFaceCount
-      } 面，占位箍带已替换）· 街道灯杆 ${streetLamps.spots.length} 杆（灯箱色族=路轴 neon 单源）` +
+      } 面，图集合并每栋 2 draw call）· 全息广告板 ${adBoards.spots.length} 块` +
+      `（静帧零配额，1 draw call）· stagger 点亮=${options.revealStagger ? 'reveal 后 150ms 逐楼' : '直出终态'}` +
+      ` · 街道灯杆 ${streetLamps.spots.length} 杆（灯箱色族=路轴 neon 单源）` +
       `· 剪影填充增密至 ${silhouette.instanceCount - silhouette.slotColliders.length}（高度方差三档）` +
       `；[CC-L3-ATM] 分层大气就位：双坡距离雾+近地雾床+方位辉光染雾（fogNode）· 地平线低云带（静态）` +
       `——Q0 全效/Q1 简化/Q2 线性雾兜底` +
@@ -148,6 +170,7 @@ export function mountCity(game: Game): City {
     sky,
     streetProps,
     buildingSigns,
+    adBoards,
     streetLamps,
     flightTrails,
   };
@@ -179,6 +202,14 @@ export {
 } from './Sky';
 export { StreetProps } from './StreetProps';
 export { BuildingSigns } from './BuildingSigns';
+export { AdBoards } from './AdBoards';
+export { armSignageIgnition } from './SignageIgnition';
+export {
+  composeAdBoardAtlas,
+  composeBuildingSignAtlas,
+  drawSignIcon,
+} from './SignageAtlas';
+export type { AtlasRegion, BuildingSignAtlas, SignIconKind } from './SignageAtlas';
 export { StreetLamps } from './StreetLamps';
 export { FlightTrails, setFlightTrails } from './FlightTrails';
 export {
@@ -187,7 +218,9 @@ export {
   createSilhouetteMaterial,
   createNeonGlowMaterial,
   createHologramBarrierMaterial,
+  createHoloAdBoardMaterial,
   createHoloSignMaterial,
+  createSignLitUniform,
   createSignPanelMaterial,
   createStreetLampMaterial,
 } from './NeonFacade';

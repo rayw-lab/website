@@ -16,6 +16,7 @@ import * as THREE from 'three/webgpu';
 import {
   Fn,
   abs,
+  attribute,
   cameraPosition,
   float,
   fract,
@@ -353,9 +354,36 @@ export function createNeonGlowMaterial(
   return material;
 }
 
+/**
+ * [CC-VIS-X3] 招牌点亮系数 uniform 工厂（stagger 逐楼点亮的一次性瞬态通道）：
+ * 每楼一支，楼内三层招牌材质共用——终态恒为 1（emissive 与未点亮版逐值恒等，
+ * R2 纪律：不改 threshold=1 与 strength，阈上/阈下归属由 intensity 常量决定）。
+ */
+export function createSignLitUniform() {
+  return uniform(1);
+}
+export type SignLitUniform = ReturnType<typeof createSignLitUniform>;
+
+/** [CC-VIS-X3] 图集子图区域（采样空间归一坐标，v 向下；SignageAtlas 同型别） */
+export interface SignAtlasRegion {
+  u0: number;
+  v0: number;
+  u1: number;
+  v1: number;
+}
+
 export interface SignPanelMaterialOptions {
   /** 文字 emissive 强度（>1 起 bloom 锚点） */
   intensity?: number;
+  /**
+   * [CC-VIS-X3] 图集模式：几何 uv 已预编码进采样空间（v 向下，BuildingSigns
+   * 编码），描边框/背光改走 uvLocal attribute（每 quad 0..1 本地 uv）——
+   * 多层招牌（街层灯箱 + 楼身竖幅）合并几何共用 1 材质 1 draw call 的前提。
+   * 缺省 false = 原单图行为逐值恒等（uv 全幅 + oneMinus 翻转口径不变）。
+   */
+  atlas?: boolean;
+  /** [CC-VIS-X3] stagger 点亮系数（缺省常亮 1；瞬态终值恒 1，见 createSignLitUniform） */
+  lit?: SignLitUniform;
 }
 
 /**
@@ -374,12 +402,18 @@ export function createSignPanelMaterial(
   const material = new THREE.MeshStandardNodeMaterial({ roughness: 0.45, metalness: 0.1 });
   material.colorNode = vec3(0.015, 0.016, 0.023);
   material.emissiveNode = Fn(() => {
-    const mask = texture(map, vec2(uv().x, uv().y.oneMinus())).r;
+    // [CC-VIS-X3] 图集模式：uv 直采（BuildingSigns 已编码采样空间）+ uvLocal 本地框
+    const local = options.atlas ? attribute<'vec2'>('uvLocal', 'vec2') : uv();
+    const mask = options.atlas
+      ? texture(map, uv()).r
+      : texture(map, vec2(uv().x, uv().y.oneMinus())).r;
     // 描边框：归一 Chebyshev 距离 0.88 处细环（灯箱金属框内衬霓虹管语义）
-    const cheb = max(uv().x.sub(0.5).abs().mul(2), uv().y.sub(0.5).abs().mul(2));
+    const cheb = max(local.x.sub(0.5).abs().mul(2), local.y.sub(0.5).abs().mul(2));
     const border = smoothstep(0.05, 0.015, cheb.sub(0.88).abs());
-    // 文字全强 + 描边半强 + 0.05 面板背光（灯箱面板整体微亮，非纯黑板）
-    return linearColorNode(hex).mul(mask.mul(intensity).add(border.mul(0.5)).add(0.05));
+    // 文字全强 + 描边半强 + 0.05 面板背光（灯箱面板整体微亮，非纯黑板）；
+    // lit = stagger 点亮系数（终值 1 = 逐值恒等；R2：threshold/strength 零涉及）
+    const emissive = linearColorNode(hex).mul(mask.mul(intensity).add(border.mul(0.5)).add(0.05));
+    return options.lit ? emissive.mul(options.lit) : emissive;
   })();
 
   return material;
@@ -390,6 +424,13 @@ export interface HoloSignMaterialOptions {
   phase?: number;
   /** 文字强度（默认 2.4，对齐被替换的占位箍带 bloom 档） */
   intensity?: number;
+  /**
+   * [CC-VIS-X3] 图集子图采样区域（采样空间归一坐标，v 向下）：楼顶主匾从整楼
+   * 招牌图集取行。缺省 = 全幅（(0,0)-(1,1) 时采样式与原 oneMinus 口径逐值恒等）。
+   */
+  region?: SignAtlasRegion;
+  /** [CC-VIS-X3] stagger 点亮系数（缺省常亮 1） */
+  lit?: SignLitUniform;
 }
 
 /**
@@ -406,6 +447,9 @@ export function createHoloSignMaterial(
 ): THREE.MeshBasicNodeMaterial {
   const intensity = options.intensity ?? 2.4;
   const phase = options.phase ?? 0;
+  // [CC-VIS-X3] 子图采样：region 缺省全幅时 su/sv 与原 vec2(x, 1-y) 逐值恒等
+  const { u0, v0, u1, v1 } = options.region ?? { u0: 0, v0: 0, u1: 1, v1: 1 };
+  const sampleUv = () => vec2(float(u0).add(uv().x.mul(u1 - u0)), float(v0).add(uv().y.oneMinus().mul(v1 - v0)));
 
   const material = new THREE.MeshBasicNodeMaterial({
     transparent: true,
@@ -415,17 +459,69 @@ export function createHoloSignMaterial(
   });
 
   material.colorNode = Fn(() => {
-    const mask = texture(map, vec2(uv().x, uv().y.oneMinus())).r;
+    const mask = texture(map, sampleUv()).r;
     // 静态全息扫描纹（fract 无时间项——滚动版归路障，此处不占动画配额）
     const scan = fract(uv().y.mul(26));
     const scanline = smoothstep(0.0, 0.35, scan).mul(smoothstep(1.0, 0.65, scan)).mul(0.25).add(0.75);
     const amp = float(0.18).mul(neonUniforms.flickerScale);
     const pulse = sin(neonTime.mul(0.9).add(phase)).mul(amp).add(float(1).sub(amp));
-    return linearColorNode(hex).mul(mask.mul(intensity).add(0.08)).mul(scanline).mul(pulse);
+    const color = linearColorNode(hex).mul(mask.mul(intensity).add(0.08)).mul(scanline).mul(pulse);
+    return options.lit ? color.mul(options.lit) : color;
   })();
   material.opacityNode = Fn(() => {
-    const mask = texture(map, vec2(uv().x, uv().y.oneMinus())).r;
-    return mask.mul(0.72).add(0.14); // 板底 0.14 若隐若现，文字段近实体
+    const mask = texture(map, sampleUv()).r;
+    const opacity = mask.mul(0.72).add(0.14); // 板底 0.14 若隐若现，文字段近实体
+    return options.lit ? opacity.mul(options.lit) : opacity;
+  })();
+
+  return material;
+}
+
+export interface HoloAdBoardMaterialOptions {
+  /** 文字强度（默认 2.2 阈上 bloom 锚点；板底/框沿恒阈下） */
+  intensity?: number;
+  /** [CC-VIS-X3] stagger 点亮系数（广告板作为点亮序列尾拍整组一支） */
+  lit?: SignLitUniform;
+}
+
+/**
+ * [CC-VIS-X3] 全息广告板材质（design-confirm §4.2 第三件：3-5 块，默认静帧
+ * 零循环动画配额——与楼顶全息板的区别即**零时间项**：无呼吸脉动、扫描纹静态；
+ * 轮播变体不在本批，须另过 R3 扩席裁决）。合并几何单材质单 draw call：
+ *   · 色相走每 quad 'signColor' attribute（线性空间预转换，AdBoards 按路轴从
+ *     neon-tokens 单源取青/品红——A3 纪律：非楼宇身份件不得用楼 neonColor）；
+ *   · uv 已预编码图集行（SignageAtlas.composeAdBoardAtlas），uvLocal 承担
+ *     板内扫描纹/描边框坐标。
+ */
+export function createHoloAdBoardMaterial(
+  map: THREE.Texture,
+  options: HoloAdBoardMaterialOptions = {},
+): THREE.MeshBasicNodeMaterial {
+  const intensity = options.intensity ?? 2.2;
+
+  const material = new THREE.MeshBasicNodeMaterial({
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+
+  material.colorNode = Fn(() => {
+    const local = attribute<'vec2'>('uvLocal', 'vec2');
+    const tint = attribute<'vec3'>('signColor', 'vec3');
+    const mask = texture(map, uv()).r;
+    // 静态扫描纹（无时间项）+ 描边框（holo 板同款 Chebyshev 细环）
+    const scan = fract(local.y.mul(22));
+    const scanline = smoothstep(0.0, 0.35, scan).mul(smoothstep(1.0, 0.65, scan)).mul(0.22).add(0.78);
+    const cheb = max(local.x.sub(0.5).abs().mul(2), local.y.sub(0.5).abs().mul(2));
+    const border = smoothstep(0.05, 0.015, cheb.sub(0.9).abs());
+    const color = tint.mul(mask.mul(intensity).add(border.mul(0.6)).add(0.07)).mul(scanline);
+    return options.lit ? color.mul(options.lit) : color;
+  })();
+  material.opacityNode = Fn(() => {
+    const mask = texture(map, uv()).r;
+    const opacity = mask.mul(0.66).add(0.16);
+    return options.lit ? opacity.mul(options.lit) : opacity;
   })();
 
   return material;
