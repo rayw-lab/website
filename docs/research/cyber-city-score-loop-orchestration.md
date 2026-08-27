@@ -9,7 +9,7 @@
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
 | **指挥官约束** | **无 CC-CAM 接入主线 → 视觉登记封顶 70**；CAM 为突破 70 的**必经门控** |
-| 生产 tip | `main` @ `ce5e280`（登记 **92.5/70**） |
+| 生产 tip | `main` @ `0066e19`（登记 **92.5/70**） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -48,9 +48,10 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 ### 通往 98（主线序 · 已拍板）
 
 1. **Loop 6 CC-CAM**（镜头/POI 单源 → **合 main**）— **当前主线**；无此步视觉 **≤70**
-2. BL2 栈 + CAM 镜头 → **CC-BL2-CAM 重审**（PR #43 待机，禁止先合）
-3. tone mapping（实模+机位到位后）
-4. poster 三面收口（**永远最后**；动 ritual_idle 须单独批次）
+2. **Loop 7 CC-VEH + CC-TRANS-FX**（驾驶 FPV + 变形粒子炫技）— 指挥官追加，与 CAM 驾驶 shot 对齐后集成
+3. BL2 栈 + CAM 镜头 → **CC-BL2-CAM 重审**（PR #43 待机，禁止先合）
+4. tone mapping（实模+机位到位后）
+5. poster 三面收口（**永远最后**；动 ritual_idle 须单独批次）
 
 ## Loop 6 — CC-CAM 镜头/POI 机位（🔄 主线 · 多路并行）
 
@@ -87,6 +88,44 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 - 未指定 `?shot=` 时 ritual_idle **逐字节恒等**（poster 合同）
 - concept-garage showcase shot：NDC 审计 **主体入帧**
 - 禁 free 漫游（G5）；禁动 poster（另批）
+
+## Loop 7 — 驾驶 FPV + 变形粒子炫技（🔄 指挥官追加 · 与 Loop 6 并行）
+
+| 项 | 内容 |
+|----|------|
+| 触发 | ① PUBG 式载具：**V 键** 第三人称 ↔ 车内第一人称 + 移动时焦点策略；② 机器人→车变形缺 **过程化粒子炫技**（现仅充能环+光幕） |
+| 入口 | `docs/research/cyber-city-vehicle-transform-experience.md` |
+| 模型 | **Fable5 xhigh** ×6（RS→DES→VIEW/IMPL→测试）→ 集成 **CC-VEH-C1** / **CC-TRANS-FX-C1** → 审计 Sol |
+| 依赖 | 驾驶 shot 与 Loop 6 `camera-shots.json` 对齐（`drive_third` / `drive_fpv`）；CAM-C1 合 main 后 VEH 集成减冲突 |
+| 登记 | 体验项；视觉登记仍须 **AL-CAM** 过 70 门；本 Loop 主攻 **V5 动效** + 驾驶 UX |
+
+### 子 Task（并行 · Fable5 xhigh）
+
+| ID | 分支 | Agent | 状态 |
+|----|------|-------|------|
+| CC-VEH-RS | `cursor/cc-veh-github-survey-1d6f` | 待派发 | 🔄 派发中 |
+| CC-VEH-DES | `cursor/cc-veh-camera-design-1d6f` | 待派发 | 🔄 派发中 |
+| CC-VEH-VIEW | `cursor/cc-veh-fpv-view-1d6f` | 待派发 | 🔄 派发中 |
+| CC-TRANS-FX-RS | `cursor/cc-trans-fx-research-1d6f` | 待派发 | 🔄 派发中 |
+| CC-TRANS-FX-DES | `cursor/cc-trans-fx-design-1d6f` | 待派发 | 🔄 派发中 |
+| CC-TRANS-FX-IMPL | `cursor/cc-trans-fx-impl-1d6f` | 待派发 | 🔄 派发中 |
+
+### 合流主线序
+
+| 步 | PR | 内容 |
+|----|-----|------|
+| ① | doc | RS 调研 ×2 + DES 规格 ×2（零 `src/` 可先合） |
+| ② | **CC-TRANS-FX-C1** | 变形窗粒子层（`TransformSystem` 节拍不变） |
+| ③ | **CC-VEH-C1** | V 键 FPV + focus 策略（`View.ts` + `Inputs` + `Player`） |
+| ④ | **CC-AL-TRANS-FX** / **CC-AL-VEH** | Sol 独立审计 + 时间维证据 |
+| ⑤ | 登记 | V5 专项门过门后更新诊断分（非生产视觉登记主路径） |
+
+### 硬门
+
+- e2e 52/52；LHCI 不降
+- 变形四拍 **1.0–1.2s** 墙钟不变；reduced-motion instant swap
+- `robot_idle` ritual 恒等；禁 free 漫游
+- CITY-03 配额：变形粒子须书面登记席位
 
 ## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流 · 待机至 Loop 6 后重审）
 
