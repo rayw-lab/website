@@ -168,6 +168,27 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | ④ | **CC-OBS-C2** ✅ [#57](https://github.com/rayw-lab/website/pull/57) · **CC-FXN-C2** ✅ [#56](https://github.com/rayw-lab/website/pull/56) · **CC-FXN-C1** [FXN-C1](bc-381d8d0c-46c4-5469-93dd-4ac3a6380a25) 🔄 |
 | ⑤ | CC-AL-FXN + 性能 human-gate 回填 |
 
+### Loop 8 功能链路交付矩阵（调研→实施）
+
+| 阶段 | 功能 | 性能 | 文档/状态 |
+|------|------|------|-----------|
+| 调研 RS | ✅ `cyber-city-gameplay-gap-audit.md` | 🔄 [PERF-RS](bc-23f6f84a-834f-561a-b326-7e086235d631) | 巨人肩膀 |
+| 脑暴 BR | ✅ `cyber-city-gameplay-features.md` | 🔄 [PERF-BR](bc-59fb04e6-1012-59ad-9b69-52b6803886f0) | 特性清单 |
+| 设计思考 ADV | ✅ `cyber-city-fxn-advisor-consult.md` | ⚠️ 顾问 §3 镜像 | 架构裁决 |
+| 设计确认 DES | ✅ `cyber-city-function-rubric.md` + OBS spec | 🔄 [PERF-DES](bc-11dc483e-8b4e-5368-83b4-58df3962fe23) | rubric 正本 |
+| 测试方案 | 🔄 [FXN-TEST](bc-85ec5dab-c8e7-577c-bd6f-7470dd9fa139) | 🔄 PERF-DES 含 CITY-PERF-01 | 四层分工 |
+| 开发 IMPL | 🔄 C1 · ✅ C2 · ✅ OBS-C1/C2 | ⏳ CITY-PERF-01 e2e 待 DES | 单 PR 单主题 |
+| 审计登记 | ⏳ CC-AL-FXN | ⏳ CC-AL-PERF + human-gate | 独立 Sol |
+
+### Loop 8 性能扩展子 Task（本 tick 新派 · Fable5 xhigh）
+
+| ID | Agent | 分支 | 状态 |
+|----|-------|------|------|
+| CC-PERF-RS | [PERF-RS](bc-23f6f84a-834f-561a-b326-7e086235d631) | `cursor/cc-perf-rs-survey-1d6f` | 🔄 |
+| CC-PERF-BR | [PERF-BR](bc-59fb04e6-1012-59ad-9b69-52b6803886f0) | `cursor/cc-perf-br-brainstorm-1d6f` | 🔄 |
+| CC-PERF-DES | [PERF-DES](bc-11dc483e-8b4e-5368-83b4-58df3962fe23) | `cursor/cc-perf-des-spec-1d6f` | 🔄 |
+| CC-FXN-TEST-DES | [FXN-TEST](bc-85ec5dab-c8e7-577c-bd6f-7470dd9fa139) | `cursor/cc-fxn-test-plan-1d6f` | 🔄 |
+
 ## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流 · 待机至 Loop 6 后重审）
 
 | ID | 分支 | PR | Agent | 状态 |
