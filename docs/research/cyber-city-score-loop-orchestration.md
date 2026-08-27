@@ -8,7 +8,8 @@
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
-| 生产 tip | `main` @ `d6c446d`（登记 **92.5/70**） |
+| **指挥官约束** | **无 CC-CAM 接入主线 → 视觉登记封顶 70**；CAM 为突破 70 的**必经门控** |
+| 生产 tip | `main` @ `426f8aa`（登记 **92.5/70**） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -44,18 +45,24 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 - **登记**：AL-BL1 独立 **70/92.5**（禁止用 BL1 自评登记）
 - **依赖调研单**：`ResourcesLoader.ts` · asset-ledger · `github-assets-research` Kenney CC0 · `gltf-transform` 一次性构建
 
-### 通往 98（顾问估 3–4 轮）
+### 通往 98（主线序 · 已拍板）
 
-BL2 沿街扩展（**PR #43 NO-GO 待机**）→ **CC-CAM 镜头/POI 多路** → tone mapping → poster 三面收口
+1. **Loop 6 CC-CAM**（镜头/POI 单源 → **合 main**）— **当前主线**；无此步视觉 **≤70**
+2. BL2 栈 + CAM 镜头 → **CC-BL2-CAM 重审**（PR #43 待机，禁止先合）
+3. tone mapping（实模+机位到位后）
+4. poster 三面收口（**永远最后**；动 ritual_idle 须单独批次）
 
-## CC-CAM — 3D 视角 / POI 机位（🔄 多路并行派发）
+## Loop 6 — CC-CAM 镜头/POI 机位（🔄 主线 · 多路并行）
 
 | 项 | 内容 |
 |----|------|
-| 根因 | ritual_idle 固定十字路口机位无法覆盖东向 hero 楼；`?poi=` 只改出生不改镜头 |
+| 目标 | 数据驱动 `camera-shots` + `?poi`/`?shot` 消费；解锁 V4 whole-frame / POI 展示帧 |
+| 根因 | ritual_idle 十字路口机位东向 hero 不可入帧；`?poi=` 仅改出生 |
 | 入口 | `docs/research/cyber-city-camera-poi-research.md` |
-| 模型 | **Fable5 xhigh** ×4 并行；审计待 **CC-AL-CAM**（Sol） |
-| PR #43 | **仍禁止合流**；相机批次与 BL2 解耦，过门后可 **CC-BL2-CAM 重审** |
+| 模型 | **Fable5 xhigh** ×4 并行 → 集成 **CC-CAM-C1** → 审计 **CC-AL-CAM**（Sol） |
+| 登记解锁 | AL-CAM GO/有条件放行后更新独立视觉分；**禁止用实现自评登记** |
+
+### 子 Task（并行）
 
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
@@ -63,6 +70,25 @@ BL2 沿街扩展（**PR #43 NO-GO 待机**）→ **CC-CAM 镜头/POI 多路** �
 | CC-CAM-DES | `cursor/cc-cam-shot-registry-design-1d6f` | [CAM-DES](bc-05fd2270-ca68-58c7-a2d1-51e136e167e2) | 🔄 RUNNING |
 | CC-CAM-DATA | `cursor/cc-cam-shot-data-probe-1d6f` | [CAM-DATA](bc-030bfcdd-043c-56ed-b2ca-9376e06b1615) | 🔄 RUNNING |
 | CC-CAM-VIEW | `cursor/cc-cam-view-poi-framing-1d6f` | [CAM-VIEW](bc-48fe6c93-f96f-595b-85bc-0da189dfdff0) | 🔄 RUNNING |
+
+### 合流主线序（父代理执行 · RS/DES 可先 doc-only 合 main）
+
+| 步 | PR | base | 内容 |
+|----|-----|------|------|
+| ① | doc | `main` | RS 调研 + DES schema（零 `src/`） |
+| ② | **CC-CAM-C1** | `main` | DATA `camera-shots.json` + NDC 探针 + VIEW 接线 + `?shot=` |
+| ③ | **CC-AL-CAM** | — | Sol 独立审计：NDC 入帧、e2e 52/52、ritual 恒等合同 |
+| ④ | 登记 | `main` | 审计独立分写入登记（仅 GO/有条件放行） |
+| ⑤ | CC-BL2-CAM | `cursor/cc-bl2-street-extension-1d6f` | CAM 镜头 + BL2 栈重审；过门后父代理合 PR #43 |
+
+### 硬门（CC-CAM-C1）
+
+- e2e **52/52**；LHCI `/`+`/home/` 不降
+- 未指定 `?shot=` 时 ritual_idle **逐字节恒等**（poster 合同）
+- concept-garage showcase shot：NDC 审计 **主体入帧**
+- 禁 free 漫游（G5）；禁动 poster（另批）
+
+## CC-CAM —（旧标题占位删除）
 
 ## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流）
 
@@ -73,7 +99,7 @@ BL2 沿街扩展（**PR #43 NO-GO 待机**）→ **CC-CAM 镜头/POI 多路** �
 | CC-AL-BL2 首次 | `cursor/cc-al-bl2-audit-1d6f` @ `7a5dffa`（已合 main） | — | [AL-BL2](bc-102414b6-9132-5de4-8de5-83580124910d) | ✅ NO-GO 71/92.8 |
 | CC-AL-BL2 复审 | `cursor/cc-al-bl2-audit-1d6f` @ **`8d8b604`** | — | [AL-BL2-R2](bc-57c16013-d459-513b-a2dc-7b622c1d00bc) | ✅ **NO-GO** 仍 **71/92.8**（V4=71<72） |
 
-报告：`docs/research/loop-bl2-audit.md` · `docs/research/loop-bl2-reaudit.md` · **登记不变**（仍 BL1 **70/92.5**）
+| 登记 | 仍 **70/92.5**；**须 Loop 6 CC-CAM 合 main 后才可突破 70** |
 
 ### AL-BL2 复审结论（`fcdfcb5` 候选）
 - 天际线/沿街整帧有像素变化，但 **work-gallery 固定帧仍无法读出完整新轮廓**（冠环被裁切）
