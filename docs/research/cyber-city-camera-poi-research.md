@@ -45,6 +45,7 @@
 - **anchor 类型**：`spawn` | `parkingBay` | `building` | `corridor` | `world`
 - **模式**：`ritual`（首幕恒等 poster 合同）| `poi`（深链）| `drive`（驾驶跟随，现有 View）
 - **审计**：每 shot 附带 `projectionAudit` 脚本输出 NDC 八角点
+- **已落地（CC-CAM-DATA）**：`src/data/camera-shots.json`（schemaVersion 1，四 shot）+ `tools/camera/audit-shot-ndc.mjs` NDC 八角点探针（复现见 `tools/camera/README.md`）。
 
 ### 3.2 多路产品功能（游戏化 POI）
 
