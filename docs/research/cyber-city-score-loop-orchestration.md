@@ -9,7 +9,7 @@
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
 | **指挥官约束** | **无 CC-CAM 接入主线 → 视觉登记封顶 70**；CAM 为突破 70 的**必经门控** |
-| 生产 tip | `main` @ `8ae872c`（登记 **92.5/70**） |
+| 生产 tip | `main` @ `1c337e0`（登记 **92.5/70**） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -68,7 +68,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
 | CC-CAM-RS | 已合 main | [CAM-RS](bc-115e402d-4831-5b34-9afd-3b050370bfd2) | ✅ PR [#44](https://github.com/rayw-lab/website/pull/44) 已合 |
-| CC-CAM-DES | `cursor/cc-cam-shot-registry-design-1d6f` @ `9201d5d` | [CAM-DES](bc-05fd2270-ca68-58c7-a2d1-51e136e167e2) | ✅ IDLE · 已并入 doc PR [#46](https://github.com/rayw-lab/website/pull/46) |
+| CC-CAM-DES | 已合 main | [CAM-DES](bc-05fd2270-ca68-58c7-a2d1-51e136e167e2) | ✅ PR [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | CC-CAM-DATA | `cursor/cc-cam-shot-data-probe-1d6f` @ `f8c46cb` | [CAM-DATA](bc-030bfcdd-043c-56ed-b2ca-9376e06b1615) | ✅ IDLE · 已并入 [#45](https://github.com/rayw-lab/website/pull/45) |
 | CC-CAM-VIEW | `cursor/cc-cam-view-poi-framing-1d6f` @ **`e44aa49`** | [CAM-VIEW](bc-48fe6c93-f96f-595b-85bc-0da189dfdff0) | ✅ **已 push** · 已并入 PR [#45](https://github.com/rayw-lab/website/pull/45) draft |
 
@@ -76,8 +76,8 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 | 步 | PR | base | 内容 |
 |----|-----|------|------|
-| ① | doc | `main` | RS 调研 ✅ [#44](https://github.com/rayw-lab/website/pull/44) 已合 + DES schema（待） |
-| ② | **CC-CAM-C1** | `main` | PR [#45](https://github.com/rayw-lab/website/pull/45) draft · **e2e ~36+/52 跑关中**（CITY-E2E-03 ✅） |
+| ① | doc | `main` | ✅ [#44](https://github.com/rayw-lab/website/pull/44)+[#46](https://github.com/rayw-lab/website/pull/46) 已合 |
+| ② | **CC-CAM-C1** | `main` | PR [#45](https://github.com/rayw-lab/website/pull/45) draft · CI ✅ · 本地 e2e ~38/52 跑关中 |
 | ③ | **CC-AL-CAM** | — | Sol 独立审计：NDC 入帧、e2e 52/52、ritual 恒等合同 |
 | ④ | 登记 | `main` | 审计独立分写入登记（仅 GO/有条件放行） |
 | ⑤ | CC-BL2-CAM | `cursor/cc-bl2-street-extension-1d6f` | CAM 镜头 + BL2 栈重审；过门后父代理合 PR #43 |
@@ -103,18 +103,18 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
-| CC-VEH-RS | `cursor/cc-veh-github-survey-1d6f` | [VEH-RS](bc-9d7c442e-24b0-5f6d-b962-578f8fc4069e) | 🔄 RUNNING（调研待 push） |
-| CC-VEH-DES | `cursor/cc-veh-camera-design-1d6f` @ `69eacc8` | [VEH-DES](bc-3a9962de-2214-5fc5-bc7d-48858b2bba98) | ✅ IDLE · 已并入 [#46](https://github.com/rayw-lab/website/pull/46) |
+| CC-VEH-RS | 已合 main | [VEH-RS](bc-9d7c442e-24b0-5f6d-b962-578f8fc4069e) | ✅ IDLE · [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
+| CC-VEH-DES | 已合 main | [VEH-DES](bc-3a9962de-2214-5fc5-bc7d-48858b2bba98) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | CC-VEH-VIEW | `cursor/cc-veh-fpv-view-1d6f` | [VEH-VIEW](bc-0f2b223e-fe77-56a6-b276-d4c92371d2ad) | 🔄 RUNNING |
-| CC-TRANS-FX-RS | `cursor/cc-trans-fx-research-1d6f` @ `d0aa3a4` | [TRANS-RS](bc-27662958-c425-5337-99fb-173b1bafbaf5) | ✅ IDLE · 已并入 [#46](https://github.com/rayw-lab/website/pull/46) |
-| CC-TRANS-FX-DES | `cursor/cc-trans-fx-design-1d6f` @ `8c82025` | [TRANS-DES](bc-ac0c5a7d-056f-527a-8180-b00a4d9e4bc3) | ✅ IDLE · 已并入 [#46](https://github.com/rayw-lab/website/pull/46) |
+| CC-TRANS-FX-RS | 已合 main | [TRANS-RS](bc-27662958-c425-5337-99fb-173b1bafbaf5) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
+| CC-TRANS-FX-DES | 已合 main | [TRANS-DES](bc-ac0c5a7d-056f-527a-8180-b00a4d9e4bc3) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | CC-TRANS-FX-IMPL | `cursor/cc-trans-fx-impl-1d6f` | [TRANS-IMPL](bc-c24bb880-b5a7-513d-8c17-343a86ea9e84) | 🔄 RUNNING |
 
 ### 合流主线序
 
 | 步 | PR | 内容 |
 |----|-----|------|
-| ① | doc | RS 调研 ×2 + DES 规格 ×2（零 `src/` 可先合） |
+| ① | doc | `main` | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合（含 VEH-RS） |
 | ② | **CC-TRANS-FX-C1** | 变形窗粒子层（`TransformSystem` 节拍不变） |
 | ③ | **CC-VEH-C1** | V 键 FPV + focus 策略（`View.ts` + `Inputs` + `Player`） |
 | ④ | **CC-AL-TRANS-FX** / **CC-AL-VEH** | Sol 独立审计 + 时间维证据 |
