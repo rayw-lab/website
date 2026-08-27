@@ -106,7 +106,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 |----|------|-------|------|
 | CC-VEH-RS | 已合 main | [VEH-RS](bc-9d7c442e-24b0-5f6d-b962-578f8fc4069e) | ✅ IDLE · [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | CC-VEH-DES | 已合 main | [VEH-DES](bc-3a9962de-2214-5fc5-bc7d-48858b2bba98) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
-| CC-VEH-VIEW | `cursor/cc-veh-fpv-view-1d6f` | [VEH-VIEW](bc-0f2b223e-fe77-56a6-b276-d4c92371d2ad) | 🔄 RUNNING |
+| CC-VEH-VIEW | `cursor/cc-veh-fpv-view-1d6f` @ **`d1565e6`** | [VEH-VIEW](bc-0f2b223e-fe77-56a6-b276-d4c92371d2ad) | 🔄 RUNNING · **FPV 代码+e2e 已 push** |
 | CC-TRANS-FX-RS | 已合 main | [TRANS-RS](bc-27662958-c425-5337-99fb-173b1bafbaf5) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | CC-TRANS-FX-DES | 已合 main | [TRANS-DES](bc-ac0c5a7d-056f-527a-8180-b00a4d9e4bc3) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | CC-TRANS-FX-IMPL | `cursor/cc-trans-fx-impl-1d6f` @ **`4320297`** | [TRANS-IMPL](bc-c24bb880-b5a7-513d-8c17-343a86ea9e84) | 🔄 RUNNING · **TransformParticles 已 push** |
@@ -142,7 +142,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 | ID | 分支 | Agent | 状态 |
 |----|------|-------|------|
-| CC-FXN-ADV | `cursor/cc-fxn-advisor-consult-1d6f` | [FXN-ADV](bc-063957b8-f8d7-57f2-a1de-0486b94ff78e) | 🔄 RUNNING |
+| CC-FXN-ADV | `cursor/cc-fxn-advisor-consult-1d6f` @ `6448442` | [FXN-ADV](bc-063957b8-f8d7-57f2-a1de-0486b94ff78e) | ✅ IDLE · doc PR 待发 |
 | CC-FXN-RS | `cursor/cc-fxn-gameplay-gap-audit-1d6f` | [FXN-RS](bc-c76a8773-232a-5259-9be1-b443c8b670f5) | 🔄 RUNNING |
 | CC-FXN-BR | `cursor/cc-fxn-gameplay-features-1d6f` | [FXN-BR](bc-3484cd88-8f28-5a98-80a9-4ddcedaef026) | 🔄 RUNNING |
 | CC-FXN-DES | `cursor/cc-fxn-function-rubric-1d6f` | 待派发 | ⏳ 待 ADV 后 |
