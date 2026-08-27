@@ -17,9 +17,34 @@ import type { Game } from '../core/Game';
 import type { WorldObject } from '../core/Objects';
 import type { Vec3Node } from '../rendering/MeshGridMaterial';
 import type { CyberCityMap } from './CityMap';
+import { createSeededRandom, hashStringToSeed } from './CityMap';
+import type { FacadeKit, FacadeKitPieceName, PieceTransform } from './FacadeKit';
 
 const BOLLARD_RADIUS = 0.22;
 const BOLLARD_HEIGHT = 1.15;
+
+/**
+ * [CC-VIS-X2] 街角道具带簇位（BR X2「垃圾箱/配电箱/自动售货亭 3-5 件同批」）：
+ * 路口四角 plaza 各一簇（隔离墩 ±13.6/±17.2 外侧对角带，北二簇入首幕近中景）+
+ * 主干道沿街二簇（work-gallery 北面 / edge-cloud-hub 南面——NDC 清单在册的驾驶
+ * 动线临街段）。全部让空泊车圈（最近 voice-pod bay (12,28) r6 距 11.3m）、斑马线
+ * 出口带与灯杆邻域；face = 簇朝向（售货亭正面朝路/路口）。
+ */
+const PROP_CLUSTERS: { x: number; z: number; face: number }[] = [
+  { x: 19.5, z: -19.5, face: (-3 * Math.PI) / 4 },
+  { x: -19.5, z: -19.5, face: (3 * Math.PI) / 4 },
+  { x: 19.5, z: 19.5, face: -Math.PI / 4 },
+  { x: -19.5, z: 19.5, face: Math.PI / 4 },
+  { x: 124, z: 25, face: Math.PI },
+  { x: -124, z: -25, face: 0 },
+];
+
+/** 道具碰撞半长宽高（本地系，y=半高；生成脚本 bbox 印证——README §碰撞） */
+const PROP_HALF: Record<'PropVending' | 'PropCabinet' | 'PropBin', [number, number, number]> = {
+  PropVending: [0.65, 1.14, 0.48],
+  PropCabinet: [0.8, 0.85, 0.4],
+  PropBin: [0.85, 0.53, 0.4],
+};
 
 /**
  * [CC-FXN-C2] 撞击判定（Rapier CONTACT_FORCE_EVENTS，Physics.getPhysical 既有接缝）：
@@ -139,6 +164,67 @@ export class StreetProps {
 
       this.game.scene.add(bodies, rings);
     }
+  }
+
+  /**
+   * [CC-VIS-X2] 街角道具带：套件 ready 后按 PROP_CLUSTERS 摆售货亭/配电箱/垃圾箱
+   * 三件套（每类 1 InstancedMesh = 3 draw call），碰撞体合 1 个 fixed 刚体经
+   * kit.registerBody 登记（Q2 与视觉同步 disable，防隐形墙）。零事件零循环动画
+   * （隔离墩 hitCount 语义不动；道具为纯静态障碍，OBS 白名单零改动）。
+   */
+  placeCornerProps(kit: FacadeKit): void {
+    void kit.ready.then((pieces) => {
+      if (!pieces) return;
+
+      const random = createSeededRandom(hashStringToSeed('x2-street-props'));
+      const byPiece = new Map<FacadeKitPieceName, PieceTransform[]>();
+      const colliders: {
+        shape: 'cuboid';
+        parameters: [number, number, number];
+        position: { x: number; y: number; z: number };
+        quaternion: { x: number; y: number; z: number; w: number };
+      }[] = [];
+
+      for (const cluster of PROP_CLUSTERS) {
+        // 簇内一字排开：售货亭居中、配电箱/垃圾箱分列两侧（沿墙向 = 朝向的右向）
+        const rx = Math.cos(cluster.face);
+        const rz = -Math.sin(cluster.face);
+        const line: [FacadeKitPieceName, number][] = [
+          ['PropVending', 0],
+          ['PropCabinet', 1.9],
+          ['PropBin', -1.8],
+        ];
+        for (const [name, along] of line) {
+          const rotY = cluster.face + (random() - 0.5) * 0.5;
+          const x = cluster.x + rx * along;
+          const z = cluster.z + rz * along;
+          let list = byPiece.get(name);
+          if (!list) byPiece.set(name, (list = []));
+          list.push({ x, y: 0, z, rotY });
+
+          const half = PROP_HALF[name as keyof typeof PROP_HALF];
+          const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, rotY, 0));
+          colliders.push({
+            shape: 'cuboid',
+            parameters: half,
+            position: { x, y: half[1], z },
+            quaternion: { x: q.x, y: q.y, z: q.z, w: q.w },
+          });
+        }
+      }
+
+      for (const [name, transforms] of byPiece) kit.addInstances(pieces, name, transforms);
+
+      const body = this.game.objects.add(null, {
+        type: 'fixed',
+        position: { x: 0, y: 0, z: 0 },
+        friction: 0.5,
+        restitution: 0.1,
+        category: 'object',
+        colliders,
+      });
+      kit.registerBody(body);
+    });
   }
 
   /** 8 个 cylinder 碰撞体合一个 fixed 刚体（Rapier cylinder(halfHeight, radius)） */
