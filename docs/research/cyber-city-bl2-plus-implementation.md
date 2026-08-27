@@ -187,9 +187,20 @@ pnpm dlx @gltf-transform/cli draco /tmp/bl2-asset/ConceptGarage-etc1s.glb public
 - 综合分口径（visual=71 时）：`node scripts/score-loop.mjs --visual-score 71` →
   92.8（e2e/LHCI/smoke 实测见 §7）。
 
-## 7. 复验结果（GLB 字节已变 → 全量门）
+## 7. 复验结果（GLB 字节已变 → 全量门，全部实跑于本 VM）
 
-〔跑完回填：astro check / build / audit-budget / 全量 e2e 52/52 / LHCI `/`+`/home/`〕
+| 门 | 命令 | 结果 |
+|---|---|---|
+| 类型检查 | `pnpm astro check` | **0 errors / 0 warnings**（132 文件，58 hints 均历史遗留） |
+| 构建 | `pnpm build`（quality-loop full 内） | OK |
+| 预算 | `node scripts/audit-budget.mjs` | **全部阻断级门禁 PASS**——public 9.1MB/40MB、world 资产池 5.5MB/12MB（含新 GLB 148,240B）、JS 86.0KB/900KB、受保护 14 页零 world 泄漏 |
+| e2e 全量 | `pnpm quality:loop:full`（五 project 链） | **52 passed / 0 failed（18.5m）**——含 VIS-01–04 视觉基线全绿：robot-idle 与 POI 近景基线零像素回归，与 §2/§5 的「零可归因变化」互证 |
+| LHCI | 同上（7 URL × 3 轮 collect + assert） | collect OK，assert **全过**；`/` 与 `/home/` 四项均值各 **100.0** |
+| 综合分 | `node scripts/score-loop.mjs`（读生产 visual=70，未改动） | **92.5/100**（LHCI 100×40% + e2e 100×20% + 视觉 70×25% + 冒烟 100×15%）；工件仅落 `test-results/quality-score.json`，生产 rubric JSON 零改动 |
+
+软门禁备注：WS-PERF-01 headless swiftshader p95 帧间隔 616.7ms ≥50ms 照例告警不阻断
+（本 VM 无 GPU，真机帧率归 human-gate 人工录测，与 AL-BL2 口径一致）。
+全程日志：`/opt/cursor/artifacts/bl2-plus-quality-loop-full.log`。
 
 ---
 
