@@ -145,7 +145,7 @@ Spike 的 60fps/30fps 门禁只能真机判定（人工录测脚本：`docs/spec
 
 ### 5.9 `e2e/cyber-city-perf.spec.ts` — 城市档性能证据包（CC-PERF-C1 追加 · 仅 city-perf-chromium project）
 
-**冻结正本 = `docs/spec/cyber-city-perf-test-plan.md`**（§2/§3 断言合同、§2.4 超时 600s、§2.5 evidence schema；秤与真机判定归 `docs/spec/cyber-city-perf-rubric.md`）。project 拓扑 = 案 B：`city-perf-chromium` 经 `dependencies: ['world-perf-chromium']` 殿后（project 间依赖是跨文件强序原语），`fullyParallel: false` 保文件内 01→02 按序；visual-chromium 依赖改指本 project。采样标定全抄 WS-PERF-01（横比前提），动作脚本与真机 rubric §4.1 行 1 同源（结构门 S4）。录像显式关闭。
+**冻结正本 = `docs/spec/cyber-city-perf-test-plan.md`**（§2/§3 断言合同、§2.5 evidence schema；秤与真机判定归 `docs/spec/cyber-city-perf-rubric.md`）。超时按 §2.4 起算、首轮 trace 实测重标定为 01=900s / 02=1200s（SwiftShader 满载下每个 CDP 动作 ~5-10s 往返开销，§3 环境事实 3 同源；偏差登记见 spec 文件头 + PR 描述）。project 拓扑 = 案 B：`city-perf-chromium` 经 `dependencies: ['world-perf-chromium']` 殿后（project 间依赖是跨文件强序原语），`fullyParallel: false` 保文件内 01→02 按序；visual-chromium 依赖改指本 project。采样标定全抄 WS-PERF-01（横比前提），动作脚本与真机 rubric §4.1 行 1 同源（结构门 S4）。录像显式关闭。
 
 - CITY-PERF-01 城市档证据包：生产 `/` 首访挂载 → robot_idle → CTA 变形 → 20s 同源驾驶脚本（2 急转 + 1 撞道具尝试 + 1 Shift boost，`boost-first` 互证）→ rAF 帧间隔采样（≥5s/≥6 帧封顶 45s）→ **硬断言 H1–H7**（状态机走通 / 速度 >2km/h / `fps().avg>0` + HUD 出数 / 采样 ≥6 帧 / 漏斗互证 / 零 pageerror / 证据 schema 自检）；**软门 p95<50ms 失败仅 annotation 不阻断**；证据 = `city-perf-evidence.jsonl` 全量行 + `session-dump-city-perf.json` 落盘/attach
 - CITY-PERF-02 Q2 存在腿：`/?quality=2` 深链 → `dump().env.quality===2` 机读证明 → 变形 → 驾驶 → driveTo 泊车圈（360s 预算，CITY-OBS-01 打法镜像）→ E 进站（route abort 跳转前取证）→ 漏斗七步非 null 单调不减 + `world-poi` 在档 + HUD 出数 + 零 pageerror；**不采样**（存在性腿）；证据 = jsonl 精简行（Q2 档 drawCalls/triangles 负载基线）

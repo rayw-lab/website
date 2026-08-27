@@ -19,6 +19,15 @@
 //   - 采样标定全抄 WS-PERF-01（≥5s 且 ≥6 帧、封顶 45s、stall 50ms）——两档同标定
 //     才可横比；动作脚本改抄真机 rubric §4.1 行 1（脚本同源 = 结构门 S4）；
 //   - 录像显式关闭（录屏吃 CPU 系统性拉低读数，WS-PERF-01 运行纪律）。
+//
+// 与冻结正本 §2.4 的显式偏差（实现事实所迫，PR 描述登记——CITY-OBS-C2 偏差登记先例）：
+//   超时 600s → CITY-PERF-01 900s / CITY-PERF-02 1200s。首轮实测（trace 逐 action
+//   计时）：挂载/robot_idle/car_ready 均在 §1.4 标定内，但 SwiftShader 满载下每个
+//   CDP 动作（键盘事件/evaluate/waitForTimeout）承担 ~5-10s 往返开销——冻结脚本的
+//   「20s 墙钟」实付 ~150-250s，§2.4 的 600s 推导未计入该系数（e2e-test-plan §3
+//   环境事实 3 同源现象）。01 实测需 ~700-750s；02 的 driveTo 腿改为逐腿 360s
+//   （CITY-OBS-01 实战跑绿的原口径——其单腿预算即 360s，§3「预算 360s」按腿计）。
+//   断言合同/脚本/采样标定/schema 零偏差；正本回改归 PERF-DES 升版（§7 版本纪律）。
 import { test, expect, type Page } from '@playwright/test';
 import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { u } from './helpers';
@@ -38,8 +47,8 @@ const SAMPLE_MIN_MS = 5_000;
 const SAMPLE_MIN_FRAMES = 6;
 const SAMPLE_CAP_MS = 45_000;
 const STALL_MS = 50;
-/** CITY-PERF-02 driveTo 腿预算（CITY-OBS-01 实战值复用，测试方案 §2.4） */
-const DRIVE_TO_BUDGET_MS = 360_000;
+/** CITY-PERF-02 driveTo 逐腿预算（CITY-OBS-01 实战值逐腿复用，文件头偏差注记） */
+const DRIVE_TO_LEG_BUDGET_MS = 360_000;
 
 /** 工件（观测规格 §6.1 冻结名；jsonl 行 schema = 测试方案 §2.5 v1） */
 const EVIDENCE_JSONL = 'test-results/city-perf-evidence.jsonl';
@@ -229,7 +238,8 @@ function assertEvidenceRow(specId: string, requiredPaths: string[]): Record<stri
 }
 
 /** 环境指纹（测试方案 §2.1 步 2：backend 取 __worldSpike.backend 实际值，防
- *  SwiftShader WebGPU 回退假象——webgpuAvailable: true ≠ 实际后端） */
+ *  SwiftShader WebGPU 回退假象——webgpuAvailable: true ≠ 实际后端）。
+ *  单次 evaluate 合并采集（满载下每次往返 ~5-10s，见文件头偏差注记）。 */
 async function captureEnv(page: Page): Promise<{
   userAgent: string;
   hardwareConcurrency: number;
@@ -239,19 +249,24 @@ async function captureEnv(page: Page): Promise<{
   backend: string;
   quality: number;
 }> {
-  const fingerprint = await page.evaluate(() => ({
-    userAgent: navigator.userAgent,
-    hardwareConcurrency: navigator.hardwareConcurrency,
-    devicePixelRatio: window.devicePixelRatio,
-    webgpuAvailable: 'gpu' in navigator,
-    viewport: { w: window.innerWidth, h: window.innerHeight },
-    backend: (window as unknown as { __worldSpike: { backend: string } }).__worldSpike.backend,
-  }));
-  const dump = await readDump(page);
-  return { ...fingerprint, quality: dump.env.quality };
+  return page.evaluate(() => {
+    const w = window as unknown as {
+      __worldSpike: { backend: string };
+      __worldSession: { dump(): { env: { quality: number } } };
+    };
+    return {
+      userAgent: navigator.userAgent,
+      hardwareConcurrency: navigator.hardwareConcurrency,
+      devicePixelRatio: window.devicePixelRatio,
+      webgpuAvailable: 'gpu' in navigator,
+      viewport: { w: window.innerWidth, h: window.innerHeight },
+      backend: w.__worldSpike.backend,
+      quality: w.__worldSession.dump().env.quality,
+    };
+  });
 }
 
-test.describe.configure({ mode: 'default', timeout: 600_000 });
+test.describe.configure({ mode: 'default', timeout: 1_200_000 });
 
 // 录像显式关闭（测试方案 §2.4 运行纪律；全局配置本就无录像，此处声明意图）
 test.use({ video: 'off' });
@@ -264,7 +279,7 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
   // → 互证读数 → 硬断言 H1–H7 → 证据落盘（jsonl 全量行 + dump 落盘 + 双 attach）。
   // ---------------------------------------------------------------------------
   test('CITY-PERF-01 城市档证据包：状态机全走 + 20s 同源驾驶脚本 + rAF 采样 + 漏斗互证；p95<50ms 软门（OBS 不阻断）', async ({ page }, testInfo) => {
-    test.setTimeout(600_000); // §2.4 冻结值（挂载 210 + robot_idle 120 + car_ready 120 + 驾驶/采样 65 + 余量）
+    test.setTimeout(900_000); // §2.4 600s + CDP 动作开销重标定（文件头偏差注记：首轮 trace 实测需 ~700-750s）
     const errors = trackErrors(page);
 
     // ① 入场：生产 `/` 无 URL 参数；Playwright 每用例全新 context = 清存储首访口径
@@ -333,10 +348,6 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
       const remaining = DRIVE_MS - (Date.now() - driveStart);
       if (remaining > 0) await page.waitForTimeout(remaining);
       const driveMs = Date.now() - driveStart;
-
-      // boost 互证：boost-first 沿检测事件应入 timeline（每会话至多 1 条）
-      const boosted = await pollDump(page, (d) => d.events.some((e) => e.type === 'boost-first'), 30_000);
-      expect(boosted.ok, 'Shift boost ≥1.5s 应打 boost-first 事件（脚本互证）').toBe(true);
 
       // ④ rAF 帧间隔采样（驾驶不间断，W 保持按住）：标定全抄 WS-PERF-01
       const sampling = await page.evaluate(
@@ -408,7 +419,9 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
       });
       expect(meter.fps.avg, 'H3 帧率仪表 avg 必须有读数').toBeGreaterThan(0);
 
-      // H5 漏斗互证：robotIdle/carReady/driveStart 非 null 且单调不减
+      // H5 漏斗互证：robotIdle/carReady/driveStart 非 null 且单调不减；
+      // 同一 dump 顺带互证 boost-first（脚本步 3 的 Shift boost 沿检测事件，
+      // Player tick 同步落账——采样 45s 窗后必然在档，免单独轮询往返）
       const dump = await readDump(page);
       const funnelLegs = ['robotIdle', 'carReady', 'driveStart'] as const;
       for (const leg of funnelLegs) {
@@ -416,6 +429,10 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
       }
       expect(dump.funnel.carReady!).toBeGreaterThanOrEqual(dump.funnel.robotIdle!);
       expect(dump.funnel.driveStart!).toBeGreaterThanOrEqual(dump.funnel.carReady!);
+      expect(
+        dump.events.some((e) => e.type === 'boost-first'),
+        'Shift boost ≥1.5s 应打 boost-first 事件（脚本互证）',
+      ).toBe(true);
 
       // 软门：p95 < 50ms（annotation + console.warn，不阻断——SwiftShader 恒预期失败，
       // 即失败路径每轮常驻实测；带 GPU 环境预期转绿）
@@ -536,7 +553,7 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
   // autodrive-lab 泊车圈 (28,-28) → E 进站（route abort 拦下 navigate，跳转前取证）。
   // ---------------------------------------------------------------------------
   test('CITY-PERF-02 Q2 存在腿：?quality=2 深链生效 + 变形驾驶进站核心路径全走 + 漏斗七步 + Q2 负载基线', async ({ page }, testInfo) => {
-    test.setTimeout(600_000); // §2.4 冻结值（挂载/变形同 01 + driveTo 腿 360s 预算）
+    test.setTimeout(1_200_000); // §2.4 600s + driveTo 逐腿 360s 重标定（文件头偏差注记；CITY-OBS-01 同动线 1500s 先例）
     const errors = trackErrors(page);
 
     // 进站目标 = autodrive-lab（parkingBay (28,-28) r6，deepLink /work/——出生 (0,0)
@@ -572,17 +589,14 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
       await page.keyboard.up('w');
     }
 
-    // ④ driveTo 泊车圈（360s 预算两腿分摊；途径点避开路口隔离墩，OBS-01 同款走位）
-    const driveToStart = Date.now();
-    const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 4, timeoutMs: DRIVE_TO_BUDGET_MS / 2 });
+    // ④ driveTo 泊车圈（逐腿 360s 预算，CITY-OBS-01 原口径；途径点避开路口隔离墩，
+    // OBS-01 同款走位）
+    const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 4, timeoutMs: DRIVE_TO_LEG_BUDGET_MS });
     expect(
       leg1.ok,
       `Q2 档途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`,
     ).toBe(true);
-    const leg2 = await driveTo(page, { x: 28, z: -28 }, {
-      radius: 4.5,
-      timeoutMs: DRIVE_TO_BUDGET_MS - (Date.now() - driveToStart),
-    });
+    const leg2 = await driveTo(page, { x: 28, z: -28 }, { radius: 4.5, timeoutMs: DRIVE_TO_LEG_BUDGET_MS });
     expect(
       leg2.ok,
       `Q2 档泊车位 (28,-28) 应可达（实测 x=${leg2.state.x.toFixed(1)} z=${leg2.state.z.toFixed(1)}）`,
