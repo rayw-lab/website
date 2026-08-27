@@ -167,17 +167,16 @@ async function readTelemetry(page: Page): Promise<{ state: SpikeState; fpsAvg: n
 /**
  * 遥测闭环路径导航（world-spike pollState 先例的转向扩展）：按住 W，每 0.5s 读
  * __worldSpike.state()，按当前途径点方位差压/放 A/D（rotationY 约定：正 = 左转 =
- * KeyA，Player.steering += 1 / PhysicsVehicle steeringTarget 正左）；直道
- * （方位差 < 0.35 且距目标 > 15m）加 Shift 助推，压缩所需游戏时间。
+ * KeyA，Player.steering += 1 / PhysicsVehicle steeringTarget 正左）；速度经
+ * 闭环帽控制（详见循环内注释），直道远段 Shift 助推压缩所需游戏时间。
  *
- * 时基纪律（上轮实测教训）：CI 负载抖动下帧率可跌破 1fps，Ticker maxDelta=1/30
+ * 时基纪律（多轮实测教训）：CI 负载抖动下帧率可跌破 1fps，Ticker maxDelta=1/30
  * 使游戏时间推进率 ≈ min(fps,30)/30 游戏秒/墙秒（10×+ 慢放）——一切「卡死」判定
  * 必须以游戏时间累计（fps 取 __worldSpike.fps() 实测），任何墙钟阈值在慢放下都是
- * 系统性误报（上轮 75s 位移阈值把正常起步误判成卡死，反复重生拽回原点）。
+ * 系统性误报（实测 75s 位移阈值把正常起步误判成卡死，反复重生拽回原点）。
  *   · 卡死 = 位移 < 2m 且 speedKmh < 5 持续 ≥ 8 游戏秒（速度条件与 fps 滑窗滞后
  *     解耦：慢放起步 1 游戏秒内速度即爬过 5，永不累计；顶墙车速≈0 才累计）
- *     → R 重生（回首幕出生锚点）并把路径重置回首途径点重走；
- *   · 终点途径点进近段（<9m）超速则松油 + 点刹（Space=brake），防高速穿圈滑出。
+ *     → R 重生（回首幕出生锚点）并把路径重置回首途径点重走。
  */
 async function navigate(
   page: Page,
@@ -246,11 +245,17 @@ async function navigate(
       const diff = wrapAngle(desired - state.yaw);
       const steer: 'a' | 'd' | null = diff > 0.12 ? 'a' : diff < -0.12 ? 'd' : null;
 
-      // 终点进近：超速则松油点刹（防穿圈滑出）；直道远段 Shift 助推；其余全油门
+      // 闭环速度控制（上轮实测教训：高速下最小转弯半径 > 触发圈，车绕目标公转
+      // 不收敛）：终点进近速度帽随距离线性收敛，急弯段一并限速压小转弯半径；
+      // 超帽 8 以上点刹，超帽即松油滑行；直道远段 Shift 助推压缩游戏时间
       const finalLeg = index === path.length - 1;
-      const overspeed = finalLeg && distance < 9 && state.speedKmh > 12;
-      const boost = !overspeed && distance > 15 && Math.abs(diff) < 0.35;
-      await setKeys(!overspeed, overspeed, boost, steer);
+      let speedCap = 50;
+      if (finalLeg) speedCap = Math.min(speedCap, Math.max(9, distance * 1.2));
+      if (Math.abs(diff) > 0.9) speedCap = Math.min(speedCap, 15);
+      const overspeed = state.speedKmh > speedCap + 8;
+      const throttleOn = state.speedKmh <= speedCap;
+      const boost = throttleOn && !finalLeg && distance > 20 && Math.abs(diff) < 0.3;
+      await setKeys(throttleOn, overspeed, boost, steer);
 
       // 游戏时基卡死自救：位移 + 速度双条件累计 → R 重生 + 路径重置
       if (Math.hypot(state.x - lastPos.x, state.z - lastPos.z) > 2) {
@@ -353,7 +358,7 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     // autodrive-lab 泊车位。卡死自救重生后回首途径点重走（重生点 = 首幕锚点 (0,0)）。
     const BAY_PATH: Waypoint[] = [
       { x: 0, z: -24, radius: 5 },
-      { x: 28, z: -28, radius: 4.5 },
+      { x: 28, z: -28, radius: 5.5 }, // POI 触发圈 r=6，5.5 = 圈内且留收敛余量
     ];
     const drive = await navigate(page, BAY_PATH, 1_800_000);
     expect(drive.ok, `泊车位 (28,-28) 应可达（实测 x=${drive.state.x.toFixed(1)} z=${drive.state.z.toFixed(1)}）`).toBe(true);
@@ -368,8 +373,8 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     let interacted = false;
     while (Date.now() < deadline && !interacted) {
       const s = await readSpike(page);
-      if (Math.hypot(28 - s.x, -28 - s.z) > 5.4) {
-        await navigate(page, [{ x: 28, z: -28, radius: 4 }], 480_000);
+      if (Math.hypot(28 - s.x, -28 - s.z) > 5.8) {
+        await navigate(page, [{ x: 28, z: -28, radius: 5 }], 480_000);
       }
       await page.keyboard.press('e');
       const hit = await pollDump(page, (d) => d.funnel.firstPoiInteract !== null, 10_000);
