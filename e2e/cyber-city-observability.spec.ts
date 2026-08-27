@@ -21,8 +21,8 @@ const PAGE_URL = u('/');
 const HOME_URL = u('/home/');
 const SPIKE_URL = u('/world-spike/');
 
-/** 状态机等待（cyber-city.spec.ts 同校准：SwiftShader 慢动作全链 ~75-110s） */
-const MOUNT_TIMEOUT = 210_000;
+/** 状态机等待（cyber-city.spec.ts 校准 ~75-110s + 并行 CI 负载挤兑余量） */
+const MOUNT_TIMEOUT = 300_000;
 
 const SEL = {
   host: '[data-world-host]',
@@ -311,7 +311,10 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
   //       导航请求保住 JS 上下文（页面原地存续），「跳转前取证」确定性成立。
   // ---------------------------------------------------------------------------
   test('CITY-OBS-01 漏斗全走 @funnel：ritual 动线 + V 往返 + R 重生 + 驾驶进 POI + E 进站取证', async ({ page }, testInfo) => {
-    test.setTimeout(2_700_000); // SwiftShader + CI 负载抖动：52m 闭环驾驶最坏 10×+ 慢放
+    // 时基纪律同 navigate 头注：robot_idle（ticker.wait 6 游戏秒）、变形仪式
+    // （~8 游戏秒）等游戏时间驱动的 DOM 状态在 10×+ 慢放下需 15-20 分钟墙钟——
+    // 等待值按最坏慢放放宽（expect 轮询即到即过，健康负载下不增加时长）
+    test.setTimeout(5_400_000);
     const errors = trackErrors(page);
 
     // 进站目标 = autodrive-lab（parkingBay (28,-28) r6，deepLink /work/——
@@ -321,25 +324,25 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     await page.goto(PAGE_URL);
     const host = page.locator(SEL.host);
     await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
-    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 120_000 });
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 900_000 });
 
-    // 变形仪式 → car_ready（CITY-E2E-03 同款校准）
+    // 变形仪式 → car_ready（CITY-E2E-03 同款动线；等待按慢放口径放宽）
     await page.locator(SEL.transform).click();
-    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 120_000 });
+    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 1_200_000 });
 
     // 驾驶接管（world-drive-start）
     await page.keyboard.down('w');
     try {
-      await expect(host).toHaveAttribute('data-world-state', 'driving', { timeout: 60_000 });
+      await expect(host).toHaveAttribute('data-world-state', 'driving', { timeout: 300_000 });
     } finally {
       await page.keyboard.up('w');
     }
 
     // V 往返 ×2：world-drive-view 覆盖（fpv → third 回位，动线其余段视角不变）
     await page.keyboard.press('v');
-    await expect(host).toHaveAttribute('data-drive-view', 'fpv', { timeout: 30_000 });
+    await expect(host).toHaveAttribute('data-drive-view', 'fpv', { timeout: 120_000 });
     await page.keyboard.press('v');
-    await expect(host).toHaveAttribute('data-drive-view', 'third', { timeout: 30_000 });
+    await expect(host).toHaveAttribute('data-drive-view', 'third', { timeout: 120_000 });
 
     // R 重生（reason 'key'）：出生点即首幕锚点，随后从原点起跑
     await page.keyboard.press('r');
@@ -419,7 +422,7 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
   // CITY-OBS-06 按 §6.2 多 dump 并集合并计分。
   // ---------------------------------------------------------------------------
   test('CITY-OBS-01b 锥桶补充取证：灰盒直线撞桩 → cone-hit 事件 + coneHits 计数互证', async ({ page }, testInfo) => {
-    test.setTimeout(1_500_000);
+    test.setTimeout(2_400_000);
     const errors = trackErrors(page);
 
     await page.goto(SPIKE_URL);
@@ -620,7 +623,7 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
   //       负腿在前（同 URL 仅变 hash 是 same-document 导航，经 about:blank 强制重挂载）。
   // ---------------------------------------------------------------------------
   test('CITY-OBS-05 #debug 面板：无 hash 零 debug 请求；有 hash 面板只读 + tail + 导出下载', async ({ page }) => {
-    test.setTimeout(900_000); // 两次完整 3D 挂载（负腿 + 正腿）
+    test.setTimeout(1_200_000); // 两次完整 3D 挂载（负腿 + 正腿）+ 负载挤兑余量
     const errors = trackErrors(page);
     const debugChunk = findDebugChunkName();
     const debugHits: string[] = [];
