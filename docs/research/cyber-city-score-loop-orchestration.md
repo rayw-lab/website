@@ -5,7 +5,7 @@
 | 编排者 | 父代理（只编排，不实现） |
 | 实现 | `claude-fable-5-thinking-xhigh` · 审计 `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
-| 生产 tip | `main` @ `bc6b8ae` |
+| 生产 tip | `main` @ `bad4f54` |
 | 更新 | 2026-08-27 · 瘦身版（历史 Loop 见 §归档） |
 
 ### 登记矩阵（**每 tick 首段必输出**）
@@ -23,31 +23,30 @@
 
 ## 当前焦点（Loop 8 · 功能 90 / 性能 85）
 
-**入口**：`docs/research/cyber-city-function-gameplay-loop.md` · e2e 基线 **64 用例 / 12 文件**
+**入口**：`docs/research/cyber-city-function-gameplay-loop.md` · e2e 合同 **67 用例 / 12 文件**（FXN-C1 已合）
 
 | 轨 | 阶段 | 状态 | 正本 |
 |----|------|------|------|
-| 功能 | RS→BR→ADV→DES→TEST→IMPL | C1/C2 + OBS ✅ · **C3 待派** · C4 未派 | `docs/spec/cyber-city-function-rubric.md` · `cyber-city-function-test-plan.md` |
-| 性能 | RS→BR→DES→TEST→IMPL | DES ✅ · **PERF-C1 待派** | `docs/spec/cyber-city-perf-rubric.md` · `cyber-city-perf-test-plan.md` · `cyber-city-perf-impl-plan.md` |
-| 驾驶 | VEH-C2 整改 | ✅ [#63](https://github.com/rayw-lab/website/pull/63) 已合 · **AL-VEH-R2 待审** | `docs/research/loop-veh-audit.md` |
+| 功能 | RS→BR→ADV→DES→TEST→IMPL | C1/C2 + OBS ✅ · **C3 [#65](https://github.com/rayw-lab/website/pull/65) CI** · C4 未派 | `cyber-city-function-test-plan.md` |
+| 性能 | RS→BR→DES→TEST→IMPL | DES ✅ · **PERF-C1 [#66](https://github.com/rayw-lab/website/pull/66) CI** | `cyber-city-perf-test-plan.md` |
+| 驾驶 | VEH-C2 + AL-VEH-R2 | C2 ✅ [#63](https://github.com/rayw-lab/website/pull/63) · R2 **NO-GO 6/7** [#67](https://github.com/rayw-lab/website/pull/67) doc | `loop-veh-r2-audit.md` |
 | 审计 | AL-FXN / AL-PERF | ⏳ IMPL 批次后 | 独立 Sol · 唯一登记出口 |
 
 ### 在途子 Task
 
 | ID | 分支 | 状态 |
 |----|------|------|
-| CC-AL-VEH-R2 | `cursor/cc-al-veh-r2-audit-1d6f` | 🔄 Sol · VEH-C2 [#63](https://github.com/rayw-lab/website/pull/63) 后重审 |
-| CC-PERF-C1 | `cursor/cc-perf-c1-e2e-1d6f` | 🔄 Fable5 · CITY-PERF-01/02 e2e（照 `perf-test-plan` §1.3 三处 config diff） |
-| CC-FXN-C3 | `cursor/cc-fxn-c3-poi-arrival-1d6f` | 🔄 Fable5 · POI 进站前奏 · CITY-PA-01…04 |
+| CC-AL-VEH-R2 | `cursor/cc-al-veh-r2-audit-1d6f` | ✅ [#67](https://github.com/rayw-lab/website/pull/67) **NO-GO 6/7**（缺 67/67 e2e 全绿） |
+| CC-PERF-C1 | `cursor/cc-perf-c1-e2e-1d6f` | 🔄 [#66](https://github.com/rayw-lab/website/pull/66) CI 跑 |
+| CC-FXN-C3 | `cursor/cc-fxn-c3-poi-arrival-1d6f` | 🔄 [#65](https://github.com/rayw-lab/website/pull/65) CI 跑 |
 | CC-AL-FXN | — | ⏳ C3 合流后或父代理拍板提前 |
 | CC-AL-PERF | — | ⏳ PERF-C1 + 真机六腿回填后 |
 
 ### 下一拍序
 
-1. **AL-VEH-R2** → 驾驶 UX 诊断分更新（非功能登记）
-2. **PERF-C1** [#PR 待开] → CI 五步链产 `city-perf-evidence.jsonl`
-3. **FXN-C3** → `shot-apply`/`shot-interrupt` 埋点转正
-4. **AL-FXN** / **AL-PERF** → 登记 JSON 落盘
+1. **#66 PERF-C1** + **#65 FXN-C3** → CI 绿则合 main（建议 PERF-C1 先合，FXN-C3 rebase）
+2. **#67 AL-VEH-R2** doc 可合 · 驾驶 GO 待 **67/67 e2e 全绿**（CAR-E2E-01/05 超时待修）
+3. **AL-FXN** / **AL-PERF** → IMPL 合流 + 真机后
 
 ---
 
