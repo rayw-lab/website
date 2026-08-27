@@ -7,7 +7,7 @@
 | 审计模型 | `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
-| 生产 tip | `main` @ 见 git tip |
+| 生产 tip | `main` @ `ad4e6cd` |
 
 ### 登记矩阵（**每次编排 Delta / 定时器回复必输出此表**）
 
@@ -15,7 +15,7 @@
 |------|--------|----------|---|------|
 | **综合** | **98** | **80** | +18 | 五维计分器（LHCI+e2e+视觉+smoke）；**不含**功能/性能维 |
 | **视觉** | **98** | **71** | +27 | AL-CAM 独立 · `cyber-city-visual-rubric-score.json` |
-| **功能** | **90** | **—** | +90 | **未登记** · 正本 `cyber-city-function-rubric.md` · **OBS-C1 合 main 后**方可 AL-FXN 登记 · F7 埋点硬门 |
+| **功能** | **90** | **—** | +90 | **未登记** · OBS-C1 [#53](https://github.com/rayw-lab/website/pull/53) 已合 · 待 AL-FXN 独立审计登记 |
 | **性能** | **85** | **—** | +85 | **未登记** · 运行时 FPS/帧时权威 = 真机 human-gate §5.4 · **与 LHCI 分立** · 正本见功能 rubric §7 |
 
 > **口径**：北极星四数 **98 / 98 / 90 / 85** 并列；生产登记只认审计独立分。**禁止**用 LHCI 或综合分冒充功能/性能。旧文案「登记 92.0/68」「综合 92.8」已作废。
@@ -117,10 +117,8 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 |----|------|-------|------|
 | CC-VEH-RS | 已合 main | [VEH-RS](bc-9d7c442e-24b0-5f6d-b962-578f8fc4069e) | ✅ IDLE · [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | CC-VEH-DES | 已合 main | [VEH-DES](bc-3a9962de-2214-5fc5-bc7d-48858b2bba98) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
-| CC-VEH-VIEW | `cursor/cc-veh-fpv-view-1d6f` @ **`d1565e6`** | [VEH-VIEW](bc-0f2b223e-fe77-56a6-b276-d4c92371d2ad) | 🔄 RUNNING · **FPV 代码+e2e 已 push** |
-| CC-TRANS-FX-RS | 已合 main | [TRANS-RS](bc-27662958-c425-5337-99fb-173b1bafbaf5) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
-| CC-TRANS-FX-DES | 已合 main | [TRANS-DES](bc-ac0c5a7d-056f-527a-8180-b00a4d9e4bc3) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
-| CC-TRANS-FX-IMPL | 待合 PR | [TRANS-IMPL](bc-c24bb880-b5a7-513d-8c17-343a86ea9e84) | ✅ IDLE · e2e 52/52 · `TransformParticles.ts` |
+| CC-VEH-VIEW | 已合 main | [VEH-VIEW](bc-0f2b223e-fe77-56a6-b276-d4c92371d2ad) | ✅ PR [#54](https://github.com/rayw-lab/website/pull/54) 已合 |
+| CC-TRANS-FX-IMPL | 已合 main | [TRANS-IMPL](bc-c24bb880-b5a7-513d-8c17-343a86ea9e84) | ✅ PR [#52](https://github.com/rayw-lab/website/pull/52) 已合 |
 
 ### 合流主线序
 
@@ -128,8 +126,8 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 |----|-----|------|
 | ① | doc | `main` | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合（含 VEH-RS） |
 | ② | **CC-TRANS-FX-C1** | ✅ PR [#52](https://github.com/rayw-lab/website/pull/52) 已合 |
-| ③ | **CC-VEH-C1** | V 键 FPV + focus 策略（`View.ts` + `Inputs` + `Player`） |
-| ④ | **CC-AL-TRANS-FX** / **CC-AL-VEH** | Sol 独立审计 + 时间维证据 |
+| ③ | **CC-VEH-C1** | ✅ PR [#54](https://github.com/rayw-lab/website/pull/54) 已合 |
+| ④ | **CC-AL-TRANS-FX** / **CC-AL-VEH** | ⏳ 待派 Sol |
 | ⑤ | 登记 | V5 专项门过门后更新诊断分（非生产视觉登记主路径） |
 
 ### 硬门
@@ -158,6 +156,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | CC-FXN-BR | 已合 main | [FXN-BR](bc-3484cd88-8f28-5a98-80a9-4ddcedaef026) | ✅ PR [#48](https://github.com/rayw-lab/website/pull/48) 已合 |
 | CC-FXN-DES | 已合 main | [FXN-DES](bc-436336c8-9fc8-5833-ae57-064e5eab2fc9) | ✅ PR [#49](https://github.com/rayw-lab/website/pull/49) 已合 |
 | CC-OBS-DES | 已合 main | [OBS-DES](bc-fecc56ff-7db5-577f-b0a8-0f9e4aab6b02) | ✅ PR [#51](https://github.com/rayw-lab/website/pull/51) 已合 |
+| CC-OBS-C1 | 已合 main | [OBS-C1](bc-e4a0b429-3131-5993-a53e-a69eb0e4bce4) | ✅ PR [#53](https://github.com/rayw-lab/website/pull/53) 已合 · e2e 52/52 |
 
 ### 合流序
 
@@ -165,8 +164,8 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 |----|------|
 | ① | ✅ ADV [#47](https://github.com/rayw-lab/website/pull/47) + RS/BR [#48](https://github.com/rayw-lab/website/pull/48) 已合 |
 | ② | ✅ rubric [#49](https://github.com/rayw-lab/website/pull/49) + OBS [#51](https://github.com/rayw-lab/website/pull/51) 已合 |
-| ③ | **CC-OBS-C1** — [OBS-C1](bc-e4a0b429-3131-5993-a53e-a69eb0e4bce4) 🔄 RUNNING · 已 push `1a79fee` |
-| ④ | CC-FXN-C1…（P0 交互，单 PR 单主题） |
+| ③ | ✅ OBS-C1 [#53](https://github.com/rayw-lab/website/pull/53) 已合 |
+| ④ | **CC-OBS-C2**（#debug + function-smoke）· **CC-FXN-C1** P0 交互 |
 | ⑤ | CC-AL-FXN + 性能 human-gate 回填 |
 
 ## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流 · 待机至 Loop 6 后重审）
@@ -178,7 +177,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | CC-AL-BL2 首次 | `cursor/cc-al-bl2-audit-1d6f` @ `7a5dffa`（已合 main） | — | [AL-BL2](bc-102414b6-9132-5de4-8de5-83580124910d) | ✅ NO-GO 71/92.8 |
 | CC-AL-BL2 复审 | `cursor/cc-al-bl2-audit-1d6f` @ **`8d8b604`** | — | [AL-BL2-R2](bc-57c16013-d459-513b-a2dc-7b622c1d00bc) | ✅ **NO-GO** 仍 **71/92.8**（V4=71<72） |
 
-| 登记 | 生产 **80/71**（综合/视觉）；功能/性能 **—** 待 OBS-C1 + AL-FXN；PR #43 **仍禁止合流** |
+| 登记 | 生产 **80/71**；功能/性能 **—** · OBS-C1 已合待 AL-FXN；PR #43 **仍禁止合流** |
 
 ### AL-BL2 复审结论（`fcdfcb5` 候选）
 - 天际线/沿街整帧有像素变化，但 **work-gallery 固定帧仍无法读出完整新轮廓**（冠环被裁切）
