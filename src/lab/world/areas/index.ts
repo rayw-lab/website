@@ -32,3 +32,5 @@ export type {
   InteractivePointItem,
   InteractivePointsOptions,
 } from './InteractivePoints';
+export { PoiArrival } from './PoiArrival';
+export type { PoiArrivalRequest } from './PoiArrival';

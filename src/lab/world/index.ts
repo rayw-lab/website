@@ -18,9 +18,11 @@
 //   shot=id   镜头预设深链（CC-CAM-VIEW）：仅与 ?poi= 组合生效——camera-shots.json
 //             注册表白名单校验后应用展示机位（poi 模式挂载即应用；ritual+poi 组合
 //             在 robot_idle 应用，最小可行口径——DES 规格定稿后可细化时机）；
-//             首个驾驶意图动作释放回玩家跟随。无 ?shot= 时 CameraShots 分包零字节
-//             且 View 零触碰（robot_idle 主帧与 main 逐字节一致——poster/VIS-03
-//             零漂移合同）。
+//             首个驾驶意图动作释放回玩家跟随。[CC-FXN-C3] 起 CameraShots 模块随
+//             areas 分包在挂 POI 时装载（PoiArrival 进站前奏复用换算单源）——
+//             「零字节」合同收窄为非城市路径；零漂移合同不变：无 ?shot= 且无进站
+//             交互时 View.applyShot 零调用（robot_idle 主帧与 main 逐字节一致——
+//             poster/VIS-03 合同）。
 //
 // CC-A2 M5：ritual 模式下 autoReveal=false，mount 不得 await 'revealed'（否则死锁）；
 // 输入放行由 TransformSystem 在 car_ready 帧 intro→driving 热切，ready = 首幕剧本已接管。
@@ -62,6 +64,7 @@ declare global {
         nippleProgress: number;
         view: string;
         fov: number;
+        shot: string | null;
       };
       fps: () => { avg: number; low1: number };
       info: () => { drawCalls: number; triangles: number };
@@ -223,7 +226,9 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   // CC-CAM-VIEW：?poi=&shot= 组合深链 → 应用 camera-shots.json 展示机位（白名单校验
   // 在 CameraShots 内单点裁决，名单外告警不阻断）。poi 模式挂载即应用（出生已在
   // parkingBay）；ritual+poi 组合此刻 state=robot_idle（最小可行口径）。
-  // 无 ?shot= 时本分包零字节、View.applyShot 零调用（零漂移合同）。
+  // [CC-FXN-C3] 注记：CameraShots 模块已随 areas 分包在挂 POI 时装载（PoiArrival
+  // 复用），本动态 import 复用同一 chunk；无 ?shot= 时 View.applyShot 仍零调用
+  // （零漂移合同不变，文件头 shot= 行同步收窄注记）。
   if (city && poiSlug !== null && shotId !== null) {
     const { applyCameraShot } = await import('./view/CameraShots');
     applyCameraShot(game, city.map, shotId);
@@ -349,6 +354,9 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       // fpv 基础档 = camera-shots.json drive_fpv.rig.fovDeg（切换帧即写，
       // reduced-motion 逐帧恰等）；third 恒为基线 42
       fov: game.view.camera.fov,
+      // [CC-FXN-C3] 当前生效 shot id（View.shotId 单源：?shot= 深链与 POI 进站
+      // 前奏共用；null = 玩家跟随）——e2e CITY-PA 断言口径
+      shot: game.view.shotId,
     }),
     fps: () => fps.read(),
     info: () => ({

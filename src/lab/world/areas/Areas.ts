@@ -10,8 +10,10 @@
 // （楼名标签 + E 键帽提示）。
 // ?poi= 深链（SRD §12.7.8 出口⑧ / CITY-09）：出生点改写为对应楼 parkingBay
 // （朝向楼门，SRD §12.7.5），光圈提亮高亮；无效 slug 告警并原地出生（不阻断）。
-// 进站动线为 CITY-08 Phase 1 先遣态：E/Enter/点按 → world-poi 事件 + 真实 URL
-// 直跳占位（overlay/View Transition 进站归 CC-P1）。
+// 进站动线（[CC-FXN-C3] CAM F1）：E/Enter/点按 → world-poi 事件 → PoiArrival 进站
+// 前奏（0.8s tween 至 poi_showcase-* 机位 + 0.4s 定帧 + shot-apply/shot-interrupt
+// 埋点）→ 真实 URL 直跳占位（overlay/View Transition 进站归 CC-P1）；注册表无
+// showcase 条目的楼保持 Phase 1 直跳（数据驱动开关，见 PoiArrival 头注）。
 import * as THREE from 'three/webgpu';
 import poisRaw from '../../../data/world-pois.json';
 import type { Game } from '../core/Game';
@@ -21,6 +23,7 @@ import { Zones } from '../world/Zones';
 import { RayCursor } from '../inputs/RayCursor';
 import { Area } from './Area';
 import { InteractivePoints } from './InteractivePoints';
+import { PoiArrival } from './PoiArrival';
 
 /** world-pois.json 条目（id 一经发布不变；buildingId 必须存在于 buildings JSON） */
 export interface WorldPoiEntry {
@@ -68,11 +71,14 @@ export class Areas {
   readonly config: WorldPoisConfig;
   readonly rayCursor: RayCursor;
   readonly points: InteractivePoints;
+  /** [CC-FXN-C3] 进站前奏控制器（E → tween → 定帧 → navigate；驾驶意图中断） */
+  readonly arrival: PoiArrival;
   readonly records: PoiRecord[] = [];
 
   constructor(game: Game, map: CyberCityMap, options: AreasOptions = {}) {
     this.game = game;
     this.config = poisRaw as unknown as WorldPoisConfig;
+    this.arrival = new PoiArrival(game, map);
 
     // Zones 底座兜底：Game.init 仅在 Rapier 就绪时建 zones（运动学回退档缺席）；
     // Zones 本身零物理依赖（只测 player.position 距离），此处按需补建。
@@ -136,13 +142,20 @@ export class Areas {
           entry.align === 'right' ? InteractivePoints.ALIGN_RIGHT : InteractivePoints.ALIGN_LEFT,
         onInteract: () => {
           const entryUrl = building.deepLink;
-          // 埋点通路占位（SRD §9.5 world-poi:{slug}；统计接线归 CITY-11/CC-P1）
+          // 埋点通路占位（SRD §9.5 world-poi:{slug}；统计接线归 CITY-11/CC-P1）——
+          // 交互帧即打（[CC-FXN-C3] 前奏不推迟取证：world-poi 先于 shot-apply 入账）
           game.events.trigger('world-poi', [building.id]);
           console.info(
             `[areas] world-poi:${building.id} → 进站 ${entryUrl}` +
-              `（CITY-08 Phase 1：真实 URL 直跳占位，overlay/View Transition 归 CC-P1）`,
+              `（[CC-FXN-C3] 前奏后直跳占位，overlay/View Transition 归 CC-P1）`,
           );
-          if (entry.action === 'navigate') location.assign(`${base}${entryUrl}`);
+          // [CC-FXN-C3] 进站前奏：有 showcase 条目走 tween+定帧后 navigate（驾驶输入
+          // 随时中断）；无条目楼由 PoiArrival 内部降级为 Phase 1 直跳
+          this.arrival.begin({
+            buildingId: building.id,
+            navigate:
+              entry.action === 'navigate' ? () => location.assign(`${base}${entryUrl}`) : null,
+          });
         },
       });
 
@@ -214,6 +227,7 @@ export class Areas {
 
   /** 纹理等非场景资源释放（几何/材质归 Game.dispose 场景遍历；zones/tick 随 Game 停摆） */
   dispose(): void {
+    this.arrival.dispose();
     this.points.dispose();
   }
 }

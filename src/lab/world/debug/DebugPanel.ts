@@ -120,7 +120,7 @@ export class DebugPanel {
     };
     row('state', 'state');
     row('driveView', 'drive-view');
-    row('shot', 'shot'); // CAM 合流前恒 —（§5.2 状态行留位）
+    row('shot', 'shot'); // [CC-FXN-C3] View.shotId（?shot= 深链 / POI 进站前奏共用遥测）
     row('fps', 'fps avg/1%');
     row('draws', 'drawCalls');
     row('tris', 'triangles');
@@ -173,9 +173,11 @@ export class DebugPanel {
         if (el && el.textContent !== text) el.textContent = text;
       };
 
-      // 状态行：host DOM 属性镜像（无 ritual / VEH 属性缺席时 —）；shot = CAM 留位
+      // 状态行：host DOM 属性镜像（无 ritual / VEH 属性缺席时 —）；shot =
+      // View.shotId 遥测（[CC-FXN-C3] 深链/进站前奏共用单源，无 shot 时 —）
       set('state', this.host?.getAttribute('data-world-state') ?? '—');
       set('driveView', this.host?.getAttribute('data-drive-view') ?? '—');
+      set('shot', game.view.shotId ?? '—');
 
       // 性能行：FpsMeter.read()（样本不足 avg=0 显示 —）+ renderer.info
       const reading = this.fps.read();
