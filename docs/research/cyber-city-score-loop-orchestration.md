@@ -7,9 +7,9 @@
 | 审计模型 | `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
-| 北极星 | 综合 **98** · **视觉 98** · **功能 90** · **性能 85**（登记 **92.5/70**，Δ 见下） |
-| **指挥官约束** | 无 CC-CAM → 视觉登记封顶 **70**；**功能/性能须独立 rubric + 可观测证据登记** |
-| 生产 tip | `main` @ 待登记（OBS [#51](https://github.com/rayw-lab/website/pull/51) 已合 · **OBS-C1 可派**） |
+| 北极星 | 综合 **98** · **视觉 98** · **功能 90** · **性能 85**（登记 **92.8/71**，Δ 见下） |
+| **指挥官约束** | CC-CAM 已合 main；**功能/性能须独立 rubric + 可观测证据登记** |
+| 生产 tip | `main` @ `68a5ea5`（视觉 **71** 待登记 JSON · OBS-C1 已派） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -80,7 +80,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | ① | doc | `main` | ✅ [#44](https://github.com/rayw-lab/website/pull/44)+[#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | ② | **CC-CAM-C1** | `main` | ✅ PR [#45](https://github.com/rayw-lab/website/pull/45) 已合 · e2e 52/52 · NDC 7/7 |
 | ③ | **CC-AL-CAM** | — | ✅ [AL-CAM](bc-a940fd9e-7869-57be-b1d9-990196d405c1) **GO** 独立视觉 **71** / 综合 **92.8** · 报告待合 |
-| ④ | 登记 | `main` | ⏳ GO 后父代理写入独立视觉分（**可破 70 封顶**） |
+| ④ | 登记 | `main` | 🔄 父代理写入 **71/92.8**（AL-CAM GO） |
 | ⑤ | CC-BL2-CAM | `cursor/cc-bl2-street-extension-1d6f` | CAM 镜头 + BL2 栈重审；过门后父代理合 PR #43 |
 
 ### 硬门（CC-CAM-C1）
@@ -109,7 +109,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | CC-VEH-VIEW | `cursor/cc-veh-fpv-view-1d6f` @ **`d1565e6`** | [VEH-VIEW](bc-0f2b223e-fe77-56a6-b276-d4c92371d2ad) | 🔄 RUNNING · **FPV 代码+e2e 已 push** |
 | CC-TRANS-FX-RS | 已合 main | [TRANS-RS](bc-27662958-c425-5337-99fb-173b1bafbaf5) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | CC-TRANS-FX-DES | 已合 main | [TRANS-DES](bc-ac0c5a7d-056f-527a-8180-b00a4d9e4bc3) | ✅ [#46](https://github.com/rayw-lab/website/pull/46) 已合 |
-| CC-TRANS-FX-IMPL | `cursor/cc-trans-fx-impl-1d6f` @ **`4320297`** | [TRANS-IMPL](bc-c24bb880-b5a7-513d-8c17-343a86ea9e84) | 🔄 RUNNING · **TransformParticles 已 push** |
+| CC-TRANS-FX-IMPL | `cursor/cc-trans-fx-impl-1d6f` @ **`e7f908b`** | [TRANS-IMPL](bc-c24bb880-b5a7-513d-8c17-343a86ea9e84) | 🔄 RUNNING · SwiftShader 调参 |
 
 ### 合流主线序
 
@@ -154,7 +154,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 |----|------|
 | ① | ✅ ADV [#47](https://github.com/rayw-lab/website/pull/47) + RS/BR [#48](https://github.com/rayw-lab/website/pull/48) 已合 |
 | ② | ✅ rubric [#49](https://github.com/rayw-lab/website/pull/49) + OBS [#51](https://github.com/rayw-lab/website/pull/51) 已合 |
-| ③ | **CC-OBS-C1**（SessionTimeline / 埋点 / `#debug`）— 规格合流后即可派 |
+| ③ | **CC-OBS-C1** — [OBS-C1](bc-e4a0b429-3131-5993-a53e-a69eb0e4bce4) 🔄 RUNNING |
 | ④ | CC-FXN-C1…（P0 交互，单 PR 单主题） |
 | ⑤ | CC-AL-FXN + 性能 human-gate 回填 |
 
@@ -167,7 +167,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | CC-AL-BL2 首次 | `cursor/cc-al-bl2-audit-1d6f` @ `7a5dffa`（已合 main） | — | [AL-BL2](bc-102414b6-9132-5de4-8de5-83580124910d) | ✅ NO-GO 71/92.8 |
 | CC-AL-BL2 复审 | `cursor/cc-al-bl2-audit-1d6f` @ **`8d8b604`** | — | [AL-BL2-R2](bc-57c16013-d459-513b-a2dc-7b622c1d00bc) | ✅ **NO-GO** 仍 **71/92.8**（V4=71<72） |
 
-| 登记 | 审计 **GO 71/92.8** 待登记（当前生产仍 **70/92.5**）；PR #43 **仍禁止合流**直至 CC-BL2-CAM |
+| 登记 | 生产 **71/92.8**（AL-CAM GO）；PR #43 **仍禁止合流**直至 CC-BL2-CAM |
 
 ### AL-BL2 复审结论（`fcdfcb5` 候选）
 - 天际线/沿街整帧有像素变化，但 **work-gallery 固定帧仍无法读出完整新轮廓**（冠环被裁切）
@@ -185,7 +185,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 ## 纪律
 
-- 登记只认审计独立分（当前 **70/92.5**）
+- 登记只认审计独立分（当前 **71/92.8** 待 JSON 落盘）
 - **禁止降级模型**；缺依赖先调研再实现
 - tone mapping **等 Blender 路径验证后再开**
 - poster 永远排批次最后
