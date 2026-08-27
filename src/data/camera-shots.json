@@ -3,7 +3,7 @@
   "task": "CC-CAM-DATA",
   "updatedAt": "2026-08-27",
   "sources": {
-    "design": "docs/research/cyber-city-camera-poi-research.md §3.1 草案（DES 规格 docs/spec/cyber-city-camera-shots.md 合入后对齐字段命名）",
+    "design": "docs/research/cyber-city-camera-poi-research.md §3.1 草案（DES 规格 docs/spec/cyber-city-camera-shots.md 合入后对齐字段命名）；drive_* 条目 = docs/spec/cyber-city-vehicle-camera.md §7.1 冻结字段（CC-VEH-C2 合流补录，§7.2 合流规则）",
     "buildings": "src/data/cyber-city-buildings.json",
     "cameraTruth": "src/lab/world/view/View.ts（city 档；ritual_idle 为其静止收敛态快照，本文件不改 View）",
     "audit": "tools/camera/audit-shot-ndc.mjs（复现命令见 tools/camera/README.md）"
@@ -117,6 +117,66 @@
           }
         ]
       }
+    },
+    "drive_third": {
+      "mode": "drive",
+      "status": "current-snapshot+proposal",
+      "anchor": { "type": "vehicle" },
+      "spherical": {
+        "phiDeg": 75,
+        "thetaDeg": 25,
+        "thetaDriftDeg": 1.1,
+        "radius": { "edges": { "min": 16, "max": 26 }, "baseRatio": 0.6, "nonIdealRatioOffset": 9 }
+      },
+      "lookAtHeight": 3.4,
+      "lateral": 4.2,
+      "dynamics": {
+        "speedSource": "focusPointSpeed",
+        "zoom": {
+          "status": "current-snapshot",
+          "speedAmplitude": -0.4,
+          "speedEdge": { "min": 4, "max": 24 },
+          "qualityGate": "Q0"
+        },
+        "lookahead": {
+          "maxDistance": 4.5,
+          "speedEdge": { "min": 3, "max": 20 },
+          "directionSmoothRate": 6,
+          "magnitudeSmoothRate": 4,
+          "steeringShrink": 0.45,
+          "steeringSmoothRate": 8,
+          "offsetRateClamp": 8,
+          "stateGate": "driving",
+          "reducedMotion": "off"
+        }
+      },
+      "notes": "驾驶第三人称 = ritual_idle 同一静态骨架（View city 跟随档），叠加 lookahead 加法通道（+0 恒等）。运行时消费方 = View.ts（构造期读 dynamics.lookahead，CC-VEH-C2 单源合流）；spherical/zoom 为现状快照文档字段，运行时以 View 既有件为准。steeringSmoothRate 为 spec §9.1 舵量低通 8 s⁻¹ 的加法补录（schemaVersion 1 可选字段）。无 projectionAudit：动态机位不做静态 NDC 审计，安全门走 spec §9/§11 e2e 运行时。"
+    },
+    "drive_fpv": {
+      "mode": "drive",
+      "status": "proposal",
+      "anchor": { "type": "vehicle" },
+      "rig": {
+        "offsetLocal": { "x": 0.35, "y": 0.55, "z": 0 },
+        "fovDeg": 58,
+        "fovKick": {
+          "maxDeg": 6,
+          "speedEdge": { "min": 8, "max": 24 },
+          "smoothRate": 3,
+          "reducedMotion": "off"
+        },
+        "attitudeTransfer": {
+          "yaw": 1,
+          "pitch": 0.7,
+          "roll": 0.35,
+          "pitchSmoothRate": 10,
+          "rollSmoothRate": 8,
+          "reducedMotion": { "pitch": 0, "roll": 0 }
+        },
+        "lookLock": "forward",
+        "nearClearanceMin": 0.15
+      },
+      "notes": "挡风前上沿机位（spec 裁决 D4：CarConcept 无内饰实模，hood cam 为诚实 V1）；offsetLocal 与 VEH-VIEW 实装校准值一致（spec §6.2 两条硬门口径）。运行时消费方 = View.ts（构造期读 rig，CC-VEH-C2 单源合流）；fovDeg 为 V 切换硬切基础档（spec §3 D3 / §10：切换帧立即写投影，reduced-motion 恒 58），fovKick 为唯一低通分量。"
     }
   }
 }
