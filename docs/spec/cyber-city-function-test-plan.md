@@ -103,15 +103,17 @@ scripts/score-loop.mjs ── northStar 只读汇总 ←────────
 | AL-FXN | F1/F5 取证增量：L3 腿录屏须含「淡出 → 再唤出 → 再淡出」完整往返 + dump `hint-dismissed{by}` 两种来路（timeout/input）各 ≥1 条 |
 | 埋点随行核对 | 若新增 type（如再唤出专用事件）：OBS §3.4 表同 PR 落行（ux 族）+ 本文件本行回填；只复用 hint-shown/hint-dismissed 则零表改 |
 
-### 3.3 CC-FXN-C3 POI 进站前奏（CAM F1 —— 依赖已解除，待派）
+### 3.3 CC-FXN-C3 POI 进站前奏（CAM F1 —— 实现 + e2e 随行 PR 交付）
 
 交付面（顾问 §4.2 行 4）：E 键 → 前奏 tween → showcase 定帧 → navigate；驾驶输入 0.1s 中断回 drive；`shot-apply{id}` / `shot-interrupt{by}` 埋点（OBS §3.4 camera 族预留行转正）。
 
+实现回填（本 PR 冻结口径）：控制器 = `src/lab/world/areas/PoiArrival.ts`（tween 0.8 / 定帧 0.4 游戏秒，design F1 值照抄；`Areas.onInteract` 接线）；**数据驱动开关** = 注册表存在 `poi_showcase-<buildingId>` 条目才有前奏，无条目楼保持 Phase 1 直跳（camera-shots.json 加条目即自动获得前奏，src 零改动）；换算/中断清单复用 `CameraShots.resolveShotPose`/`RELEASE_ACTIONS` 单源；**reduced-motion 冻结为「直切 showcase 定帧」**（tween 跳过，定帧驻留与 navigate 照常）；遥测 = `View.shotId` → `__worldSpike.state().shot` + `#debug` 面板 shot 行。
+
 | 层 | 新增断言 |
 |----|----------|
-| e2e | 新 spec `e2e/cyber-city-poi-arrival.spec.ts`，建议用例：**CITY-PA-01 前奏时序**——触发圈内按 E → dump 依序出现 `world-poi{id}` 与 `shot-apply{id}`（seq 序断言，禁时长阈值）→ route abort 拦下 navigate 请求（CITY-OBS-01 先例）→ 拦截点前 dump 已含上述两事件（「跳转前取证」合同延续）；**CITY-PA-02 驾驶中断**——前奏播放窗内压 W → dump 出现 `shot-interrupt{by:'drive'}` 且其 seq > 对应 `shot-apply`、`data-drive-view` 恢复驾驶视角、**不发生** navigate（route 断言零命中）——断因果序与终态，不断 0.1s 时长（§2-4）；**CITY-PA-03 reduced-motion**——前奏按 CAM 规格降级（定帧直出或跳过，以 C3 PR 冻结为准），核心进站路径可完成、`world-poi` 照常入 dump；**CITY-PA-04 恒等门**——robot_idle 期 E/前奏路径完全不可达（既有门禁复证） |
+| e2e | 新 spec `e2e/cyber-city-poi-arrival.spec.ts`：**CITY-PA-01 前奏时序**——触发圈内按 E → dump 依序出现 `world-poi{id}` 与 `shot-apply{id}`（seq 序断言，禁时长阈值）→ route abort 拦下 navigate 请求（CITY-OBS-01 先例）→ 拦截点前 dump 已含上述两事件（「跳转前取证」合同延续）+ `#debug` 腿定帧机位高度取证（showcase ≈34.6m ≫ 跟随档）；**CITY-PA-02 驾驶中断**——前奏播放窗内压 W → dump 出现 `shot-interrupt{by:'drive'}` 且其 seq > 对应 `shot-apply`、相机恢复驾驶跟随、**不发生** navigate（route 断言零命中）——断因果序与终态，不断 0.1s 时长（§2-4）。*建议稿偏差回填*：deep-link 非 ritual 腿无 Reveal 状态机（`data-drive-view` 属性缺席），相机恢复口径改用引擎遥测 `state().shot === null`；**CITY-PA-03 reduced-motion**——直切定帧（`shot-apply` 首次观测拍相机已在 showcase 高位 = 零 tween 状态证据），核心进站路径可完成、`world-poi` 照常入 dump；**CITY-PA-04 恒等门**——robot_idle 期 E/前奏路径完全不可达（既有门禁复证：零 `world-poi`/`shot-apply`/`shot-interrupt` + `state().shot` 恒 null） |
 | smoke | 分母零改动：`shot-apply`/`shot-interrupt` **不进** coverage 四项（§0-3）；漏斗 `firstPoiInteract` 语义不变（仍锚 `world-poi`） |
-| e2e 适配留痕 | CITY-OBS-01 的「E 进站 → 5s 内轮询 firstPoiInteract」段在前奏引入后时序拉长：若实测超窗，按 §2-1 适配（轮询窗放宽为事件驱动等待），PR 描述登记 + 本行回填 |
+| e2e 适配留痕 | 回填：CITY-OBS-01 的「E 进站 → 5s 内轮询 firstPoiInteract」**轮询窗零改动**——`world-poi` 仍在交互帧即打（前奏只推迟 navigate，不推迟取证）。实际适配点 = **route abort errorCode**：前奏把 navigate 推迟到 ticker 回调（E 的用户手势已过期），Playwright 默认 `route.abort()`（net::ERR_FAILED）对无手势主帧导航会**提交错误页销毁上下文**（本 PR 实测复现）；OBS-01 与 CITY-PA 用例一律显式 `route.abort('aborted')`（net::ERR_ABORTED 静默取消，页面原地存续），「跳转前取证」合同不变 |
 | playtest | rubric §4.4 条件腿「F4 进站前奏观察项」转正为 S-2 1:30–2:00 必测项；S-5 L1 深链腿增「`?shot=` 展示帧与进站前奏共用 shot 注册表」的一致性观察点 |
 | AL-FXN | F4 取证增量：进站段录屏须含前奏全程 + 中断一次（Pass A 观察「到达感」，Pass B 对 F4 90-100 锚「进站有前奏与到达感且落点正确」）；dump 引用 `shot-apply`/`shot-interrupt` seq |
 | 埋点随行核对 | OBS §3.4 camera 族两预留行转正（`shot-apply`/`shot-interrupt`），接线点随 C3 PR 落地——预留行机制下零版本变更 |
@@ -134,7 +136,7 @@ scripts/score-loop.mjs ── northStar 只读汇总 ←────────
 |------|------|----------|----------|------------|
 | FXN-C2 | ✅ 已合（#56） | F2 F3 | CITY-FB-01…06（3 用例，已入 64 基线） | S-2 驾驶段 / S-5 L2 确认层转全额候选 |
 | FXN-C1 | RUNNING | F1 F5 | CITY-GD-01…05（建议） | S-5 L3 转必过 |
-| FXN-C3 | 待派（依赖已解除） | F4 | CITY-PA-01…04（建议）+ OBS-01 适配留痕 | §4.4 前奏条件腿转正 |
+| FXN-C3 | 实现 + e2e 随行 PR 交付 | F4 | CITY-PA-01…04（已落 spec；OBS-01 适配 abort('aborted')，§3.3 留痕行回填） | §4.4 前奏条件腿转正 |
 | FXN-C4 | 待拍板 | F6 | CITY-GL-01…05（建议） | S-5 L7 转必测 |
 
 ---

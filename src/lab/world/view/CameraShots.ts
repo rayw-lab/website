@@ -6,9 +6,11 @@
 //   · 数据驱动预设镜头，不引入 camera-controls / 任何用户相机接管输入；
 //   · ?shot= id 白名单 = 注册表键集，名单外一律 console.warn + 原机位（?poi= 无效
 //     slug 同款不阻断口径）；
-//   · 本模块仅在 ?poi=&shot= 合法组合时被动态 import（接线见 src/lab/world/index.ts）
-//     ——未指定 shot 时 View.applyShot 零调用，robot_idle 主帧与 main 逐字节一致
-//     （poster 三面免重拍前提；VIS-03 基线合同）。
+//   · 消费面两处（[CC-FXN-C3] 起）：?poi=&shot= 合法组合时 index.ts 动态 import
+//     applyCameraShot；areas/PoiArrival（POI 进站前奏）静态 import resolveShotPose/
+//     RELEASE_ACTIONS——本模块随 areas 分包在挂 POI 时装载（纯代码装载零解算），
+//     无 ?shot= 且无进站交互时 View.applyShot 仍零调用，robot_idle 主帧与 main
+//     逐字节一致（poster 三面免重拍前提；VIS-03 基线合同）。
 // 释放（预设 → 玩家跟随）：首个驾驶意图动作（View.setFocusPoint 重吸附动作清单 +
 // nipplePointer 触屏摇杆）触发 View.releaseShot——取景参数恢复现场、焦点回归玩家，
 // 与既有「任何驾驶意图 → 相机重新吸附」机制同一节拍，非用户自由相机。
@@ -85,8 +87,12 @@ export interface CameraShotsConfig {
 
 const config = shotsRaw as unknown as CameraShotsConfig;
 
-/** 与 View.setFocusPoint 重吸附清单同源 + nipplePointer（触屏摇杆经 Player 侧路吸附） */
-const RELEASE_ACTIONS = ['forward', 'right', 'backward', 'left', 'boost', 'brake', 'respawn', 'nipplePointer'];
+/**
+ * 驾驶意图动作清单（与 View.setFocusPoint 重吸附清单同源 + nipplePointer 触屏摇杆
+ * 经 Player 侧路吸附）。[CC-FXN-C3] 导出给 areas/PoiArrival 复用：深链释放与进站
+ * 前奏中断共用同一份「什么算驾驶意图」裁决，防两处清单漂移。
+ */
+export const RELEASE_ACTIONS = ['forward', 'right', 'backward', 'left', 'boost', 'brake', 'respawn', 'nipplePointer'];
 
 const DEG_TO_RAD = Math.PI / 180;
 
@@ -125,6 +131,30 @@ export function resolveShotAnchor(
 }
 
 /**
+ * [CC-FXN-C3] 注册表条目 → View 位姿（度→弧度 + anchor 解析 + 斜距双形态归一）。
+ * ?shot= 深链与 POI 进站前奏共用的换算单源（防两处口径漂移）。
+ * 返回 null = anchor 引用未登记楼（调用侧告警/降级，不阻断）。
+ */
+export function resolveShotPose(shot: CameraShotEntry, map: CyberCityMap): ViewShotPose | null {
+  const anchor = resolveShotAnchor(shot.anchor, map);
+  if (!anchor) return null;
+
+  const radius =
+    typeof shot.spherical.radius === 'number'
+      ? { min: shot.spherical.radius, max: shot.spherical.radius }
+      : { min: shot.spherical.radius.edges.min, max: shot.spherical.radius.edges.max };
+
+  return {
+    anchor,
+    phi: shot.spherical.phiDeg * DEG_TO_RAD,
+    theta: shot.spherical.thetaDeg * DEG_TO_RAD,
+    radius,
+    lookAtHeight: shot.lookAtHeight,
+    lateral: shot.lateral,
+  };
+}
+
+/**
  * 应用 ?shot= 深链镜头：白名单校验 → anchor 解析 → View.applyShot，并在首个驾驶
  * 意图动作上一次性接线 View.releaseShot（预设让位玩家跟随，监听即拆）。
  * 返回 false = shot id 名单外或 anchor 不可解析（已告警，机位保持现状不阻断）。
@@ -149,8 +179,8 @@ export function applyCameraShot(game: Game, map: CyberCityMap, shotId: string): 
     return false;
   }
 
-  const anchor = resolveShotAnchor(shot.anchor, map);
-  if (!anchor) {
+  const pose = resolveShotPose(shot, map);
+  if (!pose) {
     console.warn(
       `[camera-shots] shot ${shotId} 的 anchor 不可解析（type=${shot.anchor.type}` +
         `${'buildingId' in shot.anchor ? `, buildingId=${shot.anchor.buildingId}` : ''}）；保持默认机位。`,
@@ -158,20 +188,8 @@ export function applyCameraShot(game: Game, map: CyberCityMap, shotId: string): 
     return false;
   }
 
-  const radius =
-    typeof shot.spherical.radius === 'number'
-      ? { min: shot.spherical.radius, max: shot.spherical.radius }
-      : { min: shot.spherical.radius.edges.min, max: shot.spherical.radius.edges.max };
-
-  const pose: ViewShotPose = {
-    anchor,
-    phi: shot.spherical.phiDeg * DEG_TO_RAD,
-    theta: shot.spherical.thetaDeg * DEG_TO_RAD,
-    radius,
-    lookAtHeight: shot.lookAtHeight,
-    lateral: shot.lateral,
-  };
-  game.view.applyShot(pose);
+  // [CC-FXN-C3] id 随位姿入 View.shotId 遥测（__worldSpike.state().shot / #debug shot 行）
+  game.view.applyShot(pose, shotId);
 
   // 首个驾驶意图 → 释放预设（一次性监听；总线随 Game.dispose 整体丢弃，无泄漏面）
   const releaseHandler = (action: { name: string }): void => {
@@ -184,8 +202,8 @@ export function applyCameraShot(game: Game, map: CyberCityMap, shotId: string): 
 
   console.info(
     `[camera-shots] shot 应用：${shotId}（${shot.mode}/${shot.status}）—— ` +
-      `anchor (${anchor.x}, ${anchor.z})，φ=${shot.spherical.phiDeg}° θ=${shot.spherical.thetaDeg}° ` +
-      `斜距 ${radius.min === radius.max ? `${radius.min}m 定值` : `${radius.min}–${radius.max}m 跟随档`}，` +
+      `anchor (${pose.anchor.x}, ${pose.anchor.z})，φ=${shot.spherical.phiDeg}° θ=${shot.spherical.thetaDeg}° ` +
+      `斜距 ${pose.radius.min === pose.radius.max ? `${pose.radius.min}m 定值` : `${pose.radius.min}–${pose.radius.max}m 跟随档`}，` +
       `视线高 ${shot.lookAtHeight}m，偏轴 ${shot.lateral}m` +
       (shot.notes ? `（${shot.notes}）` : ''),
   );

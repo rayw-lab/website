@@ -235,8 +235,12 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     const errors = trackErrors(page);
 
     // 进站目标 = autodrive-lab（parkingBay (28,-28) r6，deepLink /work/——
-    // 出生 (0,0) 朝北的最近顺路 POI）；abort 该导航请求防上下文销毁
-    await page.route('**/website/work/', (route) => route.abort());
+    // 出生 (0,0) 朝北的最近顺路 POI）；abort 该导航请求防上下文销毁。
+    // [CC-FXN-C3] 适配（function-test-plan §3.3 留痕行）：进站前奏把 navigate
+    // 推迟到 ticker 回调（E 的用户手势已过期），默认 abort（net::ERR_FAILED）
+    // 会提交错误页销毁上下文——显式 'aborted'（net::ERR_ABORTED 静默取消）
+    // 保住 JS 上下文，「跳转前取证」合同不变
+    await page.route('**/website/work/', (route) => route.abort('aborted'));
 
     await page.goto(PAGE_URL);
     const host = page.locator(SEL.host);

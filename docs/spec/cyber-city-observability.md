@@ -152,8 +152,8 @@ interface SessionDump {
 | poi | `world-poi` | `{id}` | 镜像 [id]→`{id}` · Areas onInteract | P0 |
 | poi | `deep-link` | `{poi, shot?}` | 显式 · index.ts 装配段（`?poi=` 非 null 时挂载即打；`shot` 字段 CAM PR #45 合流后由同点补传，字段加法不升版） | P0 |
 | camera | `world-drive-view` | `{mode}` | 镜像 [mode]→`{mode}` · **镜像表本 PR 即登记**，VEH-VIEW（`toggleDriveView`/KeyV）合流后事件自然入流，零补丁 | 预留 |
-| camera | `shot-apply` | `{id}` | 显式 · FXN-C3（CAM F1 进站运镜）落地时随行 | 预留 |
-| camera | `shot-interrupt` | `{by}` | 显式 · 同上（驾驶输入 0.1s 中断回 drive 处） | 预留 |
+| camera | `shot-apply` | `{id}` | 显式 · `areas/PoiArrival.begin()`（[CC-FXN-C3] E 进站前奏起帧：`world-poi` 之后同交互调用内 log，seq 序稳定；id = `poi_showcase-<buildingId>` 注册表键。预留行转正，零版本变更——§3.6-4） | P0 |
+| camera | `shot-interrupt` | `{by: 'drive'}` | 显式 · `areas/PoiArrival.interrupt()`（驾驶意图 RELEASE_ACTIONS 经 actionStart 同帧中断 = design F1「0.1s 内交还」上界；前奏中断与定帧后驾驶接管同一接线点。`by` 枚举当前仅 `'drive'`——未来来路属 data 加法） | P0 |
 | ux | `hint-shown` | — | 显式 · Reveal.showHint()（car_ready 自动浮现） | P0 |
 | ux | `hint-dismissed` | `{by: 'timeout' \| 'input'}` | 显式 · Reveal.hideHint() 两类调用点区分：HINT_FADE_DELAY 到期 → `'timeout'`；用户/状态收回（H/「键位」按钮收起、robot_idle/transforming）→ `'input'`。[CC-FXN-C1] 随行修订：driving 不再即隐——首驶重开一个完整阅读窗后走 `'timeout'` | P0 |
 | ux | `hint-recall` | `{via: 'key' \| 'button'}` | 显式 · Reveal.toggleHint()（键位卡再唤出：H/? 键 → `'key'`；`[data-world-hint-recall]` 按钮 → `'button'`）。[CC-FXN-C1] 随行加法（GAP-08 键位召回），schemaVersion 不动 | P0 |

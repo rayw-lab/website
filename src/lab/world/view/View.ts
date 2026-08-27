@@ -107,10 +107,17 @@ export class View {
 
   /**
    * [CC-CAM-VIEW] shot 预设应用前的取景现场（首次 applyShot 采集，releaseShot 恢复）。
-   * 零漂移合同：未指定 ?shot= 时 applyShot/releaseShot 均不被调用，本字段恒 null，
-   * update() 全程零改动——robot_idle 主帧与 main 逐字节一致（poster 免重拍前提）。
+   * 零漂移合同：未指定 ?shot= 且无 POI 进站交互时 applyShot/releaseShot 均不被调用，
+   * 本字段恒 null，update() 全程零改动——robot_idle 主帧与 main 逐字节一致
+   * （poster 免重拍前提）。
    */
   private shotBaseline: ShotBaseline | null = null;
+  /**
+   * [CC-FXN-C3] 当前生效 shot id 遥测（applyShot 携带、releaseShot 清空；null =
+   * 玩家跟随）。消费方 = __worldSpike.state().shot（e2e CITY-PA 断言口径）与
+   * #debug 面板 shot 行；纯读数不入任何解算路径（恒等合同零影响）。
+   */
+  shotId: string | null = null;
   /**
    * [CC-VEH-VIEW] 驾驶视角二态子状态机（spec §5.1）：
    * mode = third（默认；= 现状输出直通）| fpv（挡风机位 rig 解算，硬切 D3）；
@@ -601,13 +608,33 @@ export class View {
   }
 
   /**
+   * [CC-FXN-C3] 采集当前取景为 ViewShotPose（POI 进站前奏的 tween 起点帧）：
+   * 焦点取 smoothedPosition（跟踪/磁吸解算后的实际视点），其余为 spherical /
+   * lookAtHeight / framing.lateral 现值。纯读取零副作用（不改跟踪态/不触基线，
+   * 恒等合同不受影响）。
+   */
+  captureShotPose(): ViewShotPose {
+    return {
+      anchor: { x: this.focusPoint.smoothedPosition.x, z: this.focusPoint.smoothedPosition.z },
+      phi: this.spherical.phi,
+      theta: this.spherical.theta,
+      radius: { min: this.spherical.radius.edges.min, max: this.spherical.radius.edges.max },
+      lookAtHeight: this.lookAtHeight,
+      lateral: this.framing.lateral,
+    };
+  }
+
+  /**
    * [CC-CAM-VIEW] 应用数据驱动镜头预设（camera-shots.json → CameraShots.ts 解析产物）：
    * 焦点脱离玩家跟踪钉在锚点（磁吸同关，防镜头被玩家缓慢拉走）+ 球坐标/视线高/偏轴
-   * 整组改写。smoothedPosition 直写 = 深链帧零补间直达（挂载期应用，无在途镜头）。
-   * 玩家跟踪的回归走 releaseShot（CameraShots 在首个驾驶意图动作上接线）——
-   * 本方法不注册任何输入监听，不引入 camera-controls 用户接管（G5 红线）。
+   * 整组改写。smoothedPosition 直写 = 深链帧零补间直达（挂载期应用，无在途镜头；
+   * [CC-FXN-C3] 进站前奏逐帧传插值位姿 = tween 由调用方驱动，本方法语义不变）。
+   * 玩家跟踪的回归走 releaseShot（CameraShots 深链在首个驾驶意图动作上接线，
+   * PoiArrival 前奏在驾驶中断处接线）——本方法不注册任何输入监听，不引入
+   * camera-controls 用户接管（G5 红线）。
+   * @param id shot 遥测 id（[CC-FXN-C3]；写入 shotId，releaseShot 清空）
    */
-  applyShot(pose: ViewShotPose): void {
+  applyShot(pose: ViewShotPose, id: string | null = null): void {
     if (!this.shotBaseline) {
       this.shotBaseline = {
         phi: this.spherical.phi,
@@ -631,6 +658,7 @@ export class View {
     this.spherical.radius.edges.max = pose.radius.max;
     this.lookAtHeight = pose.lookAtHeight;
     this.framing.lateral = pose.lateral;
+    this.shotId = id;
 
     // 斜距变了 → 视野最优区（Objects 休眠圈 / RayCursor 命中圈）按新机位重算
     this.optimalArea.needsUpdate = true;
@@ -644,6 +672,7 @@ export class View {
     const baseline = this.shotBaseline;
     if (!baseline) return;
     this.shotBaseline = null;
+    this.shotId = null;
 
     this.spherical.phi = baseline.phi;
     this.spherical.theta = baseline.theta;
