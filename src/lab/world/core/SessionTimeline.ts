@@ -24,14 +24,26 @@ const RING_LIMIT = 500;
 /** pageerror message 截断长度（§3.4 error 族行） */
 const ERROR_MESSAGE_LIMIT = 200;
 
-type EventFamily = 'lifecycle' | 'ritual' | 'drive' | 'poi' | 'camera' | 'goal' | 'ux' | 'error';
+type EventFamily =
+  | 'lifecycle'
+  | 'ritual'
+  | 'drive'
+  | 'poi'
+  | 'camera'
+  | 'goal'
+  | 'perf'
+  | 'ux'
+  | 'error';
 
 /**
- * 事件白名单 v1（§3.4 冻结，31 type / 8 族；空格分隔紧凑编码控体积。
+ * 事件白名单 v1（§3.4 冻结，32 type / 9 族；空格分隔紧凑编码控体积。
  * [CC-FXN-C1] ux 族随行加法：hint-recall {via: 'key' | 'button'}——键位卡再唤出。
  * [CC-FXN-C4] goal 族随行加法（F6 探索计数 n/12）：explore-restore {n, total}
  * （localStorage 跨会话进度还原）· explore-progress {id, n, total}（首次发现某
  * POI 触发圈）· explore-complete {total}（全部探索点集齐）。
+ * [CC-PERF-C2-B1] perf 族随行加法（PERF-BR O1 自动降档取证）：quality-auto-drop
+ * {from, to, avg, low1}——装配段滞回窗触发点显式 log（仅 driving 态评估、
+ * 只降不升；`?quality=` 显式深链禁用自动档，事件不可能出现）。
  * 改动纪律（§3.6）：加法（新增 type / data 字段）同 PR 修订规格表、
  * schemaVersion 不动；破坏性（改名/删除/改语义）schemaVersion +1 且消费方同 PR 适配。
  */
@@ -42,6 +54,7 @@ const WHITELIST: Readonly<Record<EventFamily, string>> = {
   poi: 'poi-bounding-in poi-bounding-out world-poi deep-link',
   camera: 'world-drive-view shot-apply shot-interrupt',
   goal: 'explore-restore explore-progress explore-complete',
+  perf: 'quality-auto-drop',
   ux: 'hint-shown hint-dismissed hint-recall esc-menu-open idle-30s',
   error: 'pageerror context-lost',
 };

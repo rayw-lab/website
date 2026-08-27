@@ -7,6 +7,10 @@
 //      View.ts 域外禁入，速度感强化全走 DOM 通道）；
 //   ④ 翻车自救可视化倒计时（Player.rescueCountdown 镜像 → 倒计时数字 + 进度条 +
 //      「R 立即复位」提示，flipJump 重试自动回充）。
+// [CC-PERF-C2-B1] 追加第五件：
+//   ⑤ 自动降档 toast（PERF-BR O1 确认层——quality-auto-drop 事件的呈现面）：
+//      独立 chip（[data-world-quality]）不与 respawn toast 共元素，两类 toast
+//      并发时纵向堆叠互不覆盖（CITY-FB-02 断言面零竞态）。
 //
 // 纪律红线：
 //   · ritual_idle 恒等：样式层显式门控——host[data-world-state] 为 robot_idle /
@@ -22,6 +26,7 @@
 //   · pointer-events:none 全层穿透，不遮 CTA/HUD/摇杆热区。
 import { RESCUE_DELAY, type RespawnReason } from '../player/Player';
 import type { Game } from '../core/Game';
+import type { QualityLevel } from '../core/Quality';
 
 /** toast 驻留时长（设计秒，Ticker.delay 时基——暂停即冻结，SwiftShader 慢放同倍） */
 const TOAST_DURATION = 2.8;
@@ -42,12 +47,14 @@ export class DriveFeedback {
   private root!: HTMLElement;
   private collision!: HTMLElement;
   private toast!: HTMLElement;
+  private quality!: HTMLElement;
   private boost!: HTMLElement;
   private flip!: HTMLElement;
   private flipCount!: HTMLElement;
   private flipBar!: HTMLElement;
 
   private toastFade: { kill(): void } | null = null;
+  private qualityFade: { kill(): void } | null = null;
   private pulseFade: { kill(): void } | null = null;
   private boostActive = false;
   /** 倒计时显示缓存（0.1s 量化）：仅变化帧写 DOM，防 0.25s 节拍空写 */
@@ -81,6 +88,23 @@ export class DriveFeedback {
     this.toastFade?.kill();
     this.toastFade = this.game.ticker.delay(TOAST_DURATION, () => {
       this.toast.hidden = true;
+    });
+  }
+
+  /**
+   * ⑤ [CC-PERF-C2-B1] 自动降档 toast（PERF-BR O1 / R8「反馈闭环才算数」）：
+   * quality-auto-drop 同拍呈现，降档瞬间用户可归因（含 Q0→Q1 一次性阴影重编译尖峰
+   * ——BR O1 缓解案取「接受尖峰 + toast 归因」，留档见 index.ts 接线注记）。
+   */
+  qualityDropToast(to: QualityLevel): void {
+    if (this.disposed) return;
+    this.quality.textContent =
+      to >= 2 ? '帧率偏低 · 已切换省电画质' : '帧率偏低 · 已自动降低画质';
+    this.quality.hidden = false;
+    this.pop(this.quality);
+    this.qualityFade?.kill();
+    this.qualityFade = this.game.ticker.delay(TOAST_DURATION, () => {
+      this.quality.hidden = true;
     });
   }
 
@@ -123,6 +147,7 @@ export class DriveFeedback {
     if (this.disposed) return;
     this.disposed = true;
     this.toastFade?.kill();
+    this.qualityFade?.kill();
     this.pulseFade?.kill();
     // 壳 HUD 元素归壳所有：撤走本层挂的属性，不留残迹
     if (this.speedEl) delete this.speedEl.dataset.boost;
@@ -163,7 +188,13 @@ export class DriveFeedback {
     this.toast.dataset.worldToast = '';
     this.toast.hidden = true;
 
-    stack.append(this.collision, this.toast);
+    // ⑤ 自动降档 chip：样式全复用 .world-fb-chip（零新 CSS/零新关键帧，CITY-03 合规）
+    this.quality = document.createElement('p');
+    this.quality.className = 'world-fb-chip world-fb-quality';
+    this.quality.dataset.worldQuality = '';
+    this.quality.hidden = true;
+
+    stack.append(this.collision, this.toast, this.quality);
 
     this.boost = document.createElement('p');
     this.boost.className = 'world-fb-boost';

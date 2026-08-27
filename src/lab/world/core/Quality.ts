@@ -9,8 +9,11 @@
 // 经 opts.params → GameOptions.quality 注入构造器——本类不再兜底 location.search
 // （M4/M6 同款纪律：引擎只吃显式参数，壳负责白名单过滤）；
 // ② #debug 句柄 __worldSpikeGame.quality.changeLevel(n) 运行时热切。
-// 自动降档（连续 2s <30fps → 降 Quality 2 + toast，§5.3 触发条件行）依赖 FpsMeter
-// （CC-E2 文件域），接线归 Phase 1 装配段——本类的 changeLevel 即其调用面。
+// 自动降档（[CC-PERF-C2-B1] 已接线，PERF-BR O1）：装配段（src/lab/world/index.ts
+// HUD 节拍）读 FpsMeter 滑窗——滞回 3 设计秒（avg<30 或 low1<20）+ 20s 冷却 +
+// 只降不升逐档降到 2，经 changeLevel 驱动全链事件级切换 + DriveFeedback toast
+// 确认层 + quality-auto-drop 埋点；?quality= 显式深链禁用自动档。
+// 本类保持纯档位状态机（零帧率依赖），changeLevel 即自动档调用面。
 import { Events } from './Events';
 
 /** 0 = 桌面全效；1 = 移动/中端；2 = 止损档（实施方案 §5.3 三档表） */
