@@ -1,60 +1,60 @@
 {
   "schemaVersion": "1.1.0",
-  "score": 71,
+  "score": 73,
   "target": 85,
-  "subject": "CC-AL-CAM Loop 6 相机集成独立审计对象：PR #45 cursor/cc-cam-c1-integration-1d6f@e94159a merge 5152c84，审计 tip main@b2a59e4；camera-shots.json + ?poi/?shot= 消费接线 + NDC 探针，ritual 无-shot 恒等。",
+  "subject": "CC-AL-VIS-L8-W1 独立审计对象：main@dc3f56b（L8 W1 全合后 tip——X3 招牌叙事 v2 c0bb67a + X1A-R4 BL2-R2 鼓塔 dea7c1e/#92 + TRANS-FX 粒子层 + VEH FPV + FXN C1–C6 HUD 随行）；比较基线 = 上次生产登记 main@b2a59e4（CC-AL-CAM 71）。",
   "rubric": "docs/research/cyber-city-visual-rubric.md",
   "scoredAt": "2026-08-27",
-  "scoredBy": "CC-AL-CAM 独立审计（gpt-5.6-sol-xhigh-fast；报告 docs/research/loop6-cam-audit.md；沿用 rubric v1.1 原秤，只计相机本批可归因收益）",
+  "scoredBy": "CC-AL-VIS-L8-W1-R3 独立审计（claude-fable-5-thinking-xhigh；报告 docs/research/loop8-vis-w1-audit.md；沿用 rubric v1.1 原秤，帧优先铁律，只计 b2a59e4..dc3f56b 可归因收益）",
   "evidence": {
-    "protocolA": "PR #45 exact 集成分支 e2e 52/52；NDC tools/camera/audit-shot-ndc.mjs 7/7 PASS；concept-garage showcase 8/8 角入帧；无-shot ritual 注册值与 View 合同逐值相等；G5 第一次 W 释放 shot；LHCI / 与 /home/ 四分类三轮中位数全 100 delta 0；public/posters/ merge 前后 blob id 一致。",
-    "protocolB": "fresh ?poi=concept-garage&shot=poi_showcase-concept-garage 整楼入帧；no-shot robot_idle 与 poster 合同不变。",
-    "crossChecks": "git diff e94159a..b2a59e4 -- src e2e playwright.config.ts package.json 为 0；审计 tip 与 52/52 runtime tree 相同。",
-    "delta": "CC-AL-BL1 独立 raw 70.20 → CC-AL-CAM 独立 raw 70.50（+0.30）；整数 70 → 71；V4 70 → 72。"
+    "protocolB": "worktree fresh `pnpm install --frozen-lockfile && pnpm build`（EXIT=0）+ 隔离 preview :4335；F1 robot_idle 首幕帧 + F2 ?poi=work-gallery settled 整帧（1440×900，visibilitychange(hidden) 暂停后截帧），入库 docs/research/assets/visual-rubric/l8w1-*.webp。",
+    "probes": "F2 会话 Q0 双 hero GLB 请求（AutodriveLab.glb + ConceptGarage.glb）实测在案；页面 chunk hash 与 dist 逐一对上（防串台核对，见报告 §2 取证事故与更正）。",
+    "crossChecks": "score JSON 自 c5b80e6（CAM 71）后无中间登记；X1a H1 鼓塔组合轮廓（弧形鼓身/横向光带/屋顶阶差）整帧直读，放大裁切仅辅助；D10 潜分收账在本轮唯一执行。",
+    "delta": "CC-AL-CAM 独立 raw 70.50 → CC-AL-VIS-L8-W1 独立 raw 72.60（+2.10）；整数 71 → 73。"
   },
   "dimensions": {
     "v1FirstFrame": {
       "label": "首幕构图与第一印象",
       "weight": 0.2,
-      "score": 65,
-      "evidence": "无-shot robot_idle 与 poster 合同不变；showcase 为 opt-in POI 帧，不冒充首幕 definitive shot。"
+      "score": 68,
+      "evidence": "F1：机器人焦点 + 招牌中景（MASTER AGENT 主匾/楼身竖幅帧内直读）+ 剪影/雾/地平线辉光远景 ≥3 层纵深，落 70-85 段下沿；poster 未重拍、definitive shot 仍缺，压回 68。"
     },
     "v2LightingMaterial": {
       "label": "光照·材质·后处理",
       "weight": 0.2,
-      "score": 74,
-      "evidence": "相机未新增材质、光照或后处理；维持 BL1 后 POI 帧 KTX2/PBR 收益。"
+      "score": 75,
+      "evidence": "光照/后处理域本窗口零改动（X4 未动）；F2 第二栋 hero GLB 的 KTX2/PBR 展厅玻璃与鼓身发光带入 POI 帧，湿地反射清晰（+1）。"
     },
     "v3PaletteAtmosphere": {
       "label": "色彩体系与氛围一致性",
       "weight": 0.15,
-      "score": 69,
-      "evidence": "色板与明暗节奏不变。"
+      "score": 70,
+      "evidence": "招牌/广告板色族走 neon tokens 单源，逐楼语义色一致（F1 紫匾/F2 蓝幅）；同帧仍有青+红+暖白+紫+橙多族并置，色相纪律及格未精修。"
     },
     "v4SceneDensity": {
       "label": "场景密度与世界可信度",
       "weight": 0.15,
-      "score": 72,
-      "evidence": "poi_showcase-concept-garage 首次让 concept-garage 完整楼体、立面、楼名牌、道路与 POI 圈在同帧可读；8/8 NDC 闭合此前裁切缺口。楼体仍为程序化盒体，细节不足，止于 70–85 段下部。"
+      "score": 74,
+      "evidence": "X1a：F2 整帧直读鼓身弧面+横向光带+屋顶阶差组合（H1 过，72–75 门内取 74 下沿口径）；X3：三层招牌体系 5 栋 + 广告板使 3D 认楼不再靠 DOM（F1/F2 文字均帧内可读）。"
     },
     "v5MotionTransition": {
       "label": "动效与转场工艺",
       "weight": 0.15,
-      "score": 70,
-      "evidence": "shot 为挂载期直切；无 tween 或新镜头运动。"
+      "score": 74,
+      "evidence": "D10 潜分收账（唯一执行）：按 AL-TRANS-FX GO 建议复评 74——变形粒子四拍 + C3 进站 tween + X3 stagger 150ms 逐楼点亮 + FPV V 键双视角；镜头运动打磨仍缺，不越 74。"
     },
     "v6UiHudIntegration": {
       "label": "DOM UI/HUD 视觉整合",
       "weight": 0.1,
-      "score": 73,
-      "evidence": "DOM/HUD/poster 未改。"
+      "score": 74,
+      "evidence": "F1/F2：HERO TOWERS 常驻面板 + 探索 chip 1/12 + 下一站 quest chip + 速度表 + POI 立体标牌同族霓虹语言（+1）；系统字体栈未个性化。"
     },
     "v7ThematicOriginality": {
       "label": "主题原创性与叙事贴合",
       "weight": 0.05,
-      "score": 75,
-      "evidence": "专用取景提高可见性，无新增叙事物件。"
+      "score": 78,
+      "evidence": "「楼=产品线」由 X3 产品线图标灯箱 + EN/zh 双语招牌实现帧内自明（F2 CAR CONFIGURATOR/概念车库），鼓塔图腾整帧可读——上轮「靠文案自明」扣分点部分销账。"
     }
   },
-  "notes": "CC-AL-CAM 独立总分 71/100 = 65×.20+74×.20+69×.15+72×.15+70×.15+73×.10+75×.05 = raw 70.50 → 71。综合建议 92.8（LHCI 100 + e2e 100 + 视觉 71 + smoke 100）。生产仅登记审计独立分；裁决见 docs/research/loop6-cam-audit.md。70 封顶已解除。"
+  "notes": "CC-AL-VIS-L8-W1 独立总分 73/100 = 68×.20+75×.20+70×.15+74×.15+74×.15+74×.10+78×.05 = raw 72.60 → 73。X1a V4 专项门 72–75 判 74（GO）；D10 V5 收账 74 本轮唯一执行。取证事故更正在案：R3 草稿首帧曾误从跨会话 stale 服务器（:4331）取证，已作废并全部改从本轮 fresh 构建（:4335，chunk hash 与 dist 逐一核对）重截。裁决与提分清单见 docs/research/loop8-vis-w1-audit.md。"
 }
