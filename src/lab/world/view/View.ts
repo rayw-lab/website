@@ -5,6 +5,12 @@
 // 砍除：free 相机（camera-controls 依赖，G5 红线）、cinematic、speedLines、
 // mapControls、gamepad 摇杆平移、debug 面板。
 // 改动：去 Game 单例耦合；gsap 补间路径均不在保留面内，无需替代。
+// [CC-VEH-VIEW] 驾驶态双视角（docs/spec/cyber-city-vehicle-camera.md，参数/裁决
+// D1-D5 全部照抄该 spec）：V 键在 third（现状 folio 跟随，叠 lookahead 加法通道）
+// ↔ fpv（挡风机位 rig）间硬切；双相机管线——defaultCamera 恒为第三人称解算
+// （Nipple 射线/optimalArea/focusPointSpeed 零回归），fpv 只覆盖输出相机。
+// 恒等合同：third 直通路径逐行不动 + lookahead 门外恒 +0（ritualCam.shakeY 同款
+// IEEE 恒等）——robot_idle 首幕帧逐字节恒等（poster 协议 B / VIS-03）。
 // [CC-E7] 城市首幕取景（game.cameraFraming='city'，SRD §12.7.2 首幕相机行）：
 // FOV 42° / 静止机位斜距 18m（radius edges {14,24} × baseRatio 0.6 → 静止 18）/
 // 俯角 22°（phi = 68° 极角，机位高 ≈6.7m）+ 视线上抬 2.5m——配 9m 级机器人满幅
@@ -13,6 +19,7 @@
 import * as THREE from 'three/webgpu';
 import { clamp, lerp, remap, smoothstep } from '../utils/maths';
 import type { Game } from '../core/Game';
+import type { TransformState } from '../player/TransformSystem';
 
 /**
  * [CC-L4 B5] 变形运镜推镜幅度上限：dollyIn=1 时斜距 ×(1-0.07)（静止 20m → 18.6m）。
@@ -33,7 +40,7 @@ export interface ViewShotPose {
   phi: number;
   /** 方位角（弧度；spherical.theta 同口径） */
   theta: number;
-  /** 斜距档（米，写入 radius.edges）：定值 shot 传 min=max；跟随档快照 shot 传原 edges */
+  /** 斜距档（米，写入 radius.edges）：定值 shot 传 min=max；跟随档 snapshot shot 传原 edges */
   radius: { min: number; max: number };
   /** 视线目标离地高（米） */
   lookAtHeight: number;
@@ -50,6 +57,50 @@ interface ShotBaseline {
   lookAtHeight: number;
   lateral: number;
 }
+
+/**
+ * [CC-VEH-VIEW] 第三人称行进 lookahead（spec §6.1 冻结值；字段名与 camera-shots.json
+ * `drive_third.dynamics.lookahead` 条目草案一字不差）。
+ * TODO(CC-CAM 合流：改读 camera-shots.json drive_third.dynamics.lookahead——CAM-C1
+ * PR #45 合 main 后删除本内联双源，spec §7.2 降级条款)。
+ */
+const DRIVE_LOOKAHEAD = {
+  /** 满 lookahead 4.5m ≈ FOV 42°/斜距 20m 下画面半宽 13.7m 的 1/3（不出构图带） */
+  maxDistance: 4.5,
+  /** 输入 = focusPointSpeed（真实 m/s、实现无关）；巡航 ~10 → L≈1.9m 微感 */
+  speedEdge: { min: 3, max: 20 },
+  /** 方向低通 s⁻¹（方向 = 位移方向而非车头——倒车/甩尾自动正确） */
+  directionSmoothRate: 6,
+  /** 幅值低通 s⁻¹（加速/急刹不阶跃） */
+  magnitudeSmoothRate: 4,
+  /** 满舵时 L ×0.55（转弯看近处，弯中焦点稳定） */
+  steeringShrink: 0.45,
+  /** 舵量低通 s⁻¹（收缩渐进非阶跃，spec §9.1） */
+  steeringSmoothRate: 8,
+  /** 偏移向量变化率硬钳 m/s（防晕兜底，SwiftShader 大 dt 下同样成立） */
+  offsetRateClamp: 8,
+} as const;
+
+/**
+ * [CC-VEH-VIEW] FPV 挡风机位 rig（spec §6.2 冻结值；camera-shots.json
+ * `drive_fpv.rig` 条目草案同名字段）。裁决 D4：CarConcept 无内饰实模，挡风前
+ * 上沿舱外机位（hood cam）为诚实 V1——offsetLocal 底盘系 +X=车头 +Y=上 +Z=右，
+ * 中置 z=0 防不对称穿帮；底盘原点离地 0.92m → 视高 ≈1.5m。
+ * TODO(CC-CAM 合流：改读 camera-shots.json drive_fpv.rig，同上)。
+ */
+const DRIVE_FPV = {
+  offsetLocal: { x: 0.35, y: 0.55, z: 0 },
+  /** 与 third 42° 拉开明确档差 = 切换的即时视觉反馈 */
+  fovDeg: 58,
+  /** 速度 FOV kick：推背感，低通缓变防晕；reduced-motion 恒 0 */
+  fovKick: { maxDeg: 6, speedEdge: { min: 8, max: 24 }, smoothRate: 3 },
+  /**
+   * 防晕核心（spec §6.2）：yaw 直通（转向反馈零延迟——延迟 yaw 才是晕源）；
+   * pitch/roll 衰减 + 低通（颠簸/侧倾进相机前先削幅）；reduced-motion 下
+   * pitch/roll 恒 0 = 地平线完全锁定（yaw 保留——关掉无法驾驶，属功能非动效）。
+   */
+  attitudeTransfer: { yaw: 1, pitch: 0.7, roll: 0.35, pitchSmoothRate: 10, rollSmoothRate: 8 },
+} as const;
 
 export class View {
   private readonly game: Game;
@@ -86,6 +137,40 @@ export class View {
    * update() 全程零改动——robot_idle 主帧与 main 逐字节一致（poster 免重拍前提）。
    */
   private shotBaseline: ShotBaseline | null = null;
+  /**
+   * [CC-VEH-VIEW] 驾驶视角二态子状态机（spec §5.1）：
+   * mode = third（默认；= 现状输出直通）| fpv（挡风机位 rig 解算，硬切 D3）；
+   * gate = TransformSystem 状态镜像（其构造/setState 推送；灰盒无变形系统恒
+   * 'none'）——V 切换冗余门（∈{car_ready,driving}）与 lookahead 状态门
+   * （==='driving'）都读它，防未来 filters 语义漂移。
+   */
+  readonly driveView: { mode: 'third' | 'fpv'; gate: 'none' | TransformState } = {
+    mode: 'third',
+    gate: 'none',
+  };
+  /**
+   * [CC-VEH-VIEW] 第三人称 lookahead 状态（spec §9.1）：dir = 行进方向低通
+   * （XZ 单位向量）；len/steer = 幅值与舵量低通；offset = 变化率硬钳后的偏移
+   * 输出（机位与视线目标同加 = 纯屏幕平移，lateralOffset 同构）。
+   * 恒等论证（spec §9.1）：robot_idle 从未进过 driving ⇒ len 恒为精确 0 ⇒
+   * offset=(0,0,0)，下游 +0 逐位恒等——非渐近近似。
+   */
+  private readonly lookahead = {
+    dir: new THREE.Vector3(1, 0, 0),
+    len: 0,
+    steer: 0,
+    offset: new THREE.Vector3(),
+  };
+  private readonly lookaheadStep = new THREE.Vector3();
+  /** FPV 姿态低通状态（pitch/roll 衰减通道；yaw 直通不驻留） */
+  private readonly fpvState = { pitch: 0, roll: 0 };
+  private readonly fpvEye = new THREE.Vector3();
+  private readonly fpvLook = new THREE.Vector3();
+  private readonly fpvRef = new THREE.Vector3();
+  private readonly fpvCross = new THREE.Vector3();
+  /** 基线 FOV（setCameras 落定；fpv→third 切回帧精确恢复投影） */
+  private fovBase = 0;
+  private readonly reducedMotion: boolean;
 
   /** 输出相机（Rendering 渲染它） */
   camera!: THREE.PerspectiveCamera;
@@ -152,6 +237,7 @@ export class View {
     // reduced-motion 关微动（构图平移是静态取景，不属动画，保留）。
     const reducedMotion =
       typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.reducedMotion = reducedMotion;
     this.framing =
       game.cameraFraming === 'city'
         ? { lateral: 4.2, thetaDrift: reducedMotion ? 0 : 0.019 }
@@ -165,6 +251,7 @@ export class View {
     this.setSpherical();
     this.setRoll();
     this.setCameras();
+    this.setDriveView();
     this.setOptimalArea();
 
     this.game.ticker.events.on(
@@ -279,6 +366,7 @@ export class View {
   private setCameras(): void {
     // 城市首幕 FOV 42°（沉浸广角）；灰盒 25°（folio 等距望远原样）
     const fov = this.game.cameraFraming === 'city' ? 42 : 25;
+    this.fovBase = fov;
     this.camera = new THREE.PerspectiveCamera(fov, this.game.viewport.ratio, 0.1, 200);
     this.camera.position.setFromSphericalCoords(
       this.spherical.radius.current,
@@ -289,6 +377,170 @@ export class View {
     this.defaultCamera = this.camera.clone();
 
     this.game.scene.add(this.camera, this.defaultCamera);
+  }
+
+  private setDriveView(): void {
+    // V 键消费（动作表在 Player.setInputs 注册 toggleDriveView，categories
+    // ['driving']）：intro/robot_idle 下被 Inputs filters 闸门物理拦截（恒等
+    // 保证 #1，spec §6.3）；actionStart 沿触发 = 按下翻转一次，长按不连发。
+    // 不进 focusActionsNames（切视角不抢 focus 跟踪）、不进 TransformSystem
+    // DRIVE_ACTIONS（切视角 ≠ 驾驶意图，car_ready 按 V 状态恒 car_ready）。
+    this.game.inputs.events.on('toggleDriveView', (action: { active: boolean }) => {
+      if (action.active) this.toggleDriveView();
+    });
+  }
+
+  /** [CC-VEH-VIEW] V 切换（spec §9.3 硬切）：冗余门 state ∈ {car_ready, driving} */
+  private toggleDriveView(): void {
+    const gate = this.driveView.gate;
+    if (gate !== 'car_ready' && gate !== 'driving') return;
+    this.setDriveViewMode(this.driveView.mode === 'third' ? 'fpv' : 'third');
+  }
+
+  /**
+   * [CC-VEH-VIEW] 设定驾驶视角（内部切换 + TransformSystem 强制回位共用，幂等）。
+   * fpv→third 切回帧（spec §9.3）：焦点回玩家跟踪、FOV 立即回基线（同输入重算
+   * 投影 = 与接管前逐位一致）；位姿下一帧由直通拷贝接管（defaultCamera 后台连续
+   * 更新，切回无 pop）。变更时 trigger 'world-drive-view' [mode]（SRD §9.5
+   * world-* 埋点族；Reveal 镜像 data-drive-view）。
+   */
+  setDriveViewMode(mode: 'third' | 'fpv'): void {
+    if (this.driveView.mode === mode) return;
+    this.driveView.mode = mode;
+
+    // 两向切换都清 FPV 低通驻留：进入帧从 0 起坡（无上次残留姿态甩镜）
+    this.fpvState.pitch = 0;
+    this.fpvState.roll = 0;
+
+    if (mode === 'third') {
+      this.focusPoint.isTracking = true;
+      this.camera.fov = this.fovBase;
+      this.camera.updateProjectionMatrix();
+    }
+
+    this.game.events.trigger('world-drive-view', [mode]);
+  }
+
+  /**
+   * [CC-VEH-VIEW] 第三人称行进 lookahead（spec §9.1；update 焦点平滑段之后调用）。
+   * 门 = gate==='driving' 且非 reduced-motion；门外目标恒 0——robot_idle 从未
+   * 进过 driving ⇒ len/offset 恒为精确 0，下游 +0 逐位恒等（ritualCam.shakeY
+   * 同款 IEEE 恒等先例）。全部低通用 1−e^(−rate·dt) 帧率无关式（R4）。
+   */
+  private updateLookahead(smoothFocusPointDelta: THREE.Vector3, focusPointSpeed: number): void {
+    const la = this.lookahead;
+    const dt = this.game.ticker.delta;
+    const gateOpen = this.driveView.gate === 'driving' && !this.reducedMotion;
+
+    // ① 方向低通：位移方向（非车头朝向——倒车/甩尾/counter-steer 自动正确）；
+    //   近静止（v≤0.5）保持上帧方向，防噪声抖向
+    const travelMagnitude = Math.hypot(smoothFocusPointDelta.x, smoothFocusPointDelta.z);
+    if (focusPointSpeed > 0.5 && travelMagnitude > 0) {
+      const kDir = 1 - Math.exp(-DRIVE_LOOKAHEAD.directionSmoothRate * dt);
+      la.dir.x += (smoothFocusPointDelta.x / travelMagnitude - la.dir.x) * kDir;
+      la.dir.z += (smoothFocusPointDelta.z / travelMagnitude - la.dir.z) * kDir;
+      const dirLength = Math.hypot(la.dir.x, la.dir.z);
+      if (dirLength > 1e-6) {
+        la.dir.x /= dirLength;
+        la.dir.z /= dirLength;
+      }
+    }
+
+    // ② 舵量低通（gate 开才读 player——'driving' 镜像必在 Player 构造之后）
+    const steerTarget = gateOpen ? Math.min(Math.abs(this.game.player.steering), 1) : 0;
+    la.steer +=
+      (steerTarget - la.steer) * (1 - Math.exp(-DRIVE_LOOKAHEAD.steeringSmoothRate * dt));
+
+    // ③ 目标幅值：速度 smoothstep × 转弯收缩（满舵 ×0.55——弯中看近处焦点稳）
+    const targetLen = gateOpen
+      ? DRIVE_LOOKAHEAD.maxDistance *
+        smoothstep(focusPointSpeed, DRIVE_LOOKAHEAD.speedEdge.min, DRIVE_LOOKAHEAD.speedEdge.max) *
+        (1 - DRIVE_LOOKAHEAD.steeringShrink * la.steer)
+      : 0;
+
+    // ④ 幅值低通 + 偏移变化率硬钳（防晕兜底）
+    la.len += (targetLen - la.len) * (1 - Math.exp(-DRIVE_LOOKAHEAD.magnitudeSmoothRate * dt));
+    this.lookaheadStep.set(la.dir.x * la.len, 0, la.dir.z * la.len).sub(la.offset);
+    const maxStep = DRIVE_LOOKAHEAD.offsetRateClamp * dt;
+    if (this.lookaheadStep.length() > maxStep) this.lookaheadStep.setLength(maxStep);
+    la.offset.add(this.lookaheadStep);
+  }
+
+  /**
+   * [CC-VEH-VIEW] FPV 挡风机位 rig 解算（spec §9.2；update 直通拷贝之后调用，
+   * 仅 mode==='fpv' 进入）。双相机管线：只写输出相机 this.camera——defaultCamera
+   * 已按第三人称解算完毕，Nipple 射线 / optimalArea / focusPointSpeed 零回归。
+   * order 7 时底盘位姿已定（车辆 post = order 5），无帧延迟。
+   */
+  private updateFpv(focusPointSpeed: number): void {
+    const vehicle = this.game.physicalVehicle;
+    if (!vehicle) return; // 防御窗（car_ready 前不可达）：直通第三人称输出
+
+    const dt = this.game.ticker.delta;
+    const rm = this.reducedMotion;
+    const forward = vehicle.forward;
+
+    // ① 姿态分解：yaw 直通零延迟（Player.rotationY 同式反解；延迟 yaw 是晕源）
+    const yaw = Math.atan2(-forward.z, forward.x);
+    const pitch = Math.asin(clamp(forward.y, -1, 1));
+
+    // roll = 车体 up 绕前向轴相对世界 up 的有符号偏转：参考上向 = 世界 up 在
+    // ⊥forward 平面的投影；车身近垂直的特异位形（投影长 →0）保持上帧值。
+    // 符号口径：cross(u, ref)·f —— 车顶向车体右侧（+Z 底盘系）倾时输出负值，
+    // rotation.z 叠加后相机上向同侧倾（相机右向 = 世界系车右，解析推导）
+    let rollRaw = this.fpvState.roll;
+    this.fpvRef.set(-forward.x * forward.y, 1 - forward.y * forward.y, -forward.z * forward.y);
+    const refLengthSq = this.fpvRef.lengthSq();
+    if (refLengthSq > 1e-6) {
+      this.fpvRef.multiplyScalar(1 / Math.sqrt(refLengthSq));
+      this.fpvCross.crossVectors(vehicle.upward, this.fpvRef);
+      rollRaw = Math.atan2(this.fpvCross.dot(forward), this.fpvRef.dot(vehicle.upward));
+    }
+
+    // ② 传递衰减 + 低通（帧率无关 1−e^(−rate·dt)，R4）；reduced-motion：
+    //   pitch/roll 目标恒 0 = 地平线完全锁定（yaw 直通保留——功能非动效，§10）
+    const transfer = DRIVE_FPV.attitudeTransfer;
+    const pitchTarget = rm ? 0 : pitch * transfer.pitch;
+    const rollTarget = rm ? 0 : rollRaw * transfer.roll;
+    this.fpvState.pitch +=
+      (pitchTarget - this.fpvState.pitch) * (1 - Math.exp(-transfer.pitchSmoothRate * dt));
+    this.fpvState.roll +=
+      (rollTarget - this.fpvState.roll) * (1 - Math.exp(-transfer.rollSmoothRate * dt));
+
+    // ③ 机位：offsetLocal 经【完整】底盘四元数（机位随悬挂/姿态走，防头穿引擎盖；
+    //   衰减只作用于视线姿态，不作用于机位——spec §9.2 第 3 步）
+    this.fpvEye
+      .set(DRIVE_FPV.offsetLocal.x, DRIVE_FPV.offsetLocal.y, DRIVE_FPV.offsetLocal.z)
+      .applyQuaternion(vehicle.quaternion)
+      .add(vehicle.position);
+    this.camera.position.copy(this.fpvEye);
+
+    // ④ 视线：稳定前向 lookAt + roll 追加（View.roll 弹簧同法 rotation.z）。
+    //   陷阱注记（spec）：相机默认前向 −Z 与底盘前向 +X 相差绕 Y 的 −π/2——
+    //   用 lookAt 合成即可绕开手写四元数的轴系换算，勿凭直觉拼 Euler
+    const pitchCos = Math.cos(this.fpvState.pitch);
+    this.fpvLook.set(
+      this.fpvEye.x + Math.cos(yaw) * pitchCos,
+      this.fpvEye.y + Math.sin(this.fpvState.pitch),
+      this.fpvEye.z - Math.sin(yaw) * pitchCos,
+    );
+    this.camera.lookAt(this.fpvLook);
+    this.camera.rotation.z += this.fpvState.roll;
+
+    // ⑤ FOV kick 缓变（3 s⁻¹ 低通 ⇒ 实际变化率 ≪ 18°/s 防晕上限）；
+    //   reduced-motion 恒 58（脉动关，档差保留 = 切换反馈仍在）
+    const fovTarget =
+      DRIVE_FPV.fovDeg +
+      (rm
+        ? 0
+        : DRIVE_FPV.fovKick.maxDeg *
+          smoothstep(
+            focusPointSpeed,
+            DRIVE_FPV.fovKick.speedEdge.min,
+            DRIVE_FPV.fovKick.speedEdge.max,
+          ));
+    this.camera.fov += (fovTarget - this.camera.fov) * (1 - Math.exp(-DRIVE_FPV.fovKick.smoothRate * dt));
+    this.camera.updateProjectionMatrix();
   }
 
   private setOptimalArea(): void {
@@ -467,6 +719,10 @@ export class View {
     this.zoom.ratio = clamp(this.zoom.ratio, -1, 1);
     this.zoom.smoothedRatio = lerp(this.zoom.smoothedRatio, this.zoom.ratio, this.game.ticker.delta * 10);
 
+    // [CC-VEH-VIEW] 行进 lookahead（driving 态 + 非 reduced-motion 才有幅值；
+    // 门外恒精确 0 → 下游 +0 逐位恒等）——速度/方向源与速度变焦同为平滑焦点（协调单源）
+    this.updateLookahead(smoothFocusPointDelta, focusPointSpeed);
+
     // 半径与球坐标偏移（[CC-L1 A4] 城市档叠加慢 yaw 微动：theta 呼吸 ±thetaDrift；
     // [CC-L4 B5] 变形充能推镜 = 斜距乘法通道，dollyIn=0 时为 ×1 恒等零漂移）
     const radiusMax =
@@ -490,17 +746,22 @@ export class View {
       .set(Math.cos(theta), 0, -Math.sin(theta))
       .multiplyScalar(this.framing.lateral);
 
-    // 机位
+    // 机位（[CC-VEH-VIEW] lookahead 偏移与机位/视线目标同加 = 纯屏幕平移，
+    // lateralOffset 偏轴构图同构先例；非 driving 帧恒 +0 恒等）
     this.position
       .copy(this.focusPoint.smoothedPosition)
       .add(this.spherical.offset)
-      .add(this.lateralOffset);
+      .add(this.lateralOffset)
+      .add(this.lookahead.offset);
     this.delta = this.position.clone().sub(this.defaultCamera.position);
     this.defaultCamera.position.copy(this.position);
 
     // 朝向 + roll（弹簧-阻尼镜头晃动，碰撞时 kick）；城市首幕视线上抬 lookAtHeight
     this.defaultCamera.rotation.set(0, 0, 0);
-    this.lookAtTarget.copy(this.focusPoint.smoothedPosition).add(this.lateralOffset);
+    this.lookAtTarget
+      .copy(this.focusPoint.smoothedPosition)
+      .add(this.lateralOffset)
+      .add(this.lookahead.offset);
     this.lookAtTarget.y += this.lookAtHeight;
     this.defaultCamera.lookAt(this.lookAtTarget);
 
@@ -517,6 +778,11 @@ export class View {
     // 输出到最终相机（free 模式已砍，直通）
     this.camera.position.copy(this.defaultCamera.position);
     this.camera.quaternion.copy(this.defaultCamera.quaternion);
+
+    // [CC-VEH-VIEW] fpv 态输出覆盖（spec §0 双相机管线）：defaultCamera 上面已按
+    // 第三人称解算完毕（Nipple/optimalArea 消费面零回归），仅输出相机改从车体
+    // 解算；third 态本分支不执行——直通拷贝即最终输出，逐行与现状一致（恒等 #4）
+    if (this.driveView.mode === 'fpv') this.updateFpv(focusPointSpeed);
 
     this.camera.updateMatrixWorld();
     this.defaultCamera.updateMatrixWorld();
