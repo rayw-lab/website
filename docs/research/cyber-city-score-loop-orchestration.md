@@ -9,7 +9,7 @@
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98** · **视觉 98** · **功能 90** · **性能 85**（登记 **92.5/70**，Δ 见下） |
 | **指挥官约束** | 无 CC-CAM → 视觉登记封顶 **70**；**功能/性能须独立 rubric + 可观测证据登记** |
-| 生产 tip | `main` @ `a7aa1dc`（功能 rubric v1.0 [#49](https://github.com/rayw-lab/website/pull/49) 已合 · OBS 规格待合） |
+| 生产 tip | `main` @ `b2a59e4`（AL-CAM **GO 71/92.8** 待合 · OBS 规格 RUNNING） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -79,8 +79,8 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 |----|-----|------|------|
 | ① | doc | `main` | ✅ [#44](https://github.com/rayw-lab/website/pull/44)+[#46](https://github.com/rayw-lab/website/pull/46) 已合 |
 | ② | **CC-CAM-C1** | `main` | ✅ PR [#45](https://github.com/rayw-lab/website/pull/45) 已合 · e2e 52/52 · NDC 7/7 |
-| ③ | **CC-AL-CAM** | — | ⏳ 待派 Sol 独立审计 |
-| ④ | 登记 | `main` | 审计独立分写入登记（仅 GO/有条件放行） |
+| ③ | **CC-AL-CAM** | — | ✅ [AL-CAM](bc-a940fd9e-7869-57be-b1d9-990196d405c1) **GO** 独立视觉 **71** / 综合 **92.8** · 报告待合 |
+| ④ | 登记 | `main` | ⏳ GO 后父代理写入独立视觉分（**可破 70 封顶**） |
 | ⑤ | CC-BL2-CAM | `cursor/cc-bl2-street-extension-1d6f` | CAM 镜头 + BL2 栈重审；过门后父代理合 PR #43 |
 
 ### 硬门（CC-CAM-C1）
@@ -167,7 +167,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 | CC-AL-BL2 首次 | `cursor/cc-al-bl2-audit-1d6f` @ `7a5dffa`（已合 main） | — | [AL-BL2](bc-102414b6-9132-5de4-8de5-83580124910d) | ✅ NO-GO 71/92.8 |
 | CC-AL-BL2 复审 | `cursor/cc-al-bl2-audit-1d6f` @ **`8d8b604`** | — | [AL-BL2-R2](bc-57c16013-d459-513b-a2dc-7b622c1d00bc) | ✅ **NO-GO** 仍 **71/92.8**（V4=71<72） |
 
-| 登记 | 仍 **70/92.5**；**须 Loop 6 CC-CAM 合 main 后才可突破 70** |
+| 登记 | 审计 **GO 71/92.8** 待登记（当前生产仍 **70/92.5**）；PR #43 **仍禁止合流**直至 CC-BL2-CAM |
 
 ### AL-BL2 复审结论（`fcdfcb5` 候选）
 - 天际线/沿街整帧有像素变化，但 **work-gallery 固定帧仍无法读出完整新轮廓**（冠环被裁切）
