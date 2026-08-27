@@ -148,7 +148,9 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
         import('./world/Reveal'),
       ]);
 
-    city = mountCity(game);
+    // [CC-VIS-X3] 首幕招牌 stagger 点亮（world-reveal 后 150ms 逐楼，一次性瞬态）；
+    // reduced-motion 直出终态（design-confirm §4.2 第四件口径）
+    city = mountCity(game, { revealStagger: !reducedMotion });
     const spawn = city.map.world.spawn;
     const spawnRotationY = Math.PI / 2 - (spawn.heading * Math.PI) / 180;
 
