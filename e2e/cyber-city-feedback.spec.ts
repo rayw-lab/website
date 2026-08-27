@@ -263,8 +263,10 @@ test.describe('科技城驾驶反馈包（CC-FXN-C2 · world-chromium 串行 pro
 //   埋点随行互证：hint-shown / hint-recall{via} / hint-dismissed{by}
 //   （观测规格 §3.4 ux 族；hint-recall 为本 PR 随行加法）。
 //   计时校准：本组等待窗按「共享 VM 多代理并发挤兑」上界放宽（robot_idle/
-//   car_ready 210s、driving 120s、淡出 300s）——SwiftShader 纪律不变：只断
+//   car_ready 210s、driving 120s、淡出 480s）——SwiftShader 纪律不变：只断
 //   存在性/顺序性/文案，放宽窗口不弱化断言（cyber-city.spec.ts 文件头⑤同源）。
+//   淡出窗算术：Ticker.delta 每帧封顶 1/30s → 4 设计秒 ≥120 渲染帧；挤兑下
+//   帧率可跌破 0.4fps，故给到 480s 上界（静默窗数十秒即过，早退不付费）。
 // ---------------------------------------------------------------------------
 const HINT_SEL = {
   hint: '[data-world-hint]',
@@ -273,7 +275,7 @@ const HINT_SEL = {
 } as const;
 
 test.describe('科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串行 project）', () => {
-  test.describe.configure({ mode: 'serial', timeout: 900_000 });
+  test.describe.configure({ mode: 'serial', timeout: 1_500_000 });
 
   // ---------------------------------------------------------------------------
   // CITY-HINT-01 单例全链（挂载成本纪律同 CITY-VEH/CITY-FB 先例）：
@@ -287,9 +289,9 @@ test.describe('科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串
   //   ⑥ 按钮再唤出 → hint-recall{via:button}（触屏召回入口的桌面等价路径）。
   // ---------------------------------------------------------------------------
   test('CITY-HINT-01 键位卡全链：恒等门 → car_ready 全键位浮现 → 首驶阅读窗 → 淡出 → H/按钮再唤出（埋点互证）', async ({ page }) => {
-    // 全链 = 挂载 + 变形 + 淡出等待（4 设计秒 ≈ 慢动作最长 ~2min 墙钟）+ 多次 toggle，
-    // 对齐 CITY-VEH/CITY-FB 全链先例放宽至 600s
-    test.setTimeout(900_000);
+    // 全链 = 挂载 + 变形 + 淡出等待（120 帧下界，挤兑可达数百秒墙钟）+ 多次 toggle；
+    // 各段上界之和 ≈ 210+210+120+480 + 挂载/toggle 余量 → 总窗 1500s（早退不付费）
+    test.setTimeout(1_500_000);
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
 
@@ -332,8 +334,9 @@ test.describe('科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串
       await page.keyboard.up('w').catch(() => {});
     }
 
-    // —— ④ 自动淡出（HINT_FADE_DELAY=4 设计秒；SwiftShader 慢动作 ~30-40× 放大）
-    await expect(hint).toBeHidden({ timeout: 300_000 });
+    // —— ④ 自动淡出（HINT_FADE_DELAY=4 设计秒 = ≥120 渲染帧，delta 每帧封顶 1/30s；
+    // 挤兑下帧率可 <0.4fps → 480s 上界，静默窗数十秒即过）
+    await expect(hint).toBeHidden({ timeout: 480_000 });
     let dump = await dumpSession(page);
     expect(
       dump.events.some((e) => e.type === 'hint-shown'),
