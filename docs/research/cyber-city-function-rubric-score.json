@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0.0",
+  "score": 84,
+  "target": 90,
+  "subject": "main@66ed0fe（baseline b2b8684）；OBS-C1/C2 + FXN-C1/C2/C3 + PERF-C1，并包含审计 tip 已实际合流的 FXN-C4 探索计数 n/12；审计分支 cursor/cc-al-fxn-audit-1d6f。",
+  "rubric": "docs/spec/cyber-city-function-rubric.md",
+  "rubricVersion": "1.0",
+  "scripts": {
+    "s2": "1.0",
+    "s5": "1.0",
+    "legsSkipped": []
+  },
+  "scoredAt": "2026-08-27",
+  "scoredBy": "CC-AL-FXN 独立审计（gpt-5.6-sol-xhigh-fast；报告 docs/research/loop8-fxn-audit.md）——实现方自评永不登记",
+  "passes": {
+    "passA": {
+      "score": 81,
+      "method": "S-2+S-5 真浏览器脚本执行观察打分；SwiftShader 的 t/墙钟/fps 不作计时类判定"
+    },
+    "passB": {
+      "score": 84,
+      "method": "同一录屏 + dump 证据集按 F1–F7 冻结锚点逐条打分"
+    },
+    "reconciliation": "Pass A 81 vs Pass B 84，分歧 3（≤10）；无需强制逐维仲裁，按 §3.1 直接采用证据更完整的 Pass B。"
+  },
+  "evidence": {
+    "recordings": [
+      "/opt/cursor/artifacts/s2_driving_feedback_audit_20260827.mp4",
+      "/opt/cursor/artifacts/s5_deep_link_poi_progress_audit_20260827.mp4",
+      "/opt/cursor/artifacts/s5_flip_recovery_debug_audit_20260827.mp4",
+      "/opt/cursor/artifacts/s5_reduced_quality_hint_menu_audit_20260827.mp4",
+      "/opt/cursor/artifacts/s5_touch_joystick_core_path_audit_20260827.mp4",
+      "/opt/cursor/artifacts/s5_touch_poi_marker_entry_audit_20260827.mp4",
+      "/opt/cursor/artifacts/s5_explore_completion_audit_20260827.mp4"
+    ],
+    "sessionDumps": [
+      "docs/research/loop8-fxn-audit.md §2–§4（S-2 与 S-5 逐腿 dump 事件 seq/t 摘录）",
+      "/opt/cursor/artifacts/fxn_audit_session_evidence_20260827.json"
+    ],
+    "threeQuestions": {
+      "q1": "我是可以变成 CarConcept 巡航车的座舱 AI 机器人。",
+      "q2": "我能在科技城里驾驶、加速、切视角，寻找并进入代表不同作品分区的大楼。",
+      "q3": "先点“变形 · 巡航态”或按 Space，再用 WASD 开到光圈，按 E 进站。"
+    },
+    "environment": "fresh pnpm install --frozen-lockfile → pnpm build → pnpm preview@4337；Chromium；桌面 1440×900 + DevTools touch 375×812；正常/ prefers-reduced-motion / quality=2 分腿；首访清存储。"
+  },
+  "dimensions": {
+    "f1FirstSceneClarity": {
+      "label": "首幕可懂",
+      "weight": 0.15,
+      "score": 85,
+      "evidence": "S-2 dump robot-idle #3/t103545；CTA/状态/键位提示与三问全对；s5_reduced_quality_hint_menu_audit_20260827.mp4 00:00–00:24。0:15 高段锚不以 SwiftShader 墙钟伪判。"
+    },
+    "f2InputFeedback": {
+      "label": "操作反馈",
+      "weight": 0.2,
+      "score": 85,
+      "evidence": "S-2 dump boost-first #8/t612591、world-drive-view #9/#10、respawn #11/t757158、cone-hit #14/t1398161；s2_driving_feedback_audit_20260827.mp4 00:40–01:12。F/刹车未形成同等级确认链，止于 85。"
+    },
+    "f3DrivingFun": {
+      "label": "驾驶乐趣",
+      "weight": 0.15,
+      "score": 75,
+      "evidence": "S-2 dump world-drive-start #7/t608839、三次 respawn #11/#13/#15；双视角与速度感成立但自然寻路费力；s2_driving_feedback_audit_20260827.mp4 00:40–01:12。"
+    },
+    "f4PoiGameplay": {
+      "label": "POI 游戏化",
+      "weight": 0.15,
+      "score": 85,
+      "evidence": "L1 dump deep-link #2/t20386 → poi-bounding-in #4/t103895 → world-poi #6/t185240 → shot-apply #7/t185245；s5_deep_link_poi_progress_audit_20260827.mp4 00:00–01:10；S-2 自然发现未达 90 锚。"
+    },
+    "f5Humanization": {
+      "label": "人性化",
+      "weight": 0.15,
+      "score": 85,
+      "evidence": "L2 upside-down #6/t172365、flip-jump #7/t735159、respawn{key,fall}；L3 hint-recall #9/t148797；L4 RM instant transform；L5 touch world-drive-start #7/t243235 与点标点 world-poi #6/t178573。录屏：flip 00:10–03:20、RM 00:00–01:46、touch 两段。L6 同会话七步未闭合，止于 85。"
+    },
+    "f6GoalsProgress": {
+      "label": "目标/进度",
+      "weight": 0.1,
+      "score": 75,
+      "evidence": "完成腿 dump explore-restore #4/t48567 → explore-progress #6/t48571 → explore-complete #7/t48575；s5_explore_completion_audit_20260827.mp4 00:00–00:28。60s 空闲未见主动引导，止于 70–85 段。"
+    },
+    "f7Observability": {
+      "label": "可观测完备",
+      "weight": 0.1,
+      "score": 95,
+      "evidence": "dump schema 1、funnel/counters/dropped 齐；#debug 仅 EXPORT session JSON 一项按钮，下载 session-95e4a641.json（7 events、dropped 0）成功；goal/ux/drive/poi/camera 族均有实测事件；s5_flip_recovery_debug_audit_20260827.mp4 00:00–03:20。"
+    }
+  },
+  "notes": "独立功能分 84/100 = 85×.15 + 85×.20 + 75×.15 + 85×.15 + 85×.15 + 75×.10 + 95×.10 = raw 83.50 → 84。裁决：有条件放行，未过 90。没有条件腿 skipped；L6 同一 quality=2 会话未闭合进站、L7 无主动空闲引导是已执行缺口，不伪装为 skipped。"
+}
