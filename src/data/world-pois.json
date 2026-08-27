@@ -1,7 +1,7 @@
 {
   "schemaVersion": "0.1.0",
   "task": "CC-E9",
-  "updatedAt": "2026-08-25",
+  "updatedAt": "2026-08-27",
   "docs": "docs/research/cyber-city-eng-wave1-notes.md（CC-E9 小节：schema 字典与扩展规则）",
   "buildingsSource": "src/data/cyber-city-buildings.json",
   "deepLink": {
@@ -16,6 +16,11 @@
   },
   "point": {
     "hoverHeight": 3.2
+  },
+  "quest": {
+    "docs": "docs/research/cyber-city-gameplay-features.md §4 G4 冻结稿：城区顺序主链（东城出行 → 南口语言 → 北城 AI → 东南作品 → 西南个人）各取 1 栋；非强制可折叠——[CC-FXN-C5] 扩展段（加法，schemaVersion 不动）",
+    "label": { "zh": "下一站", "en": "Next stop" },
+    "chain": ["concept-garage", "voice-pod", "agent-nexus", "work-gallery", "about-pavilion"]
   },
   "pois": [
     { "id": "lingua-tower", "buildingId": "lingua-tower", "kind": "building-entry", "action": "navigate" },

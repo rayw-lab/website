@@ -224,7 +224,11 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   let areas: Areas | null = null;
   if (city) {
     const { mountAreas } = await import('./areas');
-    areas = mountAreas(game, city.map, { deepLinkPoi: ritualRequested ? null : poiSlug });
+    areas = mountAreas(game, city.map, {
+      deepLinkPoi: ritualRequested ? null : poiSlug,
+      // [CC-FXN-C5] ritual 腿目标线激活推迟到 car_ready（poster 恒等，QuestLine 头注）
+      deferQuestUntilCarReady: ritualRequested,
+    });
   }
 
   // CC-CAM-VIEW：?poi=&shot= 组合深链 → 应用 camera-shots.json 展示机位（白名单校验
@@ -348,15 +352,20 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
         game.inputs.nipple.active;
 
       // [CC-OBS-C1] idle-30s 沿检测：driving 态连续 30s 零驾驶意图打一条；
-      // 有输入即重置计时，可再打（每静默期至多 1 条）
+      // 有输入即重置计时，可再打（每静默期至多 1 条）。
+      // [CC-FXN-C5] 消费接线（L7 空闲主动引导，OBS §9-3 注记回填）：入账同拍调
+      // 目标线 idleNudge()（chip 脉冲 + 「往下一站开」nudge 行 + idle-nudge 埋点）；
+      // 驾驶意图恢复即收 nudge（引导不粘身——非强制纪律）。
       if (transformSystem?.state !== 'driving' || driveIntent) {
         idleClock = 0;
         idleLogged = false;
+        if (driveIntent) areas?.quest?.clearNudge();
       } else {
         idleClock += beatElapsed;
         if (!idleLogged && idleClock >= 30) {
           idleLogged = true;
           game.session.log('idle-30s');
+          areas?.quest?.idleNudge();
         }
       }
 

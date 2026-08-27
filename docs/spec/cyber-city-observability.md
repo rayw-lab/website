@@ -17,7 +17,7 @@
 
 1. **SessionTimeline 挂 `Game` 构造器**（`game.session`，`src/lab/world/core/SessionTimeline.ts`）：每个 Game 实例恒有一枚、系统一行接线 `this.game.session.log(type, data)` 无空判断；`index.ts` 装配段只负责 window 导出面、HUD 节拍沿检测埋点（cone-hit / idle-30s）与 deep-link 首打。
 2. **dump schema v1 冻结**（§3.2）：ring buffer 500 条 + `dropped` 计数；`funnel` 七步首达壁钟毫秒；`counters` 六项聚合**独立于 ring**（溢出不失真；[CC-PERF-C2-B0] 随行加法后**七项**——增 `longFrames` 长帧计数，§3.4 尾注）；`seq` 全局单调（含被丢弃条目）。破坏性变更 `schemaVersion` +1，加法不升版。
-3. **事件白名单 v1 冻结**（§3.4，27 个 type、7 族；[CC-FXN-C1] 随行加法后 28 个——ux 族 `hint-recall`；[CC-FXN-C4] 随行加法后 **31 个 type、8 族**——新增 goal 族 `explore-restore` / `explore-progress` / `explore-complete`，F6 探索计数 n/12；[CC-PERF-C2-B1] 随行加法后 **32 个 type、9 族**——新增 perf 族 `quality-auto-drop`，PERF-BR O1 自动降档取证）：既有 `game.events` 总线 `world-*` 事件走**镜像订阅**（args 映射表冻结）；非总线事件走显式 `session.log`（接线点逐一定位到文件/函数）；壳侧（ESC 菜单）经 **`world-obs` CustomEvent 桥**（§3.5）过族白名单进 timeline——壳零 import、window 导出面保持只读。
+3. **事件白名单 v1 冻结**（§3.4，27 个 type、7 族；[CC-FXN-C1] 随行加法后 28 个——ux 族 `hint-recall`；[CC-FXN-C4] 随行加法后 **31 个 type、8 族**——新增 goal 族 `explore-restore` / `explore-progress` / `explore-complete`，F6 探索计数 n/12；[CC-PERF-C2-B1] 随行加法后 **32 个 type、9 族**——新增 perf 族 `quality-auto-drop`，PERF-BR O1 自动降档取证；[CC-FXN-C5] 随行加法后 **34 个 type、9 族**——goal 族 `world-quest`（G4 目标线 v0 主漏斗）+ ux 族 `idle-nudge`（`idle-30s` 消费，L7 空闲主动引导））：既有 `game.events` 总线 `world-*` 事件走**镜像订阅**（args 映射表冻结）；非总线事件走显式 `session.log`（接线点逐一定位到文件/函数）；壳侧（ESC 菜单）经 **`world-obs` CustomEvent 桥**（§3.5）过族白名单进 timeline——壳零 import、window 导出面保持只读。
 4. **dispose 导出合同**（§4）：`SessionTimeline.dispose()` 幂等三步（`dispose` 事件入 ring → `console.table` funnel+counters 摘要**一次** → 摘除监听），由 `Game.dispose()` **首段**调用（各系统仍在、读数完整）；`window.__worldSession` 与 `__worldSpike` 同段挂载/删除；bfcache 快照离页不触发（facade `event.persisted` 既有语义），**e2e 取证必须在卸载前 dump**。
 5. **function-smoke 是哨兵不是登记分**（§6.2）：漏斗七步齐 70%（非 null + 单调顺序）+ 交互面四事件存在性 30%；**不掺任何时长/帧率**（SwiftShader 下时长无意义）；首个 Loop 软门（OBS annotation），稳定后再议转硬。`quality-score.json` 增只读 `northStar` 块（§6.4），综合分五维权重**零改动**。
 
@@ -159,12 +159,14 @@ interface SessionDump {
 | goal | `explore-restore` | `{n, total}` | 显式 · `areas/ExploreProgress` 构造器（localStorage `world-explore-v1` 跨会话进度还原为非零时挂载即打）。[CC-FXN-C4] 随行加法：新增 goal 族承载 F6 探索计数 n/12（rubric F6 / FXN-BR G5 先遣版），schemaVersion 不动 | P0 |
 | goal | `explore-progress` | `{id, n, total}` | 显式 · `areas/ExploreProgress.discover()`（Areas boundingIn 接线：首次发现某 POI 触发圈去重后计数 +1，chip 呈现同拍；重复进圈/已持久点零事件） | P0 |
 | goal | `explore-complete` | `{total}` | 显式 · 同 discover()（n 达 total 的跨越沿至多一次；还原到满值不补打） | P0 |
+| goal | `world-quest` | `{action: 'shown' \| 'reached' \| 'chain-complete' \| 'collapsed' \| 'expanded', step, targetId, elapsedMs}` | 显式 · `areas/QuestLine`（G4 目标线 v0 主漏斗——首两分钟流失点分析）：激活（ritual = 首个 `world-transform to='car'`；非 ritual = 挂载即激活）与每次链推进出 `shown`；进未完成主链站触发圈（Areas boundingIn 同拍）`reached`（顺序外到站合法照打）；主链五站集齐 `chain-complete`；chip 折叠开合 `collapsed`/`expanded`（localStorage `world-quest-collapsed-v1` 记忆偏好）。step = 相关站 1 起步位，elapsedMs = 距激活壁钟毫秒。[CC-FXN-C5] 随行加法：新增承载 FXN-BR G4 冻结稿事件（`{step, targetId, action, elapsedMs}` 原样），schemaVersion 不动 | P0 |
 | perf | `quality-auto-drop` | `{from, to, avg, low1}` | 显式 · index.ts 装配段 HUD 节拍（O1 滞回窗触发点：FpsMeter 滑窗连续 3 设计秒 avg<30 或 low1<20 → `Quality.changeLevel` 降一档，只降不升 + 20s 冷却；仅 ritual driving 态评估——robot_idle/transforming 恒等合同零涉及；`?quality=` 显式深链禁用自动档，事件不可能出现；avg/low1 为触发拍读数，一位小数）。[CC-PERF-C2-B1] 随行加法：新增 perf 族承载自动降档取证（PERF-BR O1 / perf rubric P5 确认层随 DriveFeedback `[data-world-quality]` toast 同拍），schemaVersion 不动 | P0 |
 | ux | `hint-shown` | — | 显式 · Reveal.showHint()（car_ready 自动浮现） | P0 |
 | ux | `hint-dismissed` | `{by: 'timeout' \| 'input'}` | 显式 · Reveal.hideHint() 两类调用点区分：HINT_FADE_DELAY 到期 → `'timeout'`；用户/状态收回（H/「键位」按钮收起、robot_idle/transforming）→ `'input'`。[CC-FXN-C1] 随行修订：driving 不再即隐——首驶重开一个完整阅读窗后走 `'timeout'` | P0 |
 | ux | `hint-recall` | `{via: 'key' \| 'button'}` | 显式 · Reveal.toggleHint()（键位卡再唤出：H/? 键 → `'key'`；`[data-world-hint-recall]` 按钮 → `'button'`）。[CC-FXN-C1] 随行加法（GAP-08 键位召回），schemaVersion 不动 | P0 |
 | ux | `esc-menu-open` | — | **壳桥** · index.astro ESC 菜单 showModal 处 dispatch（§3.5） | P0 |
-| ux | `idle-30s` | — | 沿检测 · index.ts 装配段低频节拍：driving 态连续 30s 零驾驶意图（accelerating/steering/braking/boosting 全 0 且 nipple 非 active）打一条；有输入即重置计时，可再打（每静默期至多 1 条） | P0 |
+| ux | `idle-30s` | — | 沿检测 · index.ts 装配段低频节拍：driving 态连续 30s 零驾驶意图（accelerating/steering/braking/boosting 全 0 且 nipple 非 active）打一条；有输入即重置计时，可再打（每静默期至多 1 条）。[CC-FXN-C5] 随行注记：新增消费方 `QuestLine.idleNudge()`（入账同拍调用）——打点条件与语义不变 | P0 |
+| ux | `idle-nudge` | `{targetId}` | 显式 · `areas/QuestLine.idleNudge()`（`idle-30s` 沿检测同拍消费：driving 空闲 30 设计秒 → chip 脉冲 + 「往光柱方向开」nudge 行，驻留至下一个驾驶意图 `clearNudge()` 收起；`idle-30s` 先入账、本事件随后同拍——seq 序稳定；主链完成后无目标可指，静默不打）。[CC-FXN-C5] 随行加法：L7 空闲主动引导的可观测面，schemaVersion 不动 | P0 |
 | error | `pageerror` | `{message}` | 显式 · SessionTimeline 自挂 `window` `error` + `unhandledrejection` 监听（message 截 200 字符；dispose 摘除） | P0 |
 | error | `context-lost` | — | 显式 · SessionTimeline 自挂 canvas `webglcontextlost`（canvas 经 attach 参数传入；WebGPU device.lost 接线归 §9 开放问题） | P0 |
 
@@ -373,7 +375,7 @@ DOM 契约（e2e SEL 对齐）：根 `[data-debug-panel]`（`position:fixed` 右
 
 1. **RUM 接口位**：SessionTimeline 预留的唯一外延 = `dump()` 的 JSON 形状；若 Phase B 决策接 PostHog/Plausible，做单向 adapter（dump → 批量上报），本件零改动。
 2. **WebGPU device lost**：`context-lost` P0 仅接 `webglcontextlost`；WebGPU 路径需经 `rendering` 拿 device.lost promise（渲染层接缝），OBS-C1 尽力接、接不上列欠账入 PR 描述。
-3. **idle-30s 与 attract 模式**：当前仅记录；FXN-C4/F6 若做 attract 演出，消费本事件（观测先行、演出后至）。[CC-FXN-C4] 回填：本批落地的探索计数（goal 族）**不消费** `idle-30s`——空闲引导/attract 仍开放，注记保留。
+3. **idle-30s 与 attract 模式**：当前仅记录；FXN-C4/F6 若做 attract 演出，消费本事件（观测先行、演出后至）。[CC-FXN-C4] 回填：本批落地的探索计数（goal 族）**不消费** `idle-30s`——空闲引导/attract 仍开放，注记保留。[CC-FXN-C5] 回填：G4 目标线 v0 已消费 `idle-30s`（`QuestLine.idleNudge()` 入账同拍——chip 脉冲 + 下一站 nudge，`idle-nudge` 埋点随行）——「观测先行、演出后至」闭环，本注记使命完成。
 4. **function-smoke 转硬门**：观察 ≥1 个完整 Loop 的稳定性（SwiftShader 波动、POI 进站跳转时序）后由父代理拍板；转硬前恒为 OBS annotation。
 5. **`hint-shown`/`hint-dismissed` 的壳 HUD 通道**：`[data-ws-hint]`（壳静态 hint）在 ritual 模式挂载即被置 dismissed（index.ts L159），P0 不接；若后续壳 hint 恢复活跃，经 `world-obs` 桥补接（ux 族，加法）。
 

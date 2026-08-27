@@ -1,6 +1,7 @@
-// `/`（Full Entry 科技城）探索计数 n/12 e2e —— CC-FXN-C4 随行断言
+// `/`（Full Entry 科技城）探索计数 n/12 + 目标线 v0 e2e —— CC-FXN-C4/C5 随行断言
 // （function-test-plan §3.4 C4 合同落地：任务书收窄为「探索计数」形态，
-// CITY-EXP-01…02 两用例；空闲引导腿未在本批交付，留痕见 §3.4 回填行）。
+// CITY-EXP-01…02 两用例；[CC-FXN-C5] §3.5 C5 合同落地：G4 目标线 v0 +
+// idle-30s 消费，CITY-QST-01…02 两用例——C4 悬置的空闲引导腿在本批收口）。
 //
 // 被测面 = areas/ExploreProgress.ts（功能 rubric F6「目标/进度」最小可见形态）：
 //   · chip [data-world-explore]（计数 [data-world-explore-count]，完成态 data-complete）；
@@ -35,7 +36,7 @@ const MOUNT_TIMEOUT = 210_000;
 /** 双 JSON 单源（Node ESM 下 JSON 用 fs 读，visual spec 先例）：分母/坐标零硬编码 */
 const pois = JSON.parse(
   readFileSync(new URL('../src/data/world-pois.json', import.meta.url), 'utf8'),
-) as { pois: { buildingId: string }[] };
+) as { pois: { buildingId: string }[]; quest: { chain: string[] } };
 const cityMap = JSON.parse(
   readFileSync(new URL('../src/data/cyber-city-buildings.json', import.meta.url), 'utf8'),
 ) as { buildings: { id: string; parkingBay: { x: number; z: number; radius: number } }[] };
@@ -52,6 +53,11 @@ const SECOND_POI = 'agent-nexus';
 /** localStorage 持久键（ExploreProgress STORAGE_KEY 契约） */
 const STORAGE_KEY = 'world-explore-v1';
 
+/** [CC-FXN-C5] 目标线主链（world-pois.json quest.chain 单源：站序/站数零硬编码）
+ *  + 折叠偏好持久键（QuestLine COLLAPSE_KEY 契约） */
+const CHAIN = pois.quest.chain;
+const QUEST_COLLAPSE_KEY = 'world-quest-collapsed-v1';
+
 const bayOf = (id: string): { x: number; z: number; radius: number } => {
   const bay = cityMap.buildings.find((b) => b.id === id)?.parkingBay;
   if (!bay) throw new Error(`buildings JSON 缺少 ${id}.parkingBay`);
@@ -63,6 +69,12 @@ const SEL = {
   transform: '[data-world-transform]',
   explore: '[data-world-explore]',
   exploreCount: '[data-world-explore-count]',
+  quest: '[data-world-quest]',
+  questName: '[data-world-quest-name]',
+  questDistance: '[data-world-quest-distance]',
+  questStep: '[data-world-quest-step]',
+  questToggle: '[data-world-quest-toggle]',
+  questNudge: '[data-world-quest-nudge]',
 } as const;
 
 /** UA 级已知异常白名单（world-spike.spec.ts 先例）：仅「Transition was skipped」放行 */
@@ -216,6 +228,10 @@ async function saveDump(testInfo: TestInfo, path: string, dump: SessionDump): Pr
 
 const progressEvents = (dump: SessionDump): SessionEventEntry[] =>
   dump.events.filter((e) => e.type === 'explore-progress');
+
+/** [CC-FXN-C5] world-quest 事件游标（goal 族，观测规格 §3.4 C5 加法行） */
+const questEvents = (dump: SessionDump): SessionEventEntry[] =>
+  dump.events.filter((e) => e.type === 'world-quest');
 
 test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 project）', () => {
   // 3D 挂载单例互斥（cyber-city.spec.ts 同纪律）；长用例单独 setTimeout 放宽
@@ -435,5 +451,186 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     await page.screenshot({ path: 'test-results/explore-complete.png' });
 
     expect(errors.filter((m) => !isKnownUaError(m)), '完成闭环零未捕获异常').toEqual([]);
+  });
+});
+
+test.describe('科技城目标线 v0（CC-FXN-C5 · world-chromium 串行 project）', () => {
+  // 3D 挂载单例互斥（cyber-city.spec.ts 同纪律）；长用例单独 setTimeout 放宽
+  test.describe.configure({ mode: 'serial', timeout: 420_000 });
+
+  // ---------------------------------------------------------------------------
+  // CITY-QST-01 目标线闭环（?poi= 深链非 ritual 腿——无状态机 ⇒ 挂载即激活，
+  // 出生落链首站触发圈 = 零驾驶取证链推进）：
+  //   ① 事件序：shown(step1) → reached(step1) → shown(step2)（seq 序，禁时长阈值）；
+  //   ② chip 呈现 ⇔ 埋点互证：步进 2/N + 楼名 + 距离读数 ≈ 站-1→站-2 泊位平面距；
+  //   ③ 非强制负断言：容器 pointer-events:none 全穿透（唯一交互件 = 折叠按钮
+  //      auto）+ 零模态；
+  //   ④ 折叠偏好：一键收起 → data-collapsed + localStorage 记忆 + collapsed 埋点；
+  //      再点展开 → expanded 埋点 + 属性摘除。
+  // ---------------------------------------------------------------------------
+  test('CITY-QST-01 目标线闭环：深链出生链首站到站 → 链推进 shown 步进 → 距离读数 → 折叠偏好（埋点互证）', async ({ page }, testInfo) => {
+    test.setTimeout(600_000); // 挂载 + 事件轮询（零长途驾驶腿）
+    const errors = trackErrors(page);
+    const station1 = CHAIN[0];
+    const station2 = CHAIN[1];
+
+    await page.goto(`${PAGE_URL}?poi=${station1}`);
+    const host = page.locator(SEL.host);
+    await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+
+    // —— ① 深链出生即落链首站触发圈：reached(1) 后链推进至站-2（seq 序断言）
+    const chained = await pollDump(
+      page,
+      (d) => questEvents(d).some((e) => e.data?.action === 'shown' && e.data?.step === 2),
+      90_000,
+    );
+    expect(chained.ok, '深链出生落链首站触发圈应推进主链至站-2（shown{step:2}）').toBe(true);
+    const quests = questEvents(chained.dump);
+    const shown1 = quests.find((e) => e.data?.action === 'shown' && e.data?.step === 1);
+    const reached1 = quests.find((e) => e.data?.action === 'reached' && e.data?.step === 1);
+    const shown2 = quests.find((e) => e.data?.action === 'shown' && e.data?.step === 2);
+    expect(shown1?.data?.targetId, '首个 shown 目标 = 链首站').toBe(station1);
+    expect(reached1?.data?.targetId, 'reached 站 = 链首站').toBe(station1);
+    expect(shown2?.data?.targetId, '链推进目标 = 链次站').toBe(station2);
+    expect(shown1!.seq, 'shown(1) 应先于 reached(1)').toBeLessThan(reached1!.seq);
+    expect(reached1!.seq, 'reached(1) 应先于 shown(2)').toBeLessThan(shown2!.seq);
+
+    // —— ② chip 呈现 ⇔ 埋点互证（非 ritual 腿无样式门属性，挂载即见）
+    const chip = page.locator(SEL.quest);
+    await expect(chip, '非 ritual 腿 chip 挂载即见').toBeVisible();
+    await expect(page.locator(SEL.questStep)).toHaveText(`2/${CHAIN.length}`);
+
+    // 距离读数 ≈ 站-1 泊位 → 站-2 泊位平面距（±30m：物理落位/漂移余量）
+    const bay1 = bayOf(station1);
+    const bay2 = bayOf(station2);
+    const expected = Math.hypot(bay2.x - bay1.x, bay2.z - bay1.z);
+    const distanceText = (await page.locator(SEL.questDistance).textContent()) ?? '';
+    const distance = Number(/^(\d+)m$/.exec(distanceText)?.[1]);
+    expect(Number.isFinite(distance), `距离读数应为「<整数>m」（实测「${distanceText}」）`).toBe(true);
+    expect(
+      Math.abs(distance - expected),
+      `距离读数 ${distanceText} 应≈站间泊位平面距 ${expected.toFixed(0)}m`,
+    ).toBeLessThan(30);
+    await page.screenshot({ path: 'test-results/quest-chain-step2.png' });
+
+    // —— ③ 非强制负断言（G4 红线：主链不锁楼、纯展示零输入劫持）
+    const chipPointer = await chip.evaluate((el) => getComputedStyle(el).pointerEvents);
+    expect(chipPointer, '容器必须全层穿透（不遮 CTA/HUD/摇杆热区）').toBe('none');
+    const toggle = page.locator(SEL.questToggle);
+    const togglePointer = await toggle.evaluate((el) => getComputedStyle(el).pointerEvents);
+    expect(togglePointer, '折叠按钮是唯一交互件').toBe('auto');
+    await expect(page.locator('dialog[open]'), '目标线不得弹任何模态').toHaveCount(0);
+
+    // —— ④ 折叠偏好：一键收起 + localStorage 记忆 + 埋点互证；再点展开
+    await toggle.click();
+    await expect(chip).toHaveAttribute('data-collapsed', '1');
+    expect(
+      await page.evaluate((key) => localStorage.getItem(key), QUEST_COLLAPSE_KEY),
+      '折叠偏好应持久化（记忆偏好红线）',
+    ).toBe('1');
+    const collapsedEv = await pollDump(
+      page,
+      (d) => questEvents(d).some((e) => e.data?.action === 'collapsed'),
+      30_000,
+    );
+    expect(collapsedEv.ok, '折叠应记 world-quest{action:collapsed}').toBe(true);
+    await toggle.click();
+    await expect(chip).not.toHaveAttribute('data-collapsed', '1');
+    const expandedEv = await pollDump(
+      page,
+      (d) => questEvents(d).some((e) => e.data?.action === 'expanded'),
+      30_000,
+    );
+    expect(expandedEv.ok, '展开应记 world-quest{action:expanded}').toBe(true);
+    await saveDump(testInfo, 'test-results/session-dump-quest.json', expandedEv.dump);
+
+    expect(errors.filter((m) => !isKnownUaError(m)), '目标线闭环零未捕获异常').toEqual([]);
+  });
+
+  // ---------------------------------------------------------------------------
+  // CITY-QST-02 恒等门 + car_ready 激活 + idle-30s 消费（ritual 腿，RM 快路径）：
+  //   ① 恒等双保险：robot_idle 期 chip 整层不可见（样式门）且零 world-quest 事件
+  //      （激活/光柱/首个 shown 一并推迟到 car_ready——poster 恒等合同）；
+  //   ② car_ready 激活：chip 可见 + shown{step:1, targetId:链首}；
+  //   ③ L7 空闲主动引导：driving 撒手 30 设计秒 → idle-30s 先入账、idle-nudge
+  //      随后（seq 序）⇔ nudge 行呈现互证（驻留至下一个驾驶意图，不赛跑淡出计时）；
+  //   ④ 输入即收：驾驶意图恢复 → nudge 隐藏（引导不粘身——非强制纪律）。
+  // ---------------------------------------------------------------------------
+  test('CITY-QST-02 恒等门 + car_ready 激活 + idle-30s 消费：robot_idle 隐藏零事件 → shown 链首 → 空闲 nudge 呈现（输入即收）', async ({ page }, testInfo) => {
+    test.setTimeout(2_100_000); // ritual 挂载 + 30 设计秒空闲（SwiftShader maxDelta 限频下墙钟可达十余分钟）
+    const errors = trackErrors(page);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+
+    await page.goto(PAGE_URL);
+    const host = page.locator(SEL.host);
+    await expect(host).toHaveAttribute('data-blocked', 'reduced-motion');
+    await host.locator('[data-world-enter]').click();
+    await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 120_000 });
+
+    // —— ① 恒等门：chip 已挂载但整层不可见；激活推迟 = robot_idle 期零 world-quest 事件
+    const chip = page.locator(SEL.quest);
+    await expect(chip).toBeAttached();
+    await expect(chip).toBeHidden();
+    expect(
+      questEvents(await readDump(page)).length,
+      'robot_idle 期目标线不得激活（光柱/shown 一并推迟——poster 恒等合同）',
+    ).toBe(0);
+
+    // —— ② car_ready 激活：chip 可见 + shown 链首站（RM instant swap 快路径）
+    await page.locator(SEL.transform).click();
+    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 15_000 });
+    await expect(chip).toBeVisible();
+    const shown = await pollDump(
+      page,
+      (d) => questEvents(d).some((e) => e.data?.action === 'shown' && e.data?.step === 1),
+      30_000,
+    );
+    expect(shown.ok, 'car_ready 应激活目标线（shown{step:1}）').toBe(true);
+    expect(
+      questEvents(shown.dump)[0]?.data?.targetId,
+      '首个目标 = 链首站（城区序主链）',
+    ).toBe(CHAIN[0]);
+    await expect(page.locator(SEL.questStep)).toHaveText(`1/${CHAIN.length}`);
+    await page.screenshot({ path: 'test-results/quest-car-ready.png' });
+
+    // —— ③ 进 driving 后撒手：30 设计秒零驾驶意图 → idle-30s 入账 + idle-nudge 同拍消费
+    await page.keyboard.down('w');
+    try {
+      await expect(host).toHaveAttribute('data-world-state', 'driving', { timeout: 60_000 });
+    } finally {
+      await page.keyboard.up('w');
+    }
+    const nudged = await pollDump(
+      page,
+      (d) => d.events.some((e) => e.type === 'idle-nudge'),
+      1_200_000,
+      2_000,
+    );
+    expect(nudged.ok, 'driving 空闲 30 设计秒应打 idle-nudge（idle-30s 消费腿）').toBe(true);
+    const idleEv = nudged.dump.events.find((e) => e.type === 'idle-30s');
+    const nudgeEv = nudged.dump.events.find((e) => e.type === 'idle-nudge');
+    expect(idleEv, 'idle-30s 应先入账（观测先行）').toBeTruthy();
+    expect(nudgeEv!.seq, 'idle-nudge 应晚于 idle-30s（seq 序，禁时长阈值）').toBeGreaterThan(
+      idleEv!.seq,
+    );
+    expect(nudgeEv?.data?.targetId, 'nudge 指向当前目标站').toBe(CHAIN[0]);
+
+    // nudge 呈现 ⇔ 埋点互证（驻留至下一个驾驶意图——断言免赛跑；RM 仅动画压 0，文字照常）
+    const nudge = page.locator(SEL.questNudge);
+    await expect(nudge).toBeVisible();
+    await expect(nudge, 'nudge 文案含目标语义').toContainText('下一站');
+    await page.screenshot({ path: 'test-results/quest-idle-nudge.png' });
+
+    // —— ④ 输入即收：驾驶意图恢复收起 nudge（引导不粘身）
+    await page.keyboard.down('w');
+    try {
+      await expect(nudge).toBeHidden({ timeout: 30_000 });
+    } finally {
+      await page.keyboard.up('w');
+    }
+
+    await saveDump(testInfo, 'test-results/session-dump-quest-idle.json', await readDump(page));
+    expect(errors.filter((m) => !isKnownUaError(m)), 'idle 消费闭环零未捕获异常').toEqual([]);
   });
 });
