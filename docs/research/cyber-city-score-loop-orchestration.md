@@ -7,7 +7,7 @@
 | 审计模型 | `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
-| 生产 tip | `main` @ `b80c67d` |
+| 生产 tip | `main` @ `79c3614` |
 
 ### 登记矩阵（**每次编排 Delta / 定时器回复必输出此表**）
 
