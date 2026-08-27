@@ -8,7 +8,7 @@
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
-| 生产 tip | `main` @ `3e03ea4`（登记 **92.5/70**） |
+| 生产 tip | `main` @ `1a94cd3`（登记 **92.5/70**） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -52,18 +52,18 @@ BL2 沿街扩展 → tone mapping（实模密度到位后）→ poster 三面收
 
 | ID | 分支 | PR | Agent | 状态 |
 |----|------|-----|-------|------|
-| CC-BL2 | `cursor/cc-bl2-street-extension-1d6f` @ `0b54513` | [#43](https://github.com/rayw-lab/website/pull/43) draft | [BL2](bc-3f4061c8-bf7c-58f5-b540-5e1a932d60ae) | ✅ **交付完成**（e2e 52/52 · 七维自评 71/92.8 已产出） |
-| CC-AL-BL2 | `cursor/cc-al-bl2-audit-1d6f` @ `7a5dffa`（已合 main） | — | [AL-BL2](bc-102414b6-9132-5de4-8de5-83580124910d) | ✅ **NO-GO** 独立 71/92.8（V4=71<72） |
-| CC-BL2-PLUS | 同上分支 · **本地未 push**（GLB SHA `2f5295…8303`） | — | [BL2-PLUS](bc-a8ca6d06-9f46-5728-86df-7ab43cd8a630) | 🔄 RUNNING · 取证补全中（LHCI 已中断） |
+| CC-BL2 | 已合入 PLUS 分支栈 | [#43](https://github.com/rayw-lab/website/pull/43) draft | [BL2](bc-3f4061c8-bf7c-58f5-b540-5e1a932d60ae) | ✅ 交付完成 |
+| CC-AL-BL2 | `cursor/cc-al-bl2-audit-1d6f` @ `7a5dffa`（已合 main） | — | [AL-BL2](bc-102414b6-9132-5de4-8de5-83580124910d) | ✅ **NO-GO** 首次 71/92.8（V4=71<72） |
+| CC-BL2-PLUS | `cursor/cc-bl2-street-extension-1d6f` @ **`a1362b4`** | — | [BL2-PLUS](bc-a8ca6d06-9f46-5728-86df-7ab43cd8a630) | 🔄 RUNNING · **全量 e2e 进行中**（~25/52） |
 
-报告：`docs/research/loop-bl2-audit.md` · 实现记录 `docs/research/cyber-city-bl2-plus-implementation.md`（本地） · **登记不变**（仍 BL1 70/92.5）
+报告：`docs/research/loop-bl2-audit.md` · 实现记录 `docs/research/cyber-city-bl2-plus-implementation.md`（已 push） · **登记不变**（仍 BL1 70/92.5）
 
-### AL-BL2 补洞段（CC-BL2-PLUS 进行中）
-1. whole-frame 可读新轮廓 — 实现段论证 robot-idle 几何不可达，改天际线 + `?poi=work-gallery` 沿街整帧取证（待复审裁决）
-2. README + asset-ledger — `0b54513` 已建档；PLUS 随 GLB 重生成待 push 更新 SHA/体积
-3. 七维自评 — 实现记录 §6 自评 **71**（V4=72 目标下沿），待 push
-4. GLB 字节已变 → 须重做 e2e 52/52 + LHCI（上次 e2e `@01:38` 为旧 GLB）
-5. 补洞 push 后派 **CC-AL-BL2 复审**（Sol），V4 须 **72–75** 方可合流 PR #43
+### AL-BL2 补洞段（CC-BL2-PLUS `@a1362b4`）
+1. whole-frame — 天际线重塑 + `?poi=work-gallery` 沿街整帧取证（robot-idle 几何论证见实现记录 §2）
+2. README + asset-ledger + GLB SHA `2f5295…8303`（148,240 B）— ✅ 已 push
+3. 七维自评 **71**（V4=72）— ✅ 实现记录 §6
+4. **全量 quality-loop** 跑盘中（e2e → LHCI）— 进行中
+5. 完成后派 **CC-AL-BL2 复审**（Sol），V4 须 **72–75** 方可合流 PR #43
 
 ## 渲染三条发现 — Sol 裁决
 
