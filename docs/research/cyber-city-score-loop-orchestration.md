@@ -174,7 +174,7 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 | 阶段 | 功能 | 性能 | 文档/状态 |
 |------|------|------|-----------|
-| 调研 RS | ✅ `cyber-city-gameplay-gap-audit.md` | 🔄 [PERF-RS](bc-23f6f84a-834f-561a-b326-7e086235d631) | 巨人肩膀 |
+| 调研 RS | ✅ `cyber-city-gameplay-gap-audit.md` | ✅ `cyber-city-runtime-perf-survey.md` [#59](https://github.com/rayw-lab/website/pull/59) 已合 | 巨人肩膀 |
 | 脑暴 BR | ✅ `cyber-city-gameplay-features.md` | 🔄 [PERF-BR](bc-59fb04e6-1012-59ad-9b69-52b6803886f0) | 特性清单 |
 | 设计思考 ADV | ✅ `cyber-city-fxn-advisor-consult.md` | ⚠️ 顾问 §3 镜像 | 架构裁决 |
 | 设计确认 DES | ✅ `cyber-city-function-rubric.md` + OBS spec | 🔄 [PERF-DES](bc-11dc483e-8b4e-5368-83b4-58df3962fe23) | rubric 正本 |
