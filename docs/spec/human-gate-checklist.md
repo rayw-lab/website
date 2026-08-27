@@ -181,6 +181,17 @@ pnpm human-gate:verify    # 回填签署档与证据后校验是否可签署
 | 2 | 【待填】 | 桌面【待填】 | Chrome 【待填】 | WebGL 2（`?gl=1`） | 变形+驾驶 20s | 【待填】 | 【待填】 | 【待填】 | 【待填】 | ☐ |
 | 3 | 【待填】 | 安卓中端【待填】 | Chrome 【待填】 | 默认 | 变形+驾驶 60s | 【待填】（门禁 ≥30fps；<24fps 触发降配止损，PRD §7.4） | 【待填】 | 【待填】 | 【待填】 | ☐ |
 | 4 | 【待填】 | 安卓中端【待填】 | Chrome 【待填】 | WebGL 2（`?gl=1`） | 变形+驾驶 60s | 【待填】 | 【待填】 | 【待填】 | 【待填】 | ☐ |
+| 5 | 【待填】 | 安卓中端（**行 3 同设备**）【待填】 | Chrome 【待填】 | 默认 + `?quality=2` | 变形+驾驶 60s + E 进站 | 【待填】（对照行 3 增益，留档不设门） | 【待填】 | 【待填】 | 【待填】 | ☐（P5：核心路径完成 + 无功能性缺失；帧率只留档） |
+| 6 | 【待填】 | 桌面（**行 1 同机**）【待填】 | Chrome 【待填】 + DevTools「Fast 4G」+ 清缓存 | 默认 | 加载 → robot_idle CTA 可用 | 秒表 【待填】s | `funnel.robotIdle` 【待填】ms | 【待填】 | 【待填】 | ☐（P3：两读数较大值 ≤8s；8–10s=70 / >10s=40） |
+
+**行 5/6 增补注记（CC-PERF-HG-PREP 执行性能 rubric §4.1 占位纪律；追加原计划归 PR-C，经顾问报告 `cyber-city-first-score-advisor.md` §3.2 前置至本 doc 腿）**：
+
+- **判定腿全集 = 六行**（`docs/spec/cyber-city-perf-rubric.md` §4.1 只读镜像，本表恒为回填正本与签字位）：行 1–2 计分 P1+P2、行 3–4 计分 P1、行 5 计分 P5（帧率对照行 3 留档不设门）、行 6 计分 P3。P4（预算）由 CI audit-budget 判定，不占本表行。
+- **动作脚本（S4 结构门同源口径）**：变形 → 十字路口驾驶，途中 **2 次急转 + 1 次撞道具 + 1 次 Shift boost**（桌面 20s / 安卓 60s；行 5 加 E 进站收尾；行 6 为计时腿不驾驶）——与 CITY-PERF-01 采样脚本同源，为凑读数裁剪即击穿 S4。
+- **行 6 列复用**：「FPS 均值 / 1% low」两列改填计时双读数（导航秒表 s / `__worldSession.dump().funnel.robotIdle` ms）；funnel 时基为 world 模块挂载起点、不含壳加载与 world chunk 下载，恒小于秒表——差 >1s 属预期仍须归因一句留痕，**判定取较大值**（rubric §2.2-P3）。
+- **三件套命名（城市档六行统一）**：`cityperf_<desktop|android>_<webgpu|gl2|q2|fast4g>_<yyyymmdd>.<mp4|png>`（区别于 §2 world-spike 的 `fps_*`），归档 `docs/spec/assets/human-gate/`；行 3 默认腿 token 按实际后端填，若与行 4 重名则行 3 追加 `-default` 后缀并在记录行注明。
+- **逐步执行手册** = `docs/research/cyber-city-perf-human-gate-runbook.md`（设备/浏览器/动作脚本/读数/填表/归档全流程；`/` 城市页无 `[data-ws-fps]` HUD，屏上读数走 `#debug` 面板或控制台 `__worldSpike.fps()`——读数口径详见手册 §1.3）。
+- **产不出 = 留空不伪造**（rubric §1 铁律 3 / §5.1 状态机）：行 1–4 任一缺 → P1 `null`；行 1–2 任一缺 → P2 `null`；行 5 缺 → P5 `null`；行 6 缺 → P3 `null`；**任一维 `null` → 登记顶层 `score` 必须 `null` → northStar.perf 仍显 `—`**。豁免走 §5.5 留痕先例，但豁免救不出数字（对应维仍 `null` + `debts` 欠账）；腿→维完整映射与欠账格式见手册 §5。
 
 ### 5.5 自动化证据摘要（豁免依据留痕，CC-M11 落账 · A4 硬条件 M12）
 
