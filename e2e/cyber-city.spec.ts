@@ -30,6 +30,7 @@
 //      按 ~30-40× 墙钟放大）：挂载→robot_idle 实测 ~75-110s（poster 生成脚本留档）
 //      → MOUNT_TIMEOUT 210s；变形窗 1.05s 设计 → car_ready 等待 120s；真机计时
 //      门禁（≤8s/≤2.5s）仍走 human-gate-checklist §5 走查表，CI 读数仅采集留档。
+import { readFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 import { u } from './helpers';
 
@@ -76,6 +77,45 @@ const SEL = {
  * **car_ready 起才挂属性**，robot_idle 期间属性缺席（DOM 面恒等）。
  */
 const DRIVE_VIEW_ATTR = 'data-drive-view';
+
+/**
+ * [CC-VEH-C2] 驾驶参数注册表单源（camera-shots.json；vehicle-camera spec §7.1 冻结
+ * 字段）。FOV 断言取注册表值而非字面量——运行时（View.ts 构造期读参）与数据面
+ * 对齐的机器证据（CC-AL-VEH 阻断项 A 验收 §5.1 之 3；Node ESM 下 JSON 用 fs 读，
+ * 避免 import attribute 分歧——AGENTS 已知坑）。
+ */
+const cameraShots = JSON.parse(
+  readFileSync(new URL('../src/data/camera-shots.json', import.meta.url), 'utf8'),
+) as {
+  schemaVersion: number;
+  shots: Record<
+    string,
+    {
+      mode: string;
+      anchor: { type: string };
+      posterContract?: string;
+      spherical?: Record<string, unknown>;
+      dynamics?: { speedSource: string; lookahead: Record<string, unknown> };
+      rig?: {
+        fovDeg: number;
+        fovKick: { maxDeg: number };
+        offsetLocal: Record<string, number>;
+        attitudeTransfer: Record<string, unknown>;
+      };
+    }
+  >;
+};
+/** fpv 基础 FOV 档（切换帧硬切写死；reduced-motion 逐帧恰等——spec §3 D3 / §10） */
+const DRIVE_FPV_FOV = cameraShots.shots.drive_fpv.rig!.fovDeg;
+/** fpv speed kick 上限（非 reduced-motion 驾驶中 FOV ∈ [fovDeg, fovDeg+maxDeg]） */
+const DRIVE_FPV_KICK_MAX = cameraShots.shots.drive_fpv.rig!.fovKick.maxDeg;
+/** third 基线 FOV（View.ts 城市档 42°；切回帧硬切恢复，third 路径不触投影） */
+const THIRD_FOV = 42;
+
+/** 引擎侧输出相机 FOV 遥测（__worldSpike.state().fov，度）——DOM 之外的第二口径 */
+async function engineFov(page: Page): Promise<number> {
+  return page.evaluate(() => (window as any).__worldSpike.state().fov);
+}
 
 /** 状态机等待（SwiftShader 校准，文件头⑤）：自动挂载静置 1.8s + 资产加载 + 引擎
  *  初始化 + Reveal 光柱落定（设计 ≈1.15s → 慢动作 ~40s 墙钟），实测全链 ~75-110s */
@@ -339,6 +379,13 @@ test.describe('科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium �
     await page.keyboard.press('v');
     await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'fpv');
     await expect(host).toHaveAttribute('data-world-state', 'car_ready');
+    // [CC-VEH-C2] FOV 硬切断言（CC-AL-VEH 阻断项 B 验收 §7.3 之 4）：切换帧基础档
+    // 已写死投影；car_ready 静止（v < kick speedEdge.min ⇒ kick 恒精确 0）恰等
+    // 注册表 drive_fpv.rig.fovDeg——旧缺陷此刻仍在 42° 起低通（首采样帧 43.52°）
+    expect(
+      await engineFov(page),
+      'V 切 fpv 后 FOV 必须硬切至注册表 fovDeg（静止零 kick ⇒ 恰等）',
+    ).toBe(DRIVE_FPV_FOV);
 
     // —— CITY-VEH-04：FPV 驾驶冒烟——fpv 态按住 W → driving 接管、视角保持 fpv
     await page.keyboard.down('w');
@@ -357,11 +404,19 @@ test.describe('科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium �
       // —— CITY-VEH-01：driving 态 V 往返（硬切即时生效，D3）
       await page.keyboard.press('v');
       await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'third');
+      // [CC-VEH-C2] 切回帧 FOV 恒基线 42（third 直通路径不触投影，硬切恢复恰等）
+      expect(await engineFov(page), 'fpv→third 切回帧 FOV 必须恰回基线').toBe(THIRD_FOV);
       await page.screenshot({ path: 'test-results/veh-third-driving.png' });
       await page.keyboard.press('v');
       await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'fpv');
+      // [CC-VEH-C2] 驾驶中切 fpv：基础档立即 ≥ fovDeg（42→58 档差不入低通——旧缺陷
+      // 此刻 ~43.5° 渐近）；speed kick 为唯一低通分量，上界 fovDeg + maxDeg
+      const fovDriving = await engineFov(page);
+      expect(fovDriving, '驾驶中切 fpv 基础档差必须硬切').toBeGreaterThanOrEqual(DRIVE_FPV_FOV);
+      expect(fovDriving).toBeLessThanOrEqual(DRIVE_FPV_FOV + DRIVE_FPV_KICK_MAX);
       await page.keyboard.press('v');
       await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'third');
+      expect(await engineFov(page)).toBe(THIRD_FOV);
       // 往返期间驾驶态不受视角切换扰动
       await expect(host).toHaveAttribute('data-world-state', 'driving');
     } finally {
@@ -394,7 +449,84 @@ test.describe('科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium �
     // V 硬切往返（无动画窗，即按即换）
     await page.keyboard.press('v');
     await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'fpv');
+    // [CC-VEH-C2] reduced-motion FOV 硬切合同（CC-AL-VEH 阻断项 B；spec §3 D3 +
+    // §10「FOV kick 关（恒 58°）」）：切换即恰等注册表 fovDeg——旧缺陷把 42→58
+    // 档差套入 3s⁻¹ 低通（首采样帧 43.52°、稳定采样 56.04°）
+    expect(
+      await engineFov(page),
+      'reduced-motion 切 fpv 后 FOV 必须硬切恰等 fovDeg',
+    ).toBe(DRIVE_FPV_FOV);
+    // 稳定性采样窗（旧缺陷此窗口仍在渐近未收敛）：逐帧保持恰 58，kick 恒 0
+    await page.waitForTimeout(2_000);
+    expect(
+      await engineFov(page),
+      'reduced-motion FPV 期间 FOV 必须逐帧恰等 fovDeg（kick 恒 0，无低通渐近）',
+    ).toBe(DRIVE_FPV_FOV);
     await page.keyboard.press('v');
     await expect(host).toHaveAttribute(DRIVE_VIEW_ATTR, 'third');
+    // 切回帧两向同断言（审计 §7.3 之 4「reduced-motion 两向同断言」）
+    expect(await engineFov(page), 'reduced-motion 切回 third FOV 必须恰回基线').toBe(THIRD_FOV);
   });
+});
+
+// ---------------------------------------------------------------------------
+// CITY-VEH-07 相机注册表 drive shots 合同（CC-VEH-C2；CC-AL-VEH 阻断项 A 验收 §5.1 之 3）
+// 条款：vehicle-camera spec §7.1（drive_third/drive_fpv 字段冻结）、§7.2（CAM-C1
+//       已合 → 追加条目并改读注册表、删内联双源）；schemaVersion 1 加法兼容 +
+//       ritual_idle 条目零改动（poster 协议 B）。
+// 纯 Node 断言（零浏览器/3D 挂载，顶层用例不入串行 describe）：注册表两 key 与
+// 关键字段存在性 + 运行时消费入口（View.ts import 注册表、TODO 双源标记清除）；
+// 运行时行为面证据 = 上方 VEH 用例的 FOV 遥测断言（值同取自本注册表）。
+// ---------------------------------------------------------------------------
+test('CITY-VEH-07 相机注册表：drive_third/drive_fpv 登记（spec §7.1 冻结值）+ View 注册表消费 + ritual_idle 冻结守卫', () => {
+  // schemaVersion 1 加法合同（破坏性变更须 +1——本批只做加法）
+  expect(cameraShots.schemaVersion).toBe(1);
+
+  // drive_third：lookahead 参数组（spec §6.1 冻结值；steeringSmoothRate 为 §9.1
+  // 舵量低通 8 s⁻¹ 的加法补录）
+  const driveThird = cameraShots.shots.drive_third;
+  expect(driveThird, 'drive_third 必须登记').toBeTruthy();
+  expect(driveThird.mode).toBe('drive');
+  expect(driveThird.anchor).toEqual({ type: 'vehicle' });
+  expect(driveThird.dynamics!.speedSource).toBe('focusPointSpeed');
+  expect(driveThird.dynamics!.lookahead).toMatchObject({
+    maxDistance: 4.5,
+    speedEdge: { min: 3, max: 20 },
+    directionSmoothRate: 6,
+    magnitudeSmoothRate: 4,
+    steeringShrink: 0.45,
+    steeringSmoothRate: 8,
+    offsetRateClamp: 8,
+    stateGate: 'driving',
+    reducedMotion: 'off',
+  });
+
+  // drive_fpv：rig 参数组（spec §6.2 冻结值）
+  const driveFpv = cameraShots.shots.drive_fpv;
+  expect(driveFpv, 'drive_fpv 必须登记').toBeTruthy();
+  expect(driveFpv.mode).toBe('drive');
+  expect(driveFpv.anchor).toEqual({ type: 'vehicle' });
+  expect(driveFpv.rig).toMatchObject({
+    offsetLocal: { x: 0.35, y: 0.55, z: 0 },
+    fovDeg: 58,
+    fovKick: { maxDeg: 6, speedEdge: { min: 8, max: 24 }, smoothRate: 3 },
+    attitudeTransfer: { yaw: 1, pitch: 0.7, roll: 0.35, pitchSmoothRate: 10, rollSmoothRate: 8 },
+  });
+
+  // ritual_idle 冻结守卫（poster 协议 B：drive 条目为纯加法，禁改本条目）
+  const ritual = cameraShots.shots.ritual_idle;
+  expect(ritual.posterContract).toBe('frozen');
+  expect(ritual.mode).toBe('ritual');
+  expect(ritual.spherical).toMatchObject({ phiDeg: 75, thetaDeg: 25 });
+
+  // 运行时消费入口（阻断项 A「注册与消费对齐」的源面证据）：View.ts import
+  // 注册表读两组参数，内联双源 TODO 清除（spec §7.2 降级条款到期删除）
+  const viewSource = readFileSync(
+    new URL('../src/lab/world/view/View.ts', import.meta.url),
+    'utf8',
+  );
+  expect(viewSource).toContain("from '../../../data/camera-shots.json'");
+  expect(viewSource).toContain('cameraShots.shots.drive_third.dynamics.lookahead');
+  expect(viewSource).toContain('cameraShots.shots.drive_fpv.rig');
+  expect(viewSource, '内联双源 TODO 必须清除（spec §7.2）').not.toContain('TODO(CC-CAM');
 });
