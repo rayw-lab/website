@@ -7,9 +7,9 @@
 | 审计模型 | `gpt-5.6-sol-xhigh-fast`（**禁止降级**） |
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
-| 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
-| **指挥官约束** | **无 CC-CAM 接入主线 → 视觉登记封顶 70**；CAM 为突破 70 的**必经门控** |
-| 生产 tip | `main` @ `1c337e0`（登记 **92.5/70**） |
+| 北极星 | 综合 **98** · **视觉 98** · **功能 90** · **性能 85**（登记 **92.5/70**，Δ 见下） |
+| **指挥官约束** | 无 CC-CAM → 视觉登记封顶 **70**；**功能/性能须独立 rubric + 可观测证据登记** |
+| 生产 tip | `main` @ `3ef208d`（登记 **92.5/70**） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -48,10 +48,11 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 ### 通往 98（主线序 · 已拍板）
 
 1. **Loop 6 CC-CAM**（镜头/POI 单源 → **合 main**）— **当前主线**；无此步视觉 **≤70**
-2. **Loop 7 CC-VEH + CC-TRANS-FX**（驾驶 FPV + 变形粒子炫技）— 指挥官追加，与 CAM 驾驶 shot 对齐后集成
-3. BL2 栈 + CAM 镜头 → **CC-BL2-CAM 重审**（PR #43 待机，禁止先合）
-4. tone mapping（实模+机位到位后）
-5. poster 三面收口（**永远最后**；动 ritual_idle 须单独批次）
+2. **Loop 7 CC-VEH + CC-TRANS-FX**（驾驶 FPV + 变形粒子炫技）
+3. **Loop 8 CC-FXN + CC-OBS**（功能 90 / 性能 85 / 可观测）— **指挥官追加 · 与视觉并行**
+4. BL2 栈 + CAM → **CC-BL2-CAM 重审**（PR #43 待机）
+5. tone mapping（实模+机位到位后）
+6. poster 三面收口（**永远最后**）
 
 ## Loop 6 — CC-CAM 镜头/POI 机位（🔄 主线 · 多路并行）
 
@@ -126,6 +127,36 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 - 变形四拍 **1.0–1.2s** 墙钟不变；reduced-motion instant swap
 - `robot_idle` ritual 恒等；禁 free 漫游
 - CITY-03 配额：变形粒子须书面登记席位
+
+## Loop 8 — 功能/游戏化/可观测（🔄 指挥官追加 · 功能 90 / 性能 85）
+
+| 项 | 内容 |
+|----|------|
+| 触发 | 实玩 ~2min：交互/人性化/游戏特性不足；要多在 **功能** 下功夫 |
+| 入口 | `docs/research/cyber-city-function-gameplay-loop.md` |
+| 北极星 | **功能 90** · **性能 85**（独立于视觉 98） |
+| 模型 | **Fable5 xhigh** 顾问 + RS/BR/DES/OBS/IMPL → **CC-AL-FXN**（Sol） |
+| 关键 | **可观测先行**——无埋点/会话时间线不得登记功能分 |
+
+### 子 Task（并行派发）
+
+| ID | 分支 | Agent | 状态 |
+|----|------|-------|------|
+| CC-FXN-ADV | — | 待派发 | 🔄 顾问咨询（可观测 + rubric 冻结） |
+| CC-FXN-RS | `cursor/cc-fxn-gameplay-gap-audit-1d6f` | 待派发 | 🔄 2min 体验缺口审计 |
+| CC-FXN-BR | `cursor/cc-fxn-gameplay-features-1d6f` | 待派发 | 🔄 P0 游戏化脑暴 |
+| CC-FXN-DES | `cursor/cc-fxn-function-rubric-1d6f` | 待派发 | ⏳ 待 ADV 后 |
+| CC-OBS-DES | `cursor/cc-obs-observability-spec-1d6f` | 待派发 | ⏳ 待 ADV 后 |
+
+### 合流序
+
+| 步 | 内容 |
+|----|------|
+| ① | ADV 报告 + RS 缺口清单 + BR 脑暴（doc-only） |
+| ② | OBS 规格 + 功能 rubric 规格 |
+| ③ | CC-OBS-C1（SessionTimeline / 埋点 / `#debug`） |
+| ④ | CC-FXN-C1…（P0 交互，单 PR 单主题） |
+| ⑤ | CC-AL-FXN + 性能 human-gate 回填 |
 
 ## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流 · 待机至 Loop 6 后重审）
 
