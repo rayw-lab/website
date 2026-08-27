@@ -2,7 +2,7 @@
 
 > 执行模型自报：**claude-fable-5-thinking-xhigh**
 
-> ⏳ 取证进行中（本文件随每条腿完成增量提交；最终登记以 `cyber-city-function-rubric-score.json` 为准）。
+> ⛔ **R5 已终止（2026-08-27）**：会话在 L1–L3 提交（tip `eeb78bc`）后约 63 分钟无 push 被 API stop——S-2 主腿 + 环境腿 + L1–L3 证据完整入账，**L4–L7、逐维打分与登记 JSON 未收口**。本文件保留为 R5 已完成证据的正本；L4–L7 补齐、双 Pass 合议与登记由 **CC-AL-FXN-R6**（`loop8-fxn-r6-audit.md`，分支 `cursor/cc-al-fxn-r6-1d6f`）在同一评分对象 `main@dc3f56b` 上接续完成。R5 §1–§3 证据经 R6 同源复核后**合法复用**（同 commit、同 src 指纹——见 R6 §1 互证）。
 
 ## 0. 审计事实（kickoff）
 
