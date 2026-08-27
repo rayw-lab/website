@@ -205,6 +205,8 @@
 
 ## 5. 性能 rubric v1（并入正本 · 顾问 §3 冻结镜像）
 
+> **正本已迁 `docs/spec/cyber-city-perf-rubric.md`**（v1.0 冻结，CC-PERF-DES）——本节自此为冻结时点镜像；逐维锚点分段/85 门（数值门 + 结构门 S1–S5）/真机六腿以该正本为准（指针注记随 PR-A 落地，加法不改秤）。
+
 性能 85 与 LHCI 彻底分立：LHCI 测壳加载（`/` 已 P100），**性能分分母是 world 运行时体验**。判定权威 = 真机 human-gate §5.4；CI（CITY-PERF-01，归 OBS 批次落地）只做下界哨兵。登记位 `cyber-city-perf-rubric-score.json`（§6.2）。
 
 | 维 | 权重 | 口径 | 判定权威 | 锚点 |
@@ -262,6 +264,8 @@
 ```
 
 ### 6.2 `docs/research/cyber-city-perf-rubric-score.json`
+
+> **正本已迁 `docs/spec/cyber-city-perf-rubric.md` §5.2**（全量 schema：增 `gates` 结构门逐条判定 + `debts` 欠账清单 + null 语义）——本节草案为冻结时点镜像（指针注记随 PR-A 落地，加法不改秤）。
 
 同构骨架，差异字段：`target: 85`；`dimensions` 换 `p1FrameRate`(.30) / `p2OnePercentLow`(.20) / `p3LoadToPlayable`(.20) / `p4Budget`(.15) / `p5QualityFallback`(.15)；`evidence` 增 `humanGate`（human-gate §5.4 记录行引用**或豁免留痕 + 欠账清单**）与 `ciEvidence`（`city-perf-evidence.jsonl` 同 commit 对照，标注「下界哨兵非判定」）。真机行产不出时对应维 `score` 置 `null` 留空——**禁止以预计值填充**。
 
