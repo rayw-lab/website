@@ -262,6 +262,9 @@ test.describe('科技城驾驶反馈包（CC-FXN-C2 · world-chromium 串行 pro
 //   （[data-world-hint-recall]）+ 状态行分文案（[data-world-status]）。
 //   埋点随行互证：hint-shown / hint-recall{via} / hint-dismissed{by}
 //   （观测规格 §3.4 ux 族；hint-recall 为本 PR 随行加法）。
+//   计时校准：本组等待窗按「共享 VM 多代理并发挤兑」上界放宽（robot_idle/
+//   car_ready 210s、driving 120s、淡出 300s）——SwiftShader 纪律不变：只断
+//   存在性/顺序性/文案，放宽窗口不弱化断言（cyber-city.spec.ts 文件头⑤同源）。
 // ---------------------------------------------------------------------------
 const HINT_SEL = {
   hint: '[data-world-hint]',
@@ -270,7 +273,7 @@ const HINT_SEL = {
 } as const;
 
 test.describe('科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串行 project）', () => {
-  test.describe.configure({ mode: 'serial', timeout: 420_000 });
+  test.describe.configure({ mode: 'serial', timeout: 900_000 });
 
   // ---------------------------------------------------------------------------
   // CITY-HINT-01 单例全链（挂载成本纪律同 CITY-VEH/CITY-FB 先例）：
@@ -286,14 +289,14 @@ test.describe('科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串
   test('CITY-HINT-01 键位卡全链：恒等门 → car_ready 全键位浮现 → 首驶阅读窗 → 淡出 → H/按钮再唤出（埋点互证）', async ({ page }) => {
     // 全链 = 挂载 + 变形 + 淡出等待（4 设计秒 ≈ 慢动作最长 ~2min 墙钟）+ 多次 toggle，
     // 对齐 CITY-VEH/CITY-FB 全链先例放宽至 600s
-    test.setTimeout(600_000);
+    test.setTimeout(900_000);
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
 
     await page.goto(PAGE_URL);
     const host = page.locator(SEL.host);
     await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
-    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 120_000 });
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 210_000 });
 
     const hint = page.locator(HINT_SEL.hint);
     const recall = page.locator(HINT_SEL.recall);
@@ -309,7 +312,7 @@ test.describe('科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串
 
     // —— ② 变形至 car_ready：键位卡自动浮现 + 全键位文案（GAP-08：E/Esc 补盲）
     await page.locator(SEL.transform).click();
-    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 120_000 });
+    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 210_000 });
     await expect(hint).toBeVisible();
     for (const key of ['Space/B 刹车', 'V 切换视角', 'R 回到路口', 'E 进站', 'Esc 菜单']) {
       await expect(hint, `键位卡应含「${key}」`).toContainText(key);
@@ -321,7 +324,7 @@ test.describe('科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串
     // —— ③ 首驶阅读窗：driving 接管时键位卡仍可见（原「即隐」= GAP-08 主诉）
     await page.keyboard.down('w');
     try {
-      await expect(host).toHaveAttribute('data-world-state', 'driving', { timeout: 60_000 });
+      await expect(host).toHaveAttribute('data-world-state', 'driving', { timeout: 120_000 });
       await expect(hint, '首驶接管帧键位卡不得即隐（重开阅读窗）').toBeVisible();
       await expect(page.locator(HINT_SEL.status)).toContainText('按 H 重看键位');
       await page.screenshot({ path: 'test-results/hint-first-drive.png' });
@@ -330,7 +333,7 @@ test.describe('科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串
     }
 
     // —— ④ 自动淡出（HINT_FADE_DELAY=4 设计秒；SwiftShader 慢动作 ~30-40× 放大）
-    await expect(hint).toBeHidden({ timeout: 210_000 });
+    await expect(hint).toBeHidden({ timeout: 300_000 });
     let dump = await dumpSession(page);
     expect(
       dump.events.some((e) => e.type === 'hint-shown'),
@@ -377,18 +380,18 @@ test.describe('科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串
 // SessionTimeline env.touch 同源，dump 互证。
 // ---------------------------------------------------------------------------
 test.describe('科技城触屏文案分稿（CC-FXN-C1 · pointer: coarse）', () => {
-  test.describe.configure({ mode: 'serial', timeout: 420_000 });
+  test.describe.configure({ mode: 'serial', timeout: 900_000 });
   test.use({ hasTouch: true });
 
   test('CITY-HINT-02 触屏分文案：摇杆口径键位卡（零键盘键位）+「操作说明」召回按钮 + env.touch 互证', async ({ page }) => {
-    test.setTimeout(600_000);
+    test.setTimeout(900_000);
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
 
     await page.goto(PAGE_URL);
     const host = page.locator(SEL.host);
     await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
-    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 120_000 });
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 210_000 });
 
     // 检测口径互证：Reveal 分稿与 SessionTimeline env.touch 同一 matchMedia 口径
     const dump0 = await dumpSession(page);
@@ -399,7 +402,7 @@ test.describe('科技城触屏文案分稿（CC-FXN-C1 · pointer: coarse）', (
     await expect(status).toContainText('点按「变形 · 巡航态」');
 
     await page.locator(SEL.transform).click();
-    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 120_000 });
+    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 210_000 });
 
     // 键位卡触屏稿：摇杆/点按口径，零键盘键位（GAP-18「键盘口径对触屏是噪声」）
     const hint = page.locator(HINT_SEL.hint);
