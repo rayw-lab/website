@@ -8,7 +8,7 @@
 | 范式手册 | `docs/research/cyber-city-orchestration-paradigm.md` · `AGENTS.md` §4 |
 | 自动驾驶 | 指挥官授权：Fable5 顾问咨询后父代理拍板，**全马力推进**，不考虑子代理执行预算 |
 | 北极星 | 综合 **98**（登记 **92.5/70**，Δ **−5.5**） |
-| 生产 tip | `main` @ `291b551`（登记 **92.5/70**） |
+| 生产 tip | `main` @ `6bd9ca6`（登记 **92.5/70**，复审 NO-GO 未变） |
 
 ## Loop 5 — ✅ 有条件放行
 
@@ -48,22 +48,22 @@ Agent：[MNT](bc-bf3ea1a2-5bfd-569c-9426-f51f841ac5ef) · e2e 52/52（补跑归�
 
 BL2 沿街扩展 → tone mapping（实模密度到位后）→ poster 三面收口
 
-## BL2 — ❌ AL-BL2 NO-GO（PR #43 禁止合流）
+## BL2 — ❌ AL-BL2 复审仍 NO-GO（PR #43 禁止合流）
 
 | ID | 分支 | PR | Agent | 状态 |
 |----|------|-----|-------|------|
-| CC-BL2 | 已合入 PLUS 分支栈 | [#43](https://github.com/rayw-lab/website/pull/43) draft | [BL2](bc-3f4061c8-bf7c-58f5-b540-5e1a932d60ae) | ✅ 交付完成 |
-| CC-AL-BL2 | `cursor/cc-al-bl2-audit-1d6f` @ `7a5dffa`（已合 main） | — | [AL-BL2](bc-102414b6-9132-5de4-8de5-83580124910d) | ✅ **NO-GO** 首次 71/92.8（V4=71<72） |
-| CC-BL2-PLUS | `cursor/cc-bl2-street-extension-1d6f` @ **`a1362b4`** | — | [BL2-PLUS](bc-a8ca6d06-9f46-5728-86df-7ab43cd8a630) | 🔄 RUNNING · **e2e 52/52 ✅** · LHCI 收集中 |
+| CC-BL2 | 已合入 PLUS 栈 | [#43](https://github.com/rayw-lab/website/pull/43) draft | [BL2](bc-3f4061c8-bf7c-58f5-b540-5e1a932d60ae) | ✅ 交付完成 |
+| CC-BL2-PLUS | `cursor/cc-bl2-street-extension-1d6f` @ **`fcdfcb5`** | — | [BL2-PLUS](bc-a8ca6d06-9f46-5728-86df-7ab43cd8a630) | ✅ **交付完成**（e2e 52/52 · LHCI 全绿） |
+| CC-AL-BL2 首次 | `cursor/cc-al-bl2-audit-1d6f` @ `7a5dffa`（已合 main） | — | [AL-BL2](bc-102414b6-9132-5de4-8de5-83580124910d) | ✅ NO-GO 71/92.8 |
+| CC-AL-BL2 复审 | `cursor/cc-al-bl2-audit-1d6f` @ **`8d8b604`** | — | [AL-BL2-R2](bc-57c16013-d459-513b-a2dc-7b622c1d00bc) | ✅ **NO-GO** 仍 **71/92.8**（V4=71<72） |
 
-报告：`docs/research/loop-bl2-audit.md` · 实现记录 `docs/research/cyber-city-bl2-plus-implementation.md`（已 push） · **登记不变**（仍 BL1 70/92.5）
+报告：`docs/research/loop-bl2-audit.md` · `docs/research/loop-bl2-reaudit.md` · **登记不变**（仍 BL1 **70/92.5**）
 
-### AL-BL2 补洞段（CC-BL2-PLUS `@a1362b4`）
-1. whole-frame — 天际线重塑 + `?poi=work-gallery` 沿街整帧取证（robot-idle 几何论证见实现记录 §2）
-2. README + asset-ledger + GLB SHA `2f5295…8303`（148,240 B）— ✅ 已 push
-3. 七维自评 **71**（V4=72）— ✅ 实现记录 §6
-4. **全量 quality-loop** — e2e **52/52**（18.5m exit 0）✅ · LHCI 收集中
-5. 完成后派 **CC-AL-BL2 复审**（Sol），V4 须 **72–75** 方可合流 PR #43
+### AL-BL2 复审结论（`fcdfcb5` 候选）
+- 天际线/沿街整帧有像素变化，但 **work-gallery 固定帧仍无法读出完整新轮廓**（冠环被裁切）
+- robot-idle 几何不可达（PLUS §2 与首次审计一致）
+- e2e 52/52 · LHCI `/`+`/home/` 四项全 100 · 双评门 `|71−71|=0` — 均过，**V4 专项门仍失败**
+- **禁止登记复审 71** · PR #43 **禁止合流**
 
 ## 渲染三条发现 — Sol 裁决
 
