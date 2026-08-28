@@ -482,15 +482,16 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     } finally {
       await page.keyboard.up('w');
     }
-    // 原点出圈仍留 (0,-24) 途径点（OBS-01 同款：先出隔离墩阵再入西走廊）。
-    // [CC-VIS-X2-TRIAGE] 原 (0,-24)→(-28,-28) 直线在 x=-15.7 处 z=-26.24，正穿
-    // X2 前景景框左桥腿箱体 (-15.7,-26)±0.62——插入南绕行途径点 (-19,-31.5)
-    // （腿箱南缘与灯杆 (-13.5,-34) 之间槽带；EXP-01 同批绕行口径）
+    // 原点出圈仍留 (0,-24) 途径点（先出隔离墩阵再入西走廊）。
+    // [CC-VIS-X2-TRIAGE r1] 原 (0,-24)→(-28,-28) 直线在 x=-15.7 处 z=-26.24，正穿
+    // X2 前景景框左桥腿箱体 (-15.7,-26)±0.62——插入南绕行途径点 (-20,-32.5)
+    // （腿箱南缘 −26.62 与灯杆 (-13.5,-34) 之间槽带，最劣停车圆位形下边距仍
+    // ≥1.1m；西侧无 X1 hero 道具带，agent-nexus 为 footprint 碰撞）
     const target = bayOf(SECOND_POI);
     const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 6, timeoutMs: 480_000 });
     expect(leg1.ok, `途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`).toBe(true);
-    const legM = await driveTo(page, { x: -19, z: -31.5 }, { radius: 3, timeoutMs: 360_000 });
-    expect(legM.ok, `途径点 (-19,-31.5) 应可达（实测 x=${legM.state.x.toFixed(1)} z=${legM.state.z.toFixed(1)}）`).toBe(true);
+    const legM = await driveTo(page, { x: -20, z: -32.5 }, { radius: 3, timeoutMs: 360_000 });
+    expect(legM.ok, `途径点 (-20,-32.5) 应可达（实测 x=${legM.state.x.toFixed(1)} z=${legM.state.z.toFixed(1)}）`).toBe(true);
     const leg2 = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 360_000 });
     expect(leg2.ok, `泊车位 (${target.x},${target.z}) 应可达（实测 x=${leg2.state.x.toFixed(1)} z=${leg2.state.z.toFixed(1)}）`).toBe(true);
 
