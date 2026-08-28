@@ -2,7 +2,7 @@
 
 状态：**MERGE-WAVE 已收口（8/8）**；W2 视觉链 **#101 X1b 已解锁**。父代理待命，下一棒 **P1 = X2 #104 rebase**。
 
-最后更新：2026-08-28T02:41 UTC（`handoff-check-merge-r9` tick）
+最后更新：2026-08-28T02:56 UTC
 
 ## 1. 父代理本轮动作
 
@@ -13,7 +13,7 @@
 | S2 指挥官 kit | ✅ [#108](https://github.com/rayw-lab/website/pull/108) |
 | 本交接单 | draft [#107](https://github.com/rayw-lab/website/pull/107) |
 | `/loop` 定时器 | 已退；`handoff-check-merge-r9` 续 tick |
-| 新派 Task | **待指挥官批准 fan-out** → P1 X2 rebase；秘书 post-merge → draft **#109** 已开 |
+| 新派 Task | Desktop/编排侧已派：**P1 X2 rebase** [bc-0364bcc9](https://cursor.com/agents/bc-0364bcc9-8e20-5c51-a93c-5f7414d9305c) RUNNING；父代理 Cloud 仍待命 |
 
 ## 2. main 与 MERGE-WAVE（✅ 完成）
 
@@ -94,6 +94,8 @@
 | 02:30 | MERGE-WAVE/R9 均 **IDLE**；main `88097f9`；#103 Codex 阻断；**不 fan-out**；Desktop 编排已切 `cc-vis-x2-facade-r2` 分支 |
 | 02:41 | 无新合流；#104 仍 draft（未 rebase）；Cloud 子代理全 IDLE；Desktop X2 分支 RUNNING；**不 fan-out** |
 | 02:47 | Desktop 开 draft [**#109**](https://github.com/rayw-lab/website/pull/109) 秘书 post-merge 看板刷新（`cc-loop-sec-p3-5b71`） |
+| 02:51 | **Desktop 派 3 路 Cloud VM**：P1 [X2 rebase](bc-0364bcc9-8e20-5c51-a93c-5f7414d9305c) · [Tick#2 顾问复核](bc-5c9a57d6-9379-5830-8ea7-977b46b71ed9) · [Loop 顾问 R1](bc-76bee241-08c9-5db0-83dd-2afa400347e1)；#104 仍 draft；main `88097f9` |
+| 02:56 | [Loop 顾问 R1](bc-76bee241-08c9-5db0-83dd-2afa400347e1) IDLE → draft [**#110**](https://github.com/rayw-lab/website/pull/110)（2–3 天 VM loop 方案）；#104 synchronize（tip 仍 `c24c7f3` R4 kickoff，X2 rebase 仍 RUNNING）；秘书 #109 IDLE |
 
 ---
 
