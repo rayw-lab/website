@@ -1,7 +1,8 @@
 # CC-LOOP-AUDIT-AUD-C1 段末独立审计报告（#164 AUD-C1 合入 main 后）
 
 - **审计人**：CC-LOOP-AUDITOR-AUD-C1（×1，不设 ×2；董事会执行令 = main@`d895db7` #165 正本）；**R2 接管**：原审计 Agent 于 §4.2 全量回填前 ERROR（半成品推至 `cursor/cc-loop-audit-aud-c1-2aee`@`7c5a112`），AUD-C1-AUDIT-R2 以新标签接管（禁 resume 已兑现）——新分支 `cursor/cc-loop-audit-aud-c1-r2-f37e` base=origin/main@`3fe7c5f`，cherry-pick 半成品后复核 §0–5、fresh 自跑补齐 §4.2/§6
-- **模型**：claude-fable-5-thinking-xhigh（R1/R2 同 slug）
+- **R3 接管声明**：R2（`bc-e4dd7883`）于 §4.2 全量结果回填前再度失联，**R2 E7 DEAD 依据 #175**（董事会急裁 [#175](https://github.com/rayw-lab/website/pull/175) → main@`4a58789`，`docs/research/cc-loop-board-aud-r2-e7-dead.md`；tip 冻结 `b5542ac` + 面板 RUNNING 失真双窗互证，禁 resume）。AUD-C1-AUDIT-R3 自报 slug **claude-fable-5-thinking-xhigh**，fresh 锚 = origin/main@**`4a58789`**，在同分支 `cursor/cc-loop-audit-aud-c1-r2-f37e` **append-only 续写**（保留 `b5542ac`，禁 force-push），按心跳条款 HB-1..5 补齐 §1/§3.5 锚记、§4.2 全量 fresh 自跑与 §6 裁决
+- **模型**：claude-fable-5-thinking-xhigh（R1/R2/R3 同 slug）
 - **纪律**：零业务代码（本 PR 仅新增本报告一个文件）；R1 动态取证于独立 worktree `/tmp/aud-c1-wt`（锚 = 审计对象 SHA），R2 全量 e2e 于新 VM 独占跑道 fresh 自跑（§4.2）；未跑 fps-probe（无令不飞）
 - **审计对象**：[#164](https://github.com/rayw-lab/website/pull/164) squash → **main@`38a2086`**（CC-AUD-C1 驾驶五事件 WebAudio 纯合成音效层 v0）
 - **时间窗**：2026-08-28 10:41–12:00 UTC 附近（fresh 取证与动态复跑均在合入后当日完成）
