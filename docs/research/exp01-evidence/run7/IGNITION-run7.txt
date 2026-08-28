@@ -1,0 +1,8 @@
+IGNITION-run7 v1 · Board R3 #151 §F · parent @2026-08-28T08:28:26Z
+host_fingerprint: cursor-44cb5599-cursor
+HOLD核对行: run5 BURNED run6 RETIRED; α/β diagnostic only; baseline v2=00fd832
+tip_frozen: 00fd832
+真空档: /tmp/evidence-exp01/vacuum-run7.txt PASS @08:28:27Z（晚于本令）
+起飞: tmux env-exp01-run7 · wrapper PID 107551 · log /tmp/env-exp01-run7.log
+硬闭: 起飞+65min ≈ 09:33Z 与 RUN7_EXIT 取先
+×2: 仅收轮上链+独立复核后计 leg1；禁自动 run8
