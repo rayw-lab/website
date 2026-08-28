@@ -270,15 +270,15 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     const respawned = await pollDump(page, (d) => d.counters.respawns >= 1, 30_000);
     expect(respawned.ok, 'R 重生应记入 respawn 事件').toBe(true);
 
-    // 遥测闭环驾驶：沿路走位（避开路口隔离墩）→ autodrive-lab 触发圈。
-    // [CC-VIS-X2-TRIAGE] 原 (0,-24)→(28,-28) 直线在 x=15.7 处 z=-26.24，正穿
-    // X2 前景景框右桥腿箱体 (15.7,-26)±0.62（ForegroundFraming）——插入南绕行
-    // 途径点 (19,-31.5)（腿箱南缘外 ≥1.6m；东侧最近灯杆 z=-58 无约束；
-    // EXP-01/EXP-02 同批绕行口径）
-    const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 4, timeoutMs: 360_000 });
-    expect(leg1.ok, `途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`).toBe(true);
-    const legM = await driveTo(page, { x: 19, z: -31.5 }, { radius: 3, timeoutMs: 360_000 });
-    expect(legM.ok, `途径点 (19,-31.5) 应可达（实测 x=${legM.state.x.toFixed(1)} z=${legM.state.z.toFixed(1)}）`).toBe(true);
+    // 遥测闭环驾驶：沿路走位 → autodrive-lab 触发圈。
+    // [CC-VIS-X2-TRIAGE r1] 原 (0,-24)→(28,-28) 直线双障不可通行：① X1
+    // autodrive-lab 充电桩排碰撞体（HeroBlenderMesh，x∈[16.2,17.8]×z∈[-40.3,-25.3]
+    // 15m 带墙）正卡线；② X2 前景景框右桥腿 (15.7,-26)±0.62 正穿箱体。改走
+    // 东西大道路线（EXP-01 同批口径）：E1 (20,-8)（路带内，隔离墩/道具簇边距
+    // ≥4m）→ 东南下泊车位（桩排东面 17.8 与楼裙房西沿 29.1 之间车道，全程
+    // z>-33 无裙房台阶）
+    const leg1 = await driveTo(page, { x: 20, z: -8 }, { radius: 3, timeoutMs: 360_000 });
+    expect(leg1.ok, `途径点 (20,-8) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`).toBe(true);
     const leg2 = await driveTo(page, { x: 28, z: -28 }, { radius: 4.5, timeoutMs: 360_000 });
     expect(leg2.ok, `泊车位 (28,-28) 应可达（实测 x=${leg2.state.x.toFixed(1)} z=${leg2.state.z.toFixed(1)}）`).toBe(true);
 
