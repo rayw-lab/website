@@ -553,7 +553,7 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
   // autodrive-lab 泊车圈 (28,-28) → E 进站（route abort 拦下 navigate，跳转前取证）。
   // ---------------------------------------------------------------------------
   test('CITY-PERF-02 Q2 存在腿：?quality=2 深链生效 + 变形驾驶进站核心路径全走 + 漏斗七步 + Q2 负载基线', async ({ page }, testInfo) => {
-    test.setTimeout(1_200_000); // §2.4 600s + driveTo 逐腿 360s 重标定（文件头偏差注记；CITY-OBS-01 同动线 1500s 先例）
+    test.setTimeout(1_500_000); // §2.4 600s + driveTo 逐腿 360s ×3（桥腿绕行途径点）；CITY-OBS-01 同动线先例
     const errors = trackErrors(page);
 
     // 进站目标 = autodrive-lab（parkingBay (28,-28) r6，deepLink /work/——出生 (0,0)
@@ -590,11 +590,17 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
     }
 
     // ④ driveTo 泊车圈（逐腿 360s 预算，CITY-OBS-01 原口径；途径点避开路口隔离墩，
-    // OBS-01 同款走位）
+    // OBS-01 同款走位）。[CC-VIS-X2-TRIAGE] 原 (0,-24)→(28,-28) 直线正穿 X2 前景
+    // 景框右桥腿箱体 (15.7,-26)±0.62——插入南绕行途径点 (19,-31.5)（OBS-01 同批口径）
     const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 4, timeoutMs: DRIVE_TO_LEG_BUDGET_MS });
     expect(
       leg1.ok,
       `Q2 档途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`,
+    ).toBe(true);
+    const legM = await driveTo(page, { x: 19, z: -31.5 }, { radius: 3, timeoutMs: DRIVE_TO_LEG_BUDGET_MS });
+    expect(
+      legM.ok,
+      `Q2 档途径点 (19,-31.5) 应可达（实测 x=${legM.state.x.toFixed(1)} z=${legM.state.z.toFixed(1)}）`,
     ).toBe(true);
     const leg2 = await driveTo(page, { x: 28, z: -28 }, { radius: 4.5, timeoutMs: DRIVE_TO_LEG_BUDGET_MS });
     expect(
