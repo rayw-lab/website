@@ -1,8 +1,10 @@
-# Loop 8 功能独立复审 R7（CC-AL-FXN-R7 · 收口轮）
+# Loop 8 功能独立复审 R7（CC-AL-FXN-R7 · 收口轮 · R8 接续）
 
 > 执行模型自报：**claude-fable-5-thinking-xhigh**
 
 > ⏳ 取证进行中（本文件随每条腿完成增量提交；最终登记以 `cyber-city-function-rubric-score.json` 为准）。
+
+> 🔁 **R8 接续注记（CC-AL-FXN-R8，2026-08-28）**：R7 会话在 L4+L5 提交（tip `756a0f8`）后僵死被 stop——kickoff/环境腿/L4/L5 四提交完整入账，L6–L7 与登记未收口。R8 直接**续写本分支**（`cursor/cc-al-fxn-r7-1d6f`，自真 tip `756a0f8` 顺延，零 rebase 零 cherry-pick，世系干净——R6 hash 重写教训的反面执行），沿用本报告与 PR #103；新 VM 环境重建 + 指纹互证见 §1-R8，L6/L7 取证归档前缀改用 `fxn_r8_*`。评分对象不变（`main@771b1e4`，运行时面 `dc3f56b`），封顶判读不变（真机缺席，云端 87–88，禁登 90）。
 
 ## 0. 审计事实（kickoff）
 
