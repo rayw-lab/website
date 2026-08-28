@@ -98,7 +98,10 @@ const trackAudioRequests = (page: Page): string[] => {
 };
 
 test.describe('科技城 BGM 氛围垫 @phase0（CC-BGM-C1 · world-chromium 串行 project）', () => {
-  test.describe.configure({ mode: 'serial', timeout: 420_000 });
+  // 超时预算：SwiftShader 下每次真实点击 actionability（rAF 稳定帧）实测 30–45s、
+  // 每个 evaluate 5–9s——用例 1 交互密度（4 次点击 + 双态断言）实测 ~620s，
+  // CITY-AUD 的 420s 口径装不下；取 900s（< cyber-city-perf.spec.ts 1_200s 先例）
+  test.describe.configure({ mode: 'serial', timeout: 900_000 });
 
   test('CITY-BGM-01 用例1（无种子挂载）：懒创建回归 + 样式门 + 默认 OFF + 开关钮持久 + user 埋点 + 主静音优先 + 驾驶 ducking + 零音频请求', async ({ page }) => {
     const errors: string[] = [];
@@ -142,7 +145,8 @@ test.describe('科技城 BGM 氛围垫 @phase0（CC-BGM-C1 · world-chromium 串
     expect(postUnlock.bgm!.playing, '默认不响：playing=false').toBe(false);
     expect(postUnlock.bgm!.level, '默认不响：子总线电平恒 0').toBe(0);
 
-    // ————— 断言 D：开钮/关钮——playing + aria-pressed 翻转 + localStorage 写回 —————
+    // ————— 断言 D（开钮向）：playing + aria-pressed 翻转 + localStorage 写回 —————
+    // 关钮向后置到 G 段之后收口（点击成本 30–45s/次的预算编排；事件序 H 不变）
     const bgmBtn = page.locator(SEL.bgm);
     await expect(bgmBtn).toBeVisible();
     await expect(bgmBtn).toHaveAttribute('aria-pressed', 'false');
@@ -153,24 +157,6 @@ test.describe('科技城 BGM 氛围垫 @phase0（CC-BGM-C1 · world-chromium 串
       '开钮写回 localStorage（跨会话记忆）',
     ).toBe('1');
     expect((await readProbe(page)).bgm!.playing, '开钮 → playing=true').toBe(true);
-    await bgmBtn.click();
-    await expect(bgmBtn).toHaveAttribute('aria-pressed', 'false');
-    expect(await page.evaluate(() => localStorage.getItem('world-bgm-on')), '关钮反向写回').toBe('0');
-    expect((await readProbe(page)).bgm!.playing, '关钮 → playing=false').toBe(false);
-
-    // ————— 断言 H（'user' 半部）：开/关各一条 world-bgm；无种子场景零 restore 事件 —————
-    const userEvents = await readBgmEvents(page);
-    expect(
-      userEvents.map((entry) => entry.data),
-      '开/关各产生一条 world-bgm（source: user）',
-    ).toEqual([
-      { enabled: true, source: 'user' },
-      { enabled: false, source: 'user' },
-    ]);
-
-    // 再开钮（F/G 前置：进入唯一新增听感态 ON）
-    await bgmBtn.click();
-    await expect(bgmBtn).toHaveAttribute('aria-pressed', 'true');
 
     // ————— 断言 F：主静音优先——音效钮 OFF 时 BGM 层状态保持（master 总线机器面）—————
     const audioBtn = page.locator(SEL.audio);
@@ -190,12 +176,28 @@ test.describe('科技城 BGM 氛围垫 @phase0（CC-BGM-C1 · world-chromium 串
       await expect
         .poll(async () => (await readProbe(page)).bgm!.duck, {
           message: '驾驶后 bgm.duck > 0 且高于静止基线（连续侧链随 engineLevel，§4.2）',
-          timeout: 45_000,
+          timeout: 60_000,
         })
         .toBeGreaterThan(Math.max(0.15, idleDuck + 0.05));
     } finally {
       await page.keyboard.up('w').catch(() => {});
     }
+
+    // ————— 断言 D（关钮向）：aria-pressed 回落 + 持久写回 + playing=false —————
+    await bgmBtn.click();
+    await expect(bgmBtn).toHaveAttribute('aria-pressed', 'false');
+    expect(await page.evaluate(() => localStorage.getItem('world-bgm-on')), '关钮反向写回').toBe('0');
+    expect((await readProbe(page)).bgm!.playing, '关钮 → playing=false').toBe(false);
+
+    // ————— 断言 H（'user' 半部）：开/关各一条 world-bgm；无种子场景零 restore 事件 —————
+    const userEvents = await readBgmEvents(page);
+    expect(
+      userEvents.map((entry) => entry.data),
+      '开/关各产生一条 world-bgm（source: user）',
+    ).toEqual([
+      { enabled: true, source: 'user' },
+      { enabled: false, source: 'user' },
+    ]);
 
     // ————— 断言 C 独立口径 / §D 三证之二：全程零音频资源网络请求 —————
     expect(audioRequests, '零 .mp3/.m4a/.webm/.ogg/.opus 请求（零资产 v0 恒真）').toEqual([]);
