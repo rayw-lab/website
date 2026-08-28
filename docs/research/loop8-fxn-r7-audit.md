@@ -32,6 +32,16 @@
 | 端口环境事实 | 全新 VM：kickoff 时 `ss -tlnp` 无任何 4xxx 监听，零陈旧 preview；本轮全部取证只指 **4471** |
 | SwiftShader 纪律 | 与 R5 同环境（软渲染）：`t`/墙钟/fps 仅用于排序与存在性判定，全部计时类锚点不判 |
 
+### 1-R9. R9 环境重建与指纹互证（新 VM，取证前置，已互证）
+
+| 项 | 读数 |
+|---|---|
+| 环境 | 全新 VM（kickoff 时 `ss -tlnp` 无任何 4xxx 监听、根盘 3% 占用零录屏残骸——R5 §1.1 事故的反面确认）；Node v22.14.0 · pnpm 10.33.3 · `pnpm install --frozen-lockfile`（锁文件不漂移）→ `pnpm build`（**19 pages**，与 R5/R7 记录一致）→ `pnpm preview --host 0.0.0.0 --port 4473`（tmux `fxn-r9-preview`，**全新端口 4473**） |
+| chunk hash 三方互证 | `dist/_astro/world.D74ett3S.js` sha256 = 服务口 `GET :4473/website/_astro/world.D74ett3S.js` sha256 = R5/R7 记录值，三方**逐字节一致** `1a762db396d6e8dea7bf04250a56fde03ab10c73645a81a63c84620d3b3b84eb`——R9 被测对象与 R5/R7 审计对象为同一构建产物，§2.1/§2.2（L4/L5）与 R5 §1–§3 证据接续合法性成立 |
+| 特征串 | world chunk 族内 C5/C6 特征串 `idle-nudge`（×2）/ `quest-`（×31）/ `brake-first` / `suspension-jump` / `speedtrap` 全数在位（dist 全量 rg 清点） |
+| 取证浏览器 | Playwright Chromium（headless shell 151.0.7922.34），SwiftShader 软渲染——`t`/墙钟/fps 仅用于排序与存在性判定，全部计时类锚点不判（纪律与 R5/R7 同） |
+| 归档前缀 | 本轮录屏/截图/dump 归档 `/opt/cursor/artifacts/`（`fxn_r9_*`） |
+
 ## 2. S-5 v1.0 L4–L7 四腿取证（接续 R5 §2–§3 的 S-2 + L1–L3）
 
 > 每腿全新 browser context（首访清存储实证 ls/ss=0）；SwiftShader 纪律照 §1；录屏/截图/dump 归档 `/opt/cursor/artifacts/`（`fxn_r7_*`）。
