@@ -19,9 +19,9 @@
 | 机位 / EXP-01 未动 | ✅ 只读消费、文件域零触碰（§3.4） |
 | 与 #134 文件交集 | ✅ ∅，语义面亦兼容（§3.5） |
 | CITY-AUD-01 单测复跑 | ✅ 1 passed（6.3 min，独立跑道）（§4.1） |
-| 全量 e2e | 见 §4.2（含数字口径修正：全量实为 **81** 例，非执行令所书 53） |
+| 全量 e2e | ⚠️ R3 集成树全量 81 例 = 62/4/15/0 破门；四窗归因 = 挤兑 3 + 漂移 2 + 环境 1 + 规格 2，全部非 #164（§4.2） |
 | LHCI 不降 | ✅ 同 SHA CI artifact 回填，`/` 与 `/home/` 中位四项 100 全平（§5） |
-| **裁决** | **见 §6** |
+| **裁决** | **有条件 GO**（本体零回归；0/0/0 欠账转 #104 ready 门 + H1b/H2/H3 定向补洞——§6） |
 
 ## 1. Fresh 取证
 
@@ -147,6 +147,8 @@ skipped 4 = EXP-02（EXP-01 连坐）+ OBS-04/05/06（OBS-03 连坐）
 
 　PERF 前提 R3 自证：`rg data-ws-fps` 集成树 dist/index.html **零匹配**、src 全域唯一命中 = `src/pages/world-spike/index.astro`——城市页 `/` 无该元素，`cyber-city-perf-test-plan.md` §1「HUD 在 `/` 已挂」前提失实**独立复核成立**（§8.4 采信，恒红非 #164、非挤兑）。
 - **W4' 开跑登记（22:22 UTC）**：obs 反连坐短单——`playwright test e2e/cyber-city-observability.spec.ts --project=world-chromium --no-deps --workers=1 --grep-invert "CITY-OBS-03"`（6 例，`E2E_PORT=4536`，预计 ~20 min），目的 = 以 R3 自跑闭 OBS-01b/02/04/05/06 逐例账（R1/W2' 两轮均连坐未测 OBS-04/05/06）。跑道 22:22 复查空（load 0.52 零 playwright）。
+- **W4' 终局（22:22:28–22:35:XXZ，墙钟 12.7 min，EXIT=0）**：obs 反连坐 6 例 **6 passed / 0 failed**（OBS-01 ✓ 产 dump → OBS-01b/02/04/05/06 全 ✓ 含消费腿）——OBS 链除 OBS-03 外全绿以 R3 自跑闭账（json 已归档 /tmp/aud-c1-run/archive-w4/；本窗 bind 探针省略的补偿 = 核验②正证据：4536 监听者 cwd=集成树 webServer 自起，即端口空闲实证）。
+- **R3 四窗逐例账（union 脚本合算，四份 json 单源）**：81 例中 **77 例 ≥1 次实测绿**；**永不绿 4 例** = `CITY-QST-02`（漂移型，R2 §8 曾串行 ✓19.3m——跨窗漂移再证）+ `CITY-OBS-03` + `CITY-PERF-01/02`（三例确定性红，归因全部非 #164）。全四窗 flaky=0（Playwright 口径）。
 - **R3 归因终判（R1×W2' 交叉 + §8 对照）**：① **挤兑归因成立面** = FB-01…09 / HINT-01 / OBS-01（R1 双 worker 挂 → W2' 串行绿，与 §8 W2 一致）；② **漂移归因修正面** = EXP-01 / QST-02（本窗串行**仍挂**，签名与 R2 W1/我 R1 同型——坐标差 0.3–1.8 单位/设计秒未积满：SwiftShader ~1-5fps 下驾驶腿/设计秒断言呈**跨窗时序漂移**，串行化能降概率不能归零；§8「串行全绿=挤兑定谳」单因结论**不成立**，两窗互证=同例同配置异结果即漂移实证）；③ **OBS-03 环境级确定性红**（54s 快败 + 签名与 §8.3 双发探针结论吻合，独立复现采信其反事实：#164 前 main 同败 → 非 #164 回归）；④ 全窗 CITY-AUD-01（审计对象本体）R1 全量随跑 ✓ + R1 单测 ✓（§4.1）——**#164 零回归结论在两轮三窗中稳定**。
 
 ## 5. LHCI（同 SHA CI artifact 回填，来源登记）
@@ -168,9 +170,21 @@ skipped 4 = EXP-02（EXP-01 连坐）+ OBS-04/05/06（OBS-03 连坐）
 
 ## 6. 裁决
 
-```
-（回填中：GO / 有条件 GO / NO-GO + 依据）
-```
+**有条件 GO**（#164/AUD-C1 本体零回归收口；全量 0/0/0 欠账定向补洞，不回滚不降门——#165 §3 字面执行）。
+
+**GO 面（审计对象本体，全项过）**：
+
+1. 静态五禁全过（§3.1–3.4）+ diff 文件域恰好五域（§2）+ 与 #134 交集 ∅（§3.5，R3 fresh 复核维持）。
+2. CITY-AUD-01 硬门断言：R1 单测 ✓（§4.1）+ R3-R1 集成树全量随跑 ✓（两窗互证）。
+3. LHCI 不降：同 SHA CI artifact 回填，`/` 与 `/home/` 中位四项 100 全平（§5，来源登记可复核）。
+4. 两轮四窗全部红项归因均与 #164 无涉：零音频签名、零 pageerror、零首包字节回归；OBS-03 反事实（#164 前 main 同败，§8.3 R3 独立复现采信）直接排除本体责任。
+
+**条件面（全量硬门欠账，转定向补洞）**：
+
+5. 硬门「全量 0/0/0」**未达成**：R3-R1 集成树全量 81 例 = 62/4/15/0（EXIT=1）。缺口四类归因（R3 自跑实证）：**挤兑型 3**（FB-01…09/HINT-01/OBS-01，W2' 串行转绿——修复 = #134 已入 #104 栈）；**漂移型 2**（EXP-01/QST-02，串行仍挂、跨窗异果——#134 落 main 后仍需预算/断言重标定，**R3 新增补洞项 H1b**）；**环境级 1**（OBS-03——H2 持久侧信道取证改造）；**规格前提失实 2**（PERF-01/02——H3 城市页补元素或 spec 改锚 `__worldSpike.fps()` 二选一）。
+6. 条件①：段登记分以 R1 全量实测 **62/81 expected** 为准，禁以归因轮拼分上板；0/0/0 欠账挂 #104 ready 门 + H1b/H2/H3 定向补洞段，不阻塞本段收口（先例 #167 同型）。
+7. 条件②：§8 R2 幽灵登记**资格账归董事会**；情报账 R3 逐项复核结论——OBS-03 反事实 ✅ 采信（独立复现同签名）、PERF-01/02 定性 ✅ 采信（前提失实独立自证）、W1 全量 60/5/16/0 ✅ 登记为跨窗对照、「串行全绿=挤兑定谳」单因结论 ❌ 被 R3 W2' 推翻（QST-02/EXP-01 串行复挂 = 时序漂移实证）。
+8. 条件③：CAM/六腿/安卓等真机面零代决（授权禁项维持）；#166/#104 禁合维持，本裁决不构成对二者的放行。
 
 ## 7. 附：取证命令清单（可复核）
 
@@ -181,6 +195,7 @@ skipped 4 = EXP-02（EXP-01 连坐）+ OBS-04/05/06（OBS-03 连坐）
 - `pnpm exec playwright test --list`（81 例分布）/ CITY-AUD-01 单测 / 全量（R1 E2E_PORT=4517；R2 默认 4321）
 - `gh api …/runs/{33164322861,33163104422}/artifacts` + `lhr-*.json` categories 逐项聚合
 - R2 追加：`gh pr view 134 --json baseRefName,mergeCommit` + `git merge-base --is-ancestor d99a0e2… origin/main`（NOT in main 实证）/ `gh run download {33164322861,33163104422} -n lighthouse-results` + 双轮 7 URL 中位独立复算（Node 脚本，全 100 复现）/ `pnpm test:e2e`（json reporter `test-results/e2e-results.json` 计数核对）
+- R3 追加：`git merge-tree --write-tree origin/main HEAD`（CLEAN）+ 集成树 worktree `62e6f24`（本地临时永不推送）/ bind 探针（#174 r3882091603 口径）+ `lsof -t -iTCP:$PORT` + `/proc/<pid>/cwd` 核验② / R1 全量 `pnpm test:e2e`（E2E_PORT=4533）→ W2' 三文件串行（4534）→ W3' 尾链（4535）→ W4' obs 反连坐（4536），四窗 json 归档 `/tmp/aud-c1-run/archive-{r1,w2,w3,w4}/` + union 逐例账脚本 / `rg data-ws-fps`（集成树 dist 零匹配自证）
 
 ## 8. R2 幽灵完账（append-only 登记；情报账/资格账分离按 run5-α 先例，采信权归 R3/董事会）
 
