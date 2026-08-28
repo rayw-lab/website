@@ -1,12 +1,12 @@
 # Phase 0 提分 Loop 编排看板
 
-`main` @ `88097f9` · 2026-08-28 03:30 UTC · **提分 Loop Tick#6** · 范式 `cyber-city-orchestration-paradigm.md`
+`main` @ `88097f9` · 2026-08-28 04:00 UTC · **提分 Loop Tick#9（3n 看板界点）** · 范式 `cyber-city-orchestration-paradigm.md`
 
 **模型（L8+）**：全部子代理 Task = `claude-fable-5-thinking-xhigh`；在途 Sol 可跑完（§1.2 宽限）。
 
-> 本单为 SEC-P5 Tick#6 刷新，**基于 [#112](https://github.com/rayw-lab/website/pull/112)（SEC-P4，含 [#109](https://github.com/rayw-lab/website/pull/109) P3 全量）head 叠增量**；#112 CI 绿待指挥官合入，main tip 仍 `88097f9`。合流顺序：#112 → 本单（或直接合本单，内容为 #112 超集），禁止看板回退。
+> 本单为 SEC-P6 Tick#9 刷新，**基于 [#116](https://github.com/rayw-lab/website/pull/116)（SEC-P5，为 [#112](https://github.com/rayw-lab/website/pull/112) 超集）head `1c7080e` 叠增量**；#103/#116 均未合，main tip 仍 `88097f9`。合流顺序：#116 → 本单（或直接合本单，内容为 #116 超集），禁止看板回退。
 >
-> **Tick#6 等待项**：X2 e2e triage（[#104](https://github.com/rayw-lab/website/pull/104)）与 Codex L6R capture run3 push（[#103](https://github.com/rayw-lab/website/pull/103)），两者落地前登记矩阵不动。
+> **Tick#9 等待项**：① X2 e2e RUNNING（~21min，[#104](https://github.com/rayw-lab/website/pull/104)）**收轮 triage 中**；② [#103](https://github.com/rayw-lab/website/pull/103) **待指挥官合入**（Codex IDLE ✅ · 落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120)）。两者落地前登记矩阵不动。
 
 ## 登记矩阵（**每 tick 首段必输出**）
 
@@ -14,17 +14,17 @@
 |------|--------|----------|---|------|
 | **综合** | **98** | **80** | +18 | COMP-M0 重算（#105 留痕 / #106 WIP） |
 | **视觉** | **98** | **73** | +25 | 顾问路径 →~78（[#98](https://github.com/rayw-lab/website/pull/98) 已合）· X1b [#101](https://github.com/rayw-lab/website/pull/101) 已合待复评 |
-| **功能** | **90** | **84** | +6 | [#103](https://github.com/rayw-lab/website/pull/103) 分支登记 **87** 未合（Codex L6R capture run3 RUNNING · tip `c4e844c`） |
+| **功能** | **90** | **84** | +6 | [#103](https://github.com/rayw-lab/website/pull/103) 分支登记 **87** 未合（ready · tip `1a4296f` · Codex IDLE ✅ · 落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120) · 待指挥官合入） |
 | **性能** | **85** | **—** | +85 | 六腿桌面单 [#96](https://github.com/rayw-lab/website/pull/96) 已在 main；首分待指挥官真机 → AL-PERF |
 
-> 登记只认审计独立分（JSON 单源：视觉 main@88097f9 = 73，功能 main = 84）。禁止 LHCI/e2e/smoke 冒充功能或性能；#103 的 87 合流前不登记。
+> 登记只认审计独立分（JSON 单源：视觉 main@88097f9 = 73，功能 main = 84）。禁止 LHCI/e2e/smoke 冒充功能或性能。**#103 口径注释**：合流前功能仍登 **84**；#103 合入 main 后由秘书**另开增量登记单**登 87，本单只备口径、不冒登。
 
-## 当前焦点（提分 Loop · Tick#6）
+## 当前焦点（提分 Loop · Tick#9）
 
 | 轨 | 状态 | 下一拍 |
 |----|------|--------|
-| 视觉 | **73** ✅ [#94](https://github.com/rayw-lab/website/pull/94) · X1b voice-pod 已合 [#101](https://github.com/rayw-lab/website/pull/101)（W2③）· 顾问 [#98](https://github.com/rayw-lab/website/pull/98) / TM-PREP [#99](https://github.com/rayw-lab/website/pull/99) / G3+X5 授权 [#100](https://github.com/rayw-lab/website/pull/100) 已合 | X2 [#104](https://github.com/rayw-lab/website/pull/104) e2e RUNNING（tip `c24c7f3` draft）→ e2e triage → ready → G1 预登记 |
-| 功能 | **84** ✅ main · 决策树 [#97](https://github.com/rayw-lab/website/pull/97) 已合 · [#103](https://github.com/rayw-lab/website/pull/103) 分支登记 87（tip `c4e844c`） | Codex L6R capture run3 RUNNING → push 落地清 L6/F5 后合 [#103](https://github.com/rayw-lab/website/pull/103) → 登记 87 |
+| 视觉 | **73** ✅ [#94](https://github.com/rayw-lab/website/pull/94) · X1b voice-pod 已合 [#101](https://github.com/rayw-lab/website/pull/101)（W2③）· 顾问 [#98](https://github.com/rayw-lab/website/pull/98) / TM-PREP [#99](https://github.com/rayw-lab/website/pull/99) / G3+X5 授权 [#100](https://github.com/rayw-lab/website/pull/100) 已合 | X2 [#104](https://github.com/rayw-lab/website/pull/104) e2e RUNNING（~21min · tip `c24c7f3` draft）**收轮 triage 中**——fresh 取证已有 trace.zip / error-context（探索计数用例）→ triage → ready → G1 预登记 |
+| 功能 | **84** ✅ main · 决策树 [#97](https://github.com/rayw-lab/website/pull/97) 已合 · [#103](https://github.com/rayw-lab/website/pull/103) 分支登记 87（ready · tip `1a4296f`） | Codex IDLE ✅（push 已落地清 L6/F5）· 落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120) → **待指挥官合入** [#103](https://github.com/rayw-lab/website/pull/103) → 秘书另开增量登记 87 |
 | 性能 | 六腿桌面单 [#96](https://github.com/rayw-lab/website/pull/96) 已合 | 指挥官真机 S-2 / 六腿（零 VM）仍待 → AL-PERF |
 | 综合 | 80 | COMP-M0 五维重算（#105/#106 续派） |
 
@@ -37,7 +37,10 @@
 | #3 | 顾问 T3（[#113](https://github.com/rayw-lab/website/pull/113)）+ SEC-P4（[#112](https://github.com/rayw-lab/website/pull/112)） | 双双交付；#112 CI 绿待指挥官合入 |
 | #4 | 顾问 T4（[#114](https://github.com/rayw-lab/website/pull/114)） | 交付（X2/Codex 活性判定 + 合流优先级） |
 | #5 | 顾问 T5（[#115](https://github.com/rayw-lab/website/pull/115)） | 交付；CITY-EXP-01 失败留痕（见 #115） |
-| #6 | 顾问 T6 + SEC-P5（本单） | 在途；等待 X2 e2e triage / Codex push |
+| #6 | 顾问 T6（[#117](https://github.com/rayw-lab/website/pull/117)）+ SEC-P5（[#116](https://github.com/rayw-lab/website/pull/116)） | 双双交付；#116 为 #112 超集，待指挥官合入 |
+| #7 | 顾问 T7（[#118](https://github.com/rayw-lab/website/pull/118)） | 交付（Codex push 落地取证 + X2 独占复跑验收树 + Tick#8 预排） |
+| #8 | 顾问 T8（[#119](https://github.com/rayw-lab/website/pull/119)）+ 落库审计（[#120](https://github.com/rayw-lab/website/pull/120)） | 双双交付；#120 verdict **#103 合流 GO** |
+| #9 | SEC-P6（本单，3n 看板界点） | 在途；X2 收轮 triage 中 · #103 待指挥官合入 |
 
 ## MERGE-WAVE 8/8 合流记录（`771b1e4` → `88097f9`，每步 CI+Deploy 双绿）
 
@@ -54,21 +57,21 @@
 
 ## 在途子 Task（VM 硬护栏 3，见 #107 调研）
 
-Tick#6 当前在途：
+Tick#9 当前在途：
 
 | 在途 | 内容 | 状态 |
 |------|------|------|
-| X2（原 P1） | [#104](https://github.com/rayw-lab/website/pull/104) X2 立面套件 → **e2e RUNNING** → triage → ready | RUNNING · tip `c24c7f3` draft |
-| Codex 清账（原 P2） | 定向审计续写（零 src）：**L6R capture run3 RUNNING** · F5 hint-recall 补证 → push 落地后合 [#103](https://github.com/rayw-lab/website/pull/103) | RUNNING · tip `c4e844c` |
-| 顾问 T6 | Tick#6 扇出裁决（T5 [#115](https://github.com/rayw-lab/website/pull/115) 后继） | RUNNING |
-| SEC-P5 | 本单看板 Tick#6 刷新（基于 #112 head 叠增量） | 本单 |
+| X2（原 P1） | [#104](https://github.com/rayw-lab/website/pull/104) X2 立面套件 → **e2e RUNNING（~21min）收轮 triage 中**；fresh 取证已有 trace.zip / error-context（探索计数用例） | RUNNING · tip `c24c7f3` draft |
+| SEC-P6 | 本单看板 Tick#9 刷新（基于 #116 head `1c7080e` 叠增量） | 本单 |
+
+已收口（不再占槽）：**Codex 清账 IDLE ✅**——push 已落地清 L6/F5（[#103](https://github.com/rayw-lab/website/pull/103) tip `1a4296f` ready），落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120)，**待指挥官合入**；顾问 T6/T7/T8 交付 [#117](https://github.com/rayw-lab/website/pull/117) / [#118](https://github.com/rayw-lab/website/pull/118) / [#119](https://github.com/rayw-lab/website/pull/119)。
 
 | 待派 | 内容 | 条件 |
 |------|------|------|
 | 槽空滚动（原 P3） | PERF 六腿 kit · M0-R4 [#106](https://github.com/rayw-lab/website/pull/106) · G1 预登记（#101 已合 ✅） | 槽空即派 |
 | X5-R4（原 P4） | X5 招牌续拍（[#100](https://github.com/rayw-lab/website/pull/100) 已授权） | X2 收口后串行 |
 
-## 指挥官真机（零 VM，独立于 loop 在途 · **Tick#6 仍待启动**）
+## 指挥官真机（零 VM，独立于 loop 在途 · **Tick#9 仍待启动**）
 
 1. **S-2 v1** — [#108](https://github.com/rayw-lab/website/pull/108) kit（S-2 执行单 + AL-R10 空壳）
 2. **性能六腿** — [#96](https://github.com/rayw-lab/website/pull/96) 桌面单已在 main
@@ -79,10 +82,15 @@ Tick#6 当前在途：
 
 | PR | 状态 | 说明 |
 |----|------|------|
-| [#103](https://github.com/rayw-lab/website/pull/103) | **ready**（CI 绿） | AL-FXN-R7 登记 87 · tip `c4e844c` · **Codex 卡**（L6R capture run3 / F5 补证）RUNNING，push 未落地前禁合 |
-| [#104](https://github.com/rayw-lab/website/pull/104) | draft | X2 立面套件（W2④）· tip `c24c7f3` · e2e RUNNING 待 triage |
-| [#112](https://github.com/rayw-lab/website/pull/112) | **CI 绿待指挥官合入** | SEC-P4 看板 Tick#3 刷新（含 #109 P3 全量）· 本单基于其 head 叠增量 |
-| [#109](https://github.com/rayw-lab/website/pull/109) | CI 绿 | P3 秘书刷新看板 · 内容已并入 #112，合 #112 后可关闭 |
+| [#103](https://github.com/rayw-lab/website/pull/103) | **ready · 待指挥官合入** | AL-FXN-R7 登记 87 · tip `1a4296f` · Codex push 已落地清 L6/F5（IDLE ✅）· 落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120) · mergeState CLEAN |
+| [#104](https://github.com/rayw-lab/website/pull/104) | draft | X2 立面套件（W2④）· tip `c24c7f3` · e2e RUNNING（~21min）**收轮 triage 中**（fresh 取证：trace.zip / error-context，探索计数用例） |
+| [#116](https://github.com/rayw-lab/website/pull/116) | 待指挥官合入 | SEC-P5 看板 Tick#6 刷新（#112 超集）· 本单基于其 head `1c7080e` 叠增量 |
+| [#120](https://github.com/rayw-lab/website/pull/120) | draft | 落库审计 CC-FXN-R103-LANDING-AUDIT：**#103 合流 GO** |
+| [#117](https://github.com/rayw-lab/website/pull/117) | draft | 顾问 T6：Tick#6 扇出裁决 |
+| [#118](https://github.com/rayw-lab/website/pull/118) | draft | 顾问 T7：Tick#7 扇出裁决（Codex push 落地取证 + X2 独占复跑验收树 + Tick#8 预排） |
+| [#119](https://github.com/rayw-lab/website/pull/119) | draft | 顾问 T8：Tick#8 扇出裁决（#103 合流连锁 + X2 裁决树 + M0-R4 三重门） |
+| [#112](https://github.com/rayw-lab/website/pull/112) | CI 绿 | SEC-P4 看板 Tick#3 刷新（含 #109 P3 全量）· 内容已并入 #116，合 #116 后可关闭 |
+| [#109](https://github.com/rayw-lab/website/pull/109) | CI 绿 | P3 秘书刷新看板 · 内容已并入 #112/#116，合后可关闭 |
 | [#110](https://github.com/rayw-lab/website/pull/110) | draft | 顾问 R1：2–3 天 VM loop 自动推进方案（tick 决策树 + 六槽预算） |
 | [#111](https://github.com/rayw-lab/website/pull/111) | draft | 顾问 T2：Tick#2 扇出裁决（三路并行 + #103 补洞门 + Tick#3 预排） |
 | [#113](https://github.com/rayw-lab/website/pull/113) | draft | 顾问 T3：Tick#3 扇出裁决（不加开实现路 + Tick#4 预排 + 事故缓解核证） |
@@ -96,7 +104,7 @@ Tick#6 当前在途：
 ## 阻塞
 
 - **PR [#43](https://github.com/rayw-lab/website/pull/43) BL2** · NO-GO · **禁止合流**
-- **[#103](https://github.com/rayw-lab/website/pull/103)** · Codex 卡（L6R capture run3 / F5 补证）push 未落地前禁合（Task RUNNING）
+- **[#103](https://github.com/rayw-lab/website/pull/103)** · 技术阻塞已清（Codex IDLE ✅ · 审计 GO [#120](https://github.com/rayw-lab/website/pull/120)）· **仅待指挥官合入**；合入后秘书另开增量登记 87
 - **真机 S-2 / 性能六腿（零 VM）** · 仍待指挥官启动，AL-PERF / AL-R10 前置
 
 ## 归档（一行）
