@@ -71,4 +71,23 @@ funnel 前五步齐（reveal 29426 / robotIdle 29426 / transformStart 53762 / ca
 
 方法留痕（诚实入账）：① 瞬时 `touchscreen.tap` 在软渲染 ~1–3fps 下 touchstart/touchend 整体落在相邻两 tick 之间，`Pointer.update()` 观测不到 down 沿——**环境伪影非产品缺陷**（真机 60fps 下 tap 天然跨多帧；`Pointer.ts` 双缓冲 tick 结算为既有设计），取证改用「持按 ~3s 再抬手」的环境等价操作（位移 <25px 点击阈值内，`RayCursor.ts` click 判定原样走通）；② 标点屏幕坐标经 `#debug` 只读句柄相机投影获得（R5 L2 `#debug` 置位判例同构，只读不改状态）；③ dump 抢存于导航前轮询（Astro View Transitions SPA 换页不触发 pagehide，R5 pagehide 暂存法在本路径失效——方法修正留痕）。
 
-（L6–L7、逐维打分、双 Pass 合议与裁决随取证增量回填。）
+### 2.3 L6 `?quality=2` 降档（桌面 1440×900，单会话七步闭环——上轮 84 登记点名缺口）
+
+**通过（单一 Q2 会话七步全闭合，194s 收口；R9 取证）**：`?quality=2#debug` 首访清存储实证 ls/ss=0；env `{quality:2, reducedMotion:false, viewport:1440×900}`（显式档禁用自动降档，全程零 `quality-auto-drop`）。
+
+| 被测项 | 观察 | 证据 |
+|---|---|---|
+| 恒等门 | robot_idle 期 chip `display:none` + 零 `world-quest` 事件（激活推迟到 car_ready） | 截图 `fxn_r9_l6_01_q2_robot_idle.png` |
+| 变形 | CTA 点击 → `transform-start #4/t59586` → `world-transform #6/t92729`；chip「下一站 概念车库 141m 1/5」随 car_ready 同拍激活（`world-quest{shown,step:1} #7/t92748`），状态行/全键位 hint 照常 | 截图 `fxn_r9_l6_02_q2_car_ready_chip.png` |
+| 驾驶 | W → `world-drive-start #8/t104936`，遥测 speedKmh 14.2→53.8 / grounded true，`data-world-state=driving` | 截图 `fxn_r9_l6_03_q2_driving.png` |
+| 进站（同会话闭合） | 驶入 concept-garage 触发圈 → `poi-bounding-in{concept-garage} #9/t142062` → `explore-progress{n:1} #10` → `world-quest{reached,step:1} #11` → `world-quest{shown,step:2,voice-pod} #12/t142063`（链推进 2/5 + 探索 1/12 同拍）；持按 E → `world-poi{concept-garage} #13/t153282` → `shot-apply{poi_showcase-concept-garage} #14/t153282` → 前奏后导航落 `/website/lab/car-configurator/`（楼=分区映射正确） | 截图 `fxn_r9_l6_04_q2_bounding_in.png`（圈内 + 进站标点 + chip 2/5 同框）/ `fxn_r9_l6_05_configurator_landing.png`；录屏 `fxn_r9_l6_quality2_20260828.webm` |
+
+funnel **七步全齐**（reveal 16279 / robotIdle 44048 / transformStart 59586 / carReady 92729 / driveStart 104936 / firstPoiIn 142062 / firstPoiInteract 153282）；counters poiEnters/poiInteracts 双 1；schema 1 · 14 events · dropped 0 · 零 pageerror。dump `session-dump-s5-l6-q2-20260828.json`。**Q2 轨零功能性缺失**——chip/光柱/触发圈/进站前奏/导航全链与 Q0 轨行为一致（P5 面同证）。
+
+方法留痕（诚实入账）：中途以 `#debug` 句柄置车体 (125,−18) 朝 +X 后**真实持 W 驶入**触发圈——e2e FB-04/FB-09「置位即真值」同判例（SwiftShader ~1fps 下 141m 自然驾驶墙钟不可承受的环境等价操作；置位本身不触发任何 POI/quest 事件，入圈/进站均由真实驾驶与持按 E 产生）；E 进站沿用 L5 持按判例（瞬时按键在软渲染下 down 沿可能落于相邻 tick 之间）。
+
+### 2.4 L7 空闲（driving 撒手 30 设计秒——上轮 84 登记点名缺口，C5 合流后首次实测）
+
+（取证进行中，随腿回填。）
+
+（逐维打分、双 Pass 合议与裁决随取证增量回填。）
