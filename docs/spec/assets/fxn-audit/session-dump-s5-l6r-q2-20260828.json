@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "sessionId": "1c0fafab-315b-4fab-9ed1-268c86b23b30",
+  "startedAt": "2026-08-28T03:22:22.158Z",
+  "env": {
+    "backend": "webgl2",
+    "vehicle": "physics",
+    "quality": 2,
+    "reducedMotion": false,
+    "dpr": 1,
+    "touch": false,
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    }
+  },
+  "events": [
+    {
+      "seq": 1,
+      "t": 0,
+      "type": "mount"
+    },
+    {
+      "seq": 2,
+      "t": 29241,
+      "type": "world-reveal"
+    },
+    {
+      "seq": 3,
+      "t": 79266,
+      "type": "robot-idle"
+    },
+    {
+      "seq": 4,
+      "t": 114699,
+      "type": "transform-start",
+      "data": {
+        "to": "car"
+      }
+    },
+    {
+      "seq": 5,
+      "t": 186102,
+      "type": "hint-shown"
+    },
+    {
+      "seq": 6,
+      "t": 186102,
+      "type": "world-transform",
+      "data": {
+        "to": "car"
+      }
+    },
+    {
+      "seq": 7,
+      "t": 186118,
+      "type": "world-quest",
+      "data": {
+        "action": "shown",
+        "step": 1,
+        "targetId": "concept-garage",
+        "elapsedMs": 16
+      }
+    },
+    {
+      "seq": 8,
+      "t": 291424,
+      "type": "hint-dismissed",
+      "data": {
+        "by": "timeout"
+      }
+    },
+    {
+      "seq": 9,
+      "t": 320045,
+      "type": "hint-recall",
+      "data": {
+        "via": "key"
+      }
+    },
+    {
+      "seq": 10,
+      "t": 348730,
+      "type": "hint-dismissed",
+      "data": {
+        "by": "input"
+      }
+    },
+    {
+      "seq": 11,
+      "t": 373615,
+      "type": "hint-recall",
+      "data": {
+        "via": "button"
+      }
+    },
+    {
+      "seq": 12,
+      "t": 393821,
+      "type": "hint-dismissed",
+      "data": {
+        "by": "input"
+      }
+    },
+    {
+      "seq": 13,
+      "t": 402293,
+      "type": "world-drive-start"
+    },
+    {
+      "seq": 14,
+      "t": 500182,
+      "type": "poi-bounding-in",
+      "data": {
+        "id": "concept-garage"
+      }
+    },
+    {
+      "seq": 15,
+      "t": 500182,
+      "type": "explore-progress",
+      "data": {
+        "id": "concept-garage",
+        "n": 1,
+        "total": 12
+      }
+    },
+    {
+      "seq": 16,
+      "t": 500183,
+      "type": "world-quest",
+      "data": {
+        "action": "reached",
+        "step": 1,
+        "targetId": "concept-garage",
+        "elapsedMs": 314080
+      }
+    },
+    {
+      "seq": 17,
+      "t": 500184,
+      "type": "world-quest",
+      "data": {
+        "action": "shown",
+        "step": 2,
+        "targetId": "voice-pod",
+        "elapsedMs": 314081
+      }
+    },
+    {
+      "seq": 18,
+      "t": 536480,
+      "type": "world-poi",
+      "data": {
+        "id": "concept-garage"
+      }
+    },
+    {
+      "seq": 19,
+      "t": 536480,
+      "type": "shot-apply",
+      "data": {
+        "id": "poi_showcase-concept-garage"
+      }
+    }
+  ],
+  "dropped": 0,
+  "counters": {
+    "respawns": 0,
+    "coneHits": 0,
+    "poiEnters": 1,
+    "poiInteracts": 1,
+    "transforms": 1,
+    "driveViewToggles": 0,
+    "longFrames": 250
+  },
+  "funnel": {
+    "reveal": 29241,
+    "robotIdle": 79266,
+    "transformStart": 114699,
+    "carReady": 186102,
+    "driveStart": 402293,
+    "firstPoiIn": 500182,
+    "firstPoiInteract": 536480
+  }
+}

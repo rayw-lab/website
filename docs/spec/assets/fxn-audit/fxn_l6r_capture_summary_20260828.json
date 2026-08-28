@@ -1,0 +1,63 @@
+{
+  "storageFirstVisit": {
+    "ls": 0,
+    "ss": 0
+  },
+  "env": {
+    "backend": "webgl2",
+    "vehicle": "physics",
+    "quality": 2,
+    "reducedMotion": false,
+    "dpr": 1,
+    "touch": false,
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    }
+  },
+  "funnel": {
+    "reveal": 29241,
+    "robotIdle": 79266,
+    "transformStart": 114699,
+    "carReady": 186102,
+    "driveStart": 402293,
+    "firstPoiIn": 500182,
+    "firstPoiInteract": 536480
+  },
+  "counters": {
+    "respawns": 0,
+    "coneHits": 0,
+    "poiEnters": 1,
+    "poiInteracts": 1,
+    "transforms": 1,
+    "driveViewToggles": 0,
+    "longFrames": 250
+  },
+  "eventCount": 19,
+  "dropped": 0,
+  "pageErrors": [],
+  "questConsole": [
+    "[quest] G4 目标线 v0 就位：主链 5 站（concept-garage → voice-pod → agent-nexus → work-gallery → about-pavilion）；非强制可折叠（折叠偏好还原=false）；光柱/halo 静态发光零循环配额；激活推迟至 car_ready（poster 恒等）"
+  ],
+  "events": [
+    "mount#1/t0",
+    "world-reveal#2/t29241",
+    "robot-idle#3/t79266",
+    "transform-start#4/t114699 {\"to\":\"car\"}",
+    "hint-shown#5/t186102",
+    "world-transform#6/t186102 {\"to\":\"car\"}",
+    "world-quest#7/t186118 {\"action\":\"shown\",\"step\":1,\"targetId\":\"concept-garage\",\"elapsedMs\":16}",
+    "hint-dismissed#8/t291424 {\"by\":\"timeout\"}",
+    "hint-recall#9/t320045 {\"via\":\"key\"}",
+    "hint-dismissed#10/t348730 {\"by\":\"input\"}",
+    "hint-recall#11/t373615 {\"via\":\"button\"}",
+    "hint-dismissed#12/t393821 {\"by\":\"input\"}",
+    "world-drive-start#13/t402293",
+    "poi-bounding-in#14/t500182 {\"id\":\"concept-garage\"}",
+    "explore-progress#15/t500182 {\"id\":\"concept-garage\",\"n\":1,\"total\":12}",
+    "world-quest#16/t500183 {\"action\":\"reached\",\"step\":1,\"targetId\":\"concept-garage\",\"elapsedMs\":314080}",
+    "world-quest#17/t500184 {\"action\":\"shown\",\"step\":2,\"targetId\":\"voice-pod\",\"elapsedMs\":314081}",
+    "world-poi#18/t536480 {\"id\":\"concept-garage\"}",
+    "shot-apply#19/t536480 {\"id\":\"poi_showcase-concept-garage\"}"
+  ]
+}
