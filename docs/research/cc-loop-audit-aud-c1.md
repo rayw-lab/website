@@ -1,8 +1,8 @@
 # CC-LOOP-AUDIT-AUD-C1 段末独立审计报告（#164 AUD-C1 合入 main 后）
 
-- **审计人**：CC-LOOP-AUDITOR-AUD-C1（×1，不设 ×2；董事会执行令 = main@`d895db7` #165 正本）
-- **模型**：claude-fable-5-thinking-xhigh
-- **纪律**：零业务代码（本 PR 仅新增本报告一个文件）；独立 worktree `/tmp/aud-c1-wt`（分支 `cursor/cc-loop-audit-aud-c1-2aee`，锚 = 审计对象 SHA）；未跑 fps-probe（无令不飞）
+- **审计人**：CC-LOOP-AUDITOR-AUD-C1（×1，不设 ×2；董事会执行令 = main@`d895db7` #165 正本）；**R2 接管**：原审计 Agent 于 §4.2 全量回填前 ERROR（半成品推至 `cursor/cc-loop-audit-aud-c1-2aee`@`7c5a112`），AUD-C1-AUDIT-R2 以新标签接管（禁 resume 已兑现）——新分支 `cursor/cc-loop-audit-aud-c1-r2-f37e` base=origin/main@`3fe7c5f`，cherry-pick 半成品后复核 §0–5、fresh 自跑补齐 §4.2/§6
+- **模型**：claude-fable-5-thinking-xhigh（R1/R2 同 slug）
+- **纪律**：零业务代码（本 PR 仅新增本报告一个文件）；R1 动态取证于独立 worktree `/tmp/aud-c1-wt`（锚 = 审计对象 SHA），R2 全量 e2e 于新 VM 独占跑道 fresh 自跑（§4.2）；未跑 fps-probe（无令不飞）
 - **审计对象**：[#164](https://github.com/rayw-lab/website/pull/164) squash → **main@`38a2086`**（CC-AUD-C1 驾驶五事件 WebAudio 纯合成音效层 v0）
 - **时间窗**：2026-08-28 10:41–12:00 UTC 附近（fresh 取证与动态复跑均在合入后当日完成）
 
@@ -27,6 +27,7 @@
 - `gh pr view 164`：state **MERGED**，mergedAt `2026-08-28T10:41:37Z`，mergeCommit **`38a2086e335db5c5fc4f17fc8ffb39741315fd1e`**，base `main`，head `cursor/cc-aud-c1-synth-8177`。
 - `git fetch origin main`（10:41 后取证）：origin/main tip = `38a2086` ✅ 完全吻合。
 - 审计进行中 main 前进一格：**`d895db7`**（[#165](https://github.com/rayw-lab/website/pull/165) 董事会裁决正本，`docs/research/cc-loop-board-aud-c1-merge.md` 单文件 +48 行，零业务代码）——不改变审计锚 `38a2086`，本报告 PR 挂 base=main 时天然叠其上。
+- **R2 锚更新（fresh 复核）**：main 再前进一格至 **`3fe7c5f`**（[#167](https://github.com/rayw-lab/website/pull/167) PLUG-134 段末审计档，docs-only）。`38a2086..3fe7c5f` 差异 = 2 个 docs/research 文件，零 src/e2e/config 触碰——审计锚 `38a2086` 的全部静态结论对现 main tip 依然成立；R2 已在 `3fe7c5f` 树上复跑 §2/§3 关键取证（diff stat、howler、pointer-lock、PR 164 merge 事实）逐项吻合。
 - 门禁 CI（merge commit 同 SHA）：run [33164322861](https://github.com/rayw-lab/website/actions/runs/33164322861) **success**（check / build / links / budget / lighthouse 单 job 全绿）。
 
 ## 2. diff 文件域复核（恰好五域，与任务书一致）
@@ -71,6 +72,7 @@
 
 - #134（tip `e03271f`）文件域 10 件：docs/research ×2、`e2e/cyber-city-explore|observability|perf.spec.ts`、`playwright.config.ts`、`public/models/facade-kit/README.md`、`src/lab/world/city/ForegroundFraming.ts`、`src/lab/world/city/StreetProps.ts`、`tools/camera/audit-x2-visibility.mjs`。与 #164 五件**交集 = ∅**（实测两清单逐一对照）。
 - 语义面（文本零冲突 ≠ 语义零冲突，专项核过）：#134 的 `playwright.config.ts` 改动 = 全局 `workers: 2→1` + world-chromium `fullyParallel: false`，**不动 testMatch/testIgnore**——`cyber-city-audio.spec.ts` 经既有 `cyber-city.*\.spec\.ts` 泛匹配收编 world-chromium 的链路在 #134 合入后不变，且串行化更严，对音频用例只利不害。无需试合并树即可判定兼容（配置为唯一潜在耦合点，已逐行核）。
+- **R2 锚更新**：[#134](https://github.com/rayw-lab/website/pull/134) 已于 10:56:08Z 合入（merge commit `d99a0e2`），但 base = **#104 栈分支** `cursor/cc-vis-x2-facade-r2-1d6f`，**不在 main**（`git merge-base --is-ancestor` 实测 NOT in main）。现 main（含本审计全量 e2e 所跑树）playwright 仍为 `workers: 2` 原配；上述语义兼容结论转为前瞻——待 #104 栈合 main 时生效，无需本段重审。
 
 ### 3.6 其他纪律点（随查随记）
 
@@ -92,14 +94,15 @@ pnpm exec playwright test e2e/cyber-city-audio.spec.ts --project=world-chromium 
 
 硬门断言 A–D 全过：首手势前零 AudioContext（addInitScript 构造计数 + `__worldAudio` 探针双口径互证）→ robot_idle 静音钮 hidden → CTA 首手势解锁 + 变形音计数 ≥1 + localStorage 静音记忆构造期还原 → 静音钮切换写回持久 → W 驾驶引擎层 engineLevel 抬升 → 全程零 pageerror。
 
-### 4.2 全量 e2e（跑道互斥令执行记录 + 数字口径修正）
+### 4.2 全量 e2e（R2 fresh 自跑 + 数字口径修正）
 
-- **互斥令兑现**：10:41 取证时 `/tmp/plug-rebase-wt` 上 #134 的 CITY-EXP（world-chromium，端口 4399，pid 122936）在跑（负载 ~4.4/4 核）——按令未杀、未并发，先铺静态面**排队等待**；10:48 该进程自然退出、跑道空闲后，10:55 在本审计 worktree（端口 4517）启动全量。
-- **数字口径修正（登记要点）**：执行令所书「全量 53（原 52 + CITY-AUD-01）」中的 52 为 **CC-L0 时期的陈旧登记**（`cyber-city-test-framework.md` 首跑实测行）；套件此后随 FXN/OBS/EXP/SIGN 等波次持续扩容，main@`38a2086` fresh `--list` 实测 = **81 例 / 17 文件 / 7 project**（desktop 20 / mobile 3 / car 7 / world 44 / world-perf 1 / city-perf 2 / visual 4），即 **80（合入前）+ 1（CITY-AUD-01）**——与编排看板 #104 复活门「全量 80 例」口径互证一致。**「+1 收编 world-chromium」事实成立**（testMatch 泛匹配 fresh 取证），但登记数请以 81 为准，53 不应上板。
+- **R1 互斥令执行记录（历史存档）**：10:41 取证时 `/tmp/plug-rebase-wt` 上 #134 的 CITY-EXP（world-chromium，端口 4399，pid 122936）在跑（负载 ~4.4/4 核）——按令未杀、未并发，先铺静态面**排队等待**；10:48 该进程自然退出、跑道空闲后，10:55 在审计 worktree（端口 4517）启动全量。**该 R1 全量结果随 Agent ERROR 一并丢失，未被本报告引用**。
+- **数字口径修正（登记要点）**：执行令所书「全量 53（原 52 + CITY-AUD-01）」中的 52 为 **CC-L0 时期的陈旧登记**（`cyber-city-test-framework.md` 首跑实测行）；套件此后随 FXN/OBS/EXP/SIGN 等波次持续扩容，main@`38a2086` fresh `--list` 实测 = **81 例 / 17 文件 / 7 project**（desktop 20 / mobile 3 / car 7 / world 44 / world-perf 1 / city-perf 2 / visual 4），即 **80（合入前）+ 1（CITY-AUD-01）**——与编排看板 #104 复活门「全量 80 例」口径互证一致。**「+1 收编 world-chromium」事实成立**（testMatch 泛匹配 fresh 取证；R2 于 `3fe7c5f` 树复跑 `--list` 同得 81/17）。登记数以 81 为准，53 不应上板。
+- **R2 fresh 全量（本报告采信的唯一全量结果）**：新 VM 独占跑道（启动前 `ps` 实测零 chrome/playwright/lighthouse 进程、4321/4517 端口空闲），树 = `cursor/cc-loop-audit-aud-c1-r2-f37e`（= main@`3fe7c5f` ⊕ 本报告 docs，对锚 `38a2086` 的 src/e2e/config 面逐字节等价），默认端口 4321，`workers: 2` main 原配；CITY-AUD-01 亦在其中随全量 fresh 复验（与 §4.1 R1 单测互证）。
 - **全量结果**：
 
 ```
-（回填中：全量 81 例运行结果）
+（回填中：R2 全量 81 例运行结果）
 ```
 
 ## 5. LHCI（同 SHA CI artifact 回填，来源登记）
@@ -131,5 +134,6 @@ pnpm exec playwright test e2e/cyber-city-audio.spec.ts --project=world-chromium 
 - `git show 38a2086 --stat` / `gh pr view 134 --json files` / `gh pr diff 134`（playwright.config 段逐行）
 - `rg -i howler package.json pnpm-lock.yaml src/` / `rg -i "pointerlock|pointer-lock" src/ e2e/` / `rg "\.(mp3|ogg|wav|m4a|aac|flac|opus)$"`（public 文件清单）
 - `pnpm build`（worktree @`38a2086`）+ `rg -l "world-audio-muted" dist/` + `dist/index.html` 首包脚本核对
-- `pnpm exec playwright test --list`（81 例分布）/ CITY-AUD-01 单测 / 全量（E2E_PORT=4517）
+- `pnpm exec playwright test --list`（81 例分布）/ CITY-AUD-01 单测 / 全量（R1 E2E_PORT=4517；R2 默认 4321）
 - `gh api …/runs/{33164322861,33163104422}/artifacts` + `lhr-*.json` categories 逐项聚合
+- R2 追加：`gh pr view 134 --json baseRefName,mergeCommit` + `git merge-base --is-ancestor d99a0e2… origin/main`（NOT in main 实证）/ `gh run download {33164322861,33163104422} -n lighthouse-results` + 双轮 7 URL 中位独立复算（Node 脚本，全 100 复现）/ `pnpm test:e2e`（json reporter `test-results/e2e-results.json` 计数核对）
