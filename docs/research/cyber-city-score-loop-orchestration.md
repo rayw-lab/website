@@ -57,6 +57,14 @@
 
 - **PR [#43](https://github.com/rayw-lab/website/pull/43) BL2** · NO-GO · **禁止合流**
 
+## 角色表（定义单源 = `cc-loop-role-catalog.md`，本表只做索引，禁止在此扩写条款）
+
+| 层 | 角色 | 要点 |
+|----|------|------|
+| 治理 | 指挥官 → **事后顾问（董事会）** → 父代理 | **事后顾问（新增）**：连续 ≥2 tick 无有效新增，或 subagent 角色冲突/卡点时触发；`claude-fable-5-thinking-xhigh`；权威最高，裁决对父代理与所有 Task 具约束力，可要求持续推进（条款见百科 §3） |
+| 编排辅助 | 编排顾问（T 系列）· 秘书（SEC P 系列） | 日常串并行/派单/预排仍归编排顾问；**卡门/冲突升级事后顾问**；看板 3n 界点由秘书刷新 |
+| 交付 | 调研 · 脑暴 · WBS/设计 · 开发 · 测试 · 视觉 · 功能 · 性能 · 交互/用户故事 · 产品 · 质量 · 审计 | 全员 `claude-fable-5-thinking-xhigh`；审计零业务代码 + fresh 取证，专项分只认审计独立分；逐角色五字段条款见百科 §2 |
+
 ## 归档（一行）
 
 顾问 [#87](https://github.com/rayw-lab/website/pull/87)[#88](https://github.com/rayw-lab/website/pull/88) · AL-FXN **84** [#84](https://github.com/rayw-lab/website/pull/84) · 范式 [#85](https://github.com/rayw-lab/website/pull/85) · board [#86](https://github.com/rayw-lab/website/pull/86) · 清理 [#89](https://github.com/rayw-lab/website/pull/89) · C5-R3 [#90](https://github.com/rayw-lab/website/pull/90) · C6 [#91](https://github.com/rayw-lab/website/pull/91) · X1a-R4 [#92](https://github.com/rayw-lab/website/pull/92) · X3-R4 [#93](https://github.com/rayw-lab/website/pull/93) · AL-VIS **73** [#94](https://github.com/rayw-lab/website/pull/94)
