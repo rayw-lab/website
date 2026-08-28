@@ -1,14 +1,16 @@
 # Phase 0 提分 Loop 编排看板
 
-`main` @ `9177dcc` · 2026-08-28 06:48 UTC · **合流收口 + 功能 87 增量登记（SEC-FXN87，事件驱动界点单）** · 范式 `cyber-city-orchestration-paradigm.md` · 本单 = 董事会即合序 ①② 执行后的秘书登记件（base = main@`9177dcc`，塌栈世系已全收编，看板恢复 base=main 单链）
+`main` @ `483b942` · 2026-08-28 08:15 UTC · **R3 收账：#146 功能 87 合入落账 + 双 ENV 销案 + 同机强制令上板（SEC-R3-LEDGER，事件驱动界点单）** · 范式 `cyber-city-orchestration-paradigm.md` · 本单 = 董事会 R3（[#151](https://github.com/rayw-lab/website/pull/151)）§E-4 看板收账件（base = main@`483b942`，只改看板单文件、零 src）
 
 > **董事会终裁生效（CC-LOOP-BOARD-ADVISOR-R1，指挥官 2026-08-28 授权）**：书面裁决 = 父代理与所有子代理必须执行的董事会决议，冲突时优先于顾问链 T* 与一切实现/审计单。全文见 `docs/research/cc-loop-board-advisor-r1.md`（已随 [#143](https://github.com/rayw-lab/website/pull/143) 落 main）；要点见下「董事会终裁」节。**即合序 ①②（#103 + #143）已于 06:47 UTC 执行完毕**（见「MERGE-WAVE 9 合流记录」节）；禁合项与双门口径不变。
 
 **模型（L8+）**：全部子代理 Task = `claude-fable-5-thinking-xhigh`；在途 Sol 可跑完（§1.2 宽限）。
 
-> **合流已落地（本单登记核心）**：指挥官授权父代理 squash 合流 ① [#103](https://github.com/rayw-lab/website/pull/103) → main@`e604568`（2026-08-28 06:47:47 UTC，AL-FXN-R7 功能审计 87 落库，第 9 次复读催办件清账）② [#143](https://github.com/rayw-lab/website/pull/143) → main@`9177dcc`（06:47:59 UTC，董事会 R1 终裁 + 秘书世系塌栈）。**同窗 close supersede 八单**：#140/#135/#130/#125/#121（塌栈世系收编）+ #116/#112/#109（内容已并入世系）——8/8 实测 CLOSED。登记矩阵功能 **84 → 87** 由本单落账（见「登记矩阵」）；90 禁登（云端封顶 87–88）。
+> **R3 收账（本单登记核心，事件窗 2026-08-28 08:01–08:15 UTC）**：① **#146 已合入落账**——[#146](https://github.com/rayw-lab/website/pull/146)（SEC-FXN87）于 **08:01:14Z 由指挥官授权合入 main@`483b942`**（`gh pr view 146` 实测 mergedAt/mergeCommit；合入程序合规，R3 §D），功能 **87** 已随合入自动上板，本单核对**未重复冒登**（矩阵行注记改「已合入落账」口径）。② **董事会 R3 终裁上板**（[#151](https://github.com/rayw-lab/website/pull/151) draft 已交付，全文 `docs/research/cc-loop-board-advisor-r3-dual-env-verdict.md`）：双 ENV 销案（僵尸/创建即死）+ 同机强制令三条立法 + IGNITION-run5 v3 重签 + 禁换将² + ×2 = 0/2 维持，详见「董事会 R3 终裁」节。③ **run5 同机决胜趟**：派单时点在飞观察（父代理指挥官 VM 自持跑道）；本单取证窗内 [#129](https://github.com/rayw-lab/website/pull/129) tip 出现决胜趟签字提交 `a9ec398`（08:10:33Z，自述 CITY-EXP-01 **passed 17.6m** · `EXIT=0` · 1/0/0/0 · 两键合规；签字 = e2e spec 注释块 9 行，`git diff --stat 49a5d6a..a9ec398` 实测零 src 零逻辑）——按 R3 §B-3/§C-4，✓ 计数两要件 = **三证 durable 上链**（`docs/research/exp01-evidence/run5/` 进 #129 分支）+ **独立只读复核**，两件完成前 **×2 维持 0/2**，本单不改计数。④ **存档波序登记**（R3 §E-5 / T29 §5-2）：[#149](https://github.com/rayw-lab/website/pull/149) → [#150](https://github.com/rayw-lab/website/pull/150) → [#148](https://github.com/rayw-lab/website/pull/148) → [#151](https://github.com/rayw-lab/website/pull/151)，空档执行、不占 run 窗，合并权在父代理/指挥官，**本单不代合**。
 >
-> **在途等待项（合流收口后）**：① X2 链路——**ENV [#129](https://github.com/rayw-lab/website/pull/129) ×2 门第二次重锚 run3/run4 干净趟**（T21 [#139](https://github.com/rayw-lab/website/pull/139) §1.2）：run1/run2 双诊断趟不计（㉓㉔）；每趟真空三查留档 + **跑道互斥令**（㉚：×2 趟在飞全 VM 禁起 chrome 级活动，父代理同受约束）+ **archive-then-clean 铁则**（㉙：启动命令永久禁嵌 `rm -rf`）；假 ✓ 机制实证在册（㉛）；✓✓（run3+run4）→ 签字门（扩大清单含 #134 三 spec，T19 §2.3）→ 合流，**#129 合流窗最早 Tick#29–30**；#129 CI 门禁 pass · draft 挂双门不变；② **plug 门后件**：[#134](https://github.com/rayw-lab/website/pull/134) IDLE draft（tip `e03271f`，A 案几何内容留段末审计放行，过门后先入 #104 分支）；[#104](https://github.com/rayw-lab/website/pull/104) 维持 draft 禁 ready，复活门三条 = #129 双门 + R2 双清 + 全量 80 例 0/0/0（集成树口径，T19 §3.3）；③ R2 零跑道首批已交付 [#145](https://github.com/rayw-lab/website/pull/145)（draft，㉕ 拖欠账落地清偿）；同窗顾问件 T22 [#141](https://github.com/rayw-lab/website/pull/141) · T24 [#144](https://github.com/rayw-lab/website/pull/144) · GOV-ROLES [#142](https://github.com/rayw-lab/website/pull/142) 待存档波；④ **存档波（即合序 ③）**：docs-only 顾问/审计 PR 每波 ≤5 批量合并，空档执行；⑤ 全量 e2e 解锁链六条中「#103+塌栈」一项**已落袋 ✅**，关键路径剩 #129 的 ×2 链，开闸窗口 **Tick#29–#31**。
+> **合流已落地（SEC-FXN87 [#146](https://github.com/rayw-lab/website/pull/146) 登记核心，已随 `483b942` 落 main）**：指挥官授权父代理 squash 合流 ① [#103](https://github.com/rayw-lab/website/pull/103) → main@`e604568`（2026-08-28 06:47:47 UTC，AL-FXN-R7 功能审计 87 落库，第 9 次复读催办件清账）② [#143](https://github.com/rayw-lab/website/pull/143) → main@`9177dcc`（06:47:59 UTC，董事会 R1 终裁 + 秘书世系塌栈）。**同窗 close supersede 八单**：#140/#135/#130/#125/#121（塌栈世系收编）+ #116/#112/#109（内容已并入世系）——8/8 实测 CLOSED。登记矩阵功能 **84 → 87** 由 #146 落账（08:01:14Z 已合入 `483b942`，见「登记矩阵」）；90 禁登（云端封顶 87–88）。
+>
+> **在途等待项（R3 后现行口径）**：① X2 链路——**#129 ×2 门重锚 run5/run6 同机决胜趟**（R3 §A-4/§C，跑道主 = 父代理指挥官 VM 自持；基线 `49a5d6a` 冻结续期）：run1/run2 双诊断趟不计（㉓㉔）· run3 07:16✓ 会计定谳降级不计（T29 [#150](https://github.com/rayw-lab/website/pull/150)）· run4 无点火作废（T26 [#148](https://github.com/rayw-lab/website/pull/148) / R2 [#149](https://github.com/rayw-lab/website/pull/149)）；每趟两键文书（fresh 真空三查 + `IGNITION-runN.txt` v3 同机四要素）+ **跑道互斥令**（㉚，自跑不豁免）+ **archive-then-clean 铁则**（㉙）+ **收轮即上链**（R3 §B-3：未上链 ✓ 不计 ×2）+ **每趟 ✓ 独立只读复核**（R3 §C-4，防自跑自判）；假 ✓ 机制实证在册（㉛）；run5 签字 `a9ec398` 在册待上链+复核；✓✓（run5+run6）→ 签字门（扩大清单含 #134 三 spec，T19 §2.3）→ 合流（恒等式续期）；#129 draft 挂双门不变；② **plug 门后件**：[#134](https://github.com/rayw-lab/website/pull/134) IDLE draft（tip `e03271f`，A 案几何内容留段末审计放行，过门后先入 #104 分支）；[#104](https://github.com/rayw-lab/website/pull/104) 维持 draft 禁 ready，复活门三条 = #129 双门 + R2 双清 + 全量 80 例 0/0/0（集成树口径，T19 §3.3）；③ R2 零跑道首批已交付 [#145](https://github.com/rayw-lab/website/pull/145)（draft，㉕ 拖欠账落地清偿）；同窗顾问件 T22 [#141](https://github.com/rayw-lab/website/pull/141) · T24 [#144](https://github.com/rayw-lab/website/pull/144) · GOV-ROLES [#142](https://github.com/rayw-lab/website/pull/142) 待存档波；④ **存档波**：docs-only 顾问/审计 PR 每波 ≤5 批量合并，空档执行、不占 run 窗；本轮序 = **#149 → #150 → #148 → #151**（R3 §E-5 / T29 §5-2，合并权在父代理/指挥官）；⑤ 全量 e2e 解锁链六条中「#103+塌栈」一项**已落袋 ✅**，关键路径剩 #129 的 ×2 链（run5/run6 同机），开闸 = ✓✓（上链+复核）→ 签字门。
 >
 > **Tick#13 出土在册**：08-27 先行分支 `cursor/cc-exp01-corridor-fix-0254`（remote `a59d1ea`）早已定性「直线走廊被 BL1 充电桩排封死」并原型测试面改法；T15 [#131](https://github.com/rayw-lab/website/pull/131) §4 裁决 **不并代码、只并证据链**（ENV 报告设三源对表专节；B 案若签字转正也以 fresh base 单 PR 重实现；分支保留登记 `a59d1ea`）。
 
@@ -16,12 +18,12 @@
 
 | 维度 | 北极星 | 生产登记 | Δ | 在途 |
 |------|--------|----------|---|------|
-| **综合** | **98** | **80** | +18 | COMP-M0 重算（#105 留痕 / #106 WIP）——功能输入 84→87 已更新，重算待续派 |
-| **视觉** | **98** | **73** | +25 | 顾问路径 →~78（[#98](https://github.com/rayw-lab/website/pull/98) 已合）· X1b [#101](https://github.com/rayw-lab/website/pull/101) 已合待复评 · X2 [#104](https://github.com/rayw-lab/website/pull/104) draft 禁 ready → ENV 修复段 [#129](https://github.com/rayw-lab/website/pull/129) run1/run2 双诊断趟（污染/探针并发）· **×2 重锚 run3/run4**（T21 §1.2，✓✓ 唯一放行口径）+ plug 交付 [#134](https://github.com/rayw-lab/website/pull/134)（e2e HOLD·段末审计）+ 验证轮终局 1/2/0/0（FB ✓ → #35 挤兑判读成立，⑰） |
-| **功能** | **90** | **87** | +3 | **本单增量登记 84 → 87**（[#103](https://github.com/rayw-lab/website/pull/103) 合流 SHA `e604568`；JSON 单源 `cyber-city-function-rubric-score.json` main 实测 score=87）· 真机 S-2 缺席云端封顶 87–88，**90 禁登** → 解锁路径 = 指挥官真机 S-2 → AL-R10 计时增补轮 |
+| **综合** | **98** | **80** | +18 | COMP-M0 重算（#105 留痕 / #106 WIP）——功能输入 **87 已就位**（#146 已合 `483b942`），重算待续派 |
+| **视觉** | **98** | **73** | +25 | 顾问路径 →~78（[#98](https://github.com/rayw-lab/website/pull/98) 已合）· X1b [#101](https://github.com/rayw-lab/website/pull/101) 已合待复评 · X2 [#104](https://github.com/rayw-lab/website/pull/104) draft 禁 ready → [#129](https://github.com/rayw-lab/website/pull/129) **×2 重锚 run5/run6 同机决胜趟**（R3 §A-4/§C，锚 `49a5d6a`；run1–run4 诊断/降级/作废不计；**×2 = 0/2**，run5 签字 `a9ec398` 待上链+独立复核）+ plug 交付 [#134](https://github.com/rayw-lab/website/pull/134)（e2e HOLD·段末审计） |
+| **功能** | **90** | **87** | +3 | **#146 已合入落账**（merge `483b942` @ 2026-08-28T08:01:14Z，`gh` 实测；87 随合入自动上板，本单核对**未重复冒登**）· 87 源头 = [#103](https://github.com/rayw-lab/website/pull/103) AL-FXN-R7（`e604568`，JSON 单源 score=87）· 真机 S-2 缺席云端封顶 87–88，**90 禁登** → 解锁路径 = 指挥官真机 S-2 → AL-R10 计时增补轮 |
 | **性能** | **85** | **—** | +85 | 六腿桌面单 [#96](https://github.com/rayw-lab/website/pull/96) 已在 main；首分待指挥官真机 → AL-PERF |
 
-> 登记只认审计独立分（JSON 单源：视觉 main = 73，功能 main@`9177dcc` = **87**——`docs/research/cyber-city-function-rubric-score.json` 本单实测交叉核验：score=87 · target=90 · Pass A 86 / Pass B 87 分歧 1 取证据更完整的 B · wave2 §1.2 云端从严封顶 87–88，F1/F2/F3/F4 计时锚 SwiftShader 禁判恒锁 85，**90 数学不可达、禁登**，顺延真机计时增补轮）。禁止 LHCI/e2e/smoke 冒充功能或性能。**#103 口径注释已兑现**：合流前登 84 → #103 合入 main@`e604568` 后由本单（秘书增量登记）登 **87**，未冒登、未越顶。诊断跑不作发布/登记分输入（T18 §1.2 硬校验注记）。
+> 登记只认审计独立分（JSON 单源：视觉 main = 73，功能 main@`483b942` = **87**——`docs/research/cyber-city-function-rubric-score.json`：score=87 · target=90 · Pass A 86 / Pass B 87 分歧 1 取证据更完整的 B · wave2 §1.2 云端从严封顶 87–88，F1/F2/F3/F4 计时锚 SwiftShader 禁判恒锁 85，**90 数学不可达、禁登**，顺延真机计时增补轮）。禁止 LHCI/e2e/smoke 冒充功能或性能。**#103 口径注释已兑现**：合流前登 84 → #103 合入 main@`e604568` 后由 SEC-FXN87（[#146](https://github.com/rayw-lab/website/pull/146)）增量登记 **87**，未冒登、未越顶。**R3 §D 收账核对（本单 SEC-R3-LEDGER）**：#146 于 08:01:14Z 合入 `483b942` 后 87 已随合入自动上板，登记链 = #84（84）→ #103 审计 87（`e604568`）→ #146 上板（`483b942`）→ 本单核对，**未重复冒登**。诊断跑不作发布/登记分输入（T18 §1.2 硬校验注记）。
 
 ## 董事会终裁（事后顾问 · CC-LOOP-BOARD-ADVISOR-R1 · Tick#22）
 
@@ -50,6 +52,22 @@
 | 段末审计 AL | A 案几何放行权独有 + 集成树全量复跑 | 待命（#104 rebase 后派） | `claude-fable-5-thinking-xhigh` |
 | **事后顾问（董事会，触发式）** | 打破卡点终裁：角色冲突 / 合流序 / 禁令与节流；书面裁决优先于顾问链与一切子代理单 | 本单交付即 IDLE；触发条件 = 范式 §1.3 三条 | `claude-fable-5-thinking-xhigh` |
 
+## 董事会 R3 终裁（事后顾问 · CC-LOOP-BOARD-ADVISOR-R3 · 双 ENV 卡点，事件驱动）
+
+**触发**：Loop 硬规「subagent 卡点 → 必派董事会」+ T29 [#150](https://github.com/rayw-lab/website/pull/150) §6 预置触发命中「**制度性失效**」——两键点火制证据总线（同机 `/tmp`）在跨 VM 换将后物理断路（R3 §J 管辖权裁定成立）。交付 = [#151](https://github.com/rayw-lab/website/pull/151)（draft），全文 `docs/research/cc-loop-board-advisor-r3-dual-env-verdict.md`；取证窗 08:01–08:08 UTC，双 ENV 状态 = cloud-agent API 一手实测（毫秒级时间戳）。**本单（SEC-R3-LEDGER）按 R3 §E-4 收账上板**：
+
+| 裁决 | 登记内容 |
+|------|----------|
+| **双 ENV 销案** | 旧 ENV `bc-53ac6339` **僵尸行政除名**（lastMessage 06:48:45Z 停滞 75+ min · resume ×2 失败 · **禁第三次 resume** · `ENV1-ZOMBIE-WRITEOFF-R3.txt` 收档 + dashboard 归档；迟到输出自始无效，RELIEVED 效力续期）；新 ENV `bc-0b5d1fd4` **创建即死立即解除**（07:41:49Z 创建后 **59ms** 零活动、events 0 条、setupStatus null，已排除慢启动假说；`ENV2-STILLBORN-R3.txt` 收档 + 归档；若平台自行唤醒，一切动作按未持放行令自始无效） |
+| **禁换将²** | 不得再派第三个跨 VM ENV 跑决定趟（根因 = 结构性断路，非个体违纪——换将 = 把同一物理断路再买一次）；跨 VM 子代理今后仅承担**非决定性**工作（实现/文档/审计），交付一律走 PR artifact |
+| **同机强制令（立法三条，无日落）** | ① 决定趟三要素（跑道 tmux+chrome / fresh 真空三查档 / `IGNITION-runN.txt`）**必须同机**，不同机文书自始无效（主机指纹行 `hostname` + `uptime -s` 自证）；② `/tmp` 证据仅产生它的 VM 语境内有效，跨 VM 引用必须 durable 上链（commit 进对应 PR 分支 `docs/research/exp01-evidence/runN/` 或 CI artifact 链接，转述性通报永不构成放行/计数依据）；③ **收轮即上链**——收轮后下一 tick 内三证 durable 拷贝进 #129 分支，未上链 ✓ **不计 ×2**（「干净」= 程序 ∧ 运行 ∧ 取证干净）；溯及既往补账不翻案（run3/run4 归档补上链，已定谳结论不变） |
+| **IGNITION-run5 v3** | 07:49 版作废（标的跑道灭失 + 所引真空档不可复核 + 同机令生效三理由）→ **重签 v3 同机四要素**：HOLD superseded 核对行 + 指挥官本盘 fresh 真空三查档（禁复用历史档）+ tip SHA `49a5d6a` + 主机指纹行 |
+| **run5 窗不中止 · 决定趟改同机** | 07:16✓ 情报账仍新鲜（`49a5d6a` 东线 17.7m 通过 vs 旧线 8.5m 撞死，T29 §2-2）；run5/run6 由**父代理在指挥官 VM 自持跑道**执行，两键文书纪律不变 + **每趟 ✓ 新增独立复核要件**（三证上链 + 独立只读复核或指挥官核签，防自跑自判）；放行令逐趟核发（run5 ✓ 不自动授权 run6） |
+| **×2 = 0/2 维持** | run5/run6 标签不烧（烧标签构成要件 = 违令占用，未成立；文书作废重签 ≠ 标签烧毁）；基线 `49a5d6a` 冻结续期；#146 docs-only 合入不触基线，**#129 无需 rebase**；硬闭点公式续期（点火 +55min+10min 与 `RUN_EXIT=` 取先，PID 精确 kill 绝不 pkill；在飞窗全 VM 禁 chrome，自跑不豁免互斥） |
+| **#146 终裁 = 已被事实超越** | 08:01:14Z 指挥官亲合**合规**（R2 §D / T29 §5 均「仅建议不代行」，合入权在指挥官，零瑕疵）；责令转收账三笔：87 上板已随合入自动落账（**禁重复冒登**，本单核对 ✅）· MERGE-WAVE 9 + 塌栈 close ×8 归档在板 ✅ · #129 无需 rebase ✅ |
+
+**run5 同机在飞观察（本单事件窗新鲜事实，`gh`/git 实测）**：派单时点 run5 在飞（父代理自持跑道）；08:10:33Z [#129](https://github.com/rayw-lab/website/pull/129) tip 出现决胜趟签字 `a9ec398`——自述 CITY-EXP-01 **passed 17.6m**（`EXIT=0`，expected:1 / unexpected:0 / skipped:0 / flaky:0；两键合规：IGNITION-run5 + 真空三查 PASS chrome=0/load1=0.14；证据 `/tmp/evidence-exp01/{IGNITION,vacuum}-run5.txt` + `run5-decisive/`；run3 07:16✓ 按 R2 降级不计在签字内复述）。签字本体 = e2e spec 注释块 9 行（`git diff --stat 49a5d6a..a9ec398` 实测仅 `e2e/cyber-city-explore.spec.ts` +9，零 src 零逻辑）。**会计口径**：按 R3 §B-3/§C-4，✓ 计数两要件（三证上链 `docs/research/exp01-evidence/run5/` + 独立只读复核）完成前 **×2 维持 0/2**，本单不改计数；签字所引 IGNITION 版本与 v3 四要素的一致性，一并留独立复核核验。
+
 ## Tick#19–#21 增量补登（历史在册：**十六条 ⑰–㉜** 已随 [#143](https://github.com/rayw-lab/website/pull/143) 世系落 main；①–⑯ 由 P9 [#135](https://github.com/rayw-lab/website/pull/135) 世系落账；表内「本单」均指原 P10/董事会件）
 
 | # | 条目（源） | 登记内容 / 落点 |
@@ -71,12 +89,12 @@
 | ㉛ | **假 ✓ 机制实证**（T21 F6） | `PROBE_RESULT {fps:0.399, designRatePerWallS:1.0225}`（06:07:50 出数）——0.4 帧/秒下设计秒仍按 ~1.02×墙钟累积，单帧 ≈2.5 设计秒巨步物理 → 碰撞采样稀疏化/隧穿风险**由推断转实测**（T19 §2.1 升级）；挂 #129 证据链与全量段判读参考；告警随档：对抗窗口绝对 fps 无 A/B 基线意义，唯一可信读数 = designRate≈1.02 机制性结论 |
 | ㉜ | #135 塌栈拖欠（T21 F8） | T20 §4.2 裁「本 tick 塌栈」（CI SUCCESS + CLEAN + 世系实证齐备）→ T21 06:08 实测仍 draft **拖欠 1 tick**——入执行力曲线（㉒）；T21 §4 复读「本 tick 落袋成本最低」；本单 ⊇ #135，指挥官可直接取本单塌栈 |
 
-## 当前焦点（提分 Loop · 合流收口后）
+## 当前焦点（提分 Loop · R3 收账后）
 
 | 轨 | 状态 | 下一拍 |
 |----|------|--------|
-| 视觉 | **73** ✅ [#94](https://github.com/rayw-lab/website/pull/94) · X1b 已合 [#101](https://github.com/rayw-lab/website/pull/101)（W2③）· 顾问 [#98](https://github.com/rayw-lab/website/pull/98) / TM-PREP [#99](https://github.com/rayw-lab/website/pull/99) / G3+X5 [#100](https://github.com/rayw-lab/website/pull/100) 已合 · plug 交付 [#134](https://github.com/rayw-lab/website/pull/134) | 董事会 §3 规程：**全清场 → 真空三查留档放行 run3 → run4 → ✓✓ 签字门**（扩大清单含 #134 三 spec，T19 §2.3）→ 合 [#129](https://github.com/rayw-lab/website/pull/129)（最早 Tick#29–30）→ plug 栈两步走（T19 §3.2）；✘✘（run3/run4）则判读 B 动摇回炉三候选 + R2 全 HOLD |
-| 功能 | **87** ✅ main（[#103](https://github.com/rayw-lab/website/pull/103) 合流 `e604568`，本单增量登记；JSON 单源 score=87 交叉核验 ✅）· 决策树 [#97](https://github.com/rayw-lab/website/pull/97) 已合 | 90 解锁 = 指挥官真机 S-2 → AL-R10 计时增补轮（F1/F2/F3/F4 计时锚 85→90 需真机；云端封顶 87–88 不可越） |
+| 视觉 | **73** ✅ [#94](https://github.com/rayw-lab/website/pull/94) · X1b 已合 [#101](https://github.com/rayw-lab/website/pull/101)（W2③）· 顾问 [#98](https://github.com/rayw-lab/website/pull/98) / TM-PREP [#99](https://github.com/rayw-lab/website/pull/99) / G3+X5 [#100](https://github.com/rayw-lab/website/pull/100) 已合 · plug 交付 [#134](https://github.com/rayw-lab/website/pull/134) | R3 §A-4/§C 规程：**run5 计 ✓ 两要件（三证上链 + 独立复核）→ run6 同机决胜趟 → ✓✓ 签字门**（扩大清单含 #134 三 spec，T19 §2.3）→ 合 [#129](https://github.com/rayw-lab/website/pull/129) → plug 栈两步走（T19 §3.2）；✘ 则回炉候选 + R2 全 HOLD（T20 §2.2 锚点后移） |
+| 功能 | **87** ✅ main（[#103](https://github.com/rayw-lab/website/pull/103) 合流 `e604568` 审计源 · [#146](https://github.com/rayw-lab/website/pull/146) 上板 `483b942` @08:01:14Z 已合入落账；JSON 单源 score=87 ✅）· 决策树 [#97](https://github.com/rayw-lab/website/pull/97) 已合 | 90 解锁 = 指挥官真机 S-2 → AL-R10 计时增补轮（F1/F2/F3/F4 计时锚 85→90 需真机；云端封顶 87–88 不可越） |
 | 性能 | 六腿桌面单 [#96](https://github.com/rayw-lab/website/pull/96) 已合 | 指挥官真机 S-2 / 六腿（零 VM）仍待 → AL-PERF |
 | 综合 | 80 | COMP-M0 五维重算（#105/#106 续派；功能输入 84→87 已更新） |
 
@@ -106,7 +124,9 @@
 | #20 | 顾问 T20（[#138](https://github.com/rayw-lab/website/pull/138)） | 交付（T18 三叉预案基线重写 + run1 零杀点阈值阶梯 + #103 第 8 次复读催办升级 + #135 塌栈就绪实证 + Tick#21 预排） |
 | #21 | SEC-P10（本单 [#140](https://github.com/rayw-lab/website/pull/140)，3n 看板界点，T20 §3.1-6 预排）+ 顾问 T21（[#139](https://github.com/rayw-lab/website/pull/139)） | **双双交付**：P10 → #140（⑰–㉜ 十六条补登全落）；T21 → #139（run1/run2 双诊断趟定谳 + ×2 重锚 run3/run4 + 灭失#2 抢救 + 互斥令立法 + 假 ✓ 实证 + Tick#22 动作单） |
 | #22 | **事后顾问 CC-LOOP-BOARD-ADVISOR-R1（董事会终裁，指挥官授权触发）** | 交付（[#143](https://github.com/rayw-lab/website/pull/143)）：角色冲突终裁九行 + 即合序 ①#103 ②本单塌栈 ③存档波 + 探针窗硬闭 06:40 + fps-probe/ENV 并发永久禁令 + run3/run4 真空规程 + 顾问链节流（T22 起事件驱动 + 3n 保底）+ 矩阵口径终裁（视觉 73 单源）；run2 收轮实测 `RUN2_EXIT=0`（诊断趟口径维持） |
-| 事件驱动（合流收口） | 父代理执行即合序 ①②（指挥官授权 squash）+ 秘书 SEC-FXN87 增量登记（本单） | [#103](https://github.com/rayw-lab/website/pull/103) → `e604568` · [#143](https://github.com/rayw-lab/website/pull/143) → `9177dcc`（06:47 UTC）· 塌栈/supersede close ×8 · 登记矩阵功能 **84→87**；同窗顾问件 T22 [#141](https://github.com/rayw-lab/website/pull/141) · T24 [#144](https://github.com/rayw-lab/website/pull/144) · GOV-ROLES [#142](https://github.com/rayw-lab/website/pull/142) · R2 首批 [#145](https://github.com/rayw-lab/website/pull/145) 交付待存档波 |
+| 事件驱动（合流收口） | 父代理执行即合序 ①②（指挥官授权 squash）+ 秘书 SEC-FXN87 增量登记（[#146](https://github.com/rayw-lab/website/pull/146)） | [#103](https://github.com/rayw-lab/website/pull/103) → `e604568` · [#143](https://github.com/rayw-lab/website/pull/143) → `9177dcc`（06:47 UTC）· 塌栈/supersede close ×8 · 登记矩阵功能 **84→87**；同窗顾问件 T22 [#141](https://github.com/rayw-lab/website/pull/141) · T24 [#144](https://github.com/rayw-lab/website/pull/144) · GOV-ROLES [#142](https://github.com/rayw-lab/website/pull/142) · R2 首批 [#145](https://github.com/rayw-lab/website/pull/145) 交付待存档波 |
+| 事件驱动（×2 换将链） | 顾问 T25（[#147](https://github.com/rayw-lab/website/pull/147)）· T26（[#148](https://github.com/rayw-lab/website/pull/148)）· 董事会 R2（[#149](https://github.com/rayw-lab/website/pull/149)）· 顾问 T29（[#150](https://github.com/rayw-lab/website/pull/150)） | 全部交付 draft：run3 ✘ 判读（T25）→ run4 决定性 leg1 ✘ + 判读 B 触发（T26）→ HOLD 违令案终裁：在飞趟跑完降级不计 ×2 + 两键点火制收权 + run5/run6 标签重立（R2）→ 07:16✓ 会计定谳 + run5 两键放行有条件合规 + #129 合流窗条件重启 + #146 第一优先（T29，08:01 兑现） |
+| 事件驱动（双 ENV 卡点） | 董事会 R3（[#151](https://github.com/rayw-lab/website/pull/151)）+ 秘书 SEC-R3-LEDGER（本单） | R3 交付 draft：双 ENV 销案 + 同机强制令三条立法 + IGNITION-run5 v3 + 禁换将² + ×2=0/2 维持 + #146 转收账；本单收账：#146 落账核对（未重复冒登）+ R3 上板 + run5 签字 `a9ec398` 观察在册 + 存档波序 #149→#150→#148→#151 登记 |
 
 ## MERGE-WAVE 9 合流记录（`88097f9` → `9177dcc`，指挥官授权父代理 squash 执行，2026-08-28 06:47 UTC）
 
@@ -136,21 +156,22 @@
 
 | 在途 | 内容 | 状态 |
 |------|------|------|
-| ENV 修复段 | [#129](https://github.com/rayw-lab/website/pull/129)（EXP-01 途径点改线 + BL1 桩排 collider 减深；双盲归因 + run1 诊断 ✓ 先验再抬，㉓） | **转合流门**：draft · tip `5e41550` · CI 门禁 pass · 挂双门（**×2 第二次重锚 run3/run4 干净趟 ✓✓** + 测试面解冻指挥官签字门）；run1/run2 双诊断趟不计（㉓㉔）；董事会 §3 规程 = 归档先行 → 全清场 → 真空三查留档 → run3 → run4；过门即合，**先于 plug rebase**（合流窗最早 Tick#29–30） |
+| #129 修复段（跑道 = 父代理同机自持，R3 §A-4） | [#129](https://github.com/rayw-lab/website/pull/129)（EXP-01 途径点改线东侧净道 + BL1 桩排 collider 减深 + 过弯/倒车限速鲁棒化；原 ENV 双双销案见 R3 节） | **转合流门**：draft · tip `a9ec398`（基线 `49a5d6a` + run5 签字注释 9 行，src 未漂移）· 挂双门（**×2 = run5/run6 同机决胜趟 0/2**，每趟 ✓ = 两键 + 三证上链 + 独立复核 + 测试面解冻指挥官签字门）；run1–run4 诊断/降级/作废不计；过门即合，**先于 plug rebase** |
 | plug 交付段（门后件） | [#134](https://github.com/rayw-lab/website/pull/134)（栈① base=facade-r2 @ `c24c7f3`，tip `e03271f`）：桥位南移 + 东北簇内退 + 探针走廊余量审计 | **IDLE · draft · 全量 e2e HOLD**；纪律事件 #3 坐实（⑱）；A 案几何内容留段末审计（内容与纪律分账）；两步走序 = 段末审计放行后先入 #104 分支、后随 #104 单次 rebase（T19 §3.2） |
 | X2 实现段（门后件） | [#104](https://github.com/rayw-lab/website/pull/104) tip `c24c7f3` | **draft 禁 ready**；复活门三条 = #129 双门 + R2 双清 + 全量 80 例 0/0/0（跑「#104 候选 ⊕ main 集成树」，T19 §3.3） |
 | R2 零跑道首批 | [#145](https://github.com/rayw-lab/website/pull/145)（N2/N3 双清 + #134→#104→post-#129 rebase 预案 + 归档索引） | **已交付 draft**（㉕ 第 4 tick 拖欠账清偿）；跑道段动作待 #129 过门后开闸 |
-| SEC-FXN87 | 本单：合流收口 + 功能 87 增量登记（base = main@`9177dcc`） | 本单 |
+| SEC-FXN87 | [#146](https://github.com/rayw-lab/website/pull/146)：合流收口 + 功能 87 增量登记 | **已合入** `483b942`（08:01:14Z，指挥官亲合合规） |
+| SEC-R3-LEDGER | 本单：R3 收账 + #146 落账核对 + 存档波序登记（base = main@`483b942`，只改看板单文件） | 本单 |
 
 plug 验证轮已收轮（终局 ⑰）；plug r1 `368b4d4`/`839b6fe` **冻结不 revert 不扩** + 禁改动线令维持；残波事件收尾（⑳㉒）。TRIAGE bc-ace126a4 **董事会终止定谳禁 resume**（终裁 §1）。
 
-已收口（不再占槽）：**#103 合流落库 ✅**（`e604568`，功能 87 本单登记）；**#143 董事会件 + 塌栈 ✅**（`9177dcc`）；**plug 验证轮**（终局 1/2/0/0 ⑰）；**归档代办落地销案**（351M + run1 增量，㉑）；顾问 T6–T24 交付 [#117](https://github.com/rayw-lab/website/pull/117) / [#118](https://github.com/rayw-lab/website/pull/118) / [#119](https://github.com/rayw-lab/website/pull/119) / [#122](https://github.com/rayw-lab/website/pull/122) / [#123](https://github.com/rayw-lab/website/pull/123) / [#124](https://github.com/rayw-lab/website/pull/124) / [#126](https://github.com/rayw-lab/website/pull/126) / [#127](https://github.com/rayw-lab/website/pull/127) / [#128](https://github.com/rayw-lab/website/pull/128) / [#131](https://github.com/rayw-lab/website/pull/131) / [#132](https://github.com/rayw-lab/website/pull/132) / [#133](https://github.com/rayw-lab/website/pull/133) / [#136](https://github.com/rayw-lab/website/pull/136) / [#137](https://github.com/rayw-lab/website/pull/137) / [#138](https://github.com/rayw-lab/website/pull/138) / [#139](https://github.com/rayw-lab/website/pull/139) / [#141](https://github.com/rayw-lab/website/pull/141) / [#144](https://github.com/rayw-lab/website/pull/144)。
+已收口（不再占槽）：**#103 合流落库 ✅**（`e604568`，功能 87 由 #146 上板落账 `483b942`）；**#143 董事会件 + 塌栈 ✅**（`9177dcc`）；**plug 验证轮**（终局 1/2/0/0 ⑰）；**归档代办落地销案**（351M + run1 增量，㉑）；顾问 T6–T24 交付 [#117](https://github.com/rayw-lab/website/pull/117) / [#118](https://github.com/rayw-lab/website/pull/118) / [#119](https://github.com/rayw-lab/website/pull/119) / [#122](https://github.com/rayw-lab/website/pull/122) / [#123](https://github.com/rayw-lab/website/pull/123) / [#124](https://github.com/rayw-lab/website/pull/124) / [#126](https://github.com/rayw-lab/website/pull/126) / [#127](https://github.com/rayw-lab/website/pull/127) / [#128](https://github.com/rayw-lab/website/pull/128) / [#131](https://github.com/rayw-lab/website/pull/131) / [#132](https://github.com/rayw-lab/website/pull/132) / [#133](https://github.com/rayw-lab/website/pull/133) / [#136](https://github.com/rayw-lab/website/pull/136) / [#137](https://github.com/rayw-lab/website/pull/137) / [#138](https://github.com/rayw-lab/website/pull/138) / [#139](https://github.com/rayw-lab/website/pull/139) / [#141](https://github.com/rayw-lab/website/pull/141) / [#144](https://github.com/rayw-lab/website/pull/144)。
 
 | 待派 | 内容 | 条件 |
 |------|------|------|
-| 清场令残项（父代理自跑） | 六会话（含 main-preview）capture 留痕后 kill-session；三路非自管服务 kill（@4475、@4610、plug-serve @4507）；探针谱系退净确认 + `PROBE_RESULT` 归档 `/tmp/evidence-exp01/probe/` | **即刻**（run3 真空三查的直接障碍，㉒；状态以父代理面板 fresh 取证为准） |
-| run3/run4 干净趟放行（ENV 传话包） | 一次发全：×2 重锚理由 + T19 §2.2 全表 + 命名令（`env-exp01-run3.log`/`run4.log`）+ 互斥令 + archive-then-clean 铁则 + 假 ✓ 实证情报（㉛）+ 三前置自查（ENV 已三次跳门在案，㉔） | 全清场 + 真空三查过后 |
-| 存档波（即合序 ③） | docs-only 顾问/审计 PR 每波 ≤5 批量合并（含 #141/#142/#144/#145 及 T6–T21 存量） | 空档执行（父代理按董事会 §2 序） |
+| run5 ✓ 计数两要件（R3 §B-3/§C-4/§E-3 首例执行） | ① 三证 durable 上链：run5 三证摘要 + 关键日志 commit 进 #129 分支 `docs/research/exp01-evidence/run5/`；② 独立只读复核派单（审计 Task 复核上链三证与 `RUN_EXIT=0` 一致性 + IGNITION v3 四要素核验，或指挥官核签）——两件齐 → run5 计 ✓（×2 → 1/2） | **即刻**（签字 `a9ec398` 已在册；未齐前 ×2 维持 0/2） |
+| run6 决胜趟（同机） | `IGNITION-run6.txt` 另签（逐趟核发）+ 各自 fresh 真空三查档 + 主机指纹行；硬闭点 = 点火 +65min 与 `RUN_EXIT=` 取先；收轮即上链 `run6/` | run5 计 ✓ 后（互斥令窗内全 VM 禁 chrome） |
+| 存档波（R3 §E-5） | 本轮序 = **[#149](https://github.com/rayw-lab/website/pull/149) → [#150](https://github.com/rayw-lab/website/pull/150) → [#148](https://github.com/rayw-lab/website/pull/148) → [#151](https://github.com/rayw-lab/website/pull/151)**；存量候选 #141/#142/#144/#145/#147 及 T6–T21 后续波次（每波 ≤5） | 空档执行、不占 run 窗（合并权在父代理/指挥官，本单不代合） |
 | 槽空滚动（原 P3） | PERF 六腿 kit · M0-R4 [#106](https://github.com/rayw-lab/website/pull/106) 重算（功能输入 87）· G1 预登记（#101 已合 ✅） | 槽空即派 |
 | X5-R4（原 P4） | X5 招牌续拍（[#100](https://github.com/rayw-lab/website/pull/100) 已授权） | X2 收口后串行 |
 
@@ -165,12 +186,17 @@ plug 验证轮已收轮（终局 ⑰）；plug r1 `368b4d4`/`839b6fe` **冻结�
 
 | PR | 状态 | 说明 |
 |----|------|------|
+| [#151](https://github.com/rayw-lab/website/pull/151) | draft · 存档波第 4 位 | 董事会 R3 终裁：双 ENV 销案（僵尸/创建即死）+ 同机强制令三条立法 + IGNITION-run5 v3 + 禁换将² + ×2=0/2 维持 + #146 转收账 |
+| [#150](https://github.com/rayw-lab/website/pull/150) | draft · 存档波第 2 位 | 顾问 T29：07:16✓ 会计定谳 + run5 两键放行有条件合规 + #129 合流窗条件重启 + #146 第一优先（08:01 兑现）+ 董事会不升级（§6 预置触发后被 R3 命中） |
+| [#149](https://github.com/rayw-lab/website/pull/149) | draft · 存档波第 1 位 | 董事会 R2 终裁：HOLD 违令案——在飞趟跑完降级不计 ×2 + 两键点火制收权 + run5/run6 标签重立 + R2 覆盖 T26 + HOLD 条件解除 |
+| [#148](https://github.com/rayw-lab/website/pull/148) | draft · 存档波第 3 位（附议注记） | 顾问 T26：run4 决定性 leg1 ✘ + 判读 B 触发 + 回炉排序 + 董事会 NO-GO（后被 R2 覆盖） |
+| [#147](https://github.com/rayw-lab/website/pull/147) | draft · 存档波候选 | 顾问 T25：run3 ✘ 判读 + ENV 非僵死判定（后被 R3 E3 僵尸定谳更新）+ 下一棒排序 |
 | [#145](https://github.com/rayw-lab/website/pull/145) | draft · 存档波候选 | R2 零跑道首批：N2/N3 双清 + #134→#104→post-#129 rebase 预案（EXP-01 取 ENV canonical）+ 归档索引 |
 | [#144](https://github.com/rayw-lab/website/pull/144) | draft · 存档波候选 | 顾问 T24：董事会终裁 §7 执行进度核对（事件驱动例外单） |
 | [#142](https://github.com/rayw-lab/website/pull/142) | draft · 存档波候选 | GOV-ROLES 角色百科 v1 + 看板角色表索引（纳入事后顾问·董事会） |
 | [#141](https://github.com/rayw-lab/website/pull/141) | draft · 存档波候选 | 顾问 T22：run2 作废·环境致死 + 重试壳出土·防堵三连 + run3 预排 + 解锁链 Tick#29–#31 维持 |
 | [#139](https://github.com/rayw-lab/website/pull/139) | draft | 顾问 T21：run1/run2 双诊断趟定谳 + ×2 重锚 run3/run4 + 证据灭失#2 抢救（540K）+ 跑道互斥令立法 + 假 ✓ 机制实证 + Tick#22 动作单 |
-| [#129](https://github.com/rayw-lab/website/pull/129) | draft · CI 门禁 pass · **×2 重锚 run3/run4** | ENV 修复段（EXP-01 改线 + BL1 桩排减深）· tip `5e41550` · run1/run2 双诊断趟（㉓㉔）· 双门 = ×2 ✓✓（run3+run4 干净趟）+ 测试面签字（扩大清单含 #134 三 spec）· **过门即合，先于 plug rebase**（合流窗最早 Tick#29–30） |
+| [#129](https://github.com/rayw-lab/website/pull/129) | draft · **×2 = run5/run6 同机决胜趟（0/2）** | 修复段（EXP-01 改线东侧净道 + BL1 桩排减深 + 限速鲁棒化）· tip `a9ec398`（基线 `49a5d6a` 冻结，签字注释零 src）· run1–run4 不计（诊断 ㉓㉔ / 07:16✓ 降级 / run4 作废）· 双门 = ×2 ✓✓（每趟两键 + 三证上链 + 独立复核）+ 测试面签字（扩大清单含 #134 三 spec）· **过门即合，先于 plug rebase**（恒等式续期，R3 §C-4） |
 | [#104](https://github.com/rayw-lab/website/pull/104) | draft · **禁 ready** | X2 立面套件（W2④）· tip `c24c7f3` · 复活门三条 = #129 双门 + R2 双清 + 全量 80 例 0/0/0（集成树口径，T19 §3.3） |
 | [#134](https://github.com/rayw-lab/website/pull/134) | draft · **e2e HOLD · 段末审计** | plug 交付段（栈① base=facade-r2 · tip `e03271f`）：桥位南移 + 东北簇内退 + 探针走廊余量审计；纪律事件 #3 坐实（⑱）；两步走 = 先入 #104 分支（前置 = 段末审计对 A 案几何放行）、后随 #104 单次 rebase 取 ENV canonical |
 | [#138](https://github.com/rayw-lab/website/pull/138) | draft | 顾问 T20：三叉预案基线重写 + run1 零杀点阈值阶梯 + #103 催办升级 + #135 塌栈就绪 + Tick#21 预排 |
@@ -201,15 +227,16 @@ plug 验证轮已收轮（终局 ⑰）；plug r1 `368b4d4`/`839b6fe` **冻结�
 
 ## 阻塞
 
-- **【董事会永久硬令】fps-probe（及任何 chrome 级探针/截图/LHCI/临时 preview）与 ENV 决定性趟（×2 验证趟、全量 e2e 窗）并发 = 永久禁止，无例外**：探针类活动只许在「上一趟已收轮归档、下一趟未放行」的登记空档内执行（先过真空三查 + 看板登记起止 + 自带硬闭点）；违令该趟/该窗证据作废 + 主体入执行力账，父代理同权受约束（终裁 §3.5；一次性探针窗硬闭点 06:40 UTC 已下达）
+- **【董事会永久硬令】fps-probe（及任何 chrome 级探针/截图/LHCI/临时 preview）与决定性趟（×2 验证趟、全量 e2e 窗）并发 = 永久禁止，无例外**：探针类活动只许在「上一趟已收轮归档、下一趟未放行」的登记空档内执行（先过真空三查 + 看板登记起止 + 自带硬闭点）；违令该趟/该窗证据作废 + 主体入执行力账，父代理同权受约束（R1 终裁 §3.5；R3 §C-5 续期——**同机自跑不豁免互斥**）
+- **【董事会 R3 同机强制令，立法三条无日落】**（R3 §B，本单按 §E-4 上板）：① 决定趟三要素（跑道 tmux+chrome / fresh 真空三查档 / `IGNITION-runN.txt`）**必须同机**，不同机文书自始无效（主机指纹行 `hostname` + `uptime -s` 自证）；② `/tmp` 证据仅产生它的 VM 语境内有效，跨 VM 引用必须 durable 上链（commit 进对应 PR 分支 `docs/research/exp01-evidence/runN/` 或 CI artifact 链接；转述性通报永不构成放行/计数依据）；③ **收轮即上链**——未上链 ✓ 不计 ×2（「干净」= 程序 ∧ 运行 ∧ 取证干净）；溯及既往补账不翻案。**禁换将²**：禁派第三个跨 VM ENV 跑决定趟；旧 ENV `bc-53ac6339` 禁第三次 resume、迟到输出自始无效，新 ENV `bc-0b5d1fd4` 已解除（双双 dashboard 归档收档）
 - **PR [#43](https://github.com/rayw-lab/website/pull/43) BL2** · NO-GO · **禁止合流**
 - **[#104](https://github.com/rayw-lab/website/pull/104)** · **禁 ready** · 复活门三条 = [#129](https://github.com/rayw-lab/website/pull/129) 双门 + R2 双清 + 全量 80 例 0 failed/0 skipped/0 flaky（跑「#104 候选 ⊕ main 集成树」，T19 §3.3）
 - **plug 线** · `368b4d4`/`839b6fe` **冻结不 revert 不扩** + 禁改动线令维持（EXP-01 ✘×2 同卡点在册，⑰）· 纪律事件 #3 坐实（⑱：未授权几何入栈 + 自开栈未登记）+ 尾款（⑳ 排队残波）· [#134](https://github.com/rayw-lab/website/pull/134) e2e HOLD、A 案几何留段末审计，纠偏落地前禁 ready/禁合
-- **[#129](https://github.com/rayw-lab/website/pull/129) 双门** · **验证门（×2 第二次重锚）**：run1/run2 双诊断趟不计（㉓㉔），×2 = **run3 + run4 干净趟**（命名令双标签防「run1✓+run2✓」误读，T21 §1.2），每趟真空三查 + **全程互斥令**（㉚）+ archive-then-clean（㉙）+ 三证合一 + `1 passed/0/0/0`；✓✘ 第 3 趟定多数 / ✘✘ 判读 B 动摇回炉 + R2 全 HOLD（T20 §2.2 锚点后移）· **签字门**：测试面四处 + BL1 src + 合流许可，一次性签字（扩大清单含 #134 三 spec，T19 §2.3）· 未过门禁合；过门即合且**先于 plug rebase**；合流窗最早 **Tick#29–30**（~07:20–07:30，T21 §2.4）
-- **执行力曲线**（「裁决链完整、执行链断裂」专项，㉒㉕㉖㉜）· **四账清偿**：#103 复读账（㉖）✅ 合流 `e604568` · #135/#140 塌栈账（㉜）✅ 合流 `9177dcc` · R2 派单账（㉕）✅ 交付 #145 · 归档代办 ✅ 销案（㉑）——余账：清场令残项（run3 三查障碍，状态待父代理 fresh 取证）· ENV 三前置三次跳门（㉔）· 探针并发运营（主体 = 父代理，㉚）· TRIAGE 董事会终止定谳（禁 resume）
-- **全量 e2e 解锁链**（T19 §4.2 / T20 §3.2 / T21 §4 六条）· 「#103+塌栈」一项**已落袋 ✅**；关键路径 = #129 的 ×2 链（run3/run4）；开闸窗口 **Tick#29–#31**；互斥令同样适用于全量窗
+- **[#129](https://github.com/rayw-lab/website/pull/129) 双门（R3 后现行口径）** · **验证门（×2 = run5/run6 同机决胜趟，0/2）**：run1/run2 诊断趟不计（㉓㉔）· run3 07:16✓ 会计定谳降级不计（T29）· run4 无点火作废（T26/R2）；每趟 ✓ 要件 = 两键文书（fresh 真空三查 + `IGNITION-runN.txt` v3 同机四要素，逐趟核发）+ **全程互斥令**（㉚，自跑不豁免）+ archive-then-clean（㉙）+ `1 passed/0/0/0` + **三证上链**（R3 §B-3）+ **独立只读复核**（R3 §C-4）；基线 `49a5d6a` 冻结续期（#146 docs-only 不触基线，无需 rebase）；run5 签字 `a9ec398` 在册待上链+复核 · **签字门**：测试面四处 + BL1 src + 合流许可，一次性签字（扩大清单含 #134 三 spec，T19 §2.3）· 未过门禁合；过门即合且**先于 plug rebase**（合流窗恒等式续期）
+- **执行力曲线**（「裁决链完整、执行链断裂」专项，㉒㉕㉖㉜）· **五账清偿**：#103 复读账（㉖）✅ 合流 `e604568` · #135/#140 塌栈账（㉜）✅ 合流 `9177dcc` · R2 派单账（㉕）✅ 交付 #145 · 归档代办 ✅ 销案（㉑）· #146 上板账 ✅ 合入 `483b942`（08:01:14Z）——余账：清场令残项**事实消解**（run5 签字自述真空三查 PASS：chrome=0 / load1=0.14 / astro=0；档面核对随独立复核并案）· ENV 三前置三次跳门（㉔，随双 ENV 销案封账）· 探针并发运营（主体 = 父代理，㉚）· TRIAGE 董事会终止定谳（禁 resume）
+- **全量 e2e 解锁链**（T19 §4.2 / T20 §3.2 / T21 §4 六条）· 「#103+塌栈」一项**已落袋 ✅**；关键路径 = #129 的 ×2 链（**run5/run6 同机**）；开闸 = ✓✓（上链+复核）→ 签字门；互斥令同样适用于全量窗
 - **真机 S-2 / 性能六腿（零 VM）** · 仍待指挥官启动，AL-PERF / AL-R10 前置
 
 ## 归档（一行）
 
-顾问 [#87](https://github.com/rayw-lab/website/pull/87)[#88](https://github.com/rayw-lab/website/pull/88)[#98](https://github.com/rayw-lab/website/pull/98) · AL-FXN **84** [#84](https://github.com/rayw-lab/website/pull/84) → **87** [#103](https://github.com/rayw-lab/website/pull/103) · AL-VIS **73** [#94](https://github.com/rayw-lab/website/pull/94) · C5-R3 [#90](https://github.com/rayw-lab/website/pull/90) · C6 [#91](https://github.com/rayw-lab/website/pull/91) · X1a-R4 [#92](https://github.com/rayw-lab/website/pull/92) · X3-R4 [#93](https://github.com/rayw-lab/website/pull/93) · 秘书 [#86](https://github.com/rayw-lab/website/pull/86)[#95](https://github.com/rayw-lab/website/pull/95) · 范式 [#85](https://github.com/rayw-lab/website/pull/85) · 清理 [#89](https://github.com/rayw-lab/website/pull/89) · TM-PREP [#99](https://github.com/rayw-lab/website/pull/99) · G3+X5 [#100](https://github.com/rayw-lab/website/pull/100) · FXN-NEXT [#97](https://github.com/rayw-lab/website/pull/97) · PERF-DESK [#96](https://github.com/rayw-lab/website/pull/96) · VEH-R3 留痕 [#102](https://github.com/rayw-lab/website/pull/102) · X1b [#101](https://github.com/rayw-lab/website/pull/101) · 董事会 R1+塌栈 [#143](https://github.com/rayw-lab/website/pull/143)
+顾问 [#87](https://github.com/rayw-lab/website/pull/87)[#88](https://github.com/rayw-lab/website/pull/88)[#98](https://github.com/rayw-lab/website/pull/98) · AL-FXN **84** [#84](https://github.com/rayw-lab/website/pull/84) → **87** [#103](https://github.com/rayw-lab/website/pull/103) · AL-VIS **73** [#94](https://github.com/rayw-lab/website/pull/94) · C5-R3 [#90](https://github.com/rayw-lab/website/pull/90) · C6 [#91](https://github.com/rayw-lab/website/pull/91) · X1a-R4 [#92](https://github.com/rayw-lab/website/pull/92) · X3-R4 [#93](https://github.com/rayw-lab/website/pull/93) · 秘书 [#86](https://github.com/rayw-lab/website/pull/86)[#95](https://github.com/rayw-lab/website/pull/95) · 范式 [#85](https://github.com/rayw-lab/website/pull/85) · 清理 [#89](https://github.com/rayw-lab/website/pull/89) · TM-PREP [#99](https://github.com/rayw-lab/website/pull/99) · G3+X5 [#100](https://github.com/rayw-lab/website/pull/100) · FXN-NEXT [#97](https://github.com/rayw-lab/website/pull/97) · PERF-DESK [#96](https://github.com/rayw-lab/website/pull/96) · VEH-R3 留痕 [#102](https://github.com/rayw-lab/website/pull/102) · X1b [#101](https://github.com/rayw-lab/website/pull/101) · 董事会 R1+塌栈 [#143](https://github.com/rayw-lab/website/pull/143) · SEC-FXN87 [#146](https://github.com/rayw-lab/website/pull/146)
