@@ -53,6 +53,10 @@ type EventFamily =
  * drive 族 brake-first（首次 braking===1，boost-first 同构一次性）· suspension-jump
  * （F/摇杆点按激活沿，装配段节流 ≥1 设计秒）；新增 challenge 族 world-speedtrap
  * {kmh, isRecord}（测速区驶离沿，每次通过至多 1 条 + 5 设计秒冷却）。
+ * [CC-NAV-C1] ux 族随行加法（M 键小地图/GAP-12，40 type / 10 族）：minimap-open
+ * {via: 'key'|'button'} · minimap-close {via: 'key'|'esc'|'button'|'teleport'} ·
+ * minimap-teleport {id, distanceM}——两段式第一段（pin 点击传送 parkingBay），
+ * 第二段 E 确认走既有 world-poi、漏斗零旁路（ui/Minimap.ts 接线）。
  * 改动纪律（§3.6）：加法（新增 type / data 字段）同 PR 修订规格表、
  * schemaVersion 不动；破坏性（改名/删除/改语义）schemaVersion +1 且消费方同 PR 适配。
  */
@@ -65,7 +69,7 @@ const WHITELIST: Readonly<Record<EventFamily, string>> = {
   goal: 'explore-restore explore-progress explore-complete world-quest',
   challenge: 'world-speedtrap',
   perf: 'quality-auto-drop',
-  ux: 'hint-shown hint-dismissed hint-recall esc-menu-open idle-30s idle-nudge',
+  ux: 'hint-shown hint-dismissed hint-recall esc-menu-open idle-30s idle-nudge minimap-close minimap-open minimap-teleport',
   error: 'pageerror context-lost',
 };
 
