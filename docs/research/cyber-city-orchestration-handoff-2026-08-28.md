@@ -2,7 +2,7 @@
 
 状态：**交接推进中**（父代理不写业务代码；`/loop` 已退，不 fan-out 新 VM 子代理）。
 
-最后更新：2026-08-28T02:19 UTC
+最后更新：2026-08-28T02:20 UTC（`handoff-check-merge-r9` tick）
 
 ## 1. 父代理本轮动作
 
@@ -107,7 +107,7 @@ artifacts 落 `docs/spec/assets/human-gate/` 后 → 派 **AL-R10** / **AL-PERF*
 | R9 | ✅ IDLE | #103 ready；**Codex P1×2 P2×1 待补** |
 | S2 | ✅ IDLE | [#108](https://github.com/rayw-lab/website/pull/108) @ `4d5f9d6` |
 
-**tick（02:19）**：#102 已合；MERGE-WAVE 7/8；#103 Codex 阻断合流直至看板+L6 证据+F5 锚清账。
+**tick（02:20）**：R9 IDLE；MERGE-WAVE RUNNING 7/8（#101 OPEN）；#103 Codex 仍阻断；**不派 X2**。
 
 ## 9. Codex review 摘要（#103 @ `c4e844c`）
 
