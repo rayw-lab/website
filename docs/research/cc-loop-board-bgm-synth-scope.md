@@ -65,7 +65,7 @@ v0 审查对象为空集，人工许可审查以三条**机器可核事实**替�
 | 硬门 | 内容 |
 |------|------|
 | **HG-B1**（ducking 参数争用，[r3881889313](https://github.com/rayw-lab/website/pull/169#discussion_r3881889313) 成立） | **禁止在同一 AudioParam 上混用每帧 `.value` 直写与 `setTargetAtTime` 自动化**。二选一：(i) 串联双 GainNode——连续侧链 `duckEngine` 每帧直写 × 脉冲 `duckPulse` 走自动化（**推荐**，两通道物理隔离）；(ii) 单节点全 JS 合成包络——脉冲包络在 JS 计算、与连续值相乘后每帧单点直写。实现 PR body 必须声明所选方案；cc-bgm-rs §4.2 表的包络语义（目标值/τ/恢复沿）在所选方案下逐行成立；探针 `bgm.duck` 输出合成后有效值（断言 G 不变） |
-| **HG-B2**（断言 C/E 单挂载互斥，[r3881889316](https://github.com/rayw-lab/website/pull/169#discussion_r3881889316) 成立） | **CITY-BGM-01 显式批准第二挂载**：同 spec 文件双用例串行——用例 1（无种子挂载）覆盖 A–D/F–J；用例 2（`addInitScript` 种 `world-bgm-on='1'` 后新文档挂载）覆盖 E。cc-bgm-rs §6 编排行「单用例单次挂载」就此修订；`MOUNT_TIMEOUT 210s`/serial project 口径不变；用例数登记以 `cyber-city-test-framework.md` 单源 fresh `--list` 分母为准 |
+| **HG-B2**（断言 C/E 单挂载互斥，[r3881889316](https://github.com/rayw-lab/website/pull/169#discussion_r3881889316) 成立） | **CITY-BGM-01 显式批准第二挂载**：同 spec 文件双用例串行——用例 1（无种子挂载）覆盖 A–D / F / G / I / J + **断言 H 之 `source:'user'` 半部**（开/关钮各一条）；用例 2（`addInitScript` 种 `world-bgm-on='1'` 后新文档挂载）覆盖 E + **断言 H 之 `source:'restore'` 半部**（记忆恢复沿事件形状同场取证）。**无种子用例不得要求 restore 事件**（该场景无恢复沿），restore 遥测合同必须在种子用例内闭合（[r3881996519](https://github.com/rayw-lab/website/pull/172#discussion_r3881996519) 处置）。cc-bgm-rs §6 编排行「单用例单次挂载」就此修订；`MOUNT_TIMEOUT 210s`/serial project 口径不变；用例数登记以 `cyber-city-test-framework.md` 单源 fresh `--list` 分母为准 |
 
 效力：两硬门为合入急裁必查项，违反任一 = 打回定向补洞，**不得以综合分或其他门抵扣**（专项门法理，R5 §D 同旨）。
 
@@ -88,7 +88,7 @@ v0 审查对象为空集，人工许可审查以三条**机器可核事实**替�
 | # | 动作 |
 |---|------|
 | 1 | 合本单（docs-only，站立授权直合面） |
-| 2 | 看板登记：BGM-C1 改判注记（R5 §B/WBS 行指向本单）+ Codex P1/P2×2 销案行 + cc-bgm-rs §0-7/§3.3 标记 superseded by 本单（不改史、不 revert） |
+| 2 | 看板登记：**BGM 相关最小增量已随本 PR 同批原子落账**（[r3881996509](https://github.com/rayw-lab/website/pull/172#discussion_r3881996509) P1-A 处置——裁决生效与看板单源同 commit 一致，杜绝「合入即授权但看板仍写调研待派」窗口期）；世系表/MERGE-WAVE 等其余欠账由秘书 SEC-R6 界点单并收；cc-bgm-rs §0-7/§3.3 标记 superseded by 本单（不改史、不 revert） |
 | 3 | 派 BGM-C1 实现 Task（`claude-fable-5-thinking-xhigh`）：任务书 = §F-3 转录清单，范围外禁扩批（禁⑧） |
 | 4 | 禁项复读：CAM-ROT 实现仍禁（#161 未签）；全量 e2e 互斥窗照旧；#166 合流序由父代理裁 |
 | 5 | 若指挥官欲改默认态（DP-B2），须其对禁项③解释权的**书面确认**先行，实现只动一个常量位 |
@@ -101,4 +101,4 @@ v0 审查对象为空集，人工许可审查以三条**机器可核事实**替�
 
 ---
 
-*本文档为 CC-LOOP-BOARD-ADVISOR-BGM-SCOPE 交付物（董事会急裁）；交付五问全答（P1 定性 §A、路线三选一 §B、R5 修订/开闸/许可面 §C/§D/§F、P2×2 升门 §E、合入≠授权 §F）；链接经 `gh` 实测；看板增量由秘书下一界点单并入，禁多处重复登记。*
+*本文档为 CC-LOOP-BOARD-ADVISOR-BGM-SCOPE 交付物（董事会急裁）；交付五问全答（P1 定性 §A、路线三选一 §B、R5 修订/开闸/许可面 §C/§D/§F、P2×2 升门 §E、合入≠授权 §F）；链接经 `gh` 实测。r2 合前补洞（Codex [#172](https://github.com/rayw-lab/website/pull/172) 评审）：看板 BGM 最小增量随本 PR 同批原子落账（P1-A，r3881996509 销案）+ HG-B2 断言 H 按 `source` 拆分归位（r3881996519 销案）；看板其余欠账由秘书 SEC-R6 界点单并收，禁多处重复登记。*
