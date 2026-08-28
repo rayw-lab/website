@@ -1,12 +1,12 @@
 # Phase 0 提分 Loop 编排看板
 
-`main` @ `88097f9` · 2026-08-28 05:33 UTC · **提分 Loop Tick#18（3n 看板界点）** · 范式 `cyber-city-orchestration-paradigm.md`
+`main` @ `88097f9` · 2026-08-28 05:40 UTC · **提分 Loop Tick#18（3n 看板界点）** · 范式 `cyber-city-orchestration-paradigm.md` · 本单 PR [#135](https://github.com/rayw-lab/website/pull/135)
 
 **模型（L8+）**：全部子代理 Task = `claude-fable-5-thinking-xhigh`；在途 Sol 可跑完（§1.2 宽限）。
 
-> 本单为 SEC-P9 Tick#18 刷新（T16 [#132](https://github.com/rayw-lab/website/pull/132) §4.2 预排），**基于 [#130](https://github.com/rayw-lab/website/pull/130)（SEC-P8）head `f3bc6c2` 叠 Tick#16–#18 增量（T16 十一条补登清单全落，见「增量补登」节）**；#103/#130 均未合，main tip 仍 `88097f9`。合流序（T9 [#122](https://github.com/rayw-lab/website/pull/122) + T16 [#132](https://github.com/rayw-lab/website/pull/132) §4.4）：[#103](https://github.com/rayw-lab/website/pull/103) 即合（第 5 tick 复读）→ 看板取本单（#130 超集，P8 tip 为本单祖先，**合本单即收编 #130/#125/#121 世系**）→ [#129](https://github.com/rayw-lab/website/pull/129) 双门过门即合（**合流序先于 plug rebase**）→ [#104](https://github.com/rayw-lab/website/pull/104) 维持 draft 禁 ready。禁止看板回退。
+> 本单为 SEC-P9 Tick#18 刷新（T16 [#132](https://github.com/rayw-lab/website/pull/132) §4.2 预排），**基于 [#130](https://github.com/rayw-lab/website/pull/130)（SEC-P8）head `f3bc6c2` 叠 Tick#16–#18 增量（补登十六条 = T16 十一条 + T17 五条，全落，见「增量补登」节）**；#103/#130 均未合，main tip 仍 `88097f9`。合流序（T9 [#122](https://github.com/rayw-lab/website/pull/122) + T16 [#132](https://github.com/rayw-lab/website/pull/132) §4.4）：[#103](https://github.com/rayw-lab/website/pull/103) 即合（第 6 tick 复读）→ 看板取本单（#130 超集，P8 tip 为本单祖先，**合本单即收编 #130/#125/#121 世系**）→ [#129](https://github.com/rayw-lab/website/pull/129) 双门过门即合（**合流序先于 plug rebase**）→ [#104](https://github.com/rayw-lab/website/pull/104) 维持 draft 禁 ready。禁止看板回退。
 >
-> **Tick#18 等待项**：① X2 链路——**plug 验证轮 RUNNING**（定向 playwright 三例：EXP-01 **✘ 11.9m 同卡点** · QST-02 **✘ 22.2m** · FB 在跑，收轮窗 ~05:36±；**resume 拒在册，飞行中零杠杆、禁中止**，收轮即派 PLUG-R2 接管卡）；**ENV 修复段已交 [#129](https://github.com/rayw-lab/website/pull/129)**（draft · tip `5e41550` · CI 门禁 pass）**挂双门**（CITY-EXP-01×2 三证 + 测试面解冻指挥官签字）；[#104](https://github.com/rayw-lab/website/pull/104) 禁 ready 不变；② [#103](https://github.com/rayw-lab/website/pull/103) **待指挥官合入**（Codex IDLE ✅ · 落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120)）；③ TRIAGE 僵尸中止执行 + 归档代办（第 5 次逾期）待父代理落地。登记矩阵在 ①② 落地前不动。
+> **Tick#18 等待项**：① X2 链路——**plug 验证轮 RUNNING**（定向 playwright 三例：EXP-01 **✘ 11.9m 同卡点** · QST-02 ✘ 22.2m **判读作废**（⑬ 污染窗口）· FB-01 在跑，收轮窗 ~05:36±5；**resume 拒在册，飞行中零杠杆、禁中止**，收轮即派 PLUG-R2 接管卡）；**plug 原代理已交付 [#134](https://github.com/rayw-lab/website/pull/134)**（栈①，桥位南移 + 东北簇内退，全量 e2e HOLD）；**ENV 修复段已交 [#129](https://github.com/rayw-lab/website/pull/129)**（draft · tip `5e41550` · CI 门禁 pass）**挂双门**（CITY-EXP-01×2 三证 + 测试面解冻指挥官签字），定向 EXP-01×2 **可开、slot#2 归 ENV，三前置**（收轮三证 + 跑道真空确认 + 归档先行，T17 [#133](https://github.com/rayw-lab/website/pull/133) ③）；[#104](https://github.com/rayw-lab/website/pull/104) 禁 ready 不变；② [#103](https://github.com/rayw-lab/website/pull/103) **待指挥官合入**（第 6 tick 复读 · Codex IDLE ✅ · 落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120)）；③ TRIAGE 僵尸中止执行（第 5 tick）+ 归档代办（**第 6 次逾期**，69MB trace 裸奔）待父代理落地。登记矩阵在 ①② 落地前不动。
 >
 > **Tick#13 出土在册**：08-27 先行分支 `cursor/cc-exp01-corridor-fix-0254`（remote `a59d1ea`）早已定性「直线走廊被 BL1 充电桩排封死」并原型测试面改法；T15 [#131](https://github.com/rayw-lab/website/pull/131) §4 裁决 **不并代码、只并证据链**（ENV 报告设三源对表专节；B 案若签字转正也以 fresh base 单 PR 重实现；分支保留登记 `a59d1ea`）。
 
@@ -15,13 +15,13 @@
 | 维度 | 北极星 | 生产登记 | Δ | 在途 |
 |------|--------|----------|---|------|
 | **综合** | **98** | **80** | +18 | COMP-M0 重算（#105 留痕 / #106 WIP） |
-| **视觉** | **98** | **73** | +25 | 顾问路径 →~78（[#98](https://github.com/rayw-lab/website/pull/98) 已合）· X1b [#101](https://github.com/rayw-lab/website/pull/101) 已合待复评 · X2 [#104](https://github.com/rayw-lab/website/pull/104) draft 禁 ready → ENV 修复段 [#129](https://github.com/rayw-lab/website/pull/129) CI 绿挂双门 + plug 验证轮 EXP-01/QST-02 ✘·FB 在跑（R2 接管卡备妥） |
-| **功能** | **90** | **84** | +6 | [#103](https://github.com/rayw-lab/website/pull/103) 分支登记 **87** 未合（ready · tip `1a4296f` · CLEAN/MERGEABLE · 落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120) · **第 5 tick 复读待指挥官合入**） |
+| **视觉** | **98** | **73** | +25 | 顾问路径 →~78（[#98](https://github.com/rayw-lab/website/pull/98) 已合）· X1b [#101](https://github.com/rayw-lab/website/pull/101) 已合待复评 · X2 [#104](https://github.com/rayw-lab/website/pull/104) draft 禁 ready → ENV 修复段 [#129](https://github.com/rayw-lab/website/pull/129) CI 绿挂双门 + plug 交付 [#134](https://github.com/rayw-lab/website/pull/134)（e2e HOLD）+ 验证轮 EXP-01 ✘ / QST-02 判读作废 / FB-01 在跑（R2 接管卡备妥） |
+| **功能** | **90** | **84** | +6 | [#103](https://github.com/rayw-lab/website/pull/103) 分支登记 **87** 未合（ready · tip `1a4296f` · CLEAN/MERGEABLE · 落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120) · **第 6 tick 复读待指挥官合入**） |
 | **性能** | **85** | **—** | +85 | 六腿桌面单 [#96](https://github.com/rayw-lab/website/pull/96) 已在 main；首分待指挥官真机 → AL-PERF |
 
 > 登记只认审计独立分（JSON 单源：视觉 main@88097f9 = 73，功能 main = 84；T9 [#122](https://github.com/rayw-lab/website/pull/122) 点名 71/73 双源分歧，取看板单源 **73**）。禁止 LHCI/e2e/smoke 冒充功能或性能。**#103 口径注释**：合流前功能仍登 **84**；#103 合入 main 后由秘书**另开增量登记单**登 87，本单只备口径、不冒登。EXP-01/QST-02 ✘ 属 e2e 验证面事实，不动功能登记 84。
 
-## Tick#16–#18 增量补登（T16 [#132](https://github.com/rayw-lab/website/pull/132) §4.2 十一条 = T15 §3 七条 + T16 新四条，本单全落）
+## Tick#16–#18 增量补登（**十六条** = T15 §3 七条 + T16 [#132](https://github.com/rayw-lab/website/pull/132) §4.2 新四条 + T17 [#133](https://github.com/rayw-lab/website/pull/133) 增量五条，本单全落）
 
 | # | 条目（源） | 登记内容 / 落点 |
 |---|-----------|----------------|
@@ -35,14 +35,19 @@
 | ⑧ | ENV push + #129 双门（T16 ⑧） | push `5e41550`（05:04:23）+ draft PR [#129](https://github.com/rayw-lab/website/pull/129)（05:05:04）；**CI 门禁 pass**（run 33143688516，本单 fresh 取证）；**双门 = CITY-EXP-01×2 三证 + 测试面解冻指挥官签字**；F8 纪律登记：交付形态 = 修复段（e2e 35 行 + src 9 行，BL1 桩排 collider 减深），e2e 途径点改线 = 测试面变更而**签字至今未登记**——挂 #129 合流门；推定父代理已按 T13 §2-⑤ 改派（合规），若实为自扩权由段末审计点名定谳；**合流序锁定先于 plug rebase**，EXP-01 spec 冲突一律取 ENV canonical 路线 |
 | ⑨ | T15 交付 #131（T16 ⑨） | 补号落地（并 ⑦） |
 | ⑩ | TRIAGE tick 计数（T16 ⑩) | 「已裁未执」：T13 裁 → T14 裁 GO 带保险 → T15 三度点名 → T16 第 4 tick；**执行落地时间待父代理兑现后回填** |
-| ⑪ | 验证轮终局 + 纠偏序改写（T16 ⑪） | 三例：EXP-01 **✘**（11.9m，②）· QST-02 **✘**（22.2m，05:25:43 落盘——**本单 fresh 增量**，T16 时点仍在跑）· FB **在跑**（worker 59768 存活 8m+，预计收轮 ~05:36±）；纠偏序改写为 T16 §3 **「S1 收割 → S2 R2 接管（trace 定谳分诊：X2 新增几何→A 案 / main 存量→移交 ENV）→ S3 runway 队列（slot#2=ENV 验证 → slot#3=R2 复跑 → slot#4=全量）」**，取代「revert e2e → A 案几何」旧口径（T15 冻结令 + ENV 归因移触点至 main 存量 BL1 桩带双重过时） |
+| ⑪ | 验证轮终局 + 纠偏序改写（T16 ⑪） | 三例：EXP-01 **✘**（11.9m，②）· QST-02 ✘（22.2m，05:25:43 落盘；**判读作废**，⑬）· FB-01 **在跑**（worker 59768 存活，预计收轮 ~05:36±5）；纠偏序改写为 T16 §3 **「S1 收割 → S2 R2 接管（trace 定谳分诊：X2 新增几何→A 案 / main 存量→移交 ENV）→ S3 runway 队列（slot#2=ENV 验证 → slot#3=R2 复跑 → slot#4=全量）」**，取代「revert e2e → A 案几何」旧口径（T15 冻结令 + ENV 归因移触点至 main 存量 BL1 桩带双重过时） |
+| ⑫ | 单跑道违纪主体更正（T17 ①） | **ENV push `5e41550`/开 #129 = 零跑道动作，合规**；违纪主体更正为 **plug**——验证轮飞行中 05:13–05:23 起 SwiftShader capture 旁路浏览器 @211% CPU（load 峰值 7.33/4 核），把自家 QST-02 判读腿挤兑污染 |
+| ⑬ | QST-02 判读**作废**（T17 ④-S1） | ✘ 22.2m（idle-30s nudge 未打）落在 ⑫ 污染窗口内 → **显式登记作废，不作 B 案/功能面判据**；FB-01 窗口预授权保护（旁路进程精确 kill）；ENV 定向复跑三前置之「跑道真空确认」即此教训 |
+| ⑭ | 双盲归因收敛（T17 ②） | plug 复跑遥测与 ENV [#129](https://github.com/rayw-lab/website/pull/129) 独立定谳 **BL1 桩带（17.8+1.6=19.4 分毫不差）**；trace 定谳走第一叉：**EXP-01 责任移交 #129，A 案维持降级**；`839b6fe` 冻结存证（**纪律事件#2**：三 spec 二次扩改）——不中止、不 revert，收轮即派 R2 接管 |
+| ⑮ | T17 交付 + plug 交付（补号） | T17 → [#133](https://github.com/rayw-lab/website/pull/133)（`b3e9011`）；plug 原代理 → [#134](https://github.com/rayw-lab/website/pull/134)（栈① base=facade-r2，tip `e03271f`：ForegroundFraming 桥位 z −26→−19.5 + StreetProps 东北簇 (19.5,−19.5)→(17.8,−17.8) + 探针 §④ 走廊余量审计；**全量 e2e HOLD 待 ENV 签字**，改线去留由段末审计定谳） |
+| ⑯ | 计数刷新（T17 新事实） | TRIAGE「已裁未执」**第 5 tick**；[#103](https://github.com/rayw-lab/website/pull/103) **第 6 tick** 复读即合；归档代办 **第 6 次逾期**（69MB trace 裸奔，ENV slot#2 三前置含「归档先行」） |
 
 ## 当前焦点（提分 Loop · Tick#18）
 
 | 轨 | 状态 | 下一拍 |
 |----|------|--------|
-| 视觉 | **73** ✅ [#94](https://github.com/rayw-lab/website/pull/94) · X1b voice-pod 已合 [#101](https://github.com/rayw-lab/website/pull/101)（W2③）· 顾问 [#98](https://github.com/rayw-lab/website/pull/98) / TM-PREP [#99](https://github.com/rayw-lab/website/pull/99) / G3+X5 授权 [#100](https://github.com/rayw-lab/website/pull/100) 已合 | plug 验证轮收轮（~05:36±）→ **PLUG-R2 接管**（③ 协议 + T16 §3-S2：trace 定谳分诊 / rebase 清仓 / HOLD 具体化）；[#129](https://github.com/rayw-lab/website/pull/129) 双门过门即合（先于 plug rebase）；兜底分诊：ENV 验证 ✘ → 判读 B 动摇回炉三候选（候选 a 升格）、R2 全 HOLD；✓✓ → 直行 rebase 清仓 |
-| 功能 | **84** ✅ main · 决策树 [#97](https://github.com/rayw-lab/website/pull/97) 已合 · [#103](https://github.com/rayw-lab/website/pull/103) 分支登记 87（ready · tip `1a4296f` · CLEAN/MERGEABLE） | **待指挥官合入**（第 5 tick 复读：审计 GO [#120](https://github.com/rayw-lab/website/pull/120)，纯 docs 零跑道零交集）→ 秘书另开增量登记 87 |
+| 视觉 | **73** ✅ [#94](https://github.com/rayw-lab/website/pull/94) · X1b voice-pod 已合 [#101](https://github.com/rayw-lab/website/pull/101)（W2③）· 顾问 [#98](https://github.com/rayw-lab/website/pull/98) / TM-PREP [#99](https://github.com/rayw-lab/website/pull/99) / G3+X5 授权 [#100](https://github.com/rayw-lab/website/pull/100) 已合 · plug 交付 [#134](https://github.com/rayw-lab/website/pull/134) | T17 [#133](https://github.com/rayw-lab/website/pull/133) 动作四件套：**S1 收割（QST-02 作废登记 ✅ 本单）→ S2 派 PLUG-R2 接管**（③ 协议 + T16 §3-S2；trace 定谳走第一叉：EXP-01 责任移交 #129，A 案降级）**→ S3 放 ENV 上跑道**（slot#2，三前置）**→ S4 P9 补登塌栈**（本单）；[#129](https://github.com/rayw-lab/website/pull/129) 双门过门即合（先于 plug rebase） |
+| 功能 | **84** ✅ main · 决策树 [#97](https://github.com/rayw-lab/website/pull/97) 已合 · [#103](https://github.com/rayw-lab/website/pull/103) 分支登记 87（ready · tip `1a4296f` · CLEAN/MERGEABLE） | **待指挥官合入**（第 6 tick 复读：审计 GO [#120](https://github.com/rayw-lab/website/pull/120)，纯 docs 零跑道零交集）→ 秘书另开增量登记 87 |
 | 性能 | 六腿桌面单 [#96](https://github.com/rayw-lab/website/pull/96) 已合 | 指挥官真机 S-2 / 六腿（零 VM）仍待 → AL-PERF |
 | 综合 | 80 | COMP-M0 五维重算（#105/#106 续派） |
 
@@ -66,8 +71,8 @@
 | #14 | ENV+plug 双路监跑 + 顾问 T14 | 双路 RUNNING；**T14 交付 [#128](https://github.com/rayw-lab/website/pull/128)**（`d2e1578` 05:02:01，补登 ④） |
 | #15 | SEC-P8（3n 看板界点）+ 顾问 T15 | **双双交付**：P8 → [#130](https://github.com/rayw-lab/website/pull/130)（`f3bc6c2` 05:05:49，本单基底）；T15 → [#131](https://github.com/rayw-lab/website/pull/131)（`e05a80f` 05:12:14，跨 tick 落地，补登 ⑦⑨）——行收口 |
 | #16 | 顾问 T16（[#132](https://github.com/rayw-lab/website/pull/132)） | 交付（ENV stale 解除 + #129 双门 + 纠偏序改写不 revert + 单跑道六动作 + Tick#17/#18 预排 11 条补登清单） |
-| #17 | 顾问 T17（纯监控 + 四路核对 + QST-02 登记） | 在途（worktree 已开 @ 88097f9、暂无 PR） |
-| #18 | SEC-P9（本单，3n 看板界点，T16 §4.2 预排） | 在途；plug 验证轮收轮窗 ~05:36±（FB 在跑）· [#129](https://github.com/rayw-lab/website/pull/129) 挂双门 · #103/#130 待指挥官处置 |
+| #17 | 顾问 T17（[#133](https://github.com/rayw-lab/website/pull/133)） | 交付（单跑道违纪主体更正 ENV 合规 + QST-02 判读作废 + `839b6fe` 双盲归因收敛定谳桩带 + ENV slot#2 三前置 + Tick#18 动作四件套预排）；**plug 原代理同窗交付 [#134](https://github.com/rayw-lab/website/pull/134)** |
+| #18 | SEC-P9（本单 [#135](https://github.com/rayw-lab/website/pull/135)，3n 看板界点，T16 §4.2/T17 ④ 预排） | 在途；十六条补登全落 · plug 验证轮收轮窗 ~05:36±5（FB-01 在跑）· [#129](https://github.com/rayw-lab/website/pull/129) 挂双门 · #103/#130 待指挥官处置 |
 
 ## MERGE-WAVE 8/8 合流记录（`771b1e4` → `88097f9`，每步 CI+Deploy 双绿）
 
@@ -88,20 +93,20 @@ Tick#18 当前在途：
 
 | 在途 | 内容 | 状态 |
 |------|------|------|
-| plug 验证轮 | 定向 playwright 三例（`/tmp/x2-triage-verify.log`，单跑道令下唯一重负载） | **RUNNING**——EXP-01 **✘ 11.9m**（②，同卡点签名）· QST-02 **✘ 22.2m**（05:25:43 落盘）· FB 在跑（worker 59768 存活，收轮 ~05:36±）；**resume 拒在册**（③），飞行中零杠杆、**禁中止**（正在产挤兑判读数据）；收轮即派 PLUG-R2 |
-| ENV 专项 | main 树 CITY-EXP-01 同挂根因裁决 → 已交付**修复段** [#129](https://github.com/rayw-lab/website/pull/129)（EXP-01 途径点改线 + BL1 桩排 collider 减深；归因：第一触点 = main 存量 BL1 桩带，X2 楔死点即桩带东面、桥腿为叠加恶化） | **转合流门**：draft · tip `5e41550` · **CI 门禁 pass** · 挂双门（CITY-EXP-01×2 三证 + 测试面解冻指挥官签字，⑧）；验证腿 HOLD 至验证轮收轮（runway slot#2 归 ENV）；面板 RUNNING 合法（验证栏自署等 runway） |
-| 顾问 T17 | Tick#17 纯监控 + 四路核对 + QST-02 登记 | 在途（worktree 已开、暂无 PR） |
-| SEC-P9 | 本单看板 Tick#18 刷新（基于 #130 head `f3bc6c2` 叠 11 条补登） | 本单 |
-| TRIAGE 僵尸 | bc-ace126a4（04:18:22 起，三腿零活性） | **已判 stale 中止、执行待父代理落地**（⑤⑩：T13 裁 → T16 第 4 tick 未执行）；执行后 2–3min 保险复核验证轮存活 |
+| plug 验证轮 | 定向 playwright 三例（`/tmp/x2-triage-verify.log`，单跑道令下唯一重负载） | **RUNNING**——EXP-01 **✘ 11.9m**（②，同卡点签名）· QST-02 ✘ 22.2m **判读作废**（⑬ 污染窗口）· FB-01 在跑（worker 59768 存活，收轮 ~05:36±5，窗口预授权保护）；**resume 拒在册**（③），飞行中零杠杆、**禁中止**；收轮即派 PLUG-R2 |
+| plug 交付段 | [#134](https://github.com/rayw-lab/website/pull/134)（栈① base=facade-r2，tip `e03271f`）：桥位南移 + 东北簇内退 + 探针 §④ 走廊余量审计（⑮） | **draft · 全量 e2e HOLD 待 ENV 签字**；`839b6fe` 冻结存证（纪律事件#2）；改线去留 + 走廊基线恢复由段末审计定谳 |
+| ENV 专项 | main 树 CITY-EXP-01 同挂根因裁决 → 已交付**修复段** [#129](https://github.com/rayw-lab/website/pull/129)（EXP-01 途径点改线 + BL1 桩排 collider 减深；归因：第一触点 = main 存量 BL1 桩带，X2 楔死点即桩带东面、桥腿为叠加恶化；⑭ 双盲收敛坐实） | **转合流门**：draft · tip `5e41550` · **CI 门禁 pass** · 挂双门（CITY-EXP-01×2 三证 + 测试面解冻指挥官签字，⑧）；定向 EXP-01×2 **可开、slot#2 归 ENV，三前置**（收轮三证 + 跑道真空确认 + 归档先行，T17 ③）；面板 RUNNING 合法 |
+| SEC-P9 | 本单看板 Tick#18 刷新（[#135](https://github.com/rayw-lab/website/pull/135)，基于 #130 head `f3bc6c2` 叠十六条补登） | 本单 |
+| TRIAGE 僵尸 | bc-ace126a4（04:18:22 起，三腿零活性） | **已判 stale 中止、执行待父代理落地**（⑤⑩⑯：T13 裁 → 第 5 tick 未执行）；执行后 2–3min 保险复核验证轮存活 |
 
 X2 实现段已收轮：[#104](https://github.com/rayw-lab/website/pull/104) **e2e 中断收场**，tip `c24c7f3` **draft 禁 ready**；复活门 = #129 双门 + R2 双清 + 全量 80 例 0/0/0（T16 §4.4）。plug r1 tip `368b4d4`：**冻结不 revert 不扩**（B 案存证，T15 §1.5-2）+ **禁改动线令激活**（② 同卡点 ✘）。
 
-已收口（不再占槽）：**Codex 清账 IDLE ✅**（[#103](https://github.com/rayw-lab/website/pull/103) tip `1a4296f` ready · 审计 GO [#120](https://github.com/rayw-lab/website/pull/120) · 待指挥官合入）；**TRIAGE-WRAP stale 中止**（裁决在册，执行见上表）；顾问 T6–T16 交付 [#117](https://github.com/rayw-lab/website/pull/117) / [#118](https://github.com/rayw-lab/website/pull/118) / [#119](https://github.com/rayw-lab/website/pull/119) / [#122](https://github.com/rayw-lab/website/pull/122) / [#123](https://github.com/rayw-lab/website/pull/123) / [#124](https://github.com/rayw-lab/website/pull/124) / [#126](https://github.com/rayw-lab/website/pull/126) / [#127](https://github.com/rayw-lab/website/pull/127) / [#128](https://github.com/rayw-lab/website/pull/128) / [#131](https://github.com/rayw-lab/website/pull/131) / [#132](https://github.com/rayw-lab/website/pull/132)。
+已收口（不再占槽）：**Codex 清账 IDLE ✅**（[#103](https://github.com/rayw-lab/website/pull/103) tip `1a4296f` ready · 审计 GO [#120](https://github.com/rayw-lab/website/pull/120) · 待指挥官合入）；**TRIAGE-WRAP stale 中止**（裁决在册，执行见上表）；顾问 T6–T17 交付 [#117](https://github.com/rayw-lab/website/pull/117) / [#118](https://github.com/rayw-lab/website/pull/118) / [#119](https://github.com/rayw-lab/website/pull/119) / [#122](https://github.com/rayw-lab/website/pull/122) / [#123](https://github.com/rayw-lab/website/pull/123) / [#124](https://github.com/rayw-lab/website/pull/124) / [#126](https://github.com/rayw-lab/website/pull/126) / [#127](https://github.com/rayw-lab/website/pull/127) / [#128](https://github.com/rayw-lab/website/pull/128) / [#131](https://github.com/rayw-lab/website/pull/131) / [#132](https://github.com/rayw-lab/website/pull/132) / [#133](https://github.com/rayw-lab/website/pull/133)。
 
 | 待派 | 内容 | 条件 |
 |------|------|------|
 | PLUG-R2 接管卡（**备妥**） | T15 §1.5 五条款 + T16 §3-S2 修订三条（fresh trace 第一触点定谳分诊 / rebase 清仓 / HOLD 具体化）；X2 新增几何 → A 案（几何让位 + NDC 探针双达标）；main 存量 → 回报移交 ENV | plug 验证轮收轮即派（零空转） |
-| 归档代办（父代理自跑，**第 5 次逾期**） | `/tmp/evidence-exp01` 建档 + trace/JSON 原件迁移（幂等命令 T14 §4 附；含 plug-wt 预归档增量） | **即刻**，勿再等 ENV（⑥） |
+| 归档代办（父代理自跑，**第 6 次逾期**） | `/tmp/evidence-exp01` 建档 + trace/JSON 原件迁移（69MB trace 裸奔；幂等命令 T14 §4 附；含 plug-wt 预归档增量） | **即刻**，且为 ENV slot#2 三前置之「归档先行」（⑥⑯） |
 | 槽空滚动（原 P3） | PERF 六腿 kit · M0-R4 [#106](https://github.com/rayw-lab/website/pull/106) · G1 预登记（#101 已合 ✅） | 槽空即派 |
 | X5-R4（原 P4） | X5 招牌续拍（[#100](https://github.com/rayw-lab/website/pull/100) 已授权） | X2 收口后串行 |
 
@@ -116,10 +121,12 @@ X2 实现段已收轮：[#104](https://github.com/rayw-lab/website/pull/104) **e
 
 | PR | 状态 | 说明 |
 |----|------|------|
-| [#103](https://github.com/rayw-lab/website/pull/103) | **ready · 待指挥官合入（第 5 tick 复读）** | AL-FXN-R7 登记 87 · tip `1a4296f` · Codex IDLE ✅ · 落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120) · CLEAN/MERGEABLE · 纯 docs 零跑道零交集 |
+| [#103](https://github.com/rayw-lab/website/pull/103) | **ready · 待指挥官合入（第 6 tick 复读）** | AL-FXN-R7 登记 87 · tip `1a4296f` · Codex IDLE ✅ · 落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120) · CLEAN/MERGEABLE · 纯 docs 零跑道零交集 |
 | [#129](https://github.com/rayw-lab/website/pull/129) | draft · **CI 门禁 pass** · **挂双门** | ENV 修复段（EXP-01 途径点改线 + BL1 桩排减深，判读 B）· tip `5e41550` · 双门 = CITY-EXP-01×2 三证 + 测试面解冻指挥官签字（⑧ F8）· **过门即合，合流序先于 plug rebase** |
 | [#130](https://github.com/rayw-lab/website/pull/130) | draft · 本单基底 | SEC-P8 看板 Tick#15 刷新 · tip `f3bc6c2` 为本单祖先 → **本单为其超集，合本单即收编 #130/#125/#121**（T16 F7 世系实测） |
 | [#104](https://github.com/rayw-lab/website/pull/104) | draft · **禁 ready** | X2 立面套件（W2④）· tip `c24c7f3` · 3 例 FAIL 在册（T10 [#123](https://github.com/rayw-lab/website/pull/123)）· 复活门 = #129 双门 + R2 双清 + 全量 80 例 0/0/0 |
+| [#134](https://github.com/rayw-lab/website/pull/134) | draft · **e2e HOLD** | plug 交付段（栈① base=facade-r2 · tip `e03271f`）：桥位南移 + 东北簇内退 + 探针 §④ 走廊余量审计；含 r1 四个在先 commit（`839b6fe` 冻结存证，纪律事件#2）；全量 e2e HOLD 待 ENV 签字，改线去留由段末审计定谳 |
+| [#133](https://github.com/rayw-lab/website/pull/133) | draft | 顾问 T17：Tick#17 扇出裁决（单跑道违纪主体更正 ENV 合规 + QST-02 判读作废 + `839b6fe` 双盲归因收敛 + ENV slot#2 三前置 + Tick#18 动作四件套） |
 | [#132](https://github.com/rayw-lab/website/pull/132) | draft | 顾问 T16：Tick#16 扇出裁决（ENV stale 解除·#129 双门 + 纠偏序改写不 revert + 单跑道六动作 + Tick#17/#18 预排） |
 | [#131](https://github.com/rayw-lab/website/pull/131) | draft | 顾问 T15：Tick#15 扇出裁决（验证轮 EXP-01 ✘ 同卡点·resume 拒接管协议 + ENV stale 解除 + P8 补登 + corridor-fix 只并证据） |
 | [#128](https://github.com/rayw-lab/website/pull/128) | draft | 顾问 T14：Tick#14 扇出裁决（wrap 报告已被 plug 吸收·TRIAGE-WRAP 中止带保险 + 单跑道令 + Tick#15 P8 预排） |
@@ -151,11 +158,11 @@ X2 实现段已收轮：[#104](https://github.com/rayw-lab/website/pull/104) **e
 
 - **PR [#43](https://github.com/rayw-lab/website/pull/43) BL2** · NO-GO · **禁止合流**
 - **[#104](https://github.com/rayw-lab/website/pull/104)** · **禁 ready** · 复活门 = [#129](https://github.com/rayw-lab/website/pull/129) 双门 + R2 双清 + 全量 80 例 0 failed/0 skipped/0 flaky（T16 §4.4）
-- **plug 线** · tip `368b4d4` **冻结不 revert 不扩**（B 案存证）· **禁改动线令激活**（EXP-01 ✘ 同卡点，② T14 §2.1 条款兑现）· **resume 拒 → 飞行中零杠杆**，收轮后按接管协议派 R2（③）· 纠偏落地前 plug 分支禁 ready/禁合
-- **[#129](https://github.com/rayw-lab/website/pull/129) 双门** · CI 门禁 pass 但 ① CITY-EXP-01×2 三证未跑（HOLD 至验证轮收轮，runway slot#2）② **测试面解冻指挥官签字缺位**（⑧ F8 纪律登记）· 未过门禁合；过门即合且**先于 plug rebase**
-- **TRIAGE bc-ace126a4** · 已裁未执第 4 tick（⑤⑩）· 待父代理中止落地 + 2–3min 保险复核；落地前看板不得写「已中止」
-- **归档代办** · **第 5 次逾期**（⑥，本单 05:33 实测 `/tmp/evidence-exp01` 仍缺失）· 父代理即刻自跑
-- **[#103](https://github.com/rayw-lab/website/pull/103)** · 技术阻塞已清 · **仅待指挥官合入**（第 5 tick 复读）；合入后秘书另开增量登记 87
+- **plug 线** · `368b4d4`/`839b6fe` **冻结不 revert 不扩**（B 案存证；`839b6fe` 纪律事件#2 三 spec 二次扩改）· **禁改动线令激活**（EXP-01 ✘ 同卡点，② T14 §2.1 条款兑现）· **resume 拒 → 飞行中零杠杆**，收轮后按接管协议派 R2（③；trace 定谳走第一叉：EXP-01 责任移交 #129，A 案降级，⑭）· [#134](https://github.com/rayw-lab/website/pull/134) e2e HOLD、纠偏落地前禁 ready/禁合
+- **[#129](https://github.com/rayw-lab/website/pull/129) 双门** · CI 门禁 pass 但 ① CITY-EXP-01×2 三证未跑（slot#2 三前置：收轮三证 + 跑道真空确认 + 归档先行，T17 ③）② **测试面解冻指挥官签字缺位**（⑧ F8 纪律登记）· 未过门禁合；过门即合且**先于 plug rebase**
+- **TRIAGE bc-ace126a4** · 已裁未执**第 5 tick**（⑤⑩⑯）· 待父代理中止落地 + 2–3min 保险复核；落地前看板不得写「已中止」
+- **归档代办** · **第 6 次逾期**（⑥⑯，本单 05:33 实测 `/tmp/evidence-exp01` 仍缺失，69MB trace 裸奔）· 父代理即刻自跑，ENV slot#2 前置
+- **[#103](https://github.com/rayw-lab/website/pull/103)** · 技术阻塞已清 · **仅待指挥官合入**（第 6 tick 复读）；合入后秘书另开增量登记 87
 - **真机 S-2 / 性能六腿（零 VM）** · 仍待指挥官启动，AL-PERF / AL-R10 前置
 
 ## 归档（一行）
