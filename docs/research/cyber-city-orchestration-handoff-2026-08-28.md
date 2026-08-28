@@ -26,7 +26,7 @@
 |------|------|------|----------|
 | MERGE-WAVE doc+#101 | [bc-964f16a5](https://cursor.com/agents/bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) | RUNNING | #95/#98 已合；余下 PR 合流中 |
 | R9 L7 登记收口 | [bc-558d537c](https://cursor.com/agents/bc-558d537c-022c-5eaf-bb8c-f79dbf7cc395) | RUNNING | #103 仍 draft；tip 仍 `5c27f1c`（L6），L7+JSON 待 push |
-| S2 指挥官配套单 | [bc-4e331c92](https://cursor.com/agents/bc-4e331c92-5ce4-5035-aa50-8619f9d4c4ee) | **IDLE 已完成** | 分支 `cursor/cc-fxn-s2-commander-kit-1d6f`；docs-only，待开 PR |
+| S2 指挥官配套单 | [bc-4e331c92](https://cursor.com/agents/bc-4e331c92-5ce4-5035-aa50-8619f9d4c4ee) | ✅ **已完成** | 分支 `cursor/cc-fxn-s2-commander-kit-1d6f` @ `4d5f9d6`；draft [#108](https://github.com/rayw-lab/website/pull/108) |
 | Desktop 编排循环 | [bc-6134eb35](https://cursor.com/agents/bc-6134eb35-a319-4d11-96ee-cd6adff3e859) | RUNNING | 不占 async new-VM 槽 |
 
 ## 4. VM 并发结论（给指挥官）
