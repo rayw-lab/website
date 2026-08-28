@@ -7,6 +7,8 @@
 > 🔁 **R8 接续注记（CC-AL-FXN-R8，2026-08-28）**：R7 会话在 L4+L5 提交（tip `756a0f8`）后僵死被 stop——kickoff/环境腿/L4/L5 四提交完整入账，L6–L7 与登记未收口。R8 直接**续写本分支**（`cursor/cc-al-fxn-r7-1d6f`，自真 tip `756a0f8` 顺延，零 rebase 零 cherry-pick，世系干净——R6 hash 重写教训的反面执行），沿用本报告与 PR #103；新 VM 环境重建 + 指纹互证见 §1-R8，L6/L7 取证归档前缀改用 `fxn_r8_*`。评分对象不变（`main@771b1e4`，运行时面 `dc3f56b`），封顶判读不变（真机缺席，云端 87–88，禁登 90）。
 
 > 🔁 **R9 接续注记（CC-AL-FXN-R9，2026-08-28）**：R8 在 kickoff 提交（tip `c09ee31`）后即僵死被 stop——其承诺的 §1-R8 环境腿与 L6/L7 取证**零产出**（`fxn_r8_*` 前缀零文件），kickoff 注记本身按真实世系保留不改写。R9 同法**续写本分支**（自真 tip `c09ee31` 顺延，零 rebase 零 cherry-pick），沿用本报告与 PR #103 并负责收口：新 VM 环境重建 + 指纹互证记 **§1-R9**（顶替 R8 未兑现的 §1-R8），L6/L7 取证归档前缀改用 **`fxn_r9_*`**，独立 worktree `/tmp/wt-al-fxn-r9`。评分对象不变（`main@771b1e4`，运行时面 `dc3f56b`），封顶判读不变（真机缺席，云端 87–88，禁登 90——wave2 §1.2）。
+>
+> 🔁 **R9-FINISH 接续注记（CC-AL-FXN-R9-FINISH，2026-08-28）**：R9 会话在 L6 提交（tip `5c27f1c`）后被 stop——L7 与登记未收口。本会话同法**续写本分支**（自真 tip `5c27f1c` 顺延，零 rebase 零 cherry-pick），沿用本报告与 PR #103，只负责三件事：§2.4 L7 空闲腿取证、逐维打分 + 双 Pass 合议、登记 JSON 收口。又一台新 VM——环境重建 + 指纹互证记 **§1-R9F**（全新端口 **4474**，独立 worktree `/workspace/.worktrees/fxn-r9`），L7 归档沿用 **`fxn_r9_*`** 前缀。评分对象不变（`main@771b1e4`，运行时面 `dc3f56b`），封顶判读不变（真机缺席，云端 87–88，禁登 90——wave2 §1.2）。
 
 ## 0. 审计事实（kickoff）
 
@@ -41,6 +43,14 @@
 | 特征串 | world chunk 族内 C5/C6 特征串 `idle-nudge`（×2）/ `quest-`（×31）/ `brake-first` / `suspension-jump` / `speedtrap` 全数在位（dist 全量 rg 清点） |
 | 取证浏览器 | Playwright Chromium（headless shell 151.0.7922.34），SwiftShader 软渲染——`t`/墙钟/fps 仅用于排序与存在性判定，全部计时类锚点不判（纪律与 R5/R7 同） |
 | 归档前缀 | 本轮录屏/截图/dump 归档 `/opt/cursor/artifacts/`（`fxn_r9_*`） |
+
+### 1-R9F. R9-FINISH 环境重建与指纹互证（新 VM，取证前置，已互证）
+
+| 项 | 读数 |
+|---|---|
+| 环境 | 全新 VM（无 tmux 会话、无任何 4xxx 监听、`/opt/cursor/artifacts/` 为空——R9 的 L6 取证产物随旧 VM 消亡，事实留痕）；Node v22.14.0 · pnpm 10.33.3 · `pnpm install --frozen-lockfile`（锁文件不漂移）→ `pnpm build`（**19 pages**，与 R5/R7/R9 记录一致）→ `pnpm preview --host 0.0.0.0 --port 4474`（tmux `fxn-r9f-preview`，**全新端口 4474**） |
+| chunk hash 三方互证 | `dist/_astro/world.D74ett3S.js` sha256 = 服务口 `GET :4474/website/_astro/world.D74ett3S.js` sha256 = R5/R7/R9 记录值，三方**逐字节一致** `1a762db396d6e8dea7bf04250a56fde03ab10c73645a81a63c84620d3b3b84eb`——本会话被测对象与 R5–R9 审计对象为同一构建产物，§2.1–§2.3 证据接续合法性成立 |
+| 取证浏览器 | Playwright Chromium（`--enable-unsafe-swiftshader`，SwiftShader 软渲染）——`t`/墙钟/fps 仅用于排序与存在性判定，全部计时类锚点不判（纪律与 R5–R9 同） |
 
 ## 2. S-5 v1.0 L4–L7 四腿取证（接续 R5 §2–§3 的 S-2 + L1–L3）
 
