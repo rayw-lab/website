@@ -122,7 +122,7 @@ EXIT=1（pipefail 保真，/tmp/aud-c1-run/full-run1.log 尾行；json = test-re
 
 15 skipped = feedback/observability 串行连坐 8（FB-05/06、OBS-01b/02/03/04/05/06）+ 尾链 did-not-run 7（WS-PERF-01 + CITY-PERF-01/02 + VIS-01–04）。通过面：**CITY-AUD-01 ✓ 随全量复验（6.1m 文件级，硬门断言全过）**、CITY-E2E-01–06 全过、EXP-01/02 全过、WS-E2E 族全过、desktop/mobile/car 30 例全过、CITY-BGM ✓。零 pageerror 类签名、零音频相关失败——#164 残余风险面未命中。
 - **与 §8 R2 幽灵 W1 对照（独立双确认）**：四挂与 R2 W1 五挂同属 world 系挤兑型，签名逐字吻合、时长差 ≤3%（QST-02 1374s vs 1394s；FB 908s vs 909s；OBS-01 同断言异坐标）——**`workers:2` + world 无 `fullyParallel:false` 的同项目双 worker 双 3D 上下文挤兑病理获两独立 VM/两独立树交叉证实**；系统性修复 = #134（已入 #104 栈，未落 main）。§8 情报账按 run5-α 先例登记，采信前提 = 本轮独立复核（见 R2 归因轮）。
-- **R3-R2 归因轮预登记（HB-3 逐轮）**：口径 = §8 W2/W3 窗设计复用——W2' = `playwright test e2e/cyber-city-{explore,feedback,observability}.spec.ts --project=world-chromium --no-deps --workers=1`（16 例，预计 ~90 min）；W3' = 尾链 `--project=world-perf-chromium --project=city-perf-chromium --project=visual-chromium --no-deps --workers=1`（7 例，预计 ~25 min）。隔离端口同剧本（bind 探针 + 核验②）。**19:05 nav-c1 再占跑道**（explore/feedback/minimap 多文件），继续禁杀排队，跑道空后点火。
+- **R3-R2 归因轮预登记（HB-3 逐轮）**：口径 = §8 W2/W3 窗设计复用——W2' = `playwright test e2e/cyber-city-{explore,feedback,observability}.spec.ts --project=world-chromium --no-deps --workers=1`（16 例，预计 ~90 min）；W3' = 尾链 `--project=world-perf-chromium --project=city-perf-chromium --project=visual-chromium --no-deps --workers=1`（7 例，预计 ~25 min）。隔离端口同剧本（bind 探针 + 核验②）。**19:05 nav-c1 再占跑道**（explore/feedback/minimap 多文件），继续禁杀排队，跑道空后点火。排队实录：19:16 / 19:24 / 19:32 三点复测 nav-c1 仍在飞（load ~7.4），归因轮脚本已备妥（`/tmp/aud-c1-run/run-attrib.sh`，W2'/W3' 两段、bind 探针内建）。
 
 ```
 （回填中：R3-R2 归因轮结果）
