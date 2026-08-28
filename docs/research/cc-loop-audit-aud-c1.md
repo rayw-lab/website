@@ -143,3 +143,44 @@ pnpm exec playwright test e2e/cyber-city-audio.spec.ts --project=world-chromium 
 - `pnpm exec playwright test --list`（81 例分布）/ CITY-AUD-01 单测 / 全量（R1 E2E_PORT=4517；R2 默认 4321）
 - `gh api …/runs/{33164322861,33163104422}/artifacts` + `lhr-*.json` categories 逐项聚合
 - R2 追加：`gh pr view 134 --json baseRefName,mergeCommit` + `git merge-base --is-ancestor d99a0e2… origin/main`（NOT in main 实证）/ `gh run download {33164322861,33163104422} -n lighthouse-results` + 双轮 7 URL 中位独立复算（Node 脚本，全 100 复现）/ `pnpm test:e2e`（json reporter `test-results/e2e-results.json` 计数核对）
+
+## 8. R2 幽灵完账（append-only 登记；情报账/资格账分离按 run5-α 先例，采信权归 R3/董事会）
+
+> **登记性质声明**：R2（`bc-e4dd7883`，即本节执笔者）实际存活并于 18:26 UTC 完成全部取证与裁决建议——#175 判死的「tip 冻结 + events=0」实为 **SIG-E7 信号失真**（R2 于 15:01–18:26 连续静默长跑 W1/W2/W3/EXP 四窗**未推心跳 commit**，工序失误与 #175 死因分账完全吻合，R2 认账不申诉）。本节**零触碰 R3 任何文本**，只以独立章节落证据；**资格账判定权归董事会**（#175 后 R2 无终裁资格），**情报账按 run5-α 先例全额登记**（全部结果自跑 fresh、日志/JSON 在案可复核）。R3 续审与 §6 终裁不受本节约束，但下列归因可直接采信复核，预计可省 ≥2 轮全量盲跑。
+>
+> **对 R3 的三条直接情报**（对照其 R1 轮 18:25「34 过 2 挂 = QST-02 + feedback:406」）：① R3 集成树 src/e2e/config 面与 main 同构 = `workers:2` + world 无 `fullyParallel:false`——**同项目内双 worker 双 3D 上下文挤兑**，QST-02/HINT-01 双挂与 R2 W1 同型同因（§8.2），**重跑同配置 0/0/0 恒不可达**；② 后续还有三例确定性红在等：OBS-03（环境级，§8.3）+ CITY-PERF-01/02（规格前提失实恒红，§8.4）——若 R3 的 VM 存在较旧 chromium 缓存则 OBS-03 或有差异，值得登记对照；③ 若要逐例闭账，最短路径 = 复用 §8.2 的 W2/W3 窗设计（三文件串行 + 尾链补跑 + obs 整链 `--grep-invert`），勿整窗重跑。
+
+### 8.1 W1 全量（15:01:04–16:12:52 UTC，墙钟 71.8 min，本 VM 独占跑道，`PW_EXIT=1`）
+
+- 跑道独占取证：启动前 `ps` 零 chrome/playwright/lighthouse、4321/4517 空闲；树 = `b5542ac`（= main@`3fe7c5f` ⊕ 本报告 docs，对锚 `38a2086` 的 src/e2e/config 面逐字节等价）；默认端口 4321；`workers:2` main 原配。
+- **结果：81 例 = 60 expected / 5 unexpected / 16 skipped / 0 flaky → 单窗 0/0/0 破门**。
+
+| 失败（全部 world-chromium） | 时长 | 签名 |
+|---|---|---|
+| CITY-EXP-01 | 665s | `途径点 (36,-12) 应可达（实测 x=35.5 z=-20.8）`（legB 300s 预算未进圈） |
+| CITY-QST-02 | 1394s | `driving 空闲 30 设计秒应打 idle-nudge`（设计秒未积满） |
+| CITY-FB-01…09 | 909s | `Test timeout of 900000ms exceeded` |
+| CITY-HINT-01 | 573s | `[data-world-hint]` expected hidden（淡出窗未走完） |
+| CITY-OBS-01 | 817s | `泊车位 (28,-28) 应可达（实测 x=20.7 z=-21.8）` |
+
+16 skipped = serial 连坐 9（EXP-02/FB-05/FB-06/OBS-01b/OBS-02–06）+ 依赖链级联 7（world-perf 1 + city-perf 2 + visual 4）。通过面：**CITY-AUD-01 ✓5.8m（全部硬门断言过）**、CITY-E2E-01–06 全过、WS-E2E 族全过、desktop/mobile/car 30 例全过。五失败签名零音频、零 pageerror——#165 §2.3 残余风险面未命中。
+
+### 8.2 W2/W3 归因窗（16:21–17:55 UTC）：5 失败串行全绿 = 挤兑定谳
+
+- **W2**（explore+feedback+observability 三文件 16 例，`--project=world-chromium --no-deps --workers=1`）：**12 expected / 1 unexpected（OBS-03）/ 3 skipped（OBS-04–06 连坐）/ 0 flaky**。W1 五失败全部转绿：EXP-01 ✓18.1m · QST-02 ✓19.3m · FB-01…09 ✓9.3m（距 900s 预算余 342s）· HINT-01 ✓ · OBS-01 ✓；另 EXP-02 ✓5.0m。**病理 = main 配置 world 项目内双 worker 并发**（W1 完成序 32✘→33✓→35✘→36✘→39✘ 交错实证双占用；配置注释自书「4 核上任何并发 3D 上下文都会把驾驶腿饿死」+ T21 F6 假✓机制）；系统性修复在 #134（`workers:2→1` + world `fullyParallel:false` + 预算重标定，today plug-134 审计 explore 4/4 PASS 同证）。
+- **W3**（world-perf/city-perf/visual 尾链 7 例）：**5 expected / 2 unexpected（CITY-PERF-01/02，`[data-ws-fps]` element not found）**；WS-PERF-01 ✓、VIS-01–04 ✓（含基线比对）。
+
+### 8.3 OBS-03 反事实定谳（非 #164、环境级、确定性）
+
+① 现树单例 ×2 = 2/2 同签名失败（54.1s/53.6s，`Expected >= 2, Received 0`——dispose console 摘要零送达）；② **反事实**：worktree @`5be64eb`（#164 前 main）独立 build 同条件（E2E_PORT=4519）= **完全相同失败**（52.5s）→ **#164 无责**；③ 机制探针双发：pagehide 侧信道实测 `persisted=false`（bfcache 被正确阻止、dispose 照跑），而 pagehide 内 `console.log` 经 CDP **零送达**——本 chromium 构建（headless-shell 151.0.7922.34 / playwright v1234）卸载期 console 不再送达监听器，**取证方法被浏览器行为击穿，非产品回归**；④ obs 文件 `--grep-invert "CITY-OBS-03"` 串行整链 = **6/6 全过**（OBS-01 ✓8.9m 产 dump → OBS-06 ✓61ms 消费；OBS-06 单跑必假红——Playwright 每 run 清空 `test-results/`）。
+
+### 8.4 CITY-PERF-01/02 结构性定性（先天恒红，非 #164、非挤兑）
+
+断言的 `[data-ws-fps]` 只存在于 `/world-spike/` 页（`src/pages/world-spike/index.astro` L68）；城市页 `/` 全史零该元素（`git log --all -S` 全分支零命中 + `dist/index.html` rg 零匹配 + 引擎注释自书「缺席容忍——引擎不依赖壳页 DOM」）。`cyber-city-perf-test-plan.md` §1 底座表「HUD 在 `/` 已挂（两页共用装配段）」**前提失实**。spec 8-27 合入（`c945a24`）后全量窗从未开过 = 本轮首次实测暴露；**#134 对该 spec 仅改路线/超时、H3 断言保留，栈分支城市页亦无该元素——#104 栈合入后仍恒红**。修复二选一：a) 城市页补元素（src 工单）；b) spec 改锚 `__worldSpike.fps()` 既有探针（spec-only，R2 倾向 b）。
+
+### 8.5 81 例逐例账 + R2 建议裁决（供 §6 参考，无终裁效力）
+
+- **78 例至少一次实测绿**（W1 60 + W2 新转绿 10 + W3 5 + EXP 补绿 3 = OBS-04/05/06）；**3 例确定性红全部与 #164 无涉**（OBS-03 环境级 + PERF-01/02 规格断裂）；全窗 0 flaky。
+- **建议裁决 = fix-forward（#165 §3「破门走定向补洞，不回滚不降门」字面执行）**：#164/AUD-C1 本体零回归（静态五禁 + CITY-AUD-01 双窗 PASS + LHCI 不降 + 残余风险面未命中），补洞不在 AUD-C1——**H1** 跑道串行化（#134 已含，随 #104 栈落 main 即闭）；**H2** OBS-03 取证改持久侧信道（sessionStorage/DOM 标记，R2 已验证卸载期可写）；**H3** PERF-01/02 规格前提修复。补洞后重开单窗 0/0/0 复核，同窗可销 #104 复活门「全量 80 例」欠账（80 = 81 − CITY-AUD-01）。
+- **避坑短注**：① 新 VM 必先 `pnpm exec playwright install chromium`（install.sh 不含，缺装 = 81 例秒败假红）；② #134 落 main 前 main 树全量必出挤兑假阴性，判读先过归因；③ world 一败则尾链 7 例级联 skip，闭逐例账须单独补跑；④ OBS-06 禁单跑（同轮工件依赖）；⑤ 卸载期 console 断言已不可靠（走持久侧信道）；⑥ 全量墙钟预算 ≥2h/窗（81 例；AGENTS「17–23 min」为 52 例陈旧值）；⑦ 执行令数字须 fresh `--list` 复核（53 → 81 先例）。
+- R2 取证命令（复核用）：W2 = `playwright test e2e/cyber-city-{explore,feedback,observability}.spec.ts --project=world-chromium --no-deps --workers=1`；W3 = `--project={world-perf,city-perf,visual}-chromium --no-deps --workers=1`；反事实 = `git worktree add /tmp/pre-aud-wt 5be64eb` + 独立 install/build + `E2E_PORT=4519 … -g "CITY-OBS-03"`（worktree 已清理）；机制探针 = playwright 直连 preview，addInitScript 挂 pagehide（console 版零送达 vs localStorage 版取回 `persisted=false`）；PERF 取证 = `rg data-ws-fps src/ e2e/ dist/index.html` + `git log --all -S "data-ws-fps"` + `git grep` 栈分支 + `git diff origin/main...origin/cursor/cc-vis-x2-plug-5b71 -- e2e/cyber-city-perf.spec.ts`。
