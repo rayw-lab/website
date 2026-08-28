@@ -2,7 +2,7 @@
 
 状态：**交接推进中**（父代理不写业务代码；`/loop` 已退，不 fan-out 新 VM 子代理）。
 
-最后更新：2026-08-28T02:13 UTC
+最后更新：2026-08-28T02:15 UTC
 
 ## 1. 父代理本轮动作
 
@@ -31,7 +31,7 @@
 | 3 | #99 TM AgX/Neutral 预研 | ✅ MERGED | `f63f779` |
 | 4 | #100 G3/X5 书面裁决 | ✅ MERGED | `d738f31` |
 | 5 | #97 FXN 冲90 决策树 | ✅ MERGED | `c609946` |
-| 6 | #96 PERF 指挥官六腿桌面单 | ⏳ OPEN | — |
+| 6 | #96 PERF 指挥官六腿桌面单 | ✅ MERGED | `d73784b` |
 | 7 | #102 VEH-R3 interim | ⏳ OPEN | — |
 | 8 | **#101 X1b voice-pod** | ⏳ OPEN | W2 解锁键，**必须最后合** |
 
@@ -41,7 +41,7 @@
 
 | 代理 | 链接 | 状态 | 最新已知 |
 |------|------|------|----------|
-| MERGE-WAVE | [bc-964f16a5](https://cursor.com/agents/bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) | RUNNING | **5/8** 已合；续 #96→#102→**#101** |
+| MERGE-WAVE | [bc-964f16a5](https://cursor.com/agents/bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) | RUNNING | **6/8** 已合；续 #102→**#101** |
 | R9 L7 登记 | [bc-558d537c](https://cursor.com/agents/bc-558d537c-022c-5eaf-bb8c-f79dbf7cc395) | RUNNING | #103 draft；tip **`03a6fc3`**（R9F 环境腿 + L7 开工）；登记 JSON 待 push |
 | S2 指挥官 kit | [bc-4e331c92](https://cursor.com/agents/bc-4e331c92-5ce4-5035-aa50-8619f9d4c4ee) | ✅ DONE | [#108](https://github.com/rayw-lab/website/pull/108) @ `4d5f9d6` |
 | Desktop 编排 | [bc-6134eb35](https://cursor.com/agents/bc-6134eb35-a319-4d11-96ee-cd6adff3e859) | RUNNING | 不占 async new-VM 槽 |
@@ -100,7 +100,7 @@ artifacts 落 `docs/spec/assets/human-gate/` 后 → 派 **AL-R10** / **AL-PERF*
 
 | 子代理 | 完成？ | 回填 |
 |--------|--------|------|
-| MERGE-WAVE | ⏳ RUNNING 5/8 | main `c609946`；待 #96 #102 **#101**；[bc-964f16a5](https://cursor.com/agents/bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) 未 IDLE |
+| MERGE-WAVE | ⏳ RUNNING 6/8 | main `d73784b`；#96 ✅；待 #102 **#101** |
 | R9 | ⏳ RUNNING | #103 draft tip `03a6fc3`（L7+登记未完成）；[bc-558d537c](https://cursor.com/agents/bc-558d537c-022c-5eaf-bb8c-f79dbf7cc395) 未 IDLE |
 | S2 | ✅ IDLE | [#108](https://github.com/rayw-lab/website/pull/108) @ `4d5f9d6` |
 
