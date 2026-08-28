@@ -148,6 +148,10 @@ const wrapAngle = (a: number): number => Math.atan2(Math.sin(a), Math.cos(a));
  * 倒车脱困/出泊位（S=backward，Player 倒车扇区油门转向同反转）：直线倒车至
  * 位移 ≥ meters 或超时。深链出生泊位朝建筑角（parkingBay.heading 面楼），
  * 原地掉头会蹭墙角卡死；且 R 重生锚点=泊位本身（传送回陷阱），故一律倒车脱身。
+ * [CC-FXN-EXP01-ENV] 帧率鲁棒化：VM 空载近实时帧率下倒车可飙 30-50km/h，
+ * 500ms 轮询单拍位移 >7m（run3 实测 5m 令过冲至 9.6m，退进隔离墩/角簇邻域）——
+ * 倒车限速（>12km/h 松 S 滑行）+ 250ms 轮询，把过冲压到 ~1m 内；
+ * SwiftShader 慢帧（~0.04m/s）下速度恒 <12，行为与原版逐帧一致。
  */
 async function reverseBy(
   page: Page,
@@ -156,29 +160,51 @@ async function reverseBy(
 ): Promise<{ ok: boolean; state: SpikeState }> {
   const origin = await readSpike(page);
   let state = origin;
-  await page.keyboard.down('s');
+  let reversing = false;
+  const setReverse = async (want: boolean): Promise<void> => {
+    if (want === reversing) return;
+    if (want) await page.keyboard.down('s');
+    else await page.keyboard.up('s');
+    reversing = want;
+  };
+  await setReverse(true);
   try {
     const deadline = Date.now() + capMs;
     while (Date.now() < deadline) {
       state = await readSpike(page);
       if (Math.hypot(state.x - origin.x, state.z - origin.z) >= meters) return { ok: true, state };
-      await page.waitForTimeout(500);
+      await setReverse(state.speedKmh < 12);
+      await page.waitForTimeout(250);
     }
     return { ok: false, state };
   } finally {
-    await page.keyboard.up('s').catch(() => {});
+    if (reversing) await page.keyboard.up('s').catch(() => {});
   }
 }
 
-/** 遥测闭环自动驾驶（CITY-OBS-01 同款：真实键盘输入 + 0.5s 遥测节拍 + 卡死倒车自救） */
+/**
+ * 遥测闭环自动驾驶（CITY-OBS-01 同款：真实键盘输入 + 遥测节拍 + 卡死倒车自救）。
+ * [CC-FXN-EXP01-ENV] 帧率鲁棒化——过弯限速：VM 空载近实时帧率下全程满油门
+ * 会以 45-55km/h、10-15m 半径过大弯（run3 实测回程 146° 弯过冲 15m 漂进大街角，
+ * 直线回泊线贴 SW 隔离墩 0.6m 反复楔死）；大转角（|diff|>0.9rad≈52°）且车速
+ * >18km/h 时松油门滑行收弯，弯毕/降速即回油——SwiftShader 慢帧下弯中速度
+ * 常 <18，行为与原版一致；轮询 500→250ms 同步收紧高速下的控制延迟。
+ */
 async function driveTo(
   page: Page,
   target: { x: number; z: number },
   opts: { radius: number; timeoutMs: number },
 ): Promise<{ ok: boolean; state: SpikeState }> {
   let steering: 'a' | 'd' | null = null;
+  let throttle = false;
   let state = await readSpike(page);
-  await page.keyboard.down('w');
+  const setThrottle = async (want: boolean): Promise<void> => {
+    if (want === throttle) return;
+    if (want) await page.keyboard.down('w');
+    else await page.keyboard.up('w');
+    throttle = want;
+  };
+  await setThrottle(true);
   try {
     const deadline = Date.now() + opts.timeoutMs;
     let stuckSince = Date.now();
@@ -196,6 +222,8 @@ async function driveTo(
         if (want) await page.keyboard.down(want);
         steering = want;
       }
+      // 过弯限速（速度低于门槛必回油 ⇒ 无滑行死锁）
+      await setThrottle(!(Math.abs(diff) > 0.9 && state.speedKmh > 18));
 
       if (state.speedKmh > 3) stuckSince = Date.now();
       else if (Date.now() - stuckSince > 45_000) {
@@ -205,17 +233,17 @@ async function driveTo(
           await page.keyboard.up(steering);
           steering = null;
         }
-        await page.keyboard.up('w');
+        await setThrottle(false);
         await reverseBy(page, 3, 120_000); // 倒车实测 ~0.04m/s 墙钟（SwiftShader 慢动作）
-        await page.keyboard.down('w');
+        await setThrottle(true);
         stuckSince = Date.now();
       }
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(250);
     }
     return { ok: false, state };
   } finally {
     if (steering) await page.keyboard.up(steering).catch(() => {});
-    await page.keyboard.up('w').catch(() => {});
+    if (throttle) await page.keyboard.up('w').catch(() => {});
   }
 }
 
