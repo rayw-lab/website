@@ -93,6 +93,7 @@
 | 02:25 | [MERGE-WAVE](bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) **IDLE**；8/8 合流日志已回填；P1 X2 rebase 待 fan-out |
 | 02:30 | MERGE-WAVE/R9 均 **IDLE**；main `88097f9`；#103 Codex 阻断；**不 fan-out**；Desktop 编排已切 `cc-vis-x2-facade-r2` 分支 |
 | 02:41 | 无新合流；#104 仍 draft（未 rebase）；Cloud 子代理全 IDLE；Desktop X2 分支 RUNNING；**不 fan-out** |
+| 02:47 | Desktop 开 draft [**#109**](https://github.com/rayw-lab/website/pull/109) 秘书 post-merge 看板刷新（`cc-loop-sec-p3-5b71`） |
 
 ---
 
