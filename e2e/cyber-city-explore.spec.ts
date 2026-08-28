@@ -625,7 +625,12 @@ test.describe('科技城目标线 v0（CC-FXN-C5 · world-chromium 串行 projec
   //   ④ 输入即收：驾驶意图恢复 → nudge 隐藏（引导不粘身——非强制纪律）。
   // ---------------------------------------------------------------------------
   test('CITY-QST-02 恒等门 + car_ready 激活 + idle-30s 消费：robot_idle 隐藏零事件 → shown 链首 → 空闲 nudge 呈现（输入即收）', async ({ page }, testInfo) => {
-    test.setTimeout(2_100_000); // ritual 挂载 + 30 设计秒空闲（SwiftShader maxDelta 限频下墙钟可达十余分钟）
+    // [CC-VIS-X2-TRIAGE r2] 预算按实测重标定：本 VM（4 核共享 SwiftShader）Q0 driving
+    // 态 rAF 实测 main 0.78fps / X2 0.70fps（A/B 探针，solo 无挤兑），设计秒累积率 =
+    // fps×maxDelta(1/30) → 30 设计秒需 1154s/1288s 墙钟——原 1200s 轮询预算在 main
+    // 上余量仅 46s（掷硬币）、X2 上必超线。预算是上限非定长（事件到即返回，健康
+    // 环境零成本），扩至 1800s；总超时随扩（挂载~2min + idle 腿 ≤30min + 步④）
+    test.setTimeout(2_700_000);
     const errors = trackErrors(page);
     await page.emulateMedia({ reducedMotion: 'reduce' });
 
@@ -672,7 +677,7 @@ test.describe('科技城目标线 v0（CC-FXN-C5 · world-chromium 串行 projec
     const nudged = await pollDump(
       page,
       (d) => d.events.some((e) => e.type === 'idle-nudge'),
-      1_200_000,
+      1_800_000,
       2_000,
     );
     expect(nudged.ok, 'driving 空闲 30 设计秒应打 idle-nudge（idle-30s 消费腿）').toBe(true);
