@@ -54,6 +54,12 @@ COMPOSITE_SCORE=⏳
 | 墙钟 | ⏳ |
 | smoke3d 逐例 | ⏳ |
 
+**在跑中已落定的一例红（如实登记，不掩盖）**：
+
+- **CITY-EXP-01**（`cyber-city-explore.spec.ts:252`，world-chromium，探索计数闭环）**FAIL @ 14.6m**：断言 `泊车位 (-28,-28) 应可达（实测 x=17.6 z=-22.5）`——驾驶腿在预算内未抵达目标泊车位。初诊：SwiftShader ~1fps 软渲染下脚本驾驶推进不足的**环境敏感型失败**（world 链内 workers=2 存在跨文件并发 3D 上下文挤兑窗口；本地 `retries=0` 无自动重试）。
+- **连坐**：同 describe 块 `mode: 'serial'` → **CITY-EXP-02 被跳过**（skipped 不计入 score-loop 分母，未执行 ≠ 失败）。
+- 口径注记：composite-98-RS §3.3 曾明示「CAR-E2E 修后 clean 全量绿**尚无在档实证**」——本轮即为该实证的首次尝试，红例如实入分；收尾后对该例做**单跑复诊**（整机空闲态）以判定可复现性，复诊结果只作诊断佐证、不改本轮计分 JSON。
+
 ## 3. LHCI（双源口径：本 VM 已知 null → 同 SHA CI artifact 计分）
 
 - **本 VM 不实跑 collect**：SwiftShader 下 Lighthouse 性能追踪不产值（L0 §A.3 实锤「Audit did not produce a value at all」，范式已知坑 #1），本地读数不可用于①②维计分——按 M0 计划直接走 CI artifact 回填口径。
