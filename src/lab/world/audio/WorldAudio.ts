@@ -34,8 +34,12 @@
 //   · 循环动画配额（CITY-03）零占用：无任何视觉呈现，静音钮零动画；
 //   · 埋点：'world-audio' {enabled, source:'auto'|'user'}（观测规格 §3.4 随行加法）；
 //   · dispose 全链拆除：手势/可见性监听、事件订阅、ticker、DOM、ctx.close()。
+// [CC-BGM-C1] 随行 wiring（董事会急裁 cc-loop-board-bgm-synth-scope.md §C 文件域）：
+// BGM 氛围垫子总线（BgmLoop.ts）由本类内聚编排——unlock 后惰性构造、update 尾部
+// 转发（engineLevel/open/dt）、事件脉冲转发 ×4、dispose 链尾、探针扩展、样式门扩位。
 import type { Game } from '../core/Game';
 import type { TransformForm, TransformState, TransformSystem } from '../player/TransformSystem';
+import { BgmLoop, type BgmProbe } from './BgmLoop';
 
 /** 静音偏好持久键（'1' = 静音；缺省/其他 = 开声） */
 const STORAGE_KEY = 'world-audio-muted';
@@ -82,6 +86,8 @@ declare global {
         muted: boolean;
         engineLevel: number;
         counts: AudioCounts;
+        /** [CC-BGM-C1] 只加字段不改既有键（cc-bgm-rs R3 对策）；解锁前 null */
+        bgm: BgmProbe | null;
       };
     };
   }
@@ -114,6 +120,9 @@ export class WorldAudio {
   /** 变形充能扫频在途节点（'transforming' 起、'swap' 峰值收拍） */
   private ritualSweep: { band: BiquadFilterNode; gain: GainNode; src: AudioBufferSourceNode } | null = null;
   private sharedNoise: AudioBuffer | null = null;
+  /** [CC-BGM-C1] 氛围垫（unlock 后惰性构造——懒创建合同 §10-1；解锁前恒 null） */
+  private bgm: BgmLoop | null = null;
+  private readonly stage: HTMLElement;
 
   private muted: boolean;
   private unlockLogged = false;
@@ -151,7 +160,9 @@ export class WorldAudio {
   private readonly tickHandler = (): void => this.update();
 
   private readonly stateChangeHandler = (state: TransformState): void => {
-    if (state === 'transforming' && !this.reducedMotion) this.ritualCharge();
+    if (state !== 'transforming' || this.reducedMotion) return;
+    this.ritualCharge();
+    this.bgm?.duckTransform(true); // [CC-BGM-C1] 事件脉冲③：变形让位（ritual sweep 主角）
   };
 
   private readonly swapHandler = (): void => {
@@ -159,8 +170,13 @@ export class WorldAudio {
   };
 
   private readonly transformDoneHandler = (to: TransformForm): void => {
-    if (this.reducedMotion) this.transformCue(to);
-    else this.ritualLanding(to);
+    if (this.reducedMotion) {
+      this.transformCue(to);
+      this.bgm?.duckPulse(); // [CC-BGM-C1] reduced-motion instant swap：短脉冲对齐 transformCue
+    } else {
+      this.ritualLanding(to);
+      this.bgm?.duckTransform(false); // [CC-BGM-C1] 事件脉冲④：完成沿 τ1.2s 缓升
+    }
   };
 
   private readonly brakeHandler = (action: { active: boolean }): void => {
@@ -174,6 +190,7 @@ export class WorldAudio {
   constructor(game: Game, options: WorldAudioOptions) {
     this.game = game;
     this.transform = options.transform ?? null;
+    this.stage = options.stage;
     this.muted = this.readMuted();
 
     this.setDom(options.stage);
@@ -202,6 +219,7 @@ export class WorldAudio {
         muted: this.muted,
         engineLevel: this.engineLevel,
         counts: { ...this.counts },
+        bgm: this.bgm ? this.bgm.probe() : null,
       }),
     };
   }
@@ -220,6 +238,8 @@ export class WorldAudio {
     this.game.events.off('world-drive-view', this.driveViewHandler);
     this.game.inputs.events.off('brake', this.brakeHandler);
     this.game.ticker.events.off('tick', this.tickHandler);
+    this.bgm?.dispose(); // [CC-BGM-C1] 链尾拆除（停声部/断链/摘钮；ctx.close 在下方）
+    this.bgm = null;
     this.button.remove();
     delete window.__worldAudio;
     if (this.ctx) {
@@ -239,6 +259,7 @@ export class WorldAudio {
     this.lastImpactAt = t;
     this.counts.impact += 1;
     this.thump(Math.min(0.35 + this.speed / 10, 1));
+    this.bgm?.duckPulse(); // [CC-BGM-C1] 事件脉冲①：与撞击冷却同沿，天然限流
   }
 
   /* ———————————————————— 手势解锁 ———————————————————— */
@@ -264,6 +285,13 @@ export class WorldAudio {
       this.master.gain.value = this.muted ? 0 : MASTER_VOLUME;
       this.master.connect(this.ctx.destination);
       this.buildEngine(this.ctx, this.master);
+      // [CC-BGM-C1] 氛围垫惰性构造（挂 master 之下：音效钮 OFF 时必然无声）；
+      // 记忆恢复沿在 BgmLoop 构造内闭合——恢复恒晚于解锁（硬门 4）
+      this.bgm = new BgmLoop(this.ctx, this.master, {
+        stage: this.stage,
+        noise: this.noiseBuffer(this.ctx),
+        log: (enabled, source) => this.game.session.log('world-bgm', { enabled, source }),
+      });
       this.ctx.addEventListener('statechange', () => this.onRunning());
     } else if (this.ctx.state === 'suspended') {
       void this.ctx.resume().catch(() => {});
@@ -390,6 +418,9 @@ export class WorldAudio {
     engine.boostGain.gain.value = this.boostLevel;
     engine.lowpass.frequency.value = this.lowpassFreq;
     engine.noiseGain.gain.value = open ? 0.06 * speedNorm * speedNorm : 0;
+
+    // [CC-BGM-C1] 尾部转发：连续侧链（engineLevel）+ 活跃窗（引擎门同源）+ 调度节拍
+    this.bgm?.update(this.engineLevel, open, dt);
   }
 
   /* ———————————————————— ③ 刹车打滑 ———————————————————— */
@@ -401,6 +432,9 @@ export class WorldAudio {
     if (t - this.lastSkidAt < SKID_COOLDOWN) return;
     this.lastSkidAt = t;
     this.counts.skid += 1;
+    this.bgm?.duckPulse(); // [CC-BGM-C1] 事件脉冲②：与打滑冷却同沿
+
+
 
     const duration = Math.min(0.35 + this.speed * 0.03, 0.8);
     const peak = 0.32 * Math.min(this.speed / 8, 1);
@@ -611,7 +645,7 @@ export class WorldAudio {
 .world-audio-toggle{position:absolute;top:.85rem;right:.95rem;z-index:6;pointer-events:auto;font:inherit;font-family:system-ui,-apple-system,'Segoe UI','PingFang SC','Noto Sans CJK SC',sans-serif;font-size:.72rem;letter-spacing:.14em;color:#9fb6b1;cursor:pointer;padding:.4em 1.05em;border-radius:999px;border:1px solid rgba(73,197,182,.32);background:rgba(12,13,17,.62);transition:color .25s,border-color .25s}
 .world-audio-toggle:hover,.world-audio-toggle:focus-visible{color:#eafffb;border-color:rgba(73,197,182,.7)}
 .world-audio-toggle[aria-pressed='true']{color:#6f7d7a;border-color:rgba(120,132,130,.4);text-decoration:line-through}
-[data-world-state='robot_idle'] .world-audio-toggle,[data-world-state='transforming'] .world-audio-toggle{display:none!important}
+[data-world-state='robot_idle'] .world-audio-toggle,[data-world-state='robot_idle'] .world-bgm-toggle,[data-world-state='transforming'] .world-audio-toggle,[data-world-state='transforming'] .world-bgm-toggle{display:none!important}
 @media (prefers-reduced-motion:reduce){.world-audio-toggle{transition:none}}
 `;
     document.head.appendChild(style);

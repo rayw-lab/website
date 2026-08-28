@@ -56,6 +56,9 @@ type EventFamily =
  * [CC-AUD-C1] 随行加法（G3 合成音效层可观测面，38 type / 10 族）：ux 族
  * world-audio {enabled, source: 'auto' | 'user'}——首手势解锁沿 = 'auto'
  * （enabled 为非静音记忆态）、静音钮切换 = 'user'（audio/WorldAudio.ts）。
+ * [CC-BGM-C1] 随行加法（BGM 合成氛围垫 v0 可观测面，39 type / 10 族）：ux 族
+ * world-bgm {enabled, source: 'user' | 'restore'}——BGM 钮切换 = 'user'、
+ * localStorage 记忆恢复沿（解锁后自动恢复播放）= 'restore'（audio/BgmLoop.ts）。
  * 改动纪律（§3.6）：加法（新增 type / data 字段）同 PR 修订规格表、
  * schemaVersion 不动；破坏性（改名/删除/改语义）schemaVersion +1 且消费方同 PR 适配。
  */
@@ -68,7 +71,7 @@ const WHITELIST: Readonly<Record<EventFamily, string>> = {
   goal: 'explore-restore explore-progress explore-complete world-quest',
   challenge: 'world-speedtrap',
   perf: 'quality-auto-drop',
-  ux: 'hint-shown hint-dismissed hint-recall esc-menu-open idle-30s idle-nudge world-audio',
+  ux: 'hint-shown hint-dismissed hint-recall esc-menu-open idle-30s idle-nudge world-audio world-bgm',
   error: 'pageerror context-lost',
 };
 
