@@ -1,6 +1,6 @@
 # Phase 0 提分 Loop 编排看板
 
-`main` @ `502fb2b` · 2026-08-27 16:47 UTC · 范式 `cyber-city-orchestration-paradigm.md`
+`main` @ `771b1e4` · 2026-08-27 22:05 UTC · 范式 `cyber-city-orchestration-paradigm.md`
 
 **模型（L8+）**：全部子代理 Task = `claude-fable-5-thinking-xhigh`；在途 Sol 可跑完（§1.2 宽限）。
 
@@ -8,10 +8,10 @@
 
 | 维度 | 北极星 | 生产登记 | Δ | 在途 |
 |------|--------|----------|---|------|
-| **综合** | **98** | **80** | +18 | 五维重算 |
-| **视觉** | **98** | **71** | +27 | W1-X1a-R2 · W1-X3-R2 |
-| **功能** | **90** | **84** | +6 | C5-R2 · C6-R2 |
-| **性能** | **85** | **—** | +85 | 真机六腿 · AL-PERF |
+| **综合** | **98** | **80** | +18 | COMP-M0 |
+| **视觉** | **98** | **73** | +25 | X1b · VIS-ADV-73 |
+| **功能** | **90** | **84** | +6 | AL-FXN-R5 · FXN-NEXT |
+| **性能** | **85** | **—** | +85 | TM-PREP · PERF-DESK |
 
 > 登记只认审计独立分。禁止 LHCI/e2e/smoke 冒充功能或性能。
 
@@ -19,39 +19,39 @@
 
 | 轨 | 状态 | 下一拍 |
 |----|------|--------|
-| 功能 | **84** ✅ [#84](https://github.com/rayw-lab/website/pull/84) | C5∥C6 → 真机 S-2 + AL-FXN-R3 |
-| 性能 | 顾问 R2 ✅ [#88](https://github.com/rayw-lab/website/pull/88) | 指挥官真机六腿 → AL-PERF |
-| 视觉 | 71 · 顾问/任务书 ✅ | W1-X1a-R2（接续 `33214e7`）· W1-X3-R2 |
-| 综合 | 80 | 功能/性能登记后重算 |
+| 功能 | **84** ✅ [#84](https://github.com/rayw-lab/website/pull/84) · C5-R3/C6 已合 [#90](https://github.com/rayw-lab/website/pull/90)[#91](https://github.com/rayw-lab/website/pull/91) | AL-FXN-R5 复评 → FXN-NEXT |
+| 视觉 | **73** ✅ [#94](https://github.com/rayw-lab/website/pull/94) · X1a-R4/X3-R4 已合 [#92](https://github.com/rayw-lab/website/pull/92)[#93](https://github.com/rayw-lab/website/pull/93) | X1b · VIS-ADV-73 |
+| 性能 | 顾问 R2 ✅ [#88](https://github.com/rayw-lab/website/pull/88) | TM-PREP → 真机六腿 · PERF-DESK |
+| 综合 | 80 | COMP-M0 → 五维重算 |
 
 ## 在途子 Task（≤10 并行）
 
 | ID | 模型 | 状态 |
 |----|------|------|
-| CC-FXN-C5-R2 | Fable5 xhigh | 🔄 重派（旧 C5 僵尸已弃） |
-| CC-FXN-C6-R2 | Fable5 xhigh | 🔄 重派（旧 C6 僵尸已弃） |
-| CC-VIS-L8-W1-X1a-R2 | Fable5 xhigh | 🔄 重派（接续 Step0 `33214e7`） |
-| CC-VIS-L8-W1-X3-R2 | Fable5 xhigh | 🔄 重派（旧 X3 僵尸已弃） |
-| CC-AL-VEH-R3-R2 | Fable5 xhigh | ⏳ 待 X1a/X3 让出 VM 后单跑 e2e |
+| CC-AL-FXN-R5 | Fable5 xhigh | 🔄 功能复评（C5-R3/C6 合后） |
+| CC-VIS-L8-W1-X1b | Fable5 xhigh | 🔄 视觉腿（接续 X1a-R4） |
+| CC-AL-VEH-R3 | Fable5 xhigh | 🔄 车辆 e2e 审计（独占 VM 单跑） |
+| CC-VIS-ADV-73 | Fable5 xhigh | 🔄 视觉顾问（73→90+ 路径） |
+| CC-COMP-M0 | Fable5 xhigh | 🔄 综合重算准备 |
+| CC-TM-PREP | Fable5 xhigh | 🔄 真机测试准备 |
+| CC-PERF-DESK | Fable5 xhigh | 🔄 性能桌面腿 |
+| CC-FXN-NEXT | Fable5 xhigh | 🔄 功能 84→90 下一批（承 [#87](https://github.com/rayw-lab/website/pull/87)） |
 
-## 僵尸清理（2026-08-27 16:47 UTC）
+## 本 tick 合流（→ `771b1e4`）
 
-| 旧 Task | 代理 | 裁决 | 证据 |
-|---------|------|------|------|
-| CC-FXN-C5 | bc-97ed786b | ❌ 僵尸 | 30min+ 无分支无 push |
-| CC-FXN-C6 | bc-21826795 | ❌ 僵尸 | 工作区污染、无 push |
-| CC-VIS-L8-W1-X3 | bc-aefe3a8f | ❌ 僵尸 | 分支无实现提交 |
-| CC-VIS-L8-W1-X1a | bc-d506b324 | ⚠️ 半完成 | `33214e7` Step0 已 push，主体僵死 |
-| CC-AL-VEH-R3 | bc-dc78b460 | ❌ 疑似僵死 | 30min+ 无审计 PR |
-| CC-FXN-ADV-90 / PERF-R2 | — | ✅ 已交付 | [#87](https://github.com/rayw-lab/website/pull/87)[#88](https://github.com/rayw-lab/website/pull/88) 已合 |
-
-> UI 中仍显示 RUNNING 的旧代理请在 Cursor 侧手动 Stop；父代理不再等待其回报。
+| PR | 内容 |
+|----|------|
+| [#90](https://github.com/rayw-lab/website/pull/90) | C5-R3 G4 目标线 v0 + idle-30s 引导 |
+| [#91](https://github.com/rayw-lab/website/pull/91) | C6 F/Space-B 确认层 + G9 测速牌 |
+| [#92](https://github.com/rayw-lab/website/pull/92) | X1a-R4 BL2-R2 几何增量（鼓塔） |
+| [#93](https://github.com/rayw-lab/website/pull/93) | X3-R4 招牌叙事 v2 e2e 验收面 CITY-SIGN-01…03 |
+| [#94](https://github.com/rayw-lab/website/pull/94) | AL-VIS-R3 视觉复评登记 **71→73** |
 
 ## 下一拍序
 
-1. C5-R2 ∥ C6-R2 ∥ W1-X1a-R2 ∥ W1-X3-R2（独立 worktree，禁共享 `/workspace`）
-2. 四路收敛后单派 VEH-R3-R2（75/75 e2e 独占 VM）
-3. 指挥官真机六腿 → AL-PERF
+1. 八路在途并行（独立 worktree，禁共享 `/workspace`）；VEH-R3 独占 VM 单跑 e2e
+2. AL-FXN-R5 / VIS-ADV-73 回报后重排功能、视觉腿
+3. TM-PREP 就绪 → 指挥官真机六腿 → AL-PERF → COMP-M0 五维重算
 
 ## 阻塞
 
@@ -59,4 +59,4 @@
 
 ## 归档（一行）
 
-顾问 [#87](https://github.com/rayw-lab/website/pull/87)[#88](https://github.com/rayw-lab/website/pull/88) · AL-FXN **84** [#84](https://github.com/rayw-lab/website/pull/84) · 范式 [#85](https://github.com/rayw-lab/website/pull/85) · board [#86](https://github.com/rayw-lab/website/pull/86)
+顾问 [#87](https://github.com/rayw-lab/website/pull/87)[#88](https://github.com/rayw-lab/website/pull/88) · AL-FXN **84** [#84](https://github.com/rayw-lab/website/pull/84) · 范式 [#85](https://github.com/rayw-lab/website/pull/85) · board [#86](https://github.com/rayw-lab/website/pull/86) · 清理 [#89](https://github.com/rayw-lab/website/pull/89) · C5-R3 [#90](https://github.com/rayw-lab/website/pull/90) · C6 [#91](https://github.com/rayw-lab/website/pull/91) · X1a-R4 [#92](https://github.com/rayw-lab/website/pull/92) · X3-R4 [#93](https://github.com/rayw-lab/website/pull/93) · AL-VIS **73** [#94](https://github.com/rayw-lab/website/pull/94)
