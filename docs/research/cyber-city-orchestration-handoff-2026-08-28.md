@@ -2,7 +2,7 @@
 
 状态：**交接推进中**（父代理不写业务代码；`/loop` 已退，不 fan-out 新 VM 子代理）。
 
-最后更新：2026-08-28T02:08 UTC
+最后更新：2026-08-28T02:13 UTC
 
 ## 1. 父代理本轮动作
 
@@ -20,7 +20,7 @@
 | 时点 | main tip | 已合 PR |
 |------|----------|---------|
 | 合流前 | `771b1e4` | — |
-| **当前** | **`c609946`** | #95 #98 #99 #100 **#97** |
+| **当前** | **`d73784b`** | #95–#100 #97 **#96** |
 
 合流日志（MERGE-WAVE [bc-964f16a5](https://cursor.com/agents/bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e)，进行中）：
 
@@ -100,9 +100,11 @@ artifacts 落 `docs/spec/assets/human-gate/` 后 → 派 **AL-R10** / **AL-PERF*
 
 | 子代理 | 完成？ | 回填 |
 |--------|--------|------|
-| MERGE-WAVE | ⏳ 5/8 | main `c609946`；#97 ✅；待 #96 #102 **#101** |
-| R9 | ⏳ | #103 tip；登记分；ready? |
-| S2 | ✅ | #108；分支 `4d5f9d6` |
+| MERGE-WAVE | ⏳ RUNNING 5/8 | main `c609946`；待 #96 #102 **#101**；[bc-964f16a5](https://cursor.com/agents/bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) 未 IDLE |
+| R9 | ⏳ RUNNING | #103 draft tip `03a6fc3`（L7+登记未完成）；[bc-558d537c](https://cursor.com/agents/bc-558d537c-022c-5eaf-bb8c-f79dbf7cc395) 未 IDLE |
+| S2 | ✅ IDLE | [#108](https://github.com/rayw-lab/website/pull/108) @ `4d5f9d6` |
+
+**tick 结论**：#101 未合 → **暂不派 X2 rebase**；父代理不 fan-out，续盯 MERGE-WAVE / R9。
 
 ---
 
