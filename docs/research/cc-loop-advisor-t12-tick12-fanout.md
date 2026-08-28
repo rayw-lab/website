@@ -18,7 +18,7 @@
 | F4 | （简报未及） | **秘书 P7 已在途**：`/tmp/wt-sec-p7` 分支 `cursor/cc-loop-sec-p7-5b71`，**栈在 P6 tip `b7dc652` 上**（未从 main 重开），看板文件已有未提交修改；对应面板代理「Tick#12 秘书看板刷新」RUNNING（04:30:27 起） | worktree status + 面板 API |
 | F5 | 「#104 tip 仍 c24c7f3 draft；#103/#121 未合」 | 复核不变：#104 tip `c24c7f3` draft（tip CI 绿）；#103 OPEN/非 draft/MERGEABLE（`1a4296f`）；#121 OPEN/draft（`b7dc652`）；**plug / ENV 专项分支均未开**（ls-remote 实测）；main @ `88097f9` 无新合入 | gh + ls-remote |
 
-**勘误（供秘书 P7 一并登记）**：T11 文档内 #122/#123 链接误写 `rayw-lab/mywebsite`（手册 §3.5 已列旧坑再犯）；实际 repo 为 `rayw-lab/website`，本文档所有链接以 `gh` 实际输出为准。
+**勘误精确化（供秘书 P7 一并登记）**：push 实测 remote 提示「This repository moved → `rayw-lab/website.git`」——**仓库已由 `mywebsite` 改名为 `website`**，本 VM origin 仍指旧名靠 GitHub 301 重定向工作。T11 等文档内的 `mywebsite` 链接经重定向**可达、非死链**，但登记应统一用 `gh` 输出的规范名 `rayw-lab/website`（手册 §3.5 坑表可补此因：非「错写」而是改名遗留）。
 
 ---
 
@@ -61,7 +61,7 @@ P7 已在途（F4），栈序正确（base = P6 tip `b7dc652`，PR 栈场景②�
 5. **TRIAGE-WRAP 行**：「定向测 04:26 自然收轮 1 failed（判读 B 兑现，双因并立）；wrap 报告在途，deadline Tick#13 开局，缺位按产物已收割中止」。
 6. **#103/#121 复读**（T10 §4 模板不变形）：#103 ready/MERGEABLE 待指挥官点合；#121 不合则看板单源持续漂移，且 **P7 叠其上，栈深已 2**——#121 拖得越久，秘书链栈越深，建议指挥官本轮一并处理（顺序 #103 → #121 → P7）；视觉 71/73 双源分歧随 #121 合流定谳。
 7. **stale 台账**：按本文档 §4 表登记（原 X2 代理 stale 坐实待中止、TRIAGE-WRAP 观察至 deadline、T9/T10/T11 已交付非 stale）。
-8. **勘误行**：T11 文档 #122/#123 链接 repo 名误写 `mywebsite`（旧坑再犯，正确 = `rayw-lab/website`）；不改 T11 文档本体（已推送），看板登记正确链接即可。
+8. **勘误行**：仓库已改名 `mywebsite` → `website`（301 重定向），T11 等文档的旧名链接可达但非规范；不改已推送文档本体，看板登记统一规范名 `rayw-lab/website` 即可。
 9. **纪律复读**：顾问文档（#122–#124 + 本 PR）均不写看板，单源在秘书链；P7 一次 commit 收口，勿多处登记。
 
 ---
