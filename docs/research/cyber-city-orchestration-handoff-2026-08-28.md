@@ -2,7 +2,7 @@
 
 状态：**MERGE-WAVE 已收口（8/8）**；W2 视觉链 **#101 X1b 已解锁**。父代理待命，下一棒 **P1 = X2 #104 rebase**。
 
-最后更新：2026-08-28T02:30 UTC（`handoff-check-merge-r9` tick）
+最后更新：2026-08-28T02:41 UTC（`handoff-check-merge-r9` tick）
 
 ## 1. 父代理本轮动作
 
@@ -13,7 +13,7 @@
 | S2 指挥官 kit | ✅ [#108](https://github.com/rayw-lab/website/pull/108) |
 | 本交接单 | draft [#107](https://github.com/rayw-lab/website/pull/107) |
 | `/loop` 定时器 | 已退；`handoff-check-merge-r9` 续 tick |
-| 新派 Task | **待指挥官批准 fan-out** → P1 X2 rebase |
+| 新派 Task | **待指挥官批准 fan-out** → P1 X2 rebase；秘书 post-merge → draft **#109** 已开 |
 
 ## 2. main 与 MERGE-WAVE（✅ 完成）
 
@@ -92,6 +92,7 @@
 |------|------|
 | 02:25 | [MERGE-WAVE](bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) **IDLE**；8/8 合流日志已回填；P1 X2 rebase 待 fan-out |
 | 02:30 | MERGE-WAVE/R9 均 **IDLE**；main `88097f9`；#103 Codex 阻断；**不 fan-out**；Desktop 编排已切 `cc-vis-x2-facade-r2` 分支 |
+| 02:41 | 无新合流；#104 仍 draft（未 rebase）；Cloud 子代理全 IDLE；Desktop X2 分支 RUNNING；**不 fan-out** |
 
 ---
 
