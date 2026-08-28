@@ -4,6 +4,8 @@
 - **model slug**：`claude-fable-5-thinking-xhigh`
 - **纪律**：零 `src/` 改动、零实现代码、零视角旋转内容；文件域 = 仅本文档；base = main@`3fe7c5f`。
 - **取证窗口**：2026-08-28 15:32–15:55 UTC。证据全部一手：仓内源码逐文件读取 + `git show origin/cursor/cc-nav-c1-minimap-8ca4`（NAV-C1 在途 [#166](https://github.com/rayw-lab/website/pull/166)，tip `5faab5f`）+ `gh` 实测（仓库规范 slug = `rayw-lab/website`，`gh repo view` 输出）。
+- **修订（2026-08-28，Codex 事后评 P2×3 落板，NAV-C1.5 实现前生效）**：① r3881991523 方向键选楼断言 → §5-S5 / §6.1-门2；② r3881991516 触控断言路由（world-chromium 无触点、mobile-375 不匹配本 spec）→ §5-S8 / §4 文件域；③ r3881991528 默认态「逐像素一致」与 header 切换钮可见的矛盾消解（改口径：恒等主张收窄 + 可见增量登记在案）→ §3.2 / §5-S6 / §6.1-门5。
+- **修订（2026-08-28，Codex 合前审 P2 落板）**：r3882091609——S8 默认路线补 `baseURL` 保真：`browser.newContext()` 手建 context **不继承** Playwright Test 的 `use.baseURL`，而 world specs 用 `u('/')` 导航、只产出根相对路径 `/website/`（`e2e/helpers.ts` 实测，baseURL 仅含 origin），缺 baseURL 时相对导航会**先于任何触控断言**报错。新口径：newContext 必须显式传入与 `playwright.config.ts` `use.baseURL` 同源的 `baseURL`（现成 `baseURL` fixture 直通，禁另写死），或改绝对 URL 导航，或走触控 project 备选（配置继承天然带 baseURL）。落点 = §5-S8 + §4 文件域 e2e 行。
 
 ---
 
@@ -83,7 +85,7 @@
 
 ### 3.2 为什么默认 OFF（三条法理）
 
-1. **归因隔离**：v1.5 合流当帧不改变任何既有可见面——面板默认外观与 v1 逐像素一致，CITY-NAV-01/02/03、visual 4 例、poster 全部零联动；若 v1.5 破门回退，删钮即净、零迁移成本（W-R5-2「归因隔离」的实现面表达）。
+1. **归因隔离（恒等主张精确化，Codex r3881991528 消解）**：旧表述「面板默认外观与 v1 逐像素一致」**撤回**——面板开态 header 新增「楼卡」切换钮（`aria-pressed=false`，§3.3 矩阵）在默认偏好下**必然可见**，开态面板做不到逐像素恒等，二者矛盾以**改口径**消解（保留 header 钮呈现；「默认态零新可见控件」备选被否——钮藏进 dock 内会造成「关着的东西装着自己的开关」死锁）。恒等主张收窄为：**poster / robot_idle / 面板关闭态逐像素恒等**（钮活在面板内部，面板 hidden 即零可见增量）；**面板开态 header 切换钮 = 登记在案的唯一可见增量**。零基线联动之所以仍成立：现行 visual 基线仅 VIS-01/02 两帧 reduced-motion 拦截态壳截图（`e2e/visual/world-visual.spec.ts` 唯二 `toHaveScreenshot`，本单实测），**不含任何面板开态帧**；CITY-NAV-01/02/03 为行为断言不截图，期望零改。**连锁义务**：若实现窗前基线族新增「面板开态」帧，该基线随 NAV-C1.5 PR 更新并单独归因（diff 应限 header 区域），§5-S6 同步改写。若 v1.5 破门回退，删钮即净、零迁移成本（W-R5-2「归因隔离」的实现面表达）。
 2. **面板信息密度与小屏预算**：62vmin 地图 board 是面板主位，默认再挂 12 卡会推面板逼近 78vh 上限（§2.2）；默认 OFF 让增强项只对主动选择者付高度成本。
 3. **「不分裂心智」的延伸**（U1）：默认形态维持 pin 单一导航面；楼卡是浏览增强，不是第二套默认导航。
 
@@ -109,7 +111,8 @@
 | 触碰 | `src/lab/world/ui/Minimap.ts` | dock 填充（卡列构建入 `ensurePanel()`）+ header 切换钮 + 偏好读写 + 样式追加；`teleportTo()` **零改动纯复用**。预估 +100–150 行（DriveFeedback 单件同量级下限） |
 | 触碰 | `src/lab/world/core/SessionTimeline.ts` | ux 族白名单 +1（`minimap-dock-toggle`），41→42 type / 10 族 |
 | 触碰 | `docs/spec/cyber-city-observability.md` | §3.4 随行加法一行 + 总数修订 |
-| 触碰 | `e2e/cyber-city-minimap.spec.ts` | 追加 CITY-NAV-04（§5 断言集）；既有 01/02/03 期望零改 |
+| 触碰 | `e2e/cyber-city-minimap.spec.ts` | 追加 CITY-NAV-04（§5 断言集）；S8 触控断言按 §5-S8 路由口径**在 spec 内显式建 touch context 且必传 `baseURL`**（默认路线，零 config 改动；手建 context 不继承 `use.baseURL`，`baseURL` fixture 直通——r3882091609）；既有 01/02/03 期望零改 |
+| 仅 S8 走「触控 project」备选路线才有 | `playwright.config.ts` | 新增触控 world project 并接入串行 dependencies 链（§5-S8 备选；默认路线不触碰本文件） |
 | 仅 v1.5c 才有 | `public/` 楼卡缩略 webp ×12 + 批拍工序 | **默认不做**（U3；触发即背 §6-R3 全部连锁义务） |
 | **禁入** | `src/lab/world/view/View.ts`、`view/CameraShots.ts`、`src/data/camera-shots.json`、`inputs/`（Pointer/Keyboard/Nipple/RayCursor）、city 几何、`physics/`、`world/Respawns.ts`、`areas/PoiArrival.ts`（`cancel()` 已在 #166 落好，零再改）、壳 `src/pages/index.astro`、`world/Reveal.ts`（不新增键位则 HINT_TEXT 零改） | 出现任何此列 diff = 越权，审计即卡门 |
 
@@ -125,10 +128,10 @@
 | S2 | 开关闭环：点切换钮 → dock 可见且楼卡数 = buildings JSON 楼数（12，读 JSON 断言勿写死亦可）→ 再点关；`minimap-dock-toggle {on}` 入 `__worldSession.dump()` 白名单且 seq 有序 | 交互 + OBS 合同 |
 | S3 | 偏好持久：开 dock → reload + 重进 driving → 开面板 dock 即开；清 localStorage 回落 OFF | 跨会话记忆 |
 | S4 | 楼卡 = pin 同语义：卡点击 → `__worldSpike.state()` x/z 距目标 parkingBay ≤ radius + `minimap-teleport {id}` 入 dump + 面板关 + E → `world-poi:{id}` 路由链照常（CITY-NAV-01 A4 同构，零新传送事件） | 遥测 + 埋点 seq 序 |
-| S5 | 键盘可达：Tab 可达切换钮与各卡（原生 button）、Enter 激活 = 点击同语义；卡 `aria-label` = 楼名 · role | 焦点断言 |
-| S6 | 恒等门：robot_idle 按 M 零反应/零面板 DOM（A5 继承）+ `e2e/visual` 4 例基线不动 + poster 逐字节恒等 | 恒等回归 |
+| S5 | 键盘可达 = **Tab + 方向键双通道**（R5 §D 门 2 明文「Tab/方向键选楼」，Codex r3881991523 补洞）：Tab 可达切换钮与卡列、Enter 激活 = 点击同语义；**方向键选楼**——焦点在卡上时 ←/→ 在 12 卡间移焦、Home/End 首尾直达（断言实按 ArrowRight/ArrowLeft 后 `toBeFocused` 落相邻卡）。实现口径：建议 roving tabindex（卡列整体单 Tab 停靠点，免 12 连 Tab 稀释）；**←/→ 同时是驾驶转向键**（`Player.ts` 实测 `Keyboard.ArrowLeft/Right` 入 driving 绑定）——焦点在卡列内时方向键须由面板 capture 段吞掉（#166 对焦点在面板内 Enter 的 stopPropagation 先例同构，§6.3-R7），焦点在面板外驾驶照常；方向键为控件内焦点移动、非全局新键位，M/Esc 键位面与 HINT_TEXT 仍零改（§3.1 口径不破）；卡 `aria-label` = 楼名 · role | 焦点断言（含方向键实按） |
+| S6 | 恒等门（§3.2 精确化口径）：robot_idle 按 M 零反应/零面板 DOM（A5 继承）+ 现行 `e2e/visual` 基线不动（VIS-01/02 拦截态壳帧，不含面板开态）+ poster 逐字节恒等；**面板开态不主张逐像素恒等**——header 切换钮 = 登记在案的唯一可见增量（若届时基线族已含面板开态帧，则按 §3.2 连锁义务随 PR 更新该基线并单独归因） | 恒等回归 |
 | S7 | reduced-motion：dock 展开/收起直切（零 transition 等待即达终态） | emulateMedia |
-| S8 | 触屏（mobile project）：dock 横滑可滚、卡点按传送、卡热区 ≥44px | 触屏等价 |
+| S8 | 触屏：dock 横滑可滚、卡点按传送、卡热区 ≥44px。**路由口径（Codex r3881991516 补洞，禁假定既有 project 覆盖）**：`playwright.config.ts` 实测 world-chromium = Desktop Chrome 无触点（96–103 行）、mobile-375 只匹配 `mobile.spec.ts`（66–72 行），本 spec 天然跑不进任何触控项目。**默认路线** = 在 `cyber-city-minimap.spec.ts` 内显式 `browser.newContext({ hasTouch: true, isMobile: true, viewport: 375×667, baseURL })` 建触控 context 跑 S8，其中 **`baseURL` 必传**（Codex r3882091609 补洞：手建 context **不继承** `use.baseURL`，world specs 的 `u('/')` 只产出根相对路径 `/website/`，缺 baseURL 时相对导航先于任何触控断言报错；取值直通测试入参 fixture——`async ({ browser, baseURL }) =>`——与 `playwright.config.ts` `use.baseURL`（`http://127.0.0.1:$E2E_PORT`）同源单源，禁另写死端口；不便传 fixture 时改绝对 URL 导航等价）（留在 world-chromium 串行链内、零 config 改动、不破 3D 独占纪律）；**备选** = 新增触控 world project 接入串行 dependencies 链（project 走配置继承、天然带 `use.baseURL`；须把 `playwright.config.ts` 纳入 §4 文件域） | 触屏等价（显式 touch context） |
 | S9 | 既有回归：CITY-NAV-01/02/03 期望零改；全量 0 failed / 0 skipped / 0 flaky（现行全量口径单源 `cyber-city-test-framework.md`；全量窗按登记空档执行） | 恒等门 |
 
 ---
@@ -140,10 +143,10 @@
 | 门 | 缩略条落点 |
 |----|-----------|
 | 1 e2e 全量 0/0/0 + 新增最低集 | §5 S1–S9 即为本件最低集；全量窗互斥硬令照抄（R1 §3.5） |
-| 2 无障碍 | 切换钮 `aria-pressed` + 可聚焦；卡 = 原生 button（Enter/Space 免费）+ `aria-label`；焦点还原继承面板既有合同；键盘全等价（S5） |
+| 2 无障碍 | 切换钮 `aria-pressed` + 可聚焦；卡 = 原生 button（Enter/Space 免费）+ `aria-label`；焦点还原继承面板既有合同；键盘全等价 = **Tab + 方向键选楼双通道**（S5：←/→ 卡间移焦 + Home/End，roving tabindex；R5 原文口径） |
 | 3 reduced-motion | dock 展开直切（S7）；**禁横滑自动轮播/scroll-behavior:smooth 类持续动效** |
 | 4 autoplay 政策 | 不涉及——本件零音频面，零 AudioContext 交互（声明即合规） |
-| 5 poster / 恒等 | 懒初始化 + 双态 hidden 全继承（§3.3）；v1.5a/b 零像素资产；v1.5c 才有批拍且**禁动既有像素基线**（U4） |
+| 5 poster / 恒等 | 懒初始化 + 双态 hidden 全继承（§3.3）；v1.5a/b 零像素资产；恒等边界 = §3.2 精确化口径（poster/关态恒等；**开态 header 增钮为登记在案可见增量、不主张开态逐像素恒等**）；v1.5c 才有批拍且**禁动既有像素基线**（U4） |
 | 6 LHCI + 体积 | v1.5a/b 零资产零新请求（样式随 world 分包内联注入，壳静态段零字节）；`/`、`/home/` 渲染路径零涉及；v1.5c 12×webp 体积入账**前置审** |
 
 ### 6.2 禁项八条逐条声明
