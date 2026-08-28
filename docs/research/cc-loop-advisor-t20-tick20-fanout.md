@@ -149,6 +149,37 @@ main 前进不影响在飞实验：`/tmp/env-wt` 是独立 worktree 钉在 `5e41
 
 ---
 
+## P.S. 终局速报（@06:02 UTC，交付后追加取证——正文为 05:50–05:55 快照，本节四处覆盖）
+
+**run1 于本文提交后数分钟自然收轮，终局落袋；以下按新证覆盖正文对应条目，其余裁决不变。**
+
+### P.S.1 run1 终局（覆盖 §1.2 阈值阶梯——整梯 moot，零杀点预言兑现）
+
+- **三证合一已落袋**：`RUN1_EXIT=0` tee 尾行 + `e2e-results.json` stats `readFileSync` 实读 = **`{expected:1, unexpected:0, skipped:0, flaky:0}`** + 用例级 `passed 1179s`；startTime 05:38:05.066Z，duration **1,180.8s（19.7min）**，自然退出 ≈05:57:46；
+- **登记口径照 T19 §2.1 既定裁决**：「污染跑道 ✓ · 对抗性负载下的鼓励性诊断」，**不计 ×2 趟**（假 ✓ 机制在册，对称口径不因结果方向翻案）；污染窗精化 = 05:40:19–05:53（残波被切时点），末段 ~5min 实为放空跑道；
+- 情报价值：对抗负载下全剧本五腿走通（②驾驶 +1 至 05:51、③去重 + ⑤reload 持久还原在 05:51–05:57 内完成）——#129 改线 + 桩排减深的先验**再抬一格**，与 §2.1 叉 A 判读一致。
+
+### P.S.2 残波终局更正（覆盖 F3/F4 部分内容）
+
+- `/tmp/exp01-rerun.log` 尾行 `EXP01_EXIT=0` 是 **tee 管道假信号**（`$?` 取管道末命令 tee 的退出码，非 playwright）；
+- 实际终局 = **~05:53 被 SIGINT 中断**：error-context 签名「`Channel closed` / `Target page, context or browser has been closed`」+ 18KB 截断 trace.zip + **无 e2e-results.json**——**中断非判败**，信息价值维持 ≈0（T19 F2 定性不变）；失败保留件目录 + 残波 log 列入归档必收件。
+
+### P.S.3 清场令执行位更正（覆盖 F4「零执行」与 §1.1 追账口径）
+
+- **部分执行实锤**（~05:53 窗）：残波 C-c ✓（中断签名互证）、孤儿 preview 46251 已亡 ✓、`env-exp01-run1` 会话随收轮自灭 ✓；
+- **残余五项未清**：`kill 12388`（port 4475）、`main-preview`（port 4610，F5 增补）、`x2-triage-verify`/`fxn-codex-preview`/`plug-preview`/`plug-build`/`x2-e2e` 会话留痕收割；
+- 追账口径从「拖欠 1 tick 零执行」改为「**迟到半 tick、部分执行、残余五项**」，交秘书线照实登记。
+
+### P.S.4 即时动作单（收割窗现在打开，覆盖 §3.1 序 2/3 的时点）
+
+1. **增量归档（先于一切）**：`/tmp/env-wt/test-results`（e2e-results.json + 两张 discover 截图 + traces）+ `/tmp/env-exp01-run1.log` + 残波三件（error-context / trace.zip / exp01-rerun.log）拷入 `/tmp/evidence-exp01/`——run1' 会清写 test-results；
+2. **残余清场**（P.S.3 五项，~2min）；
+3. **真空三查**：chrome 零存活 ✓（06:00 实测）、load 1min **0.22** ✓（已达标，无需等沉降）、preview 项待步 2 清后即 ✓；
+4. **放行 run1'**（窗口 ~06:05–06:10）：log `env-exp01-run1b.log`，ENV 传话包照 §3.1-3；run2 顺延 ~06:30±；
+5. **时刻表回拉**：✓✓ 则签字 + #129 合流窗提前回 **Tick#22**；全量开闸窗从 Tick#23–#25 回拉 **Tick#22–#24**（T19 原估恢复）；#103/#135 清账（§4）不受影响、照旧本 tick 执行。
+
+---
+
 ## 登记矩阵四行（看板单源，照抄不改口径）
 
 北极星 **98 / 98 / 90 / 85** vs 生产登记 **80 / 71 / 84 / —**（综合/视觉/功能/性能）；性能未登记显式 **—**，解锁条件 = 真机 human-gate 六腿 → AL-PERF。
