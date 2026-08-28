@@ -42,7 +42,7 @@
 | 代理 | 链接 | 状态 | 最新已知 |
 |------|------|------|----------|
 | MERGE-WAVE | [bc-964f16a5](https://cursor.com/agents/bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) | RUNNING | **6/8** 已合；续 #102→**#101** |
-| R9 L7 登记 | [bc-558d537c](https://cursor.com/agents/bc-558d537c-022c-5eaf-bb8c-f79dbf7cc395) | RUNNING | #103 draft；tip **`03a6fc3`**（R9F 环境腿 + L7 开工）；登记 JSON 待 push |
+| R9 L7 登记 | [bc-558d537c](https://cursor.com/agents/bc-558d537c-022c-5eaf-bb8c-f79dbf7cc395) | ✅ **IDLE 完成** | [#103](https://github.com/rayw-lab/website/pull/103) **ready** @ `c4e844c`；登记 **87**（Pass B，云端封顶合规） |
 | S2 指挥官 kit | [bc-4e331c92](https://cursor.com/agents/bc-4e331c92-5ce4-5035-aa50-8619f9d4c4ee) | ✅ DONE | [#108](https://github.com/rayw-lab/website/pull/108) @ `4d5f9d6` |
 | Desktop 编排 | [bc-6134eb35](https://cursor.com/agents/bc-6134eb35-a319-4d11-96ee-cd6adff3e859) | RUNNING | 不占 async new-VM 槽 |
 
@@ -58,7 +58,7 @@
 |------|------|--------|------|
 | 综合 | 80 | 98 | doc 堆合流后秘书需刷新 |
 | 视觉 | 73 | 98 | #98 顾问已进 main，登记 JSON 未重签 |
-| 功能 | 84 | 90 | #103 R9 目标 87–88；90 需指挥官 S-2 |
+| 功能 | **87**（#103 分支，未合 main） | 90 | R9 登记；main 仍 84 直至 #103 合流 |
 | 性能 | — | 85 | 真机六腿 → AL-PERF |
 
 ## 6. 指挥官真机（零 VM）
@@ -79,11 +79,11 @@ artifacts 落 `docs/spec/assets/human-gate/` 后 → 派 **AL-R10** / **AL-PERF*
 3. 合 doc 堆余下若未完成：#100 #97 #96 #102（MERGE-WAVE 应已处理）
 4. **秘书 post-merge 刷新**看板 `cyber-city-score-loop-orchestration.md`
 
-### B. R9 #103 收口后
+### B. R9 #103 — ✅ 已 ready，待合流
 
-1. 确认 `cyber-city-function-rubric-score.json` 登记 **87–88**
-2. `gh pr ready` #103 → 按审计序合流（**晚于** doc 堆，勿抢在 #101 前 unless 审计明确）
-3. 解锁 AL-R10（需 #103 + S-2 三件套）
+1. ~~L7 + 登记 JSON~~ → **done**：`c4e844c`，`cyber-city-function-rubric-score.json` **score=87**
+2. **合流时机**：doc 堆 MERGE-WAVE 收尾（#102→#101）后，或按审计指定序；**勿与 #101 抢序除非审计明确**
+3. 合 #103 后 main 功能登记升至 **87**；**90 仍须指挥官 S-2 真机** → AL-R10
 
 ### C. 槽空滚动派单（≤3 async new-VM）
 
@@ -100,11 +100,11 @@ artifacts 落 `docs/spec/assets/human-gate/` 后 → 派 **AL-R10** / **AL-PERF*
 
 | 子代理 | 完成？ | 回填 |
 |--------|--------|------|
-| MERGE-WAVE | ⏳ RUNNING 6/8 | main `d73784b`；#96 ✅；待 #102 **#101** |
-| R9 | ⏳ RUNNING | #103 draft tip `03a6fc3`（L7+登记未完成）；[bc-558d537c](https://cursor.com/agents/bc-558d537c-022c-5eaf-bb8c-f79dbf7cc395) 未 IDLE |
+| MERGE-WAVE | ⏳ RUNNING 6/8 | main `d73784b`；待 #102 **#101** |
+| R9 | ✅ **IDLE** | [#103 ready](https://github.com/rayw-lab/website/pull/103) @ `c4e844c`；登记 **87**（Pass B 87 / Pass A 86） |
 | S2 | ✅ IDLE | [#108](https://github.com/rayw-lab/website/pull/108) @ `4d5f9d6` |
 
-**tick 结论**：#101 未合 → **暂不派 X2 rebase**；父代理不 fan-out，续盯 MERGE-WAVE / R9。
+**tick 结论（02:15）**：R9 收口完成；#101 仍 OPEN → X2 rebase 仍等待；#103 可排进合流队列（建议 MERGE-WAVE 完 #101 后审序合 #103）。
 
 ---
 
