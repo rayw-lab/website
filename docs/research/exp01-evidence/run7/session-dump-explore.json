@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 1,
+  "sessionId": "9e518b2d-18eb-48d6-8eb7-df3bf44148d6",
+  "startedAt": "2026-08-28T08:28:32.168Z",
+  "env": {
+    "backend": "webgl2",
+    "vehicle": "physics",
+    "quality": 0,
+    "reducedMotion": false,
+    "dpr": 1,
+    "touch": false,
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    }
+  },
+  "events": [
+    {
+      "seq": 1,
+      "t": 0,
+      "type": "mount"
+    },
+    {
+      "seq": 2,
+      "t": 4492,
+      "type": "deep-link",
+      "data": {
+        "poi": "autodrive-lab"
+      }
+    },
+    {
+      "seq": 3,
+      "t": 7537,
+      "type": "ready"
+    },
+    {
+      "seq": 4,
+      "t": 21850,
+      "type": "world-quest",
+      "data": {
+        "action": "shown",
+        "step": 1,
+        "targetId": "concept-garage",
+        "elapsedMs": 11
+      }
+    },
+    {
+      "seq": 5,
+      "t": 21857,
+      "type": "poi-bounding-in",
+      "data": {
+        "id": "autodrive-lab"
+      }
+    },
+    {
+      "seq": 6,
+      "t": 21858,
+      "type": "explore-progress",
+      "data": {
+        "id": "autodrive-lab",
+        "n": 1,
+        "total": 12
+      }
+    },
+    {
+      "seq": 7,
+      "t": 123861,
+      "type": "poi-bounding-out",
+      "data": {
+        "id": "autodrive-lab"
+      }
+    },
+    {
+      "seq": 8,
+      "t": 134515,
+      "type": "poi-bounding-in",
+      "data": {
+        "id": "autodrive-lab"
+      }
+    },
+    {
+      "seq": 9,
+      "t": 173867,
+      "type": "poi-bounding-out",
+      "data": {
+        "id": "autodrive-lab"
+      }
+    },
+    {
+      "seq": 10,
+      "t": 304243,
+      "type": "world-speedtrap",
+      "data": {
+        "kmh": 40,
+        "isRecord": true
+      }
+    },
+    {
+      "seq": 11,
+      "t": 655143,
+      "type": "poi-bounding-in",
+      "data": {
+        "id": "agent-nexus"
+      }
+    },
+    {
+      "seq": 12,
+      "t": 655144,
+      "type": "explore-progress",
+      "data": {
+        "id": "agent-nexus",
+        "n": 2,
+        "total": 12
+      }
+    },
+    {
+      "seq": 13,
+      "t": 655145,
+      "type": "world-quest",
+      "data": {
+        "action": "reached",
+        "step": 3,
+        "targetId": "agent-nexus",
+        "elapsedMs": 633306
+      }
+    },
+    {
+      "seq": 14,
+      "t": 695297,
+      "type": "poi-bounding-out",
+      "data": {
+        "id": "agent-nexus"
+      }
+    },
+    {
+      "seq": 15,
+      "t": 805254,
+      "type": "cone-hit",
+      "data": {
+        "total": 1
+      }
+    },
+    {
+      "seq": 16,
+      "t": 826080,
+      "type": "cone-hit",
+      "data": {
+        "total": 5
+      }
+    },
+    {
+      "seq": 17,
+      "t": 836653,
+      "type": "cone-hit",
+      "data": {
+        "total": 13
+      }
+    },
+    {
+      "seq": 18,
+      "t": 847181,
+      "type": "cone-hit",
+      "data": {
+        "total": 21
+      }
+    },
+    {
+      "seq": 19,
+      "t": 857706,
+      "type": "cone-hit",
+      "data": {
+        "total": 29
+      }
+    },
+    {
+      "seq": 20,
+      "t": 868146,
+      "type": "cone-hit",
+      "data": {
+        "total": 33
+      }
+    },
+    {
+      "seq": 21,
+      "t": 963992,
+      "type": "poi-bounding-in",
+      "data": {
+        "id": "agent-nexus"
+      }
+    }
+  ],
+  "dropped": 0,
+  "counters": {
+    "respawns": 0,
+    "coneHits": 33,
+    "poiEnters": 4,
+    "poiInteracts": 0,
+    "transforms": 0,
+    "driveViewToggles": 0,
+    "longFrames": 665
+  },
+  "funnel": {
+    "reveal": null,
+    "robotIdle": null,
+    "transformStart": null,
+    "carReady": null,
+    "driveStart": null,
+    "firstPoiIn": 21857,
+    "firstPoiInteract": null
+  }
+}

@@ -1,0 +1,20 @@
+run5 ignition 2026-08-28T07:46:27Z
+
+Running 1 test using 1 worker
+
+(node:3210) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3210) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [world-chromium] › e2e/cyber-city-explore.spec.ts:280:3 › 科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 project） › CITY-EXP-01 探索计数闭环：深链发现 → 驾驶 +1 → 重复进圈去重 → reload 持久还原（埋点互证） (17.6m)
+
+  Slow test file: [world-chromium] › e2e/cyber-city-explore.spec.ts (17.6m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 passed (17.6m)
+
+To open last HTML report run:
+
+  pnpm exec playwright show-report
+
+EXIT=0
+run5 finished 2026-08-28T08:04:06Z

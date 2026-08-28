@@ -1,0 +1,4 @@
+e2e-results.json 灭失前提取的判定行（α VM 收轮归档步 node 提取，会话誊本逐字）：
+
+{"startTime":"2026-08-28T07:46:28.286Z","duration":1058582.928,"expected":1,"skipped":0,"unexpected":0,"flaky":0}
+CITY-EXP-01 探索计数闭环：深链发现 → 驾驶 +1 → 重复进圈去重 → reload 持久还原（埋点互证） | ok= true | duration(ms)= 1056445 | status= passed

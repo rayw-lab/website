@@ -1,0 +1,9 @@
+IGNITION-run5 v3 · Board R3 #151 · parent @2026-08-28T08:11:25Z
+host_fingerprint: cursor-44cb5599-cursor
+07:49 版作废（标的跨VM跑道灭失）；本 v3 同机强制令生效
+RATIFY in-flight: vacuum-run5 PASS @2026-08-28T08:03:22Z + CITY-EXP-01 wrapper PID 101645 已在指挥官 VM 起飞——按 R3 §A 窗不中止，本签追认该趟为合法同机决定趟 run5
+tip=49a5d6a FROZEN
+硬闭点: 2026-08-28T09:08:22Z（起飞+65min）与 RUN5_EXIT 取先
+PASS→归档 run5-decisive/ + 三证上链 #129 后独立复核才计 ×2 leg1
+FAIL→run5-fail/ 停；禁自动 run6
+Forbidden: fps-probe；换将²；跨VM文书

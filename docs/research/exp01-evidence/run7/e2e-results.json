@@ -1,0 +1,250 @@
+{
+  "config": {
+    "argv": [
+      "/exec-daemon/node",
+      "/tmp/env-wt/node_modules/@playwright/test/cli.js",
+      "test",
+      "cyber-city-explore.spec.ts",
+      "--project=world-chromium",
+      "--no-deps",
+      "--grep",
+      "CITY-EXP-01"
+    ],
+    "configFile": "/tmp/env-wt/playwright.config.ts",
+    "rootDir": "/tmp/env-wt/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/tmp/env-wt/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "desktop-chromium",
+        "name": "desktop-chromium",
+        "testDir": "/tmp/env-wt/e2e",
+        "testIgnore": [
+          "/mobile\\.spec\\.ts|world-spike.*\\.spec\\.ts|cyber-city.*\\.spec\\.ts|car-configurator\\.spec\\.ts|visual[\\\\/].*\\.spec\\.ts/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/tmp/env-wt/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile-375",
+        "name": "mobile-375",
+        "testDir": "/tmp/env-wt/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/mobile\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/tmp/env-wt/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "car-chromium",
+        "name": "car-chromium",
+        "testDir": "/tmp/env-wt/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/car-configurator\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/tmp/env-wt/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "world-chromium",
+        "name": "world-chromium",
+        "testDir": "/tmp/env-wt/e2e",
+        "testIgnore": [
+          "/cyber-city-perf\\.spec\\.ts/"
+        ],
+        "testMatch": [
+          "/world-spike\\.spec\\.ts|cyber-city.*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/tmp/env-wt/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "world-perf-chromium",
+        "name": "world-perf-chromium",
+        "testDir": "/tmp/env-wt/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/world-spike-perf\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/tmp/env-wt/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "city-perf-chromium",
+        "name": "city-perf-chromium",
+        "testDir": "/tmp/env-wt/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/cyber-city-perf\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/tmp/env-wt/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "visual-chromium",
+        "name": "visual-chromium",
+        "testDir": "/tmp/env-wt/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/visual[\\\\/].*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/e2e-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 2,
+    "webServer": {
+      "command": "pnpm preview --host 127.0.0.1 --port 4620",
+      "url": "http://127.0.0.1:4620/website/",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "cyber-city-explore.spec.ts",
+      "file": "cyber-city-explore.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 project）",
+          "file": "cyber-city-explore.spec.ts",
+          "line": 269,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-EXP-01 探索计数闭环：深链发现 → 驾驶 +1 → 重复进圈去重 → reload 持久还原（埋点互证）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 3300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1052189,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-28T08:28:30.087Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "session-dump-explore.json",
+                          "contentType": "application/json",
+                          "path": "/tmp/env-wt/test-results/cyber-city-explore-科技城探索计数-5ab23--重复进圈去重-→-reload-持久还原（埋点互证）-world-chromium/attachments/session-dump-explore-json-9e84bf19a1e5b5c1b45319b0e9cdfa4a833f7579.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1527a5917c0110d10612-fa9cf716274348a62891",
+              "file": "cyber-city-explore.spec.ts",
+              "line": 285,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-28T08:28:28.579Z",
+    "duration": 1053898.202,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
