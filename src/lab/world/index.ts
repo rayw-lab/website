@@ -41,6 +41,7 @@ import type { QualityLevel } from './core/Quality';
 import type { SessionDump } from './core/SessionTimeline';
 import { Game } from './core/Game';
 import { DriveFeedback } from './world/DriveFeedback';
+import { WorldAudio } from './audio/WorldAudio';
 import { FpsMeter } from './utils/FpsMeter';
 
 export interface WorldSpikeInstance extends LabInstance {
@@ -207,6 +208,12 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   // 循环动画配额零占用）；埋点零新增——本层只是 OBS-C1 既有事件的呈现面。
   const driveFeedback = new DriveFeedback(game, { stage, speedEl: hudSpeed });
 
+  // ————— [CC-AUD-C1] 驾驶五事件合成音效层（董事会 R5 §B；G3 合成主路径 v0+v1）—————
+  // 加速/巡航引擎哼鸣 + 刹车打滑 + 撞击 + 变形四拍全在 WorldAudio 内自行订阅
+  // （transformSystem/brake/world-drive-view）；撞击沿复用下方 HUD 节拍的既有
+  // 碰撞检测点（cone-hit 同源同拍）。首手势解锁 + 静音钮持久，`/` 首包零音频字节。
+  const worldAudio = new WorldAudio(game, { stage, transform: transformSystem });
+
   // ② respawn toast：reason ∈ key/fall/unstuck 时呈现（R 键/坠落兜底两来路；
   // null = 装配对齐/Game.reset 软复位，不出提示）。壳复位按钮走合成 KeyR，同路
   game.player.events.on('respawn', (_respawn: unknown, reason?: RespawnReason | null) => {
@@ -372,6 +379,7 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       if (collisionTotal > lastCollisionTotal) {
         game.session.log('cone-hit', { total: collisionTotal });
         driveFeedback.collisionPulse(collisionTotal);
+        worldAudio.impact(); // [CC-AUD-C1] 撞击 thump（同源同拍，强度随当前速度）
       }
       lastCollisionTotal = collisionTotal;
 
@@ -511,6 +519,7 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
     dispose() {
       debugPanel?.dispose();
       debugPanel = null;
+      worldAudio.dispose();
       driveFeedback.dispose();
       minimap?.dispose();
       minimap = null;
