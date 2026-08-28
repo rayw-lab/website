@@ -137,6 +137,16 @@ skipped 4 = EXP-02（EXP-01 连坐）+ OBS-04/05/06（OBS-03 连坐）
 ```
 
 - **W3' 排队实录**：21:31 nav-c1 抢窗（city-perf 短单）→ 21:40 nav-c1 续窗（playwright worker）→ 21:53 nav-c1 于新 worktree `nav-c1-main-wt` 再起 city-perf（疑似 main 树 PERF 对照单），R3 继续禁杀排队；**22:05 跑道空**（零 playwright、load 0.11），W3' 开跑登记：`E2E_PORT=4535`、尾链三 project 7 例 `--workers=1`、预计 ~25 min、bind 探针 + 核验②同剧本。
+- **W3' 终局（22:06:16–22:19:55Z，墙钟 13.6 min，EXIT=1）**：
+
+```
+7 例 = expected 5 / unexpected 2 / skipped 0 / flaky 0（json 已归档 /tmp/aud-c1-run/archive-w3/）
+✓ WS-PERF-01 + VIS-01/02/03/04（含基线比对全过）
+✘ CITY-PERF-01/02 —— locator('[data-ws-fps]') 等待 30s 超时（与 §8.4 同签名）
+```
+
+　PERF 前提 R3 自证：`rg data-ws-fps` 集成树 dist/index.html **零匹配**、src 全域唯一命中 = `src/pages/world-spike/index.astro`——城市页 `/` 无该元素，`cyber-city-perf-test-plan.md` §1「HUD 在 `/` 已挂」前提失实**独立复核成立**（§8.4 采信，恒红非 #164、非挤兑）。
+- **W4' 开跑登记（22:22 UTC）**：obs 反连坐短单——`playwright test e2e/cyber-city-observability.spec.ts --project=world-chromium --no-deps --workers=1 --grep-invert "CITY-OBS-03"`（6 例，`E2E_PORT=4536`，预计 ~20 min），目的 = 以 R3 自跑闭 OBS-01b/02/04/05/06 逐例账（R1/W2' 两轮均连坐未测 OBS-04/05/06）。跑道 22:22 复查空（load 0.52 零 playwright）。
 - **R3 归因终判（R1×W2' 交叉 + §8 对照）**：① **挤兑归因成立面** = FB-01…09 / HINT-01 / OBS-01（R1 双 worker 挂 → W2' 串行绿，与 §8 W2 一致）；② **漂移归因修正面** = EXP-01 / QST-02（本窗串行**仍挂**，签名与 R2 W1/我 R1 同型——坐标差 0.3–1.8 单位/设计秒未积满：SwiftShader ~1-5fps 下驾驶腿/设计秒断言呈**跨窗时序漂移**，串行化能降概率不能归零；§8「串行全绿=挤兑定谳」单因结论**不成立**，两窗互证=同例同配置异结果即漂移实证）；③ **OBS-03 环境级确定性红**（54s 快败 + 签名与 §8.3 双发探针结论吻合，独立复现采信其反事实：#164 前 main 同败 → 非 #164 回归）；④ 全窗 CITY-AUD-01（审计对象本体）R1 全量随跑 ✓ + R1 单测 ✓（§4.1）——**#164 零回归结论在两轮三窗中稳定**。
 
 ## 5. LHCI（同 SHA CI artifact 回填，来源登记）
