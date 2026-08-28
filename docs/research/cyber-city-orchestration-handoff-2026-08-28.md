@@ -33,7 +33,7 @@
 
 | 代理 | 状态 | 回填 |
 |------|------|------|
-| MERGE-WAVE [bc-964f16a5](https://cursor.com/agents/bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) | 待 IDLE | **8/8**；final main **`88097f9`** |
+| MERGE-WAVE [bc-964f16a5](https://cursor.com/agents/bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) | ✅ **IDLE 完成** | **8/8** squash；final main **`88097f9`**；每步 CI+Deploy 双绿 |
 | R9 [bc-558d537c](https://cursor.com/agents/bc-558d537c-022c-5eaf-bb8c-f79dbf7cc395) | ✅ IDLE | #103 ready；Codex 待补 |
 | S2 [bc-4e331c92](https://cursor.com/agents/bc-4e331c92-5ce4-5035-aa50-8619f9d4c4ee) | ✅ IDLE | #108 |
 
