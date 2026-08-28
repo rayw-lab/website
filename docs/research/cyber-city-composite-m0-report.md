@@ -54,11 +54,19 @@ COMPOSITE_SCORE=⏳
 | 墙钟 | ⏳ |
 | smoke3d 逐例 | ⏳ |
 
-**在跑中已落定的一例红（如实登记，不掩盖）**：
+**在跑中已落定的红例（如实登记，不掩盖；根因证据见下）**：
 
-- **CITY-EXP-01**（`cyber-city-explore.spec.ts:252`，world-chromium，探索计数闭环）**FAIL @ 14.6m**：断言 `泊车位 (-28,-28) 应可达（实测 x=17.6 z=-22.5）`——驾驶腿在预算内未抵达目标泊车位。初诊：SwiftShader ~1fps 软渲染下脚本驾驶推进不足的**环境敏感型失败**（world 链内 workers=2 存在跨文件并发 3D 上下文挤兑窗口；本地 `retries=0` 无自动重试）。
-- **连坐**：同 describe 块 `mode: 'serial'` → **CITY-EXP-02 被跳过**（skipped 不计入 score-loop 分母，未执行 ≠ 失败）。
-- 口径注记：composite-98-RS §3.3 曾明示「CAR-E2E 修后 clean 全量绿**尚无在档实证**」——本轮即为该实证的首次尝试，红例如实入分；收尾后对该例做**单跑复诊**（整机空闲态）以判定可复现性，复诊结果只作诊断佐证、不改本轮计分 JSON。
+| 用例 | 墙钟 | 失败面 |
+|------|------|--------|
+| CITY-EXP-01（explore 闭环） | 14.6m | 断言 `泊车位 (-28,-28) 应可达（实测 x=17.6 z=-22.5）`——驾驶腿预算内未达 |
+| CITY-QST-02（恒等门 + idle nudge） | 23.1m | 驾驶/空闲长例墙钟型失败 |
+| CITY-FB-01…09（反馈全链） | 15.2m | 同上 |
+| CITY-HINT-01（键位卡全链） | 10.1m | 同上 |
+
+- **serial 连坐跳过**：CITY-EXP-02、CITY-FB-05、CITY-FB-06（skipped 不计入 score-loop 分母，未执行 ≠ 失败）。
+- **根因实锤（运行中取证，2026-08-28 01:22 UTC）**：4 核 VM `loadavg 7.0`，`ps` 捕获**两个** `chrome-headless-shell --type=gpu-process --use-angle=swiftshader-webgl` 并存、各吃 **~196% CPU**——即两个 3D 世界（explore 与 feedback 文件）**同时**在软渲染驾驶。结构洞：`playwright.config.ts` 中 `car-chromium`/`city-perf-chromium`/`visual-chromium` 均钉了 `fullyParallel: false`，**world-chromium 没有**——顶层 `fullyParallel: true` + `workers: 2` 允许 world 链**跨文件并发**，「任意时刻至多一个重 3D 上下文」纪律在 project 内部失守。文件内 serial 只锁文件内顺序，锁不住跨文件。
+- **历史对照**：L0 时代 world 用例短（52 例全量 18.4 min），并发窗口伤害小；FXN C1–C6 引入 7 min 级驾驶长例（describe `timeout: 420_000`）后，两长例对撞即互相饿死。composite-98-RS §3.3「修后 clean 全量绿尚无在档实证」的欠账，本轮兑现为**首次在档实证：不绿**。
+- **处置口径（M0 红线：不改 e2e/不改秤）**：本全量跑照常收尾作为当轮官方记录，红例如实入分；收尾后对失败 spec 做 `--workers=1` **整机独占复诊**（只作可复现性诊断佐证，不改官方计分 JSON）；`world-chromium` 补 `fullyParallel: false` 的一行修复**移交后续任务**（本轮 doc-only 禁改）。
 
 ## 3. LHCI（双源口径：本 VM 已知 null → 同 SHA CI artifact 计分）
 
