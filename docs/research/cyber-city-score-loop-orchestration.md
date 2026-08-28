@@ -1,6 +1,6 @@
 # Phase 0 提分 Loop 编排看板
 
-`main` @ `88097f9` · 2026-08-28 06:25 UTC · **提分 Loop Tick#22（董事会终裁窗口）** · 范式 `cyber-city-orchestration-paradigm.md` · 本单 = 董事会件（base = #140 head `502dfd8`，塌栈收编 #140/#135/#130/#125/#121 全世系）· PR 号开单后回填
+`main` @ `88097f9` · 2026-08-28 06:25 UTC · **提分 Loop Tick#22（董事会终裁窗口）** · 范式 `cyber-city-orchestration-paradigm.md` · 本单 = 董事会件（base = #140 head `502dfd8`，塌栈收编 #140/#135/#130/#125/#121 全世系）· 本单 PR [#143](https://github.com/rayw-lab/website/pull/143)
 
 > **董事会终裁生效（CC-LOOP-BOARD-ADVISOR-R1，指挥官 2026-08-28 授权）**：书面裁决 = 父代理与所有子代理必须执行的董事会决议，冲突时优先于顾问链 T* 与一切实现/审计单。全文见 `docs/research/cc-loop-board-advisor-r1.md`；要点见下「董事会终裁」节。#140 分支即刻冻结（禁再追加 commit）。
 
@@ -105,7 +105,7 @@
 | #19 | 顾问 T19（[#137](https://github.com/rayw-lab/website/pull/137)） | 交付（跑道双占实锤·run1 降级诊断 + 清场令 + 证据灭失#1 抢救归档 351M + ×2 重锚 run1'+run2 + 塌栈序修正 + 全量解锁六条） |
 | #20 | 顾问 T20（[#138](https://github.com/rayw-lab/website/pull/138)） | 交付（T18 三叉预案基线重写 + run1 零杀点阈值阶梯 + #103 第 8 次复读催办升级 + #135 塌栈就绪实证 + Tick#21 预排） |
 | #21 | SEC-P10（本单 [#140](https://github.com/rayw-lab/website/pull/140)，3n 看板界点，T20 §3.1-6 预排）+ 顾问 T21（[#139](https://github.com/rayw-lab/website/pull/139)） | **双双交付**：P10 → #140（⑰–㉜ 十六条补登全落）；T21 → #139（run1/run2 双诊断趟定谳 + ×2 重锚 run3/run4 + 灭失#2 抢救 + 互斥令立法 + 假 ✓ 实证 + Tick#22 动作单） |
-| #22 | **事后顾问 CC-LOOP-BOARD-ADVISOR-R1（董事会终裁，指挥官授权触发）** | 交付（本单，PR 号回填）：角色冲突终裁九行 + 即合序 ①#103 ②本单塌栈 ③存档波 + 探针窗硬闭 06:40 + fps-probe/ENV 并发永久禁令 + run3/run4 真空规程 + 顾问链节流（T22 起事件驱动 + 3n 保底）+ 矩阵口径终裁（视觉 73 单源）；run2 收轮实测 `RUN2_EXIT=0`（诊断趟口径维持） |
+| #22 | **事后顾问 CC-LOOP-BOARD-ADVISOR-R1（董事会终裁，指挥官授权触发）** | 交付（[#143](https://github.com/rayw-lab/website/pull/143)）：角色冲突终裁九行 + 即合序 ①#103 ②本单塌栈 ③存档波 + 探针窗硬闭 06:40 + fps-probe/ENV 并发永久禁令 + run3/run4 真空规程 + 顾问链节流（T22 起事件驱动 + 3n 保底）+ 矩阵口径终裁（视觉 73 单源）；run2 收轮实测 `RUN2_EXIT=0`（诊断趟口径维持） |
 
 ## MERGE-WAVE 8/8 合流记录（`771b1e4` → `88097f9`，每步 CI+Deploy 双绿）
 
@@ -155,7 +155,7 @@ X2 实现段已收轮：[#104](https://github.com/rayw-lab/website/pull/104) tip
 
 | PR | 状态 | 说明 |
 |----|------|------|
-| 本单（董事会件，PR 号回填） | draft → ready · **优先审 · 即合序 ②** | CC-LOOP-BOARD-ADVISOR-R1 董事会终裁 · base = #140 head `502dfd8` · **塌栈首选升级**：合本单即一步收编 #140/#135/#130/#125/#121 全世系 + 终裁落 main |
+| [#143](https://github.com/rayw-lab/website/pull/143)（董事会件，**本单**） | draft → ready · **优先审 · 即合序 ②** | CC-LOOP-BOARD-ADVISOR-R1 董事会终裁 · base = #140 head `502dfd8` · **塌栈首选升级**：合本单即一步收编 #140/#135/#130/#125/#121 全世系 + 终裁落 main |
 | [#140](https://github.com/rayw-lab/website/pull/140) | draft · **本单基底 · 分支冻结（禁追加 commit）** | SEC-P10 看板 Tick#21 刷新（基于 #135 head `5f801b7` 叠 ⑰–㉜ 十六条）· head `502dfd8` 为董事会件祖先，合董事会件后自动转 merged |
 | [#139](https://github.com/rayw-lab/website/pull/139) | draft | 顾问 T21：run1/run2 双诊断趟定谳 + ×2 重锚 run3/run4 + 证据灭失#2 抢救（540K）+ 跑道互斥令立法 + 假 ✓ 机制实证 + Tick#22 动作单 |
 | [#103](https://github.com/rayw-lab/website/pull/103) | **ready · 指挥官单独催办件（第 9 次复读）** | AL-FXN-R7 登记 87 · tip `1a4296f` · 审计 GO [#120](https://github.com/rayw-lab/website/pull/120) · CLEAN/MERGEABLE · 纯 docs 零跑道零交集 · 连续复读入执行力证据链（㉖） |
