@@ -1,0 +1,14 @@
+vacuum-run5 三查（点火前留痕） — CC-FXN-EXP01-ENV
+timestamp: 2026-08-28T07:46:11Z
+host: cursor（与父代理不同 VM，IGNITION 以任务单授权副本落档）
+worktree: /tmp/worktrees/exp01-run5 @ 49a5d6a4d2807b8e832decf3c8b9e6afd618e078
+方法: 脚本文件法（cmdline 无关键词明文，防 pgrep -f 自匹配；首次行内版因 echo 标签自匹配作废）
+
+① chrome 计数: chrome=0 chrome-headless(15字符截断)=0 headless_shell=0  => PASS
+② load1=0.14（阈值 <2）  => PASS
+③ astro 计数=0；端口 LISTEN 4321=0 4620=0  => PASS
+附查 fps-probe 计数=0  => PASS
+
+raw loadavg: 0.14 0.21 0.09 1/247 2864
+总裁决: VACUUM PASS
+（注：真空 PASS 单独不构成授权，须与 IGNITION-run5 两键齐全）

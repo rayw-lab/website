@@ -1,0 +1,6 @@
+IGNITION-run5 (authorization copy)
+signed-by: parent agent (Board R2 #149), relayed via task prompt to CC-FXN-EXP01-ENV
+note: this VM differs from parent VM; per work order, the task prompt itself is the authorization copy.
+scope: exactly ONE run of CITY-EXP-01 (world-chromium), label run5, on PR #129 tip 49a5d6a
+no-second-run: a new IGNITION-run6.txt is required for any further run
+recorded-at: 2026-08-28T07:42:43Z
