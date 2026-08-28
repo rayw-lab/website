@@ -250,7 +250,10 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
   //      出生圈 poi-bounding-in 再入账仍零新增 explore-progress（跨会话去重）。
   // ---------------------------------------------------------------------------
   test('CITY-EXP-01 探索计数闭环：深链发现 → 驾驶 +1 → 重复进圈去重 → reload 持久还原（埋点互证）', async ({ page }, testInfo) => {
-    test.setTimeout(2_400_000); // SwiftShader 慢动作 + 共享 VM 竞争：56m 遥测闭环 + 二次挂载
+    // SwiftShader 慢动作 + 共享 VM 竞争：遥测闭环 + 二次挂载。[CC-FXN-EXP01-ENV]
+    // 途径点改线后驾驶腿预算 = 360+480+360s（三腿各自封顶，见 ② 注），上限相应
+    // 2400→3000s（各腿为封顶非实耗，成功路径实测 ~15min 收轮）
+    test.setTimeout(3_000_000);
     const errors = trackErrors(page);
 
     await page.goto(`${PAGE_URL}?poi=${SPAWN_POI}`);
@@ -281,18 +284,33 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     expect(pointerEvents, 'chip 必须全层穿透（不遮 CTA/HUD/摇杆热区）').toBe('none');
     await expect(page.locator('dialog[open]'), '探索计数不得弹任何模态').toHaveCount(0);
 
-    // —— ② 驾驶至第 2 个探索点（agent-nexus = 56m 最近邻，直线走廊 z∈[-24,-28]
-    //    全程避开隔离墩阵 |x|,|z|≲18 / 灯杆线 ≥8m / 楼排 z≤-32——坐标实测核对）。
-    //    出泊位先倒车 5m：出生朝向 = parkingBay.heading（面建筑角），原地掉头
-    //    必蹭墙角；倒退线 (28,-28)→(24.5,-24.5) 后左转弧线已避开楼角（x≥30 墙面）。
-    //    倒车实测 ~0.04m/s 墙钟 → 5m ≈ 120s，予 300s 余量
+    // —— ② 驾驶至第 2 个探索点（agent-nexus）。出泊位先倒车 5m：出生朝向 =
+    //    parkingBay.heading（面建筑角），原地掉头必蹭墙角；倒退线 (28,-28)→(24.5,-24.5)。
+    //    倒车实测 ~0.04m/s 墙钟 → 5m ≈ 120s，予 300s 余量。
+    //    [CC-FXN-EXP01-ENV] 途径点加固（T11 #124 F4/F5 + T12 #126 判读 B 兑现）：
+    //    原「直线走廊 z∈[-24,-28]」实测被 BL1 充电桩带截断（桩带世界 x∈[16.2,17.8]、
+    //    桩位 z∈[-39.5,-26]，雨棚柱 (19.2,-24.2)/(14.8,-24.2)）——西行直线在 x=17 处
+    //    z≈-25.0，与桩带间距 < 车半宽：高帧率靠高速擦碰偏转侥幸通过，SwiftShader
+    //    慢帧下贴壁楔死（main 卡 (25.2,-25.7) 出泊爬行 / X2 楔死 (19.4,-32.7) 桩带东面）。
+    //    改线经霓虹大街（路面带 z∈[-12,12]，全平无路缘、无在册障碍）：
+    //      · WP-A (26,-8)：出泊右转南下（desired≈-85°，diff≈-130°→恒右转；右转弧线
+    //        x 单调东移、z 不低于 -27，几何上背离桩带与 X2 角簇 ±(18.2~20.8,18.2~20.8)）；
+    //      · WP-B (-26,-8)：大街直线西行 52m（隔离墩 (±17.2,-13.6) 距线 5.6m、
+    //        (±13.6,-17.2) 距线 9.2m；X2 桥腿 (±15.7,-26) 距线 18m——两树余量均
+    //        ≥ 车半宽 1m + 转向余量 1.5m 纪律）；
+    //      · 终点泊位 (-28,-28)：北上入泊（右转弧线 x 单调西移，隔离墩 x≥-17.2 不可达；
+    //        agent-nexus 墙面 x=-32 仅 z≤-32 段，进泊线 z≥-28 全程无障碍）。
     const escaped = await reverseBy(page, 5, 300_000);
     expect(
       escaped.ok,
       `应能倒车退出泊位（实测 x=${escaped.state.x.toFixed(1)} z=${escaped.state.z.toFixed(1)}）`,
     ).toBe(true);
     const target = bayOf(SECOND_POI);
-    const leg = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 600_000 });
+    const legA = await driveTo(page, { x: 26, z: -8 }, { radius: 6, timeoutMs: 360_000 });
+    expect(legA.ok, `途径点 (26,-8) 应可达（实测 x=${legA.state.x.toFixed(1)} z=${legA.state.z.toFixed(1)}）`).toBe(true);
+    const legB = await driveTo(page, { x: -26, z: -8 }, { radius: 6, timeoutMs: 480_000 });
+    expect(legB.ok, `途径点 (-26,-8) 应可达（实测 x=${legB.state.x.toFixed(1)} z=${legB.state.z.toFixed(1)}）`).toBe(true);
+    const leg = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 360_000 });
     expect(leg.ok, `泊车位 (${target.x},${target.z}) 应可达（实测 x=${leg.state.x.toFixed(1)} z=${leg.state.z.toFixed(1)}）`).toBe(true);
 
     const second = await pollDump(
@@ -413,7 +431,8 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     await expect(chip).not.toHaveAttribute('data-complete', '1');
     await page.screenshot({ path: 'test-results/explore-rm-restored.png' });
 
-    // —— ③ 完成闭环：驾驶至最后一个未发现点（agent-nexus，途径点走廊同 EXP-01）
+    // —— ③ 完成闭环：驾驶至最后一个未发现点（agent-nexus；本腿自原点出发走西侧
+    //    (0,-24) 途径点直线，不经 BL1 桩带域 x∈[14.8,19.2]，无需 EXP-01 的大街改线）
     await page.keyboard.down('w');
     try {
       await expect(host).toHaveAttribute('data-world-state', 'driving', { timeout: 60_000 });
