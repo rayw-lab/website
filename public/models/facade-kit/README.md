@@ -31,9 +31,11 @@ ritual_idle 机位 + `src/data/cyber-city-buildings.json` 足迹，1440×900 八
   insights-archive 西面→AxisAve、about-pavilion 东面→AxisAve、contact-beacon
   北面→NeonBlvd、edge-cloud-hub 南面→NeonBlvd、workflow-foundry 西面→AxisAve、
   now-signal 东面→AxisAve（楼近缘-路缘 12–22m，近读距离）。
-- **前景桥 NDC 预演**：桥体 (0,0,−26) 沿 X 跨中轴大道——桥面带投影帧顶
-  （ndc.y +0.68…+1.02 横贯），东腿 ndc.x +0.93 压右缘，机器人（ndc −0.34,
-  −0.44…−0.16）零遮挡；北向驾驶从桥下穿（净高 13.4m）。
+- **前景桥 NDC 预演**（[CC-VIS-X2-PLUG] 桥位 z −26 → −19.5，让出 e2e 驾驶走廊带
+  z∈[−24,−28]——腿柱碰撞面走廊余量核对见探针 §④）：桥体 (0,0,−19.5) 沿 X 跨中轴
+  大道——桥面带投影帧顶（deck ndc.y +0.74…+0.97，管束顶 +0.87…+1.18 溢出帧顶），
+  东腿 ndc.x +0.96 压右缘，机器人（ndc −0.34, −0.44…−0.16）零遮挡；北向驾驶从
+  桥下穿（净高 13.4m）。
 
 ## 坐标与合同（消费端 `src/lab/world/city/FacadeKit.ts`）
 
@@ -41,7 +43,7 @@ ritual_idle 机位 + `src/data/cyber-city-buildings.json` 足迹，1440×900 八
   法向）；独立件（KitRoofVent/Prop*/FramePipeBridge）原点 = 底面中心。
 - 消费方三处：`CityBlocks.attachFacades`（FACADE_PLAN 逐楼逐面摆位）/
   `StreetProps.placeCornerProps`（PROP_CLUSTERS 六簇三件套）/
-  `ForegroundFraming`（桥 (0,0,−26) 单实例）。
+  `ForegroundFraming`（桥 (0,0,−19.5) 单实例，[CC-VIS-X2-PLUG] 南移让出走廊）。
 - 材质名合同：`KitSurface`（唯一材质；运行时按名微调可用）。
 - 色纪律（rubric A3）：只用既有三族色（暖白/青/暗）+ 通用工业橙黑警示纹；
   **不引入新色相、不使用楼宇身份色**（套件跨楼共享，身份色归 BuildingSigns 域）；
