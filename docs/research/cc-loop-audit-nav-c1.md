@@ -15,7 +15,7 @@
 
 1. **破门项唯一且已实锤：NAV×AUD HUD 右上角双钮重叠**。`.world-minimap-btn`（`top:1rem;right:1.15rem`，`Minimap.ts` 后挂载同 z-index 6 后画居上）完全盖住 #164 的 `.world-audio-toggle`（`top:.85rem;right:.95rem`）——两钮可见窗相同（robot_idle/transforming 双态同 hidden、car_ready 起同现身）。运行时证据：CITY-AUD-01 第 108 行 `audioBtn.click()` 被 Playwright hit-target 检查拦截，报错原文 `<button class="world-minimap-btn">… from <div class="world-minimap-root">… subtree intercepts pointer events`，重试 18+ 次后用例超时 **FAIL**——独立探针轮 + 全量轮**两窗复现，非 flaky**。截图取证：car_ready 帧右上角**只见「地图 M」一颗钮**，「音效 OFF」钮在视觉与命中面上双双消失——不止 e2e 破门，真实用户的静音钮同样不可点、不可见。e2e 硬门 0/0/0 破（数字与竞争窗剔除见 §2）。
 2. **归因在 #166 tip 自身而非集成树**：`5faab5f` 已是 merge main（含 #164）后的 tip，重叠在 PR 分支上原样复现；PR 声称的「后合者承担试合并 + 合流树冒烟」只清了白名单/规格两处**文本**冲突（41 type / 10 族双全 ✓），未做交互面冒烟——恰是「文本零冲突 ≠ 语义零冲突」的教科书案例。PR 承诺的全量 e2e 跟帖（评论区）截至取证时**未落地**，本审计为该 PR 首份全量证据。
-3. **其余核验面全部过门**：DP-1 传送式逐条 PASS（§3）、DP-3 三重保险逐层核验 PASS（§4）、文件域合规（§4）、禁 pointer-lock 零命中、LHCI 不降（CI artifact 回填，§5）；e2e 全量轮的另 5 项失败与 16 项连坐**全部落在跑道被外来 chrome 级活动双占的竞争窗内**（取证与独占窗复跑裁决见 §2），静态因果上与 #166 文件域零交集或已由旁证证真（NAV-03 全链 ✓）。修复面极小（一处 CSS 落位 + 一条回归断言），**不推倒重来、不降门**，走定向补洞（§7 F1–F3）。
+3. **其余核验面全部过门**：DP-1 传送式逐条 PASS（§3）、DP-3 三重保险三层 PASS 且 **CITY-NAV-01/02/03 独占窗全绿 + VIS-01–04 全绿**（poster 恒等运行时终证）、文件域合规（§4）、禁 pointer-lock 零命中、LHCI 不降（CI artifact 回填，§5）。全量轮其余失败经**双向对照实验**（同 VM 无 #166 对照树同款失败、时长指纹 ±0.3m 一致）全部定性为本 VM 环境性/竞争性，与 #166 零因果（§2.1 对照表）。**#166 语义账 = 83/84 过 + 1 真回归**。修复面极小（一处 CSS 落位 + 一条回归断言），**不推倒重来、不降门**，走定向补洞（§7 F1–F3）。
 
 ## 1. 集成树与分母（fresh 取证链）
 
@@ -41,16 +41,30 @@
 
 竞争窗旁证：外来跑在 CITY-QST-01（5.5m ✓）与 QST-02（23m ✘）之间开机；窗内用例墙钟 2–4× 膨胀（HINT-02 8.9m ✓ vs 常态 ~3m），窗后恢复常态（PA-01 3.4m、CITY-E2E-04 1.4m）。
 
-### 2.1 独占窗裁决复跑（竞争嫌疑 5 项 + 连坐 16 项）
+### 2.1 裁决复跑（竞争嫌疑 + 连坐清账）与双向对照实验
 
-（首轮复跑 17:42Z 起步即遭遇外来**全量** `astro build && playwright test` 二次占道——按跑道互斥硬令让行中止，等待外来收轮后在验证过的独占窗执行；本节数字为独占窗终值。）
+（首轮复跑 17:42Z 起步即遭遇外来**全量** `astro build && playwright test` 二次占道——按跑道互斥硬令让行中止，19:05Z 验证跑道空闲（load 0.02）后执行。）
 
 | 波 | 范围 | 结果 |
 |----|------|------|
-| R1 | `cyber-city-explore/feedback/minimap/observability` 四 spec 全文件（world-chromium `--no-deps`） | 【复跑后回填】 |
-| R2 | `world-perf-chromium` → `city-perf-chromium` → `visual-chromium` 分序（`--no-deps`） | 【复跑后回填】 |
+| R1（19:05Z 独占窗） | explore/feedback/minimap/observability 四 spec 19 例（world-chromium `--no-deps`） | 10 ✓ / 4 ✘ / 5 连坐：**NAV-01 ✓ 6.8m · NAV-02 ✓ 6.2m · NAV-03 ✓ 5.2m**（三用例全绿，A1–A8 运行时证据齐）；OBS-01 ✓（全量轮失败=竞争定谳）；OBS-01b/02 ✓；EXP-01/02、QST-01、HINT-02 ✓；仍败 = QST-02（23.1m）/ FB-01…09 / HINT-01（10.1m）/ OBS-03（49s 快败，新面孔） |
+| R3（定向单跑清连坐） | FB-05 / FB-06 / OBS-04 / OBS-05 / OBS-06 | FB-05 ✓ · FB-06 ✓ · OBS-04 ✓ · OBS-05 ✓；OBS-06 ✘ 52ms = **过滤跑工件**（新 session 清空 test-results，其消费的 `session-dump-funnel.json` 需同 session 先跑 OBS-01 产出——报错原文自证），空窗连跑闭账见下 |
+| R2 | `world-perf-chromium` → `city-perf-chromium` → `visual-chromium`（`--no-deps`） | WS-PERF-01 ✓；**VIS-01/02/03/04 全 ✓（poster/视觉基线逐字节合同运行时终证）**；CITY-PERF-01 ✘（`[data-ws-fps]` 30s 未现——执行时外来裁决复跑在途、双占窗内，空窗重跑见下） |
+| R4（空窗终局轮） | CITY-PERF-01/02 + OBS-01\|01b\|06 同 session 连跑 | 【终局轮回填】 |
 
-**裁决口径**：84 分母下，AUD-01 = 真失败（破门）；其余 83 例以「全量轮 62 绿 + 独占窗复跑」合并判定。跑法：`E2E_PORT=4399 pnpm exec playwright test`（webServer 自拉 preview 于 4399，与共享 checkout 的 4321 零接触）。
+**双向对照实验（本审计定性主证据，全部同 VM）**：
+
+| 用例 | #166 树（本审计） | 无 #166 对照树 | 定性 |
+|------|------|------|------|
+| CITY-AUD-01 | ✘ 拦截超时（探针轮 + 全量轮两复现） | **✓ 6.1m**（外来全量 @`/tmp/aud-c1-ready-wt`，AUD-ready 树）+ ✓（17:55Z 外来单跑） | **#166 真回归（唯一破门项）** |
+| CITY-QST-02 | ✘ 23.0m / 23.1m | **✘ 22.9m**（同上对照树） | 环境性（时长指纹一致 ±0.3m） |
+| CITY-FB-01…09 | ✘ 15.2m | **✘ 15.1m** | 环境性（同上） |
+| CITY-HINT-01 | ✘ 10.2m / 10.1m（「M 地图」文案断言已过，败在淡出 210s 预算） | **✘ 10m** | 环境性（同上） |
+| CITY-OBS-03 | ✘ 49–77s（卸载期 console.table 0 条送达） | **✘ 75s**（main@`4a58789` 定向单跑，同条件对照） | 环境性（卸载期 CDP console 送达竞走） |
+
+环境性四项的机制：本指挥 VM 慢于 e2e 校准包线（同用例墙钟 ~2×：EXP-01 本机 26–29m vs 校准预期），设计秒驱动腿（idle-30s / 淡出 / 长驾驶链）在固定 expect/poll 预算内走不完；外来侧同日在本机的全量（无 #166，81 例）同样 62 ✓ / 4 ✘ / 15 连坐、失败集完全一致——**四项与 #166 零因果**。
+
+**裁决口径**：84 分母下，**#166 语义账 = 83 过 / 1 真失败（CITY-AUD-01）**；环境性四项挂 VM 账（对照树同款失败，不入 #166 归因）；0/0/0 硬门在本 VM 物理不可达，**F3 复跑门必须在标准 e2e 云机执行**。跑法：`E2E_PORT=4399 pnpm exec playwright test`（webServer 自拉 preview 于 4399，与共享 checkout 的 4321 零接触）。
 
 ## 3. DP-1 执法（传送式两段式，#163 §B 终裁逐条）
 
@@ -60,14 +74,14 @@
 | 不动 Respawns（R2 硬项） | 传送零触 `Respawns`、不发 player `'respawn'` 事件（不重置道具/不出复位 toast）；`Respawns.ts` 零改动 | PASS |
 | 位姿换算单源 | `Math.PI / 2 - (bay.heading * Math.PI) / 180` 与 `Areas.applyDeepLink`（L275）逐字一致 | PASS |
 | 直跳楼页否决执行 | `teleportTo()` 全路径零 `navigate` 调用；进楼路由唯一入口仍是 PoiArrival E 确认 | PASS |
-| 第二段 = E 确认 | CITY-NAV-01 route abort 取证：`world-poi:{id}` 入账 + navHits≥1 + `minimap-teleport.seq < world-poi.seq` 因果序断言 | 静态 PASS · 运行时证据 = §2.1-R1 |
-| 漏斗零旁路 | 落点即触发圈内，`poi-bounding-in` 由 Zones 距离检测天然入账；explore/quest 不旁路（触屏腿 NAV-03 已证落点 ≤radius） | 静态 PASS · §2.1-R1 |
+| 第二段 = E 确认 | CITY-NAV-01 route abort 取证：`world-poi:{id}` 入账 + navHits≥1 + `minimap-teleport.seq < world-poi.seq` 因果序断言（R1 独占窗 ✓ 6.8m） | PASS |
+| 漏斗零旁路 | 落点即触发圈内，`poi-bounding-in` 由 Zones 距离检测天然入账（NAV-01 ✓）；explore/quest 不旁路；触屏腿 NAV-03 ✓ 落点 ≤radius | PASS |
 | R3 传送竞态 | teleport 不经 actionStart、RELEASE_ACTIONS 拦不到 → `arrival.cancel()` 显式释放（`PoiArrival.interrupt('teleport')`，`shot-interrupt` by 枚举 data 值加法、无参调用行为不变） | PASS |
-| 非模态合同 | `role="dialog"` + `aria-modal="false"`（NAV-03 窗内实测 aria-modal=false ✓）；开态不吞驾驶键、不暂停 Ticker（CITY-NAV-02 driving 态断言 = §2.1-R1） | 静态 PASS · §2.1-R1 |
+| 非模态合同 | `role="dialog"` + `aria-modal="false"`（NAV-01/03 实测）；开态不吞驾驶键、不暂停 Ticker（NAV-02 ✓：开图后 `data-world-state` 仍 driving） | PASS |
 
 ## 4. DP-3 执法（双态 hidden 三重保险，#163 §B-3）+ 文件域 + AUD 兼容
 
-**三重保险逐层**：① categories 闸门——`minimap` 动作 categories `['wandering','driving']`，`Inputs.filters` 集合过滤机制核验（intro 期两 category 均不在 filters → M 物理拦截；`?poi=` 深链腿 filters='wandering' 与 E 进站 poiInteract 同权，比调研 P1 `['driving']` 放宽一档的法理成立且恒等保证不变）② CSS 样式门——`[data-world-state='robot_idle'/'transforming'] .world-minimap-root{display:none!important}`（钮层整层）③ 懒初始化——`ensurePanel()` 首开才建面板 DOM（NAV-01 窗内已证：首开前 `[data-world-minimap]` count=0）。CITY-NAV-02 恒等门三连（robot_idle 钮 hidden + M 零反应零埋点 + 零面板节点）与 visual 4 例基线（poster 恒等旁证）在全量轮被连坐——运行时终证 = §2.1 R1/R2。**静态三层机制核验 PASS**。
+**三重保险逐层**：① categories 闸门——`minimap` 动作 categories `['wandering','driving']`，`Inputs.filters` 集合过滤机制核验（intro 期两 category 均不在 filters → M 物理拦截；`?poi=` 深链腿 filters='wandering' 与 E 进站 poiInteract 同权，比调研 P1 `['driving']` 放宽一档的法理成立且恒等保证不变）② CSS 样式门——`[data-world-state='robot_idle'/'transforming'] .world-minimap-root{display:none!important}`（钮层整层）③ 懒初始化——`ensurePanel()` 首开才建面板 DOM（NAV-01 ✓：首开前 `[data-world-minimap]` count=0）。运行时终证齐：CITY-NAV-02 ✓（robot_idle 钮 hidden + M 三连按零反应零埋点 + 零面板节点）+ **VIS-01–04 全 ✓（poster/视觉基线逐字节合同）**。**PASS**。
 
 **文件域（vs #158 §B / #163 §D-1）**：`ui/Minimap.ts`（新增，授权绿地）✓ · `world/index.ts` 装配段（#163 §D-2 预期交叠点，条件动态 import + dispose 链对称）✓ · `SessionTimeline.ts` 白名单（同前，41 type / 10 族与规格 §3.4 双全）✓ · `Reveal.ts` HINT_TEXT 串尾 +「M 地图」（#163 §D-3 明令随行 + feedback spec 断言同 PR 修）✓ · `Keyboard.ts` **零触**（运行期 `addActions`，比 #158 授权域「Keyboard.ts M 动作 +1」更收敛）✓ · `PoiArrival.ts` 超出 #158「areas 数据只读」，但 #162 R3 明令「teleport 入口显式调 arrival 中断」+ #163 §D-3 采纳全套验收合同——判**随行豁免**（改动最小：公开 `cancel()` + `interrupt(by)` 参数化，向后兼容）· 禁入区（`view/View.ts`/city 几何/physics/Respawns）零触 ✓。**禁 pointer-lock：PR 全 diff 0 命中** ✓。禁做项自查复核（BGM/机位/缩略条 dock 空槽 hidden/EXP-01）✓。
 
