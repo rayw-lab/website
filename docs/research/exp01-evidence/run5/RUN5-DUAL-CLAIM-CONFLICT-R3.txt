@@ -1,0 +1,13 @@
+R3 accounting note @2026-08-28T08:12Z · parent commander VM
+CLOUD claim (bc-0b5d1fd4 "新ENV"): reports CITY-EXP-01 passed 17.6m EXIT=0 on OTHER VM
+  (vacuum@07:46 / ignite@07:46 / done@08:04 / run5-decisive on remote /tmp — NOT present on commander disk)
+  Agent was R3-written-off as STILLBORN (ENV2-STILLBORN-R3.txt). Cross-VM /tmp per R3 §B = 自始无效 for ×2.
+  Pushed #129 tip a9ec398 comment-only "run5 签字" — treat as CLAIM not credit pending same-host independent review.
+
+SAME-HOST run5 (commander VM, R3 §A ratified by IGNITION v3):
+  vacuum-run5@08:03:22 + claimed by bc-990c31cf session @08:03:10
+  CITY-EXP-01 IN FLIGHT as of 08:12 (wrapper 101645, ~9m+) — DO NOT KILL
+  ×2: only after this leg exits + archive run5-decisive/ + evidence on #129 branch + independent review
+
+×2 counter remains 0/2 until same-host chain closes.
+IGNITION-run6: NOT issued.

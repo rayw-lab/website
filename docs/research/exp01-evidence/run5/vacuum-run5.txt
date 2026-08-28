@@ -1,0 +1,5 @@
+=== 真空三查 run5（决定趟 · IGNITION-run5@07:49 之后新签，tip=49a5d6a） · 2026-08-28T08:03:22Z · by CC-FXN-EXP01-ENV ===
+① chrome 系进程数（pgrep -c chrome，应 0）: 0
+② load1（应 <2）: 0.00
+③ astro 进程数（pgrep -c astro，应 0）: 0
+判定: PASS

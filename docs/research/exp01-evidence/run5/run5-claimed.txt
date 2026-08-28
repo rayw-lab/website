@@ -1,0 +1,2 @@
+run5 执钥人: CC-FXN-EXP01-ENV（bc-990c31cf …5b71，原跑道主，持父代理 07:49 IGNITION-run5 令执行）@2026-08-28T08:03:10Z
+合同复述: 单趟 run5 · tip=49a5d6a · PASS→run5-decisive/ 停 · FAIL→run5-fail/ 停 · 不自动 run6
