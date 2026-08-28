@@ -231,7 +231,7 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
   //       导航请求保住 JS 上下文（页面原地存续），「跳转前取证」确定性成立。
   // ---------------------------------------------------------------------------
   test('CITY-OBS-01 漏斗全走 @funnel：ritual 动线 + V 往返 + R 重生 + 驾驶进 POI + E 进站取证', async ({ page }, testInfo) => {
-    test.setTimeout(1_500_000); // SwiftShader 慢动作下 56m 遥测闭环驾驶 ~4-8min 墙钟
+    test.setTimeout(1_800_000); // SwiftShader 慢动作下遥测闭环驾驶（桥腿绕行三腿）~4-10min 墙钟
     const errors = trackErrors(page);
 
     // 进站目标 = autodrive-lab（parkingBay (28,-28) r6，deepLink /work/——
@@ -270,9 +270,15 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     const respawned = await pollDump(page, (d) => d.counters.respawns >= 1, 30_000);
     expect(respawned.ok, 'R 重生应记入 respawn 事件').toBe(true);
 
-    // 遥测闭环驾驶：沿路走位（避开路口隔离墩）→ autodrive-lab 触发圈
+    // 遥测闭环驾驶：沿路走位（避开路口隔离墩）→ autodrive-lab 触发圈。
+    // [CC-VIS-X2-TRIAGE] 原 (0,-24)→(28,-28) 直线在 x=15.7 处 z=-26.24，正穿
+    // X2 前景景框右桥腿箱体 (15.7,-26)±0.62（ForegroundFraming）——插入南绕行
+    // 途径点 (19,-31.5)（腿箱南缘外 ≥1.6m；东侧最近灯杆 z=-58 无约束；
+    // EXP-01/EXP-02 同批绕行口径）
     const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 4, timeoutMs: 360_000 });
     expect(leg1.ok, `途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`).toBe(true);
+    const legM = await driveTo(page, { x: 19, z: -31.5 }, { radius: 3, timeoutMs: 360_000 });
+    expect(legM.ok, `途径点 (19,-31.5) 应可达（实测 x=${legM.state.x.toFixed(1)} z=${legM.state.z.toFixed(1)}）`).toBe(true);
     const leg2 = await driveTo(page, { x: 28, z: -28 }, { radius: 4.5, timeoutMs: 360_000 });
     expect(leg2.ok, `泊车位 (28,-28) 应可达（实测 x=${leg2.state.x.toFixed(1)} z=${leg2.state.z.toFixed(1)}）`).toBe(true);
 

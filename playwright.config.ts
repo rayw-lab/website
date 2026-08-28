@@ -93,8 +93,14 @@ export default defineConfig({
       // （观测规格 §7：OBS 用例入 world-chromium 串行 project，同款 3D 独占纪律）
       // [CC-VEH-E2E-FIX] 依赖改指 car-chromium（线性链：desktop+mobile → car →
       // world → world-perf → city-perf → visual，任意时刻至多一个重 3D 上下文）
+      // [CC-VIS-X2-TRIAGE] fullyParallel 显式关死（triage r1 实锤：根配置
+      // fullyParallel:true 会把本组不同文件/不同 describe 的用例派往 2 个 worker
+      // 并发——X2 全量跑时间戳证实 QST-02 与 EXP-01/FB 链全程并行，双 3D 上下文
+      // 挤兑令 wall-fps 减半，idle-30s 设计秒 20min 轮询耗尽、FB 900s 预算越线。
+      // car-chromium/city-perf/visual 同款纪律，本组此前漏配）
       name: 'world-chromium',
       testMatch: /world-spike\.spec\.ts|cyber-city.*\.spec\.ts/,
+      fullyParallel: false,
       // [CC-PERF-C1] perf spec 排除（perf 测试方案 §1.3 ①）：cyber-city.*\.spec\.ts
       // 泛匹配会误收编 cyber-city-perf.spec.ts——该 spec 独归 city-perf-chromium
       testIgnore: /cyber-city-perf\.spec\.ts/,

@@ -362,8 +362,11 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     await expect(count).toHaveText(`2/${TOTAL}`);
     await page.screenshot({ path: 'test-results/explore-second-discover.png' });
 
-    // —— ③ 去重：驶出触发圈（bounding-out 入账）再驶回（bounding-in 第二次入账）
-    const out = await driveTo(page, { x: target.x + 14, z: target.z + 2 }, { radius: 4, timeoutMs: 300_000 });
+    // —— ③ 去重：驶出触发圈（bounding-out 入账）再驶回（bounding-in 第二次入账）。
+    //    [CC-VIS-X2-TRIAGE] 原东向驶出点 (target.x+14, target.z+2)=(-14,-26) 距左桥腿
+    //    (-15.7,-26) 仅 1.7m（正对撞柱），改南向 (target.x, target.z-14)=(-28,-42)：
+    //    agent-nexus 东墙 x=-32 边距 4m，出入均直线净空
+    const out = await driveTo(page, { x: target.x, z: target.z - 14 }, { radius: 4, timeoutMs: 300_000 });
     expect(out.ok, '应能驶出触发圈').toBe(true);
     const bounded = await pollDump(
       page,
@@ -479,11 +482,16 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     } finally {
       await page.keyboard.up('w');
     }
-    // 原点出圈仍留 (0,-24) 途径点（OBS-01 同款：先出隔离墩阵再入西走廊直线）
+    // 原点出圈仍留 (0,-24) 途径点（OBS-01 同款：先出隔离墩阵再入西走廊）。
+    // [CC-VIS-X2-TRIAGE] 原 (0,-24)→(-28,-28) 直线在 x=-15.7 处 z=-26.24，正穿
+    // X2 前景景框左桥腿箱体 (-15.7,-26)±0.62——插入南绕行途径点 (-19,-31.5)
+    // （腿箱南缘与灯杆 (-13.5,-34) 之间槽带；EXP-01 同批绕行口径）
     const target = bayOf(SECOND_POI);
     const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 6, timeoutMs: 480_000 });
     expect(leg1.ok, `途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`).toBe(true);
-    const leg2 = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 600_000 });
+    const legM = await driveTo(page, { x: -19, z: -31.5 }, { radius: 3, timeoutMs: 360_000 });
+    expect(legM.ok, `途径点 (-19,-31.5) 应可达（实测 x=${legM.state.x.toFixed(1)} z=${legM.state.z.toFixed(1)}）`).toBe(true);
+    const leg2 = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 360_000 });
     expect(leg2.ok, `泊车位 (${target.x},${target.z}) 应可达（实测 x=${leg2.state.x.toFixed(1)} z=${leg2.state.z.toFixed(1)}）`).toBe(true);
 
     const completed = await pollDump(
