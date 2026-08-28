@@ -249,6 +249,14 @@ plug 验证轮已收轮（终局 ⑰）；plug r1 `368b4d4`/`839b6fe` **冻结�
 - **全量 e2e 解锁链**（T19 §4.2 / T20 §3.2 / T21 §4 六条）· 「#103+塌栈」一项**已落袋 ✅**；关键路径 = #129 的 ×2 链（**run7/run8 同机**，run7 在飞）；开闸 = ✓✓（上链+复核）→ 签字门；互斥令同样适用于全量窗
 - **真机 S-2 / 性能六腿（零 VM）** · 仍待指挥官启动，AL-PERF / AL-R10 前置
 
+## 角色表（定义单源 = `cc-loop-role-catalog.md`，本表只做索引，禁止在此扩写条款）
+
+| 层 | 角色 | 要点 |
+|----|------|------|
+| 治理 | 指挥官 → **事后顾问（董事会）** → 父代理 | **事后顾问（新增）**：连续 ≥2 tick 无有效新增，或 subagent 角色冲突/卡点时触发；`claude-fable-5-thinking-xhigh`；权威最高，裁决对父代理与所有 Task 具约束力，可要求持续推进（条款见百科 §3） |
+| 编排辅助 | 编排顾问（T 系列）· 秘书（SEC P 系列） | 日常串并行/派单/预排仍归编排顾问；**卡门/冲突升级事后顾问**；看板 3n 界点由秘书刷新 |
+| 交付 | 调研 · 脑暴 · WBS/设计 · 开发 · 测试 · 视觉 · 功能 · 性能 · 交互/用户故事 · 产品 · 质量 · 审计 | 全员 `claude-fable-5-thinking-xhigh`；审计零业务代码 + fresh 取证，专项分只认审计独立分；逐角色五字段条款见百科 §2 |
+
 ## 归档（一行）
 
 顾问 [#87](https://github.com/rayw-lab/website/pull/87)[#88](https://github.com/rayw-lab/website/pull/88)[#98](https://github.com/rayw-lab/website/pull/98) · AL-FXN **84** [#84](https://github.com/rayw-lab/website/pull/84) → **87** [#103](https://github.com/rayw-lab/website/pull/103) · AL-VIS **73** [#94](https://github.com/rayw-lab/website/pull/94) · C5-R3 [#90](https://github.com/rayw-lab/website/pull/90) · C6 [#91](https://github.com/rayw-lab/website/pull/91) · X1a-R4 [#92](https://github.com/rayw-lab/website/pull/92) · X3-R4 [#93](https://github.com/rayw-lab/website/pull/93) · 秘书 [#86](https://github.com/rayw-lab/website/pull/86)[#95](https://github.com/rayw-lab/website/pull/95) · 范式 [#85](https://github.com/rayw-lab/website/pull/85) · 清理 [#89](https://github.com/rayw-lab/website/pull/89) · TM-PREP [#99](https://github.com/rayw-lab/website/pull/99) · G3+X5 [#100](https://github.com/rayw-lab/website/pull/100) · FXN-NEXT [#97](https://github.com/rayw-lab/website/pull/97) · PERF-DESK [#96](https://github.com/rayw-lab/website/pull/96) · VEH-R3 留痕 [#102](https://github.com/rayw-lab/website/pull/102) · X1b [#101](https://github.com/rayw-lab/website/pull/101) · 董事会 R1+塌栈 [#143](https://github.com/rayw-lab/website/pull/143) · SEC-FXN87 [#146](https://github.com/rayw-lab/website/pull/146)
