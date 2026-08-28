@@ -157,10 +157,11 @@ T6 输出 Delta：矩阵四行 + 在途表 + 本 tick 动作 + 下 tick 预告 �
 | `docs/research/` 膨胀 | 60+ 文件，检索成本上升 | 建 `docs/research/INDEX.md` 单页索引（按轨道分组 + 单源指针）；历史审计移 `docs/research/archive/` 的动作须单独裁决（链接稳定性风险），先只做索引不搬家 |
 | PR 链接卫生 | 坑 5 复发风险（仓库实际 remote = `mywebsite`，PR URL = `website` 重定向） | 恒用 `gh pr view --json url` 实际输出，禁手拼 |
 
-### 5.2 隔离树纪律（两条新坑登记）
+### 5.2 隔离树纪律（三条坑登记，第 3 条为本 Task 执行中实锤）
 
 1. **stale-base diff 假象（坑 4 变体）**：#107/#108 base 在 `771b1e4`（MERGE-WAVE 前），对 main 的 diff 显示「删除 voice-pod GLB/脚本」等不存在的回退。**处置**：两分支合流前必须 rebase 到 `88097f9`；审计此类 PR 先自建「候选 ⊕ main」集成树。今后 doc 单也登记 base SHA，秘书刷新时核对「在途分支 base 是否落后 main 一个合并波」。
 2. **看板单写者**：并发 ≥3 后，看板 `cyber-city-score-loop-orchestration.md` 只允许秘书 Task（或父代理白名单直改）写入；实现/审计 Task 在返回件里交「状态行草稿」。消除单源文件竞写冲突，也让「每 3 tick 更新看板」有唯一责任人。
+3. **共享 `/workspace` 竞写实锤（2026-08-28 02:52 UTC，本 Task 执行中）**：本顾问、秘书（`cc-loop-sec-p3-5b71`）与 X2 rebase 代理共用同一 checkout；顾问暂存中的本文件被 X2 的 `git rebase --continue` 卷进其冲突收口提交 **`8ab019c`**（reflog 全程在案）。当时远端 X2 分支仍在旧世系 `a88a139`，污染未出本机。**处置**：X2 收口者 push 前 `git rm docs/research/cc-loop-advisor-r1-2-3day-plan.md` 摘除（或 rebase 摘该文件）；**今后并发 Task 一律独立 worktree/独立 VM，父代理派单时禁止两单落同一 checkout**（板上「禁共享 /workspace」从建议升格为硬纪律）。本顾问件已改在独立 worktree 提交，与 X2 现场零接触。
 
 ### 5.3 skill 缺口（建议沉淀到 `rayw-lab/agent-skills`）
 
@@ -226,6 +227,8 @@ T6 输出 Delta：矩阵四行 + 在途表 + 本 tick 动作 + 下 tick 预告 �
 | 6 | **CC-AL-VEH-R3-R3** | 尾槽滚入，可让位给 X4 条件触发单 | 🟢 P4 | 车辆 e2e 审计第三轮收口（#102 interim 续），独立 VM 单跑，零业务代码 |
 
 条件触发预留：**CC-VIS-X4-TM** 在「X2 合流 + G1 解除」当 tick 即发，优先级升 🔴，压过槽 5/6。
+
+> **现场更新（本文提交时点核实）**：P1 与 P3 已被兄弟代理抢跑——① X2 rebase 机械段已在本 VM 完成（本地 tip `037bd1d`，**远端仍 `a88a139` 未推**；全量 e2e/基线重签未跑；含 §5.2-3 污染文件待摘）；② 秘书刷新已提交并推送（`cursor/cc-loop-sec-p3-5b71` @ `3e863e0`，待开 PR 合流）。故 Tick#2 实际新派 = **槽 2（P2 Codex 清账）即派 + 槽 4（X5）/槽 5（M0-R4）滚入**；X2 只需「收口单」（摘污染文件 → e2e/重签 → push → ready），不要重复派全量 rebase 单。
 
 ---
 
