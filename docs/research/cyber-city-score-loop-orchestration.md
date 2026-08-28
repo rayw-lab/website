@@ -6,7 +6,7 @@
 
 > 本单为 SEC-P7 Tick#12 刷新，**基于 [#121](https://github.com/rayw-lab/website/pull/121)（SEC-P6，为 [#116](https://github.com/rayw-lab/website/pull/116)/[#112](https://github.com/rayw-lab/website/pull/112) 超集）head `b7dc652` 叠增量**；#103/#121 均未合，main tip 仍 `88097f9`。合流序（T9 [#122](https://github.com/rayw-lab/website/pull/122) 裁决）：[#103](https://github.com/rayw-lab/website/pull/103) 即合 → 看板取本单（#121 超集）→ 关 #109/#112/#116/#121（世系收编防双源），禁止看板回退。
 >
-> **Tick#12 等待项**：① X2 e2e **中断收场**，T10 [#123](https://github.com/rayw-lab/website/pull/123) 裁决 **3 例 FAIL**（#32 泊车位不可达 / #33 idle-nudge 未触发 / #34 串行跳过）→ **TRIAGE-WRAP RUNNING**（收轮 triage 收口）；[#104](https://github.com/rayw-lab/website/pull/104) draft `c24c7f3` **禁 ready**；② [#103](https://github.com/rayw-lab/website/pull/103) **待指挥官合入**（Codex IDLE ✅ · 落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120)）。两者落地前登记矩阵不动。
+> **Tick#12 等待项**：① X2 e2e **中断收场**，T10 [#123](https://github.com/rayw-lab/website/pull/123) 裁决 **3 例 FAIL**（#32 泊车位不可达 / #33 idle-nudge 未触发 / #34 串行跳过）→ **TRIAGE-WRAP RUNNING**（对照跑 04:26 自然收轮：main 树同挂 CITY-EXP-01，T11 [#124](https://github.com/rayw-lab/website/pull/124) 判读 B 兑现——双因并立、X2 归因不翻案；wrap 报告在途）；[#104](https://github.com/rayw-lab/website/pull/104) draft `c24c7f3` **禁 ready**；② [#103](https://github.com/rayw-lab/website/pull/103) **待指挥官合入**（Codex IDLE ✅ · 落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120)）。两者落地前登记矩阵不动。
 
 ## 登记矩阵（**每 tick 首段必输出**）
 
@@ -42,7 +42,7 @@
 | #8 | 顾问 T8（[#119](https://github.com/rayw-lab/website/pull/119)）+ 落库审计（[#120](https://github.com/rayw-lab/website/pull/120)） | 双双交付；#120 verdict **#103 合流 GO** |
 | #9 | SEC-P6（[#121](https://github.com/rayw-lab/website/pull/121)）+ 顾问 T9（[#122](https://github.com/rayw-lab/website/pull/122)，补交） | 双双交付；#121 待指挥官合入；T9 归因坐实 + plug GO + 合流序 |
 | #10 | 顾问 T10（[#123](https://github.com/rayw-lab/website/pull/123)） | 交付（X2 判活勿重派 + 结局锁 FAIL + T9 合并规则 + Tick#11 预排） |
-| #11 | TRIAGE-WRAP（X2 收轮 triage 收口）+ 顾问 T11 | TRIAGE-WRAP **RUNNING**；T11 在途（分支未推送） |
+| #11 | TRIAGE-WRAP（X2 收轮 triage 收口）+ 顾问 T11（[#124](https://github.com/rayw-lab/website/pull/124)） | T11 交付（对照跑收轮 main 树同挂 1 failed · 判读 B 兑现 + T9 纠偏 + ENV/plug 并行编排）；TRIAGE-WRAP **RUNNING**（wrap 报告在途） |
 | #12 | SEC-P7（本单，3n 看板界点） | 在途；TRIAGE-WRAP 收口 · #103 待指挥官合入 |
 
 ## MERGE-WAVE 8/8 合流记录（`771b1e4` → `88097f9`，每步 CI+Deploy 双绿）
@@ -64,17 +64,17 @@ Tick#12 当前在途：
 
 | 在途 | 内容 | 状态 |
 |------|------|------|
-| TRIAGE-WRAP | X2 收轮 triage 收口——e2e 中断后收全失败清单 + 收轮 JSON 落盘（T10 [#123](https://github.com/rayw-lab/website/pull/123) 裁决 3 例 FAIL：#32 泊车位不可达 / #33 idle-nudge 未触发 / #34 串行跳过） | **RUNNING** |
-| 顾问 T11 | Tick#11 扇出裁决 | 在途（分支未推送，零产出待判） |
+| TRIAGE-WRAP | X2 收轮 triage 收口——e2e 中断后收全失败清单 + 收轮 JSON 落盘（T10 [#123](https://github.com/rayw-lab/website/pull/123) 裁决 3 例 FAIL：#32 泊车位不可达 / #33 idle-nudge 未触发 / #34 串行跳过）；对照跑 04:26 自然收轮：main 树同挂 CITY-EXP-01（1 failed，卡点异于 X2——出泊爬行 vs 17km/h 楔死），T11 判读 B 兑现：**双因并立、X2 归因不翻案** | **RUNNING**（wrap 报告在途，给自然收尾窗） |
 | SEC-P7 | 本单看板 Tick#12 刷新（基于 #121 head `b7dc652` 叠增量） | 本单 |
 
-X2 实现段已收轮：[#104](https://github.com/rayw-lab/website/pull/104) **e2e 中断收场**（T10 判活勿重派、让其收全失败清单），tip `c24c7f3` **draft 禁 ready**，等 TRIAGE-WRAP 收口 → plug 段（T9 [#122](https://github.com/rayw-lab/website/pull/122) plug GO：收轮 JSON 落盘即派 cc-vis-x2-plug，栈场景① base `c24c7f3`）。
+X2 实现段已收轮：[#104](https://github.com/rayw-lab/website/pull/104) **e2e 中断收场**（T10 判活勿重派、让其收全失败清单），tip `c24c7f3` **draft 禁 ready**，等 TRIAGE-WRAP 收口 → **ENV 专项 + plug 实现段并行**（T11 [#124](https://github.com/rayw-lab/website/pull/124) 编排：文件域正交；plug 验收全量 e2e HOLD 待 ENV 签字；**不派修复前全量 e2e**——两树都必挂纯废轮）。plug GO 依据 T9 [#122](https://github.com/rayw-lab/website/pull/122)（T11 纠偏采 T9 为 triage 权威）。
 
-已收口（不再占槽）：**Codex 清账 IDLE ✅**——push 已落地清 L6/F5（[#103](https://github.com/rayw-lab/website/pull/103) tip `1a4296f` ready），落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120)，**待指挥官合入**；顾问 T6–T10 交付 [#117](https://github.com/rayw-lab/website/pull/117) / [#118](https://github.com/rayw-lab/website/pull/118) / [#119](https://github.com/rayw-lab/website/pull/119) / [#122](https://github.com/rayw-lab/website/pull/122) / [#123](https://github.com/rayw-lab/website/pull/123)。
+已收口（不再占槽）：**Codex 清账 IDLE ✅**——push 已落地清 L6/F5（[#103](https://github.com/rayw-lab/website/pull/103) tip `1a4296f` ready），落库审计 GO [#120](https://github.com/rayw-lab/website/pull/120)，**待指挥官合入**；顾问 T6–T11 交付 [#117](https://github.com/rayw-lab/website/pull/117) / [#118](https://github.com/rayw-lab/website/pull/118) / [#119](https://github.com/rayw-lab/website/pull/119) / [#122](https://github.com/rayw-lab/website/pull/122) / [#123](https://github.com/rayw-lab/website/pull/123) / [#124](https://github.com/rayw-lab/website/pull/124)。
 
 | 待派 | 内容 | 条件 |
 |------|------|------|
-| X2 plug 段 | cc-vis-x2-plug（两处新碰撞面补洞：ForegroundFraming 桥腿柱 + StreetProps 东北簇；T9 [#122](https://github.com/rayw-lab/website/pull/122) GO） | TRIAGE-WRAP 收轮 JSON 落盘即派（栈场景① base `c24c7f3`） |
+| X2 plug 段 | cc-vis-x2-plug（两处新碰撞面补洞：ForegroundFraming 桥腿柱 + StreetProps 东北簇；T9 [#122](https://github.com/rayw-lab/website/pull/122) GO） | TRIAGE-WRAP 收轮 JSON 落盘即派（栈场景① base `c24c7f3`）；验收全量 e2e HOLD 待 ENV 签字 |
+| ENV 专项 | main 树 CITY-EXP-01 同挂根因（出泊爬行）修复/环境核证（T11 [#124](https://github.com/rayw-lab/website/pull/124) 双因并立裁决） | 与 plug 并行（文件域正交），TRIAGE-WRAP 收口后派 |
 | 槽空滚动（原 P3） | PERF 六腿 kit · M0-R4 [#106](https://github.com/rayw-lab/website/pull/106) · G1 预登记（#101 已合 ✅） | 槽空即派 |
 | X5-R4（原 P4） | X5 招牌续拍（[#100](https://github.com/rayw-lab/website/pull/100) 已授权） | X2 收口后串行 |
 
@@ -94,6 +94,7 @@ X2 实现段已收轮：[#104](https://github.com/rayw-lab/website/pull/104) **e
 | [#121](https://github.com/rayw-lab/website/pull/121) | 待指挥官合入 | SEC-P6 看板 Tick#9 刷新（#116/#112 超集）· 本单基于其 head `b7dc652` 叠增量，合本单后可关闭 |
 | [#122](https://github.com/rayw-lab/website/pull/122) | draft | 顾问 T9：Tick#9 扇出裁决（X2 复挂归因坐实两处新碰撞面 + plug GO + 合流序 + P6 矩阵口径） |
 | [#123](https://github.com/rayw-lab/website/pull/123) | draft | 顾问 T10：Tick#10 扇出裁决（X2 判活勿重派 + 结局锁 FAIL + T9 合并规则 + Tick#11 预排） |
+| [#124](https://github.com/rayw-lab/website/pull/124) | draft | 顾问 T11：Tick#11 扇出裁决（对照跑收轮 1 failed·判读 B 兑现 + T9 纠偏 + ENV/plug 并行编排 + T7-A 改挂事件门·全量 80 用例口径） |
 | [#116](https://github.com/rayw-lab/website/pull/116) | 内容已并入 #121/本单 | SEC-P5 看板 Tick#6 刷新（#112 超集）· 合本单后可关闭 |
 | [#120](https://github.com/rayw-lab/website/pull/120) | draft | 落库审计 CC-FXN-R103-LANDING-AUDIT：**#103 合流 GO** |
 | [#117](https://github.com/rayw-lab/website/pull/117) | draft | 顾问 T6：Tick#6 扇出裁决 |
