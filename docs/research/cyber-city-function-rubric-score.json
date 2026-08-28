@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0.0",
-  "score": 84,
+  "score": 87,
   "target": 90,
-  "subject": "main@66ed0fe（baseline b2b8684）；OBS-C1/C2 + FXN-C1/C2/C3 + PERF-C1，并包含审计 tip 已实际合流的 FXN-C4 探索计数 n/12；审计分支 cursor/cc-al-fxn-audit-1d6f。",
+  "subject": "main@771b1e4（运行时面 = dc3f56b，docs-only 漂移零漂移互证）；含 FXN-C5 目标线+空闲引导 #90 · FXN-C6 F2 确认层+G9 测速牌 #91 · VIS-X1A-R4 #92 · X3 e2e #93；审计分支 cursor/cc-al-fxn-r7-1d6f（R5 证据正本吸收 + R7/R9/R9F 接续收口）。",
   "rubric": "docs/spec/cyber-city-function-rubric.md",
   "rubricVersion": "1.0",
   "scripts": {
@@ -10,83 +10,83 @@
     "s5": "1.0",
     "legsSkipped": []
   },
-  "scoredAt": "2026-08-27",
-  "scoredBy": "CC-AL-FXN 独立审计（gpt-5.6-sol-xhigh-fast；报告 docs/research/loop8-fxn-audit.md）——实现方自评永不登记",
+  "scoredAt": "2026-08-28",
+  "scoredBy": "CC-AL-FXN 独立审计 R7/R9（claude-fable-5-thinking-xhigh；报告 docs/research/loop8-fxn-r7-audit.md + 吸收正本 loop8-fxn-r5-audit.md）——实现方自评永不登记",
   "passes": {
     "passA": {
-      "score": 81,
+      "score": 86,
       "method": "S-2+S-5 真浏览器脚本执行观察打分；SwiftShader 的 t/墙钟/fps 不作计时类判定"
     },
     "passB": {
-      "score": 84,
-      "method": "同一录屏 + dump 证据集按 F1–F7 冻结锚点逐条打分"
+      "score": 87,
+      "method": "同一录屏 + dump 证据集按 F1–F7 冻结锚点逐条打分（loop8-fxn-r7-audit.md §3）"
     },
-    "reconciliation": "Pass A 81 vs Pass B 84，分歧 3（≤10）；无需强制逐维仲裁，按 §3.1 直接采用证据更完整的 Pass B。"
+    "reconciliation": "Pass A 86 vs Pass B 87，分歧 1（≤10）；无需强制逐维仲裁，按 §3.1 直接采用证据更完整的 Pass B。封顶复核：真机 S-2 缺席 → wave2 §1.2 云端从严封顶 87–88，本轮 87 未越顶，90 禁登。"
   },
   "evidence": {
     "recordings": [
-      "/opt/cursor/artifacts/s2_driving_feedback_audit_20260827.mp4",
-      "/opt/cursor/artifacts/s5_deep_link_poi_progress_audit_20260827.mp4",
-      "/opt/cursor/artifacts/s5_flip_recovery_debug_audit_20260827.mp4",
-      "/opt/cursor/artifacts/s5_reduced_quality_hint_menu_audit_20260827.mp4",
-      "/opt/cursor/artifacts/s5_touch_joystick_core_path_audit_20260827.mp4",
-      "/opt/cursor/artifacts/s5_touch_poi_marker_entry_audit_20260827.mp4",
-      "/opt/cursor/artifacts/s5_explore_completion_audit_20260827.mp4"
+      "/opt/cursor/artifacts/s2_full_session_20260827.webm（R5 §2，30:09）",
+      "/opt/cursor/artifacts/fxn_r7_l4_reduced_motion_20260827.webm",
+      "/opt/cursor/artifacts/fxn_r7_l5a_touch_joystick_20260827.webm",
+      "/opt/cursor/artifacts/fxn_r7_l5b_touch_poi_entry_20260827.webm",
+      "/opt/cursor/artifacts/fxn_r9_l6_quality2_20260828.webm",
+      "/opt/cursor/artifacts/fxn_r9_l7_idle_nudge_20260828.webm"
     ],
     "sessionDumps": [
-      "docs/research/loop8-fxn-audit.md §2–§4（S-2 与 S-5 逐腿 dump 事件 seq/t 摘录）",
-      "/opt/cursor/artifacts/fxn_audit_session_evidence_20260827.json"
+      "docs/research/loop8-fxn-r5-audit.md §2–§3（S-2 + L1–L3 逐腿 dump 事件 seq/t 摘录）",
+      "docs/research/loop8-fxn-r7-audit.md §2.1–§2.4（L4–L7 逐腿 dump 摘录）",
+      "/opt/cursor/artifacts/session-dump-s5-l7-idle-20260828.json（L7 正本，15 events · dropped 0）"
     ],
     "threeQuestions": {
-      "q1": "我是可以变成 CarConcept 巡航车的座舱 AI 机器人。",
-      "q2": "我能在科技城里驾驶、加速、切视角，寻找并进入代表不同作品分区的大楼。",
-      "q3": "先点“变形 · 巡航态”或按 Space，再用 WASD 开到光圈，按 E 进站。"
+      "q1": "我是能变形成 CarConcept 巡航车的座舱 AI 机器人。",
+      "q2": "按 Space 变形后用 WASD 在科技城开车、加速刹车跳跃切视角，跟着『下一站』光柱和光圈找大楼，按 E 进站看各产品线内容。",
+      "q3": "照顶上『下一站 概念车库 141m 1/5』往光柱方向开，进圈按 E。"
     },
-    "environment": "fresh pnpm install --frozen-lockfile → pnpm build → pnpm preview@4337；Chromium；桌面 1440×900 + DevTools touch 375×812；正常/ prefers-reduced-motion / quality=2 分腿；首访清存储。"
+    "environment": "fresh pnpm install --frozen-lockfile → pnpm build（19 pages）→ pnpm preview（R5@4444 / R7@4471 / R9@4473 / R9F@4474，world chunk sha256 1a762db3…3b84eb 四轮逐字节互证）；Playwright Chromium SwiftShader；桌面 1440×900 + 触屏 375×812；正常 / reduced-motion / quality=2 / 空闲分腿；首访清存储实证 ls/ss=0。"
   },
   "dimensions": {
     "f1FirstSceneClarity": {
       "label": "首幕可懂",
       "weight": 0.15,
       "score": 85,
-      "evidence": "S-2 dump robot-idle #3/t103545；CTA/状态/键位提示与三问全对；s5_reduced_quality_hint_menu_audit_20260827.mp4 00:00–00:24。0:15 高段锚不以 SwiftShader 墙钟伪判。"
+      "evidence": "R5 §2 S-2：CTA/状态行/键位 hint 三层接力 + 三问全对 + quest chip robot_idle 恒等门实证（robot-idle #3/t329397）；「0:15」高段计时锚 SwiftShader 禁判恒锁 85。"
     },
     "f2InputFeedback": {
       "label": "操作反馈",
       "weight": 0.2,
       "score": 85,
-      "evidence": "S-2 dump boost-first #8/t612591、world-drive-view #9/#10、respawn #11/t757158、cone-hit #14/t1398161；s2_driving_feedback_audit_20260827.mp4 00:40–01:12。F/刹车未形成同等级确认链，止于 85。"
+      "evidence": "R5 §2 + e2e FB：boost/BRAKE 徽标双沿（brake-first #11/t927570）、悬挂弹跳 chip（suspension-jump #12/t948951）、respawn 双语义 toast（key/fall 分文案）、降档 toast——C6 后确认层缺口清零；「≤100ms」计时锚禁判恒锁 85。"
     },
     "f3DrivingFun": {
       "label": "驾驶乐趣",
       "weight": 0.15,
-      "score": 75,
-      "evidence": "S-2 dump world-drive-start #7/t608839、三次 respawn #11/#13/#15；双视角与速度感成立但自然寻路费力；s2_driving_feedback_audit_20260827.mp4 00:40–01:12。"
+      "score": 85,
+      "evidence": "R5 §2 速度感/双视角/复位友好 + C5 光柱与 chip 解自然寻路（L1 链顺位推进、L6 真实驶入触发圈）+ C6 测速牌玩点（e2e FB-09 world-speedtrap）——上轮 75 的「寻路费力」病根已修复；「≤3s 恢复+主动继续」计时子句禁判，止于 85。"
     },
     "f4PoiGameplay": {
       "label": "POI 游戏化",
       "weight": 0.15,
       "score": 85,
-      "evidence": "L1 dump deep-link #2/t20386 → poi-bounding-in #4/t103895 → world-poi #6/t185240 → shot-apply #7/t185245；s5_deep_link_poi_progress_audit_20260827.mp4 00:00–01:10；S-2 自然发现未达 90 锚。"
+      "evidence": "L1 深链出生落圈（deep-link #2 → world-poi #9 → shot-apply #10）+ L5b 触屏点标进站 + L6 Q2 同会话驶入进站落 car-configurator（楼=分区映射三证）；「30s 自然吸引」计时锚禁判，止于 85。"
     },
     "f5Humanization": {
       "label": "人性化",
       "weight": 0.15,
-      "score": 85,
-      "evidence": "L2 upside-down #6/t172365、flip-jump #7/t735159、respawn{key,fall}；L3 hint-recall #9/t148797；L4 RM instant transform；L5 touch world-drive-start #7/t243235 与点标点 world-poi #6/t178573。录屏：flip 00:10–03:20、RM 00:00–01:46、touch 两段。L6 同会话七步未闭合，止于 85。"
+      "score": 90,
+      "evidence": "五腿全过（90 段锚）：L2 失败恢复三路径（flip-jump/respawn{key}/respawn{fall} 专属 toast）+ L3 ESC 双出口 200 + L4 RM 五面全证（Δt=0/1ms 终态直出与 instant swap）+ L5 触屏两段（摇杆驾驶+点标进站）+ L6 Q2 单会话七步闭合（loop8-fxn-r7-audit.md §2.3，上轮 84 点名缺口已补）；误触无惩罚（变形窗 CTA disabled）。"
     },
     "f6GoalsProgress": {
       "label": "目标/进度",
       "weight": 0.1,
-      "score": 75,
-      "evidence": "完成腿 dump explore-restore #4/t48567 → explore-progress #6/t48571 → explore-complete #7/t48575；s5_explore_completion_audit_20260827.mp4 00:00–00:28。60s 空闲未见主动引导，止于 70–85 段。"
+      "score": 90,
+      "evidence": "90 段锚逐项：可见可选目标（chip「下一站」+ 64m 光柱）+ 进度呈现（step n/5 + 探索 n/12 双计数）+ 完成反馈（chain-complete，e2e 面）+ 空闲主动引导实测（§2.4 双静默期 idle-30s #12/t415490 → idle-nudge{concept-garage} #13/t415496 同拍、#14/#15 复触发、驾驶意图即收）+ 全部可无视（可折叠、pointer-events 穿透、非强制不阻断）。"
     },
     "f7Observability": {
       "label": "可观测完备",
       "weight": 0.1,
       "score": 95,
-      "evidence": "dump schema 1、funnel/counters/dropped 齐；#debug 仅 EXPORT session JSON 一项按钮，下载 session-95e4a641.json（7 events、dropped 0）成功；goal/ux/drive/poi/camera 族均有实测事件；s5_flip_recovery_debug_audit_20260827.mp4 00:00–03:20。"
+      "evidence": "当轮白名单族全接通（goal world-quest / ux idle-30s+idle-nudge / drive brake-first+suspension-jump 实测入账，challenge world-speedtrap e2e FB-09 承接）；dump 可导出（__worldSession 轮询 + #debug EXPORT 实测 session-7d800a3d.json）；funnel/counters/dropped 齐；L7 会话 15 events · dropped 0 · 零 pageerror。"
     }
   },
-  "notes": "独立功能分 84/100 = 85×.15 + 85×.20 + 75×.15 + 85×.15 + 85×.15 + 75×.10 + 95×.10 = raw 83.50 → 84。裁决：有条件放行，未过 90。没有条件腿 skipped；L6 同一 quality=2 会话未闭合进站、L7 无主动空闲引导是已执行缺口，不伪装为 skipped。"
+  "notes": "独立功能分 87/100 = 85×.15 + 85×.20 + 85×.15 + 85×.15 + 90×.15 + 90×.10 + 95×.10 = raw 87.25 → 87。真机 S-2 缺席 → wave2 §1.2 云端从严封顶 87–88：F1/F2/F3/F4 计时高段锚 SwiftShader 禁令下恒锁 85，90 数学不可达、禁登——顺延至真机计时增补轮（advisor 轻量 R4 预案）。L7 时间快进（ticker.maxDelta 1/30→0.15，§2.4 方法留痕）为环境等价操作，沿检测/消费/收起管线全真实执行零旁路。上轮 84 → 87：F3 75→85（C5 寻路修复）、F5 85→90（L6 闭合）、F6 75→90（C5 目标线 + L7 空闲引导实测）。裁决：有条件放行，未过 90。没有条件腿 skipped。"
 }

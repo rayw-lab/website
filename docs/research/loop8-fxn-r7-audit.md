@@ -2,7 +2,7 @@
 
 > 执行模型自报：**claude-fable-5-thinking-xhigh**
 
-> ⏳ 取证进行中（本文件随每条腿完成增量提交；最终登记以 `cyber-city-function-rubric-score.json` 为准）。
+> ✅ 取证已收口（2026-08-28，R9-FINISH）：S-2 + L1–L7 全腿闭合，双 Pass 合议 **87**（真机缺席云端封顶内），登记见 `cyber-city-function-rubric-score.json`，裁决见 §4。
 
 > 🔁 **R8 接续注记（CC-AL-FXN-R8，2026-08-28）**：R7 会话在 L4+L5 提交（tip `756a0f8`）后僵死被 stop——kickoff/环境腿/L4/L5 四提交完整入账，L6–L7 与登记未收口。R8 直接**续写本分支**（`cursor/cc-al-fxn-r7-1d6f`，自真 tip `756a0f8` 顺延，零 rebase 零 cherry-pick，世系干净——R6 hash 重写教训的反面执行），沿用本报告与 PR #103；新 VM 环境重建 + 指纹互证见 §1-R8，L6/L7 取证归档前缀改用 `fxn_r8_*`。评分对象不变（`main@771b1e4`，运行时面 `dc3f56b`），封顶判读不变（真机缺席，云端 87–88，禁登 90）。
 
@@ -96,8 +96,45 @@ funnel **七步全齐**（reveal 16279 / robotIdle 44048 / transformStart 59586 
 
 方法留痕（诚实入账）：中途以 `#debug` 句柄置车体 (125,−18) 朝 +X 后**真实持 W 驶入**触发圈——e2e FB-04/FB-09「置位即真值」同判例（SwiftShader ~1fps 下 141m 自然驾驶墙钟不可承受的环境等价操作；置位本身不触发任何 POI/quest 事件，入圈/进站均由真实驾驶与持按 E 产生）；E 进站沿用 L5 持按判例（瞬时按键在软渲染下 down 沿可能落于相邻 tick 之间）。
 
-### 2.4 L7 空闲（driving 撒手 30 设计秒——上轮 84 登记点名缺口，C5 合流后首次实测）
+### 2.4 L7 空闲（driving 撒手 30 设计秒——上轮 84 登记点名缺口，C5 合流后首次实测；R9F 取证）
 
-（取证进行中，随腿回填。）
+**通过（idle-30s→idle-nudge 全链 + 恢复即收 + 复触发，单会话 10:15 收口）**：`#debug` 首访清存储实证 ls/ss=0；env `{quality:0, reducedMotion:false, viewport:1440×900}`；单会话动线 = 变形 → W 入驾驶 → 撒手静默期 1 → 驾驶意图恢复 → 撒手静默期 2。
 
-（逐维打分、双 Pass 合议与裁决随取证增量回填。）
+| 被测项 | 观察 | 证据 |
+|---|---|---|
+| 空闲沿检测 | driving 态撒手，零驾驶意图累计满 30 设计秒 → `idle-30s #12/t415490`（ux 族，OBS-C1 既有行） | dump `session-dump-s5-l7-idle-20260828.json` |
+| 主动引导呈现 | 同拍消费 `idle-nudge{concept-garage} #13/t415496`（Δ6ms）：nudge 行「空闲了？往光柱方向开——下一站 概念车库 141m」呈现 + chip 脉冲；console `[quest] idle-30s 消费：空闲引导 nudge → concept-garage` 随行 | 截图 `fxn_r9_l7_02_idle_nudge.png`（nudge 行 + chip + `#debug` 事件流 #12/#13 同框三方互证，speed 0 km/h）；录屏 `fxn_r9_l7_idle_nudge_20260828.webm` |
+| 引导不粘身 | 驾驶意图（W）恢复 → nudge 即收（`clearNudge`，hidden 置真），驻留式零淡出赛跑 | 截图 `fxn_r9_l7_03_nudge_cleared.png` |
+| 复触发 | 静默期 2 再满 30 设计秒 → `idle-30s #14/t607746` → `idle-nudge #15/t607748`——「有输入即重置、每静默期至多 1 条、可再打」全语义实证 | 截图 `fxn_r9_l7_04_renudge.png`；console 第二条 `[quest]` 行 |
+| 世界「活着」（F6 空闲面） | 空闲期间 HUD/遥测照常心跳；Q0 轨自动降档独立照常（`quality-auto-drop ×2` t196990/t363593，perf 面与功能链互不污染）；主链完成后静默返回的「自由探索态不打扰」语义有 e2e 面覆盖 | dump 全序列 15 events |
+
+funnel 前五步齐（reveal 28237 / robotIdle 69279 / transformStart 83295 / carReady 133525 / driveStart 142312；firstPoiIn/Interact 空——L7 腿不进站，非缺口）；counters transforms 1 / respawns 0；schema 1 · 15 events · dropped 0 · 零 pageerror。
+
+方法留痕（诚实入账）：本会话 SwiftShader 实测 ~0.7fps，`ticker.delta` 钳制 1/30（`Ticker.maxDelta`）→ 静默期实测设计时累积速率 0.024 设计秒/墙钟秒，30 设计秒真实等待投影 **1255s** 不可承受——环境等价操作：静默期内经 `#debug` 句柄将 `ticker.maxDelta` 1/30→0.15（时间快进 ≈5×），驾驶操作前复位 1/30。沿检测（idleClock 逐拍累计、≥30 阈值比较）、消费（`idleNudge()`）与收起（`clearNudge()`）管线**全部真实执行，零置位零旁路**（L6「置位即真值」判例同构）；两次触发的沿条件均为真实设计秒跨越，物理全程稳定（respawns 0，零污染事件）。
+
+## 3. 逐维打分（Pass B 冻结锚点向量，rubric v1.0 §2.2）
+
+| 维 | 权重 | 分 | 锚点依据（证据索引） |
+|---|:---:|:---:|---|
+| F1 首幕可懂 | 15% | 85 | R5 §2：CTA/状态行/键位 hint 三层接力 + 三问全对 + chip 恒等门实证；「0:15」高段计时锚 SwiftShader 禁判恒锁 85 |
+| F2 操作反馈 | 20% | 85 | R5 §2 + e2e FB：boost/BRAKE 徽标双沿、悬挂弹跳 chip、respawn 双语义 toast、降档 toast——C6 后确认层缺口清零（`brake-first #11` / `suspension-jump #12` 埋点互证）；「≤100ms」计时锚禁判恒锁 85 |
+| F3 驾驶乐趣 | 15% | 85 | R5 §2 速度感/双视角/复位友好 + C5 光柱与 chip 解自然寻路（L1 链顺位推进、L6 真实驶入触发圈）+ C6 测速牌玩点（e2e FB-09 `world-speedtrap`）——上轮 75 的「寻路费力」病根已由 C5 修复；「≤3s 恢复+主动继续」计时子句禁判，止于 85 |
+| F4 POI 游戏化 | 15% | 85 | L1 深链出生落圈 + L5b 触屏点标进站 + L6 Q2 同会话驶入进站落 car-configurator（楼=分区映射三证）；「30s 自然吸引」计时锚禁判，止于 85 |
+| F5 人性化 | 15% | 90 | 五腿全过（90 段锚原文）：L2 失败恢复三路径（翻车自救/R/fall 重生）+ L3 ESC 菜单与 hint 语义 + L4 RM 五面全证 + L5 触屏两段 + **L6 Q2 单会话七步闭合（上轮 84 点名缺口已补，§2.3）**；误触无惩罚（S-2 变形窗 CTA disabled 实证） |
+| F6 目标/进度 | 10% | 90 | 90 段锚逐项：可见可选目标（chip「下一站」+ 光柱）+ 进度呈现（step n/5 + 探索 n/12 双计数）+ 完成反馈（chain-complete，e2e 面）+ **空闲主动引导实测（§2.4：双静默期 idle-30s→idle-nudge、恢复即收）** + 全部可无视（可折叠、pointer-events 穿透、非强制不阻断） |
+| F7 可观测完备 | 10% | 95 | 当轮白名单族全接通（goal `world-quest` / ux `idle-30s`+`idle-nudge` / drive `brake-first`+`suspension-jump` 均实测入账；challenge `world-speedtrap` e2e FB-09 承接）；dump 可导出（`__worldSession` 轮询 + `#debug` EXPORT 实测 `session-7d800a3d.json`）；funnel/counters/dropped 齐；L7 会话 15 events · dropped 0 · 零 pageerror |
+
+合成 = 85×.15 + 85×.20 + 85×.15 + 85×.15 + 90×.15 + 90×.10 + 95×.10 = **raw 87.25 → 87**。反凑分校验（rubric §2.3）：无 ≤70 维，通过。
+
+## 4. 双 Pass 合议与裁决
+
+| Pass | 分 | 口径 |
+|---|:---:|---|
+| Pass A（脚本执行观察） | 86 | 执行者视角七维初分：F6 落 85——空闲引导呈现面成立但形态克制（单行文字 + chip 脉冲，无 attract 相机候选），执行观感按 70-85 段上缘记 |
+| Pass B（冻结锚点逐条） | 87 | §3 向量：F6 按 90 段锚原文逐项过（锚点不含 attract 形态要求，「空闲时世界主动给引导」已实证） |
+
+**合议**：分歧 1（≤10），无需逐维仲裁，按 §3.1 采用证据更完整的 **Pass B = 87**。
+
+**封顶复核**：真机 S-2 缺席 → wave2 §1.2 云端从严封顶 87（F7 95）～88（F7 100）；本轮 87 未越顶，**90 禁登**（F1/F2/F3/F4 计时高段锚 SwiftShader 禁令下恒锁 85，数学上 90 不可达——90 顺延至真机计时增补轮，advisor「轻量 R4」预案照旧）。
+
+**裁决**：有条件放行，未过 90。上轮 84 → 本轮 **87**（+3：F3 75→85 系 C5 寻路修复、F5 85→90 系 L6 闭合、F6 75→90 系 C5 目标线 + L7 空闲引导实测）。登记落 `cyber-city-function-rubric-score.json`；没有条件腿 skipped。
