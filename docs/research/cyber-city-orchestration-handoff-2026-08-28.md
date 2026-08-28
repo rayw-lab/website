@@ -91,6 +91,7 @@
 | 时间 | 结论 |
 |------|------|
 | 02:25 | [MERGE-WAVE](bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) **IDLE**；8/8 合流日志已回填；P1 X2 rebase 待 fan-out |
+| 02:30 | MERGE-WAVE/R9 均 **IDLE**；main `88097f9`；#103 Codex 阻断；**不 fan-out**；Desktop 编排已切 `cc-vis-x2-facade-r2` 分支 |
 
 ---
 
