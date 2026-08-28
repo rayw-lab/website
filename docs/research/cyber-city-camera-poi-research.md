@@ -75,7 +75,7 @@
 
 ## 5. 纪律
 
-- 禁止 `camera-controls` 用户 free 漫游（G5）
+- 禁止 `camera-controls` 用户 free 漫游（G5）——v2 修订送签稿（受控临时环视，签字前不生效）：`docs/spec/cyber-city-camera-orbit.md`
 - 禁止未授权改 `e2e/`、`playwright.config.ts`、像素基线（CAM-VIEW 若动 VIS-03 须单独任务书）
 - tone mapping / poster 三面 **本批次不碰**
 - 登记分只认审计独立分
