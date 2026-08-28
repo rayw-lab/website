@@ -1,0 +1,11 @@
+IGNITION-run8 v1 · Board R3 §F + Audit #154 · parent @2026-08-28T09:01:47Z
+host_fingerprint: cursor-44cb5599-cursor
+HOLD核对行: run7 GO ×2=1/2 (#154); run5/run6 burned; tip lineage 00fd832..fecf595
+tip_frozen: fecf595
+真空档路径: /tmp/evidence-exp01/vacuum-run8.txt MUST be fresh PASS written AFTER this file and BEFORE test start
+Authorization: ONE decisive CITY-EXP-01 labeled run8 · commander same-host only
+PASS→run8-decisive/ + 上链 + 独立复核后才计 ×2 2/2；禁预写 2/2
+FAIL→run8-fail/ STOP
+Forbidden: fps-probe; cross-VM auth copies; auto-retry
+
+真空补签: PASS @2026-08-28T09:01:48Z (file vacuum-run8.txt)
