@@ -2,7 +2,7 @@
 
 状态：**交接推进中**（父代理不写业务代码；`/loop` 已退，不 fan-out 新 VM 子代理）。
 
-最后更新：2026-08-28T02:15 UTC
+最后更新：2026-08-28T02:19 UTC
 
 ## 1. 父代理本轮动作
 
@@ -13,7 +13,7 @@
 | 指挥官要求「3→10」 | ❌ **平台 runtime 不可改**；见 §4 |
 | S2 kit draft PR | ✅ [#108](https://github.com/rayw-lab/website/pull/108) |
 | 本交接单 | draft [#107](https://github.com/rayw-lab/website/pull/107) |
-| 新派 Task | ❌ 等 MERGE-WAVE / R9 收口后再续 |
+| 新派 Task | ❌ 待命；R9 已收口，续盯 MERGE-WAVE #102→#101 |
 
 ## 2. main 与 MERGE-WAVE
 
@@ -35,7 +35,7 @@
 | 7 | #102 VEH-R3 interim | ⏳ OPEN | — |
 | 8 | **#101 X1b voice-pod** | ⏳ OPEN | W2 解锁键，**必须最后合** |
 
-**禁合**：#43 BL2；#103/#104/#105/#106 直至 ready。
+**禁合**：#43 BL2；#104/#105/#106 draft WIP；**#103 已 ready**（待 MERGE-WAVE 收尾后按审计序合流）
 
 ## 3. 在途子代理
 
