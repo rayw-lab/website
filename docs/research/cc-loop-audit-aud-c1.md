@@ -125,10 +125,18 @@ EXIT=1（pipefail 保真，/tmp/aud-c1-run/full-run1.log 尾行；json = test-re
 - **R3-R2 归因轮预登记（HB-3 逐轮）**：口径 = §8 W2/W3 窗设计复用——W2' = `playwright test e2e/cyber-city-{explore,feedback,observability}.spec.ts --project=world-chromium --no-deps --workers=1`（16 例，预计 ~90 min）；W3' = 尾链 `--project=world-perf-chromium --project=city-perf-chromium --project=visual-chromium --no-deps --workers=1`（7 例，预计 ~25 min）。隔离端口同剧本（bind 探针 + 核验②）。**19:05 nav-c1 再占跑道**（explore/feedback/minimap 多文件），继续禁杀排队，跑道空后点火。排队实录：19:16 / 19:24 / 19:32 / 19:41 / 19:49 / 19:57 / 20:03 复测 nav-c1 仍在飞（load ~7.4 平稳），归因轮脚本已备妥（`/tmp/aud-c1-run/run-attrib.sh`，W2'/W3' 两段、bind 探针内建）；**20:17 nav-c1 自然收轮**。
 - **W2' 开跑登记（20:17 UTC）**：真空三查 PASS——① 零 chrome/playwright/lighthouse 存活 ② load 0.02 ③ 监听仅系统服务 + nav-c1 idle preview 4399（0% CPU 零 chrome，登记不判废）。R1 轮 test-results 已先归档 `/tmp/aud-c1-run/archive-r1/`（archive-then-clean ㉙）。点火参数：`E2E_PORT=4534`、W2' 三文件 16 例 `--workers=1`、预计 ~90 min；W3' 尾链 7 例接续、预计 ~25 min。20:17:46Z 探针 rc=0 点火，核验② PASS（4534 监听 PID 52568 cwd=集成树）。
 - **W2' 跑中要点（20:34）**：#1 `CITY-EXP-01`（explore:285）**串行下亦挂**——与 §8「串行全绿=挤兑定谳」不符（R2 W2 该例 ✓18.1m、R3-R1 双 worker 下 ✓）：EXP-01 呈 SwiftShader 时序边缘型 flaky 特征（跨配置漂移），归因待终局 JSON 修正。20:59 第二挂：`CITY-QST-02`（explore:618）**串行下亦挂**（R2 W2 曾 ✓19.3m）——两长腿同窗串行复挂，初步定性：SwiftShader 设计秒/驾驶腿类断言存在**跨窗时序漂移型 flaky**，`workers:2` 挤兑为加重因子而非唯一因（与 §8 单因定谳存在分歧，以本轮 fresh 实测为准登记）。21:24 中段：feedback 文件五例**串行全绿**（含 R1 挂的 FB-01…09 与 HINT-01——此二例挤兑归因成立），obs 链接续。
+- **W2' 终局（20:17:46–21:29:33Z，墙钟 71.8 min，EXIT=1）**：
 
 ```
-（回填中：R3-R2 归因轮结果）
+16 例 = expected 9 / unexpected 3 / skipped 4 / flaky 0（json stats，已归档 /tmp/aud-c1-run/archive-w2/）
+✘ CITY-EXP-01  544s  途径点 (36,-12) 应可达（实测 x=35.2 z=-19.0）
+✘ CITY-QST-02 1392s  driving 空闲 30 设计秒应打 idle-nudge
+✘ CITY-OBS-03   54s  console 摘要零送达（toBeGreaterThanOrEqual 2 → 0）
+skipped 4 = EXP-02（EXP-01 连坐）+ OBS-04/05/06（OBS-03 连坐）
+✓ 9 = QST-01 + feedback 全五例（FB-01…09 ✓23.1m 文件/HINT-01/触屏分稿/…）+ OBS-01 ✓ + OBS-01b ✓ + OBS-02 ✓
 ```
+
+- **R3 归因终判（R1×W2' 交叉 + §8 对照）**：① **挤兑归因成立面** = FB-01…09 / HINT-01 / OBS-01（R1 双 worker 挂 → W2' 串行绿，与 §8 W2 一致）；② **漂移归因修正面** = EXP-01 / QST-02（本窗串行**仍挂**，签名与 R2 W1/我 R1 同型——坐标差 0.3–1.8 单位/设计秒未积满：SwiftShader ~1-5fps 下驾驶腿/设计秒断言呈**跨窗时序漂移**，串行化能降概率不能归零；§8「串行全绿=挤兑定谳」单因结论**不成立**，两窗互证=同例同配置异结果即漂移实证）；③ **OBS-03 环境级确定性红**（54s 快败 + 签名与 §8.3 双发探针结论吻合，独立复现采信其反事实：#164 前 main 同败 → 非 #164 回归）；④ 全窗 CITY-AUD-01（审计对象本体）R1 全量随跑 ✓ + R1 单测 ✓（§4.1）——**#164 零回归结论在两轮三窗中稳定**。
 
 ## 5. LHCI（同 SHA CI artifact 回填，来源登记）
 
