@@ -13,14 +13,14 @@
 | 指挥官要求「3→10」 | ❌ **平台 runtime 不可改**；见 §4 |
 | S2 kit draft PR | ✅ [#108](https://github.com/rayw-lab/website/pull/108) |
 | 本交接单 | draft [#107](https://github.com/rayw-lab/website/pull/107) |
-| 新派 Task | ❌ 待命；R9 已收口，续盯 MERGE-WAVE #102→#101 |
+| 新派 Task | ❌ 待命；MERGE-WAVE 剩 **#101**；#103 有 Codex P1 待补 |
 
 ## 2. main 与 MERGE-WAVE
 
 | 时点 | main tip | 已合 PR |
 |------|----------|---------|
 | 合流前 | `771b1e4` | — |
-| **当前** | **`d73784b`** | #95–#100 #97 **#96** |
+| **当前** | **`e84e77b`** | #95–#100 #97 #96 **#102** |
 
 合流日志（MERGE-WAVE [bc-964f16a5](https://cursor.com/agents/bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e)，进行中）：
 
@@ -32,16 +32,16 @@
 | 4 | #100 G3/X5 书面裁决 | ✅ MERGED | `d738f31` |
 | 5 | #97 FXN 冲90 决策树 | ✅ MERGED | `c609946` |
 | 6 | #96 PERF 指挥官六腿桌面单 | ✅ MERGED | `d73784b` |
-| 7 | #102 VEH-R3 interim | ⏳ OPEN | — |
+| 7 | #102 VEH-R3 interim | ✅ MERGED | `e84e77b` |
 | 8 | **#101 X1b voice-pod** | ⏳ OPEN | W2 解锁键，**必须最后合** |
 
-**禁合**：#43 BL2；#104/#105/#106 draft WIP；**#103 已 ready**（待 MERGE-WAVE 收尾后按审计序合流）
+**禁合**：#43 BL2；#104/#105/#106 draft WIP；**#103 ready 但 Codex P1 未清禁合**（见 §9）
 
 ## 3. 在途子代理
 
 | 代理 | 链接 | 状态 | 最新已知 |
 |------|------|------|----------|
-| MERGE-WAVE | [bc-964f16a5](https://cursor.com/agents/bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) | RUNNING | **6/8** 已合；续 #102→**#101** |
+| MERGE-WAVE | [bc-964f16a5](https://cursor.com/agents/bc-964f16a5-adb2-503b-a3fd-4d6b11862b9e) | RUNNING | **7/8** 已合；**仅剩 #101** |
 | R9 L7 登记 | [bc-558d537c](https://cursor.com/agents/bc-558d537c-022c-5eaf-bb8c-f79dbf7cc395) | ✅ **IDLE 完成** | [#103](https://github.com/rayw-lab/website/pull/103) **ready** @ `c4e844c`；登记 **87**（Pass B，云端封顶合规） |
 | S2 指挥官 kit | [bc-4e331c92](https://cursor.com/agents/bc-4e331c92-5ce4-5035-aa50-8619f9d4c4ee) | ✅ DONE | [#108](https://github.com/rayw-lab/website/pull/108) @ `4d5f9d6` |
 | Desktop 编排 | [bc-6134eb35](https://cursor.com/agents/bc-6134eb35-a319-4d11-96ee-cd6adff3e859) | RUNNING | 不占 async new-VM 槽 |
@@ -79,11 +79,14 @@ artifacts 落 `docs/spec/assets/human-gate/` 后 → 派 **AL-R10** / **AL-PERF*
 3. 合 doc 堆余下若未完成：#100 #97 #96 #102（MERGE-WAVE 应已处理）
 4. **秘书 post-merge 刷新**看板 `cyber-city-score-loop-orchestration.md`
 
-### B. R9 #103 — ✅ 已 ready，待合流
+### B. R9 #103 — ready，**Codex 阻断合流前须补洞**
 
-1. ~~L7 + 登记 JSON~~ → **done**：`c4e844c`，`cyber-city-function-rubric-score.json` **score=87**
-2. **合流时机**：doc 堆 MERGE-WAVE 收尾（#102→#101）后，或按审计指定序；**勿与 #101 抢序除非审计明确**
-3. 合 #103 后 main 功能登记升至 **87**；**90 仍须指挥官 S-2 真机** → AL-R10
+1. ~~L7 + 登记 JSON~~ → done @ `c4e844c`，score **87**
+2. **Codex review（02:19）** — 合流前须定向补洞 Task（Fable5 审计续写，零 src）：
+   - **P1** 刷新单源看板 `cyber-city-score-loop-orchestration.md`（功能 84→87、C5/C6 状态）
+   - **P1** L6 录屏/dump 旧 VM 消亡 → 重采或落库 `docs/spec/assets/human-gate/` 可复验路径
+   - **P2** F5 hint-recall 锚：R5 L3 defer 项是否在 L6 补证，否则 F5 不得 90
+3. MERGE-WAVE **#101 合后** + Codex 清账 → 再合 #103
 
 ### C. 槽空滚动派单（≤3 async new-VM）
 
@@ -92,7 +95,7 @@ artifacts 落 `docs/spec/assets/human-gate/` 后 → 派 **AL-R10** / **AL-PERF*
 | P1 | X2 rebase 收口 | #101 已合 |
 | P2 | PERF 六腿 kit | 可与指挥官真机并行 |
 | P3 | M0-R4 #106 实算 | draft 续跑 |
-| P4 | VEH-R3-R3 | #102 合后 |
+| P4 | VEH-R3-R3 续审 | #102 已合 main，槽空可派 |
 | P5 | G1 预登记 | X1b 合后 |
 | 延后 | X5-R4 | X2 收口后再开 |
 
@@ -100,11 +103,19 @@ artifacts 落 `docs/spec/assets/human-gate/` 后 → 派 **AL-R10** / **AL-PERF*
 
 | 子代理 | 完成？ | 回填 |
 |--------|--------|------|
-| MERGE-WAVE | ⏳ RUNNING 6/8 | main `d73784b`；待 #102 **#101** |
-| R9 | ✅ **IDLE** | [#103 ready](https://github.com/rayw-lab/website/pull/103) @ `c4e844c`；登记 **87**（Pass B 87 / Pass A 86） |
+| MERGE-WAVE | ⏳ RUNNING **7/8** | main `e84e77b`；#102 ✅；**仅剩 #101** |
+| R9 | ✅ IDLE | #103 ready；**Codex P1×2 P2×1 待补** |
 | S2 | ✅ IDLE | [#108](https://github.com/rayw-lab/website/pull/108) @ `4d5f9d6` |
 
-**tick 结论（02:15）**：R9 收口完成；#101 仍 OPEN → X2 rebase 仍等待；#103 可排进合流队列（建议 MERGE-WAVE 完 #101 后审序合 #103）。
+**tick（02:19）**：#102 已合；MERGE-WAVE 7/8；#103 Codex 阻断合流直至看板+L6 证据+F5 锚清账。
+
+## 9. Codex review 摘要（#103 @ `c4e844c`）
+
+| 级 | 要点 | 下一棒 |
+|----|------|--------|
+| P1 | 看板仍写功能 84 / C5·C6 在途 | 同 PR 或秘书 tick 刷新 `cyber-city-score-loop-orchestration.md` |
+| P1 | L6 artifact 随旧 VM 消失，登记仍引用 | 重采 webm+dump 或 human-gate 持久化 |
+| P2 | F5=90 缺 hint-recall 补证 | L6 补跑或登记降 F5 |
 
 ---
 
