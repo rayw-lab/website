@@ -105,10 +105,27 @@ pnpm exec playwright test e2e/cyber-city-audio.spec.ts --project=world-chromium 
 - **R3 fresh 全量（本报告采信的唯一全量结果）**：树 = 「候选 ⊕ main」集成树（`git merge-tree --write-tree origin/main@4a58789 HEAD` = CLEAN，tree `cb8d4e3`；候选分支对 main 的 diff 仅 docs/research 报告件，src/e2e/config 面与 main@`4a58789` 逐字节等价，亦即与锚 `38a2086` 等价——§1 锚间隔自证）；**隔离端口按 #171/#174 剧本**（`E2E_PORT`≠4321、socket bind 探针核验①正证据 + `lsof`+`/proc` 核验②，禁 `ss`；`set -o pipefail` + `EXIT=` 尾行实落日志）；`workers: 2` main 原配。**跑道预检（16:28 UTC）实测非独占**：同 VM `/tmp/nav-c1-wt`（15:55 起跑 playwright + preview:4321-族）与 `/tmp/worktrees/bgm-c1`（16:25 点火 BGM 单 spec）在飞，load 10.26/4 核——纪律禁杀他人进程，**排队等自然收轮**后按 HB-3 预登记开跑（等待与开跑时刻见下）。排队实录（`ps`+`/proc/loadavg` 逐点取证）：16:36 bgm-c1 换双 spec 续跑（bgm+audio）；16:41 / 16:46 / 16:51 三点复测两路仍在飞（load 10.25→11.31→11.95）；17:01 bgm-c1 双 spec 自然收轮，仅剩 nav-c1 全量；17:06 / 17:12 / 17:16 / 17:21 / 17:26 / 17:31 复测 nav-c1 仍在飞，继续排队；**17:36 nav-c1 自然收轮，跑道空**。
 - **HB-3 开跑预登记（17:36–17:38 UTC）**：真空三查 PASS——① `ps` 零 chrome/SwiftShader/playwright/lighthouse 存活；② load 0.14 < 2；③ `lsof -iTCP -sTCP:LISTEN` 仅 exec-daemon/VNC 系统服务，零 preview 僵尸（主树 astro-dev 4321 亦已不在监听，按令仍不复用）。点火参数：集成树 `/tmp/aud-c1-ready-wt`@`62e6f24`、`E2E_PORT=4533`（bind 探针核验①过后钉死）、命令 `pnpm test:e2e`（build 内含）、`set -o pipefail` + `EXIT=` 尾行落 `/tmp/aud-c1-run/full-run1.log`。**预计时长 ~30–60 min**（81 例 workers=2 独占跑道；52 例时代实测 18.5 min 外推 + explore 长腿余量）；超 30 min 推进度心跳、收轮即推结果 commit。
 - **跑中核验与进度实录**：17:36:49Z bind 探针 rc=0（`PORT 4533 FREE`）→ 点火；17:37 核验② PASS——`lsof -t -iTCP:4533` 监听 PID 42170，`/proc/42170/cwd` = `/tmp/aud-c1-ready-wt`（集成树自起 preview，隔离自证）；进度 17:44 = 30 过 0 挂 → 17:52 = 32 过 0 挂（进入 world-chromium 长腿段）→ 18:00 = 32 过 0 挂（QST 级长用例在跑）→ 18:17 = 34 过 **1 挂**（`CITY-QST-02` explore:618，local retries=0）→ 18:25 = 34 过 **2 挂**（`cyber-city-feedback.spec.ts:406` FXN-C1 系）。R1 轮已注定不满足 0/0/0，按 AGENTS §4.3 ≥2 轮预算：让 R1 轮自然跑完留全证（JSON stats + 失败详情），随后逐轮预登记重跑。后续进度：18:42 = 39 过 3 挂 → 18:51 = 51 过 4 挂（第四挂 = `cyber-city-observability.spec.ts:233` OBS-C2）→ 18:58 = 60 过 4 挂（world 尾段，靠近收轮）。窗内旁站登记：17:42 nav-c1 重起 idle preview（4399 口、0% CPU、零 chrome）——非 chrome 级活动，登记不判窗废；load ~7.7 主源 = 本轮自身 workers=2 双 SwiftShader GPU 进程（190%/195% 实测）。集成树已备妥待点火：worktree `/tmp/aud-c1-ready-wt`@`62e6f24`（本地临时 merge，永不推送），`pnpm install --frozen-lockfile` 完成，fresh `--list` = **Total: 81 tests in 17 files**（分母登记，与 #171 dry-run 81/17 一致）。
-- **全量结果**：
+- **R3-R1 轮全量结果（17:36:49–19:00:10Z，墙钟 83.3 min，EXIT=1）**：
 
 ```
-（回填中：R3 全量运行结果；分母以集成树 fresh --list 实数为准）
+分母 81（fresh --list 81 tests in 17 files）
+stats: expected=62 / unexpected=4 / skipped=15 / flaky=0   → 0/0/0 破门
+EXIT=1（pipefail 保真，/tmp/aud-c1-run/full-run1.log 尾行；json = test-results/e2e-results.json，已归档）
+```
+
+| R3-R1 失败（全部 world-chromium） | 时长 | 签名 |
+|---|---|---|
+| CITY-QST-02 | 1374s | `driving 空闲 30 设计秒应打 idle-nudge`（设计秒未积满） |
+| CITY-FB-01…09 | 908s | `Test timeout of 900000ms exceeded` |
+| CITY-HINT-01 | 601s | `[data-world-hint]` expected hidden（淡出窗未走完） |
+| CITY-OBS-01 | 822s | `泊车位 (28,-28) 应可达（实测 x=19.7 z=-19.1）` |
+
+15 skipped = feedback/observability 串行连坐 8（FB-05/06、OBS-01b/02/03/04/05/06）+ 尾链 did-not-run 7（WS-PERF-01 + CITY-PERF-01/02 + VIS-01–04）。通过面：**CITY-AUD-01 ✓ 随全量复验（6.1m 文件级，硬门断言全过）**、CITY-E2E-01–06 全过、EXP-01/02 全过、WS-E2E 族全过、desktop/mobile/car 30 例全过、CITY-BGM ✓。零 pageerror 类签名、零音频相关失败——#164 残余风险面未命中。
+- **与 §8 R2 幽灵 W1 对照（独立双确认）**：四挂与 R2 W1 五挂同属 world 系挤兑型，签名逐字吻合、时长差 ≤3%（QST-02 1374s vs 1394s；FB 908s vs 909s；OBS-01 同断言异坐标）——**`workers:2` + world 无 `fullyParallel:false` 的同项目双 worker 双 3D 上下文挤兑病理获两独立 VM/两独立树交叉证实**；系统性修复 = #134（已入 #104 栈，未落 main）。§8 情报账按 run5-α 先例登记，采信前提 = 本轮独立复核（见 R2 归因轮）。
+- **R3-R2 归因轮预登记（HB-3 逐轮）**：口径 = §8 W2/W3 窗设计复用——W2' = `playwright test e2e/cyber-city-{explore,feedback,observability}.spec.ts --project=world-chromium --no-deps --workers=1`（16 例，预计 ~90 min）；W3' = 尾链 `--project=world-perf-chromium --project=city-perf-chromium --project=visual-chromium --no-deps --workers=1`（7 例，预计 ~25 min）。隔离端口同剧本（bind 探针 + 核验②）。**19:05 nav-c1 再占跑道**（explore/feedback/minimap 多文件），继续禁杀排队，跑道空后点火。
+
+```
+（回填中：R3-R2 归因轮结果）
 ```
 
 ## 5. LHCI（同 SHA CI artifact 回填，来源登记）
