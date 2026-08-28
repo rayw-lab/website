@@ -45,6 +45,7 @@ COMPOSITE_SCORE=⏳
 
 - **80 tests / 16 files**；composite-98-RS 时点 75/15 → +5：`cyber-city-explore` 2→4（[#90](https://github.com/rayw-lab/website/pull/90) C5-R3 G4 目标线 + idle 引导）、`cyber-city-signage` 新文件 +3（[#93](https://github.com/rayw-lab/website/pull/93) X3-R4 CITY-SIGN-01…03）；`cyber-city-feedback` 只改不增（5→5）。
 - `@smoke3d` = **3**（VIS-02/03/04，`grep -c` 实数），与登记口径零漂移。
+- **墙钟观察（实测中）**：world 链单例墙钟显著高于历史预算——CITY-QST-01（#90 新增目标线闭环）单例实测 **5.1 分钟**（SwiftShader ~1fps 下深链出生 + 链推进 + 埋点互证全程）。composite-98-RS §3.3 的每轮 25–40 min 预算按 75 例估，本轮 80 例含 QST/SIGN 新长例，实测总墙钟收尾后登记（预警：预算需上修）。
 
 | 项 | 数值 |
 |----|------|
@@ -75,12 +76,14 @@ COMPOSITE_SCORE=⏳
 
 | 北极星 | 登记位 | 本轮读数 | 说明 |
 |--------|--------|----------|------|
-| 视觉 | `cyber-city-visual-rubric-score.json` | **73** | AL-VIS-L8-W1-R3 独立审计（[#94](https://github.com/rayw-lab/website/pull/94)），本轮恒读不改 |
-| 功能 | `cyber-city-function-rubric-score.json` | **84** | AL-FXN 独立审计（[#84](https://github.com/rayw-lab/website/pull/84)），本轮恒读不改；**不折算进五维** |
+| 视觉 | `cyber-city-visual-rubric-score.json` | **73** | AL-VIS-L8-W1-R3 独立审计登记于 `771b1e4`（[#94](https://github.com/rayw-lab/website/pull/94)），本轮恒读不改 |
+| 功能 | `cyber-city-function-rubric-score.json` | **84** | AL-FXN 独立审计（[#84](https://github.com/rayw-lab/website/pull/84)）登记于 `f2ec089`，本轮恒读不改；**不折算进五维** |
 | 性能 | `cyber-city-perf-rubric-score.json` | **—（缺席）** | 文件不存在（`ls` 实证）；真机六腿 + AL-PERF 未执行。**缺失明示、禁止估值**——LHCI Perf 100 是页面加载性能，不冒充 3D 运行时性能北极星 |
 | 综合 | `score-loop.mjs` 镜像 | ⏳ | 本轮实算值，见 §1 |
 
 性能缺席**不影响**综合五维完整性：五维 = LHCI×2 + e2e + 视觉 + smoke3d，功能/性能是并列北极星（可观测规格 §6.4 冻结）。`score-loop.mjs` northStar 块对 perf 输出 `null` + sources 注记「（缺失）」，人读行显式 `perf —`。
+
+**矩阵行滞后观察（登记备查，不归本轮改）**：`AGENTS.md`「编排 Delta」矩阵行与看板（tip `502fb2b`）仍写视觉 **71**，滞后于 [#94](https://github.com/rayw-lab/website/pull/94)（`771b1e4`）落进 JSON 的 **73**——`score-loop.mjs` northStar 恒读 JSON 登记位，本轮以 JSON 为准；矩阵行刷新权归指挥官/父代理。
 
 ## 5. 证据链核验
 
