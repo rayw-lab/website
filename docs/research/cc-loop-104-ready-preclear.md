@@ -4,6 +4,7 @@
 - **纪律**：只读为主，零 `src/` 改动，本 PR 仅本报告一文件；**本单禁跑全量 e2e**（排在 [#166](https://github.com/rayw-lab/website/pull/166) 合入裁决之后，避免白烧集成树）；禁点 ready、禁合 [#104](https://github.com/rayw-lab/website/pull/104)；未杀任何进程，dry-run worktree 用毕即清（防 stale 树误用）
 - **取证窗**：2026-08-28 15:32–15:55 UTC，全部 `gh`/git fresh 复核
 - **fresh 锚**：#104 tip **`bbba5a5`**（与任务书一致 ✓）· main tip **`40709fc`**（#169；**取证中实测 main 由 `3fe7c5f` 推进两格 docs**——[#168](https://github.com/rayw-lab/website/pull/168) SEC-R5-LEDGER + [#169](https://github.com/rayw-lab/website/pull/169) BGM 调研——集成树时效性风险的活证）· [#134](https://github.com/rayw-lab/website/pull/134) **MERGED** 10:56:08Z · [#167](https://github.com/rayw-lab/website/pull/167) **MERGED** 11:00:25Z（段末审计有条件 GO）· #166 **OPEN draft @`5faab5f`**（未合）
+- **修订（2026-08-28，Codex 事后评 P1×2 落板）**：① r3881989545——全量 e2e 必须对隔离集成树起独立 preview（独立 `E2E_PORT`，禁复用本机 4321 astro-dev）；② r3881989555——`tee` 管道退出码保真（`set -o pipefail` / `${PIPESTATUS[0]}`）+ `EXIT=` 尾行实落日志。改动 = §3 步骤 5 剧本改写 + §5 checklist 第 4/8 项同步；其余取证结论不动
 
 ---
 
@@ -56,8 +57,26 @@ cd /tmp/x2-ready-wt && pnpm install --frozen-lockfile && pnpm build
 pnpm exec playwright test --list | tail -1      # 登记「Total: N tests in M files」入收轮档
 
 # 5. 全量 e2e —— 本单禁跑；开窗后在独占窗口执行（§5 checklist 全过才点火）
+#
+# 5a. 隔离端口选取（Codex r3881989545 补洞）：禁沿用 4321——本机主 checkout 的 astro-dev
+#     常驻该口，而 playwright.config.ts 默认 E2E_PORT=4321 且 reuseExistingServer=!CI，
+#     从 /tmp/x2-ready-wt 点火会静默复用主树 dev server → 即便 81/81 也证明不了集成树。
+# export E2E_PORT=4331                # 集成树专用口；任选 ≠4321 端口，核验空闲后钉死
+# ss -ltn "sport = :$E2E_PORT" | grep -q LISTEN && { echo "端口被占，换号重选"; exit 1; }
+#     # 核验①（点火前）：$E2E_PORT 必须零监听——这样 webServer 必自起、reuse 无从发生
+#
+# 5b. 点火（cwd 必须 = /tmp/x2-ready-wt：webServer 的 preview 以本树 dist/ 起在 $E2E_PORT）
+#     退出码保真（Codex r3881989555 补洞；tee 吞码假成功先例 = T20 fanout §164 / T22 §15）：
+# set -o pipefail                     # 或不开 pipefail、改取 ${PIPESTATUS[0]}，二选一
 # pnpm test:e2e 2>&1 | tee /tmp/x2-ready-full-run1.log
-# 收轮三证：EXIT 尾行 + test-results/e2e-results.json stats（readFileSync 读，Node22 ESM 坑）+ playwright-report
+# EXIT=$?                             # pipefail 下 = playwright 真实退出码（否则恒为 tee 的 0）
+# echo "EXIT=$EXIT" | tee -a /tmp/x2-ready-full-run1.log   # EXIT= 尾行实落日志，收轮三证之一
+#
+# 5c. 隔离核验②（运行中/收轮时）：ss -ltnp 见 $E2E_PORT 有 LISTEN 且进程 cwd=/tmp/x2-ready-wt；
+#     点火前零监听（核验①）+ config 端口单源 ⇒ 该服务只能是集成树 webServer 自起。
+#     任一不符（或发现 baseURL 仍指 4321）= 整轮作废，排障后重跑。
+# 收轮三证：EXIT= 尾行（与 json stats 互证）+ test-results/e2e-results.json stats
+#           （readFileSync 读，Node22 ESM 坑）+ playwright-report
 # 硬门：failed=0 / skipped=0 / flaky=0，expected = 步骤 4 登记的分母实数
 
 # 6. 收轮即 durable 上链（同机强制令②③），然后才允许清理/下一轮
@@ -85,11 +104,11 @@ pnpm exec playwright test --list | tail -1      # 登记「Total: N tests in M f
 | 1 | #166 合入裁决落定 | 合 → 等 mergeCommit 落 main 后重建集成树（§4）；不合 → 照样 fresh 取 main tip 再建 |
 | 2 | fresh 取证四件 | #104 tip（≠`bbba5a5` 即停手核对）· main tip · merge-tree CLEAN 复验 · `--list` 分母登记（§3 步骤 0–4） |
 | 3 | R2 双清登记落板 | §2 表 → 看板单源一行闭环（N2-a 转正闭环 / N2-b 灭失挂证据账）；材料即本文档 |
-| 4 | 跑道独占 | 在飞轮全部**自然收轮**（NAV/AUD/审计类 worktree 的 playwright/chrome 自然退出；纪律禁杀他人进程）；真空三查 = ① 零 chrome/SwiftShader 存活 ② load < 2 ③ 非自管服务/僵尸 preview 清零 |
+| 4 | 跑道独占 | 在飞轮全部**自然收轮**（NAV/AUD/审计类 worktree 的 playwright/chrome 自然退出；纪律禁杀他人进程）；真空三查 = ① 零 chrome/SwiftShader 存活 ② load < 2 ③ 非自管服务/僵尸 preview 清零；**另：集成树点火必用独立 `E2E_PORT` 并过零监听核验（§3 步骤 5a/5c）——主 checkout astro-dev 的 4321 常驻不算僵尸、但禁复用（reuseExistingServer 会静默假测主树）** |
 | 5 | archive-then-clean 铁则（㉙） | 固定序 = ①归档上一趟 test-results 证据（离开覆写半径）→ ②真空三查 → ③才清 test-results 点火；**启动命令永久禁嵌 `rm -rf test-results`** |
 | 6 | 互斥令（㉚） | 窗内全 VM 禁一切 chrome 级活动（探针/截图/LHCI/preview 一律排队）；**父代理自身同受约束** |
 | 7 | 预算 ≥2 轮（AGENTS §4.3） | workers=1 串行口径估轮长：52 例时代 `pnpm test:e2e` 实测 ~18.5–23 min；81 例含 explore 长腿（QST-02 单例 24m 级）**单轮预留 1.5–2h**（T19 §5-6 口径） |
-| 8 | 收轮三证 + durable 上链 | EXIT 尾行 + `e2e-results.json` stats（`readFileSync` 读）+ report；跨 VM 引用必须 commit 上链（同机强制令②③）；未上链 ✓ 不构成过门 |
+| 8 | 收轮三证 + durable 上链 | `EXIT=` 尾行（**`set -o pipefail` 或 `${PIPESTATUS[0]}` 保真后 `echo "EXIT=$EXIT"` 实落日志**——§3 步骤 5b；裸 `cmd \| tee` 恒返 tee 的 0 = 假成功，先例 T20/T22）+ `e2e-results.json` stats（`readFileSync` 读）+ report；跨 VM 引用必须 commit 上链（同机强制令②③）；未上链 ✓ 不构成过门 |
 | 9 | 过门后边界 | 0/0/0 达成 ≠ 测试代理点 ready——**ready/合 #104 权限在父代理**；#167 条件③：合 main 另需 LHCI 不降 + 指挥官口径；#43 禁合维持 |
 
 ## 6. 登记待办（给父代理，均零跑道）
