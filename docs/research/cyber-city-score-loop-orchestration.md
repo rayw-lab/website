@@ -225,7 +225,7 @@ R7 收账窗后当前在途：
 | AUD-C1 段末审计 R3 | [#165](https://github.com/rayw-lab/website/pull/165) 裁定的合后审计 ×1；R1 首派 ERROR 判死 → R2 E7 DEAD 定谳（[#175](https://github.com/rayw-lab/website/pull/175) 追认，tip 冻结 `b5542ac`）→ **R3 附条件 GO 已派**：同分支 `cursor/cc-loop-audit-aud-c1-r2-f37e` append-only 续写，HB-1..5 心跳条款内嵌 + HB-5 违约自动判死预授权（→R4 免开董事会） | **在途 · 生命征象双搏在案**（fresh 16:39Z：HB-1 `f5216ca`@16:26:56Z 接管声明 + HB-2 `3c9f9fc`@16:36:28Z fresh 重锚，间隔 9.5min ≤30min 合规）；分支保留禁删（含 `b5542ac` 禁 force-push）；破门定向补洞 fix-forward 口径维持 |
 | NAV-C1 段末审计 | #166 合前独立审计（`bc-2b5f3253`，15:32:13Z 派出；首派 `bc-5afa39d8` 秒级 ERROR 判死单换轨，F4 合规） | **疑僵尸 · 17:00Z 检查点武装**（无可观测交付物推进；E7 口径检查点前不判死，交付后按 #166 ready 门收账） |
 | BGM-C1 实现段 | 合成氛围垫 v0 实现（[#172](https://github.com/rayw-lab/website/pull/172) 附条件批准开工；开闸五条 + 零资产三证 + 默认 OFF；HG-B1/HG-B2 实现硬门） | **在途**：分支 `cursor/cc-bgm-c1-synth-pad-0fc2` @ `3710b43` 远端实测，**尚无 PR**；含 src 合入须另案董事会急裁 |
-| SEC-R7-LEDGER | 本单：R7 收账（MERGE-WAVE 13 #172/#174/#173/#175 入账 + AUD R2 DEAD 定谳/R3 双搏登记 + BGM-C1 在途 + NAV 疑僵尸检查点，base = main@`4a58789`） | 本单 |
+| SEC-R7-LEDGER | 本单：R7 收账（MERGE-WAVE 13 #172/#174/#173/#175 入账 + AUD R2 DEAD 定谳/R3 双搏登记 + BGM-C1 在途 + NAV 疑僵尸检查点，base = main@`4a58789`） | 本单（PR [#176](https://github.com/rayw-lab/website/pull/176)） |
 
 plug 验证轮已收轮（终局 ⑰）；**plug 交付段 [#134](https://github.com/rayw-lab/website/pull/134) 已收口入栈 ✅ `d99a0e2`**（段末审计有条件 GO [#167](https://github.com/rayw-lab/website/pull/167)；纪律事件 #3 历史在册 ⑱，内容与纪律分账口径维持）；plug r1 `368b4d4`/`839b6fe` 冻结口径随入栈自然收束；残波事件收尾（⑳㉒）。TRIAGE bc-ace126a4 **董事会终止定谳禁 resume**（终裁 §1）。
 
@@ -250,7 +250,7 @@ plug 验证轮已收轮（终局 ⑰）；**plug 交付段 [#134](https://github
 
 | PR | 状态 | 说明 |
 |----|------|------|
-| 本单 | OPEN · **SEC-R7-LEDGER** | R7 收账（MERGE-WAVE 13 + AUD R2 DEAD/R3 双搏 + BGM-C1 在途 + NAV 疑僵尸检查点）；CI 绿后按站立授权 squash 合 |
+| [#176](https://github.com/rayw-lab/website/pull/176) | OPEN · **本单**（SEC-R7-LEDGER） | R7 收账（MERGE-WAVE 13 + AUD R2 DEAD/R3 双搏 + BGM-C1 在途 + NAV 疑僵尸检查点）；CI 绿后按站立授权 squash 合 |
 | [#104](https://github.com/rayw-lab/website/pull/104) | draft · **工程主件** · 禁 ready | X2 立面套件（W2④，tip **`bbba5a5`**，[#134](https://github.com/rayw-lab/website/pull/134) 已入栈 `d99a0e2`）：段末审计有条件 GO（[#167](https://github.com/rayw-lab/website/pull/167)）+ 非 e2e 预清 ✅（[#171](https://github.com/rayw-lab/website/pull/171)）；**ready 单门 = 全量 81 例 0/0/0 开窗**（「候选 ⊕ main」集成树） |
 | [#166](https://github.com/rayw-lab/website/pull/166) | draft · **MERGEABLE + CI 绿** | NAV-C1 M 键小地图 + pin 两段式传送进楼（DP-1 GO / DP-3 双态 hidden，tip `5faab5f` 冲突已解）；NAV 段末审计（在途）过门前禁 ready |
 | [#43](https://github.com/rayw-lab/website/pull/43) | draft · **冻结 NO-GO** | BL2 concept-garage 沿街 hero 楼实模 · 禁止合流（另案） |
