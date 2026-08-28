@@ -1,13 +1,13 @@
-# EXP-01 run5 证据包（同机决定趟 · Board R3 #151）
+# EXP-01 run5-β 证据包（同机诊断 · Board R3 #151 §F · 不计 ×2）
 
-上链人：CC-FXN-EXP01-EVIDENCE-UPLINK（本地执行）· 2026-08-28T08:24Z
-证据来源（本机路径）：`/tmp/evidence-exp01/run5-decisive/`（指挥官 VM，host_fingerprint `cursor-44cb5599-cursor`）
+上链人：CC-FXN-EXP01-EVIDENCE-UPLINK（本地执行）· 2026-08-28T08:24Z；§F 改判注记 08:27Z
+证据来源：`/tmp/evidence-exp01/run5-beta-diagnostic-0803/`（原 `run5-decisive/` 已按 §F 改名）
 
-## 结论三行（口径）
+## 结论三行（§F 最终口径）
 
-- **同机 RUN5_EXIT=0，CITY-EXP-01 通过，墙钟 17.5m**（`env-exp01-run5.log` 末行 `RUN5_EXIT=0`；测试 tip=49a5d6a）。
-- **×2 计数：待独立复核**——本证据包上链只完成 R3 §B/§C 链条中的「三证上链 #129」一步，×2 leg1 须独立复核通过后方可入账；当前 ×2 计数仍为 0/2。
-- **跨 VM 宣称不作数**——云侧 bc-0b5d1fd4（"新ENV"）在另一 VM 报告的 17.6m PASS 及其 remote /tmp 证据，按 R3 §B 自始无效，不计入 ×2（详见 `RUN5-DUAL-CLAIM-CONFLICT-R3.txt`）。
+- **同机 β RUN5_EXIT=0，CITY-EXP-01 通过，墙钟 17.5m**——**仅情报账**；资格账零。
+- **×2 维持 0/2**：run5 标签烧毁、run6 连坐退役；决定趟改锚 **run7/run8**（基线 v2）。
+- **跨 VM α**（bc-0b5d1fd4，17.6m PASS）免责但同样不计 ×2；证据另案 `run5-alpha-diagnostic/` 抢救。
 
 ## 文件清单与 sha256
 

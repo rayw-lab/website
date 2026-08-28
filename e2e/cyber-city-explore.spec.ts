@@ -25,14 +25,10 @@
 // cyber-city.*\.spec\.ts 泛化，零配置改动）；驾驶走 OBS-01 同款遥测闭环
 // driveTo（真实 CDP 键盘输入，禁止 evaluate 直改物理状态）。
 //
-// [CC-FXN-EXP01-ENV run5 签字] 2026-08-28 决胜趟（Board R2 #149 换将后首趟，两键合规）：
-//   IGNITION-run5（父代理签发）+ 真空三查 PASS（chrome=0 / load1=0.14 / astro=0 /
-//   无 fps-probe；脚本文件法防 pgrep 自匹配）→ 独立 worktree @49a5d6a、E2E_PORT=4620、
-//   world-chromium --no-deps 单跑 CITY-EXP-01：passed 17.6m（EXIT=0，
-//   expected:1 / unexpected:0 / skipped:0 / flaky:0）。证据 /tmp/evidence-exp01/
-//   {IGNITION,vacuum}-run5.txt + run5-decisive/（log + e2e-results.json +
-//   session-dump-explore.json + 三截图；trace 无——retain-on-failure 且通过）。
-//   run3（旧 ENV 07:16 诊断趟 passed 17.7m）按 R2 强制降级不计 ×2；run5 为合规首计趟。
+// [CC-FXN-EXP01-ENV run5 留痕] 2026-08-28 诊断情报趟（Board R3 #151 §F；标签已烧毁）：
+//   跨 VM α：CITY-EXP-01 passed 17.6m EXIT=0 @49a5d6a——情报账全额、资格账零（不计 ×2）。
+//   同机 β：passed 17.5m EXIT=0——同样不计 ×2（空引用点火 + 标签双占用）。
+//   ×2 改锚 run7/run8 @ 本基线 v2；run5/run6 退役。禁把本注释读成决胜/首计。
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { u } from './helpers';
