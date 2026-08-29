@@ -11,6 +11,10 @@
 //      CITY-OBS-06 以 §6.2 冻结的多 dump 并集机制合并计分——分母与断言口径不变。
 //   ② OBS-01 动线增加 V 视角往返两拍：CC-VEH-VIEW 已合流（PR #54），
 //      world-drive-view 覆盖随动线自然命中（§3.4 预留行已激活，零补丁语义）。
+//   ③ [CC-OBS-STAB] OBS-01 的 `counters.coneHits === 0` 断言撤销硬 0 口径：
+//      CC-FXN-C2 起 StreetProps.hitCount（城市隔离墩接触力）与锥桶合并进同一
+//      cone-hit 埋点（src/lab/world/index.ts:366），「城市档撞不到东西」的前提已
+//      不成立。改为与 OBS-01b 同构的 counters↔events 互证式（真不变量未放松）。
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -201,11 +205,41 @@ async function saveDump(testInfo: TestInfo, path: string, dump: SessionDump): Pr
 
 const wrapAngle = (a: number): number => Math.atan2(Math.sin(a), Math.cos(a));
 
+/* ————————————— [CC-OBS-STAB] driveTo 闭环稳定化参数（零 src） —————————————
+ * 病历（本 PR body §机制假说 / cc-nav-c1-f3r3-evidence §8-9）：旧 driveTo 是「全程
+ * 满油 + 500ms 墙钟轮询 + 全锁 bang-bang 转向」的开环控速器。实测满油巡航到
+ * 50–64 km/h（HUD 口径 = |forwardSpeed|×scale×3.6，即 7–9 m/设计秒），一拍 500ms
+ * 走 2.4–2.9m；leg1 在 r=4 处「达标」时车头仍朝南满速，leg2 要求近 90° 右转——
+ * 0.5rad 前轮锁下的高速转弯半径把航迹甩到 z≈-32.7（目标线南 5m），正好压在
+ * SpeedTrap 隔板（碰撞体枚举实测 x∈[16.2,17.8] z∈[-29.8,-40.3]）上楔死，
+ * 速度掉到 0.1 再也起不来。旧自救要等「速度<3 连续 45s」才 R 重生，重生回原点又
+ * 复演同一条超速弧——于是要么超时（F3 R3：x=8.3/13.8），要么长时间刮道具
+ * （H2 窗 coneHits=120，经 StreetProps.hitCount 折进同一 cone-hit 计数）。
+ * 三条改法：① 速度治理（压转弯半径与撞击能量）；② 轮询间隔按实测位移自适应
+ * （闭环粒度与帧率/慢放倍率脱钩）；③ 楔死用倒车脱困优先于 R 重生。
+ */
+/** 巡航速度上限（HUD km/h）：高于此值收油滑行，靠 idleBrake 自然减速 */
+const CRUISE_KMH = 22;
+/** 大航向误差档速度（HUD km/h）：错向时先减速把弧压小，比高速画大弧收敛快 */
+const TURN_KMH = 12;
+/** 终末段速度（HUD km/h）：距目标 < COAST_RADIUS_M 时收油滑入，防高速掠过触发圈 */
+const APPROACH_KMH = 8;
+const COAST_RADIUS_M = 7;
+/** 每拍期望位移（m）：轮询间隔按实测位移向此值收敛 */
+const STEP_TRAVEL_M = 0.7;
+/** 转向滞回双阈值（rad）：进 0.10 / 出 0.04，防死区边缘 A/D 抖振 */
+const STEER_ON_RAD = 0.1;
+const STEER_OFF_RAD = 0.04;
+/** 无进展判窗（ms）：距离最优值在此窗内未再改善 > PROGRESS_EPS_M 即判楔死 */
+const NO_PROGRESS_MS = 12_000;
+const PROGRESS_EPS_M = 0.5;
+
 /**
- * 遥测闭环自动驾驶（world-spike pollState 先例的转向扩展）：按住 W，每 0.5s 读
- * __worldSpike.state()，按目标方位差压/放 A/D（rotationY 约定：正 = 左转 = KeyA，
- * Player.steering += 1 / PhysicsVehicle steeringTarget 正左）。卡死自救：速度贴地
- * 超 45s → R 重生重跑（respawn 事件入 timeline 属合法动线，计数互证不受影响）。
+ * 遥测闭环自动驾驶（world-spike pollState 先例的转向扩展）：读 __worldSpike.state()，
+ * 按目标方位差压/放 A/D（rotationY 约定：正 = 左转 = KeyA，Player.steering += 1 /
+ * PhysicsVehicle steeringTarget 正左），按情境速度目标脉冲 W（PWM 式限速）。
+ * 楔死自救：先反向倒车脱困（S + 反打方向）两次，仍无进展才 R 重生
+ * （respawn 事件入 timeline 属合法动线，计数互证不受影响）。
  */
 async function driveTo(
   page: Page,
@@ -213,44 +247,85 @@ async function driveTo(
   opts: { radius: number; timeoutMs: number },
 ): Promise<{ ok: boolean; state: SpikeState }> {
   let steering: 'a' | 'd' | null = null;
+  let throttle = false;
   let state = await readSpike(page);
-  await page.keyboard.down('w');
+
+  const setSteering = async (want: 'a' | 'd' | null): Promise<void> => {
+    if (want === steering) return;
+    if (steering) await page.keyboard.up(steering);
+    if (want) await page.keyboard.down(want);
+    steering = want;
+  };
+  const setThrottle = async (on: boolean): Promise<void> => {
+    if (on === throttle) return;
+    if (on) await page.keyboard.down('w');
+    else await page.keyboard.up('w');
+    throttle = on;
+  };
+
   try {
     const deadline = Date.now() + opts.timeoutMs;
-    let stuckSince = Date.now();
+    let interval = 250;
+    let bestDist = Infinity;
+    let progressAt = Date.now();
+    let escapes = 0;
+
     while (Date.now() < deadline) {
+      const previous = state;
       state = await readSpike(page);
       const dx = target.x - state.x;
       const dz = target.z - state.z;
-      if (Math.hypot(dx, dz) <= opts.radius) return { ok: true, state };
+      const dist = Math.hypot(dx, dz);
+      if (dist <= opts.radius) return { ok: true, state };
 
-      const desired = Math.atan2(-dz, dx); // forward = (cos r, 0, -sin r) 反解
-      const diff = wrapAngle(desired - state.yaw);
-      const want: 'a' | 'd' | null = diff > 0.12 ? 'a' : diff < -0.12 ? 'd' : null;
-      if (want !== steering) {
-        if (steering) await page.keyboard.up(steering);
-        if (want) await page.keyboard.down(want);
-        steering = want;
-      }
+      // 轮询间隔自适应：按上一拍实测位移向 STEP_TRAVEL_M 收敛（帧率/慢放无关）
+      const moved = Math.hypot(state.x - previous.x, state.z - previous.z);
+      if (moved > STEP_TRAVEL_M * 1.3) interval = Math.max(120, Math.round(interval * 0.6));
+      else if (moved < STEP_TRAVEL_M * 0.5) interval = Math.min(500, Math.round(interval * 1.4));
 
-      if (state.speedKmh > 3) stuckSince = Date.now();
-      else if (Date.now() - stuckSince > 45_000) {
-        if (steering) {
-          await page.keyboard.up(steering);
-          steering = null;
+      // 转向：滞回双阈值（forward = (cos r, 0, -sin r) 反解）
+      const diff = wrapAngle(Math.atan2(-dz, dx) - state.yaw);
+      const magnitude = Math.abs(diff);
+      if (magnitude > STEER_ON_RAD) await setSteering(diff > 0 ? 'a' : 'd');
+      else if (magnitude < STEER_OFF_RAD) await setSteering(null);
+
+      // 速度治理：情境目标速度下才给油（脉冲 W ≈ PWM 限速）
+      const wantKmh =
+        dist < COAST_RADIUS_M ? APPROACH_KMH : magnitude > 0.9 ? TURN_KMH : CRUISE_KMH;
+      await setThrottle(state.speedKmh < wantKmh);
+
+      // 进展判据用距离而非速度：贴着障碍物打滑也算无进展
+      if (dist < bestDist - PROGRESS_EPS_M) {
+        bestDist = dist;
+        progressAt = Date.now();
+      } else if (Date.now() - progressAt > NO_PROGRESS_MS) {
+        escapes++;
+        await setSteering(null);
+        await setThrottle(false);
+        if (escapes <= 2) {
+          // 倒车脱困：反打方向后退，把楔在道具上的车拽出来（比 R 重生便宜得多）
+          await page.keyboard.down(diff > 0 ? 'd' : 'a');
+          await page.keyboard.down('s');
+          await page.waitForTimeout(2_500);
+          await page.keyboard.up('s');
+          await page.keyboard.up(diff > 0 ? 'd' : 'a');
+        } else {
+          await page.keyboard.press('r');
+          await page.waitForTimeout(3_000);
+          escapes = 0;
         }
-        await page.keyboard.up('w');
-        await page.keyboard.press('r');
-        await page.waitForTimeout(3_000);
-        await page.keyboard.down('w');
-        stuckSince = Date.now();
+        bestDist = Infinity;
+        progressAt = Date.now();
+        state = await readSpike(page);
+        continue;
       }
-      await page.waitForTimeout(500);
+
+      await page.waitForTimeout(interval);
     }
     return { ok: false, state };
   } finally {
     if (steering) await page.keyboard.up(steering).catch(() => {});
-    await page.keyboard.up('w').catch(() => {});
+    if (throttle) await page.keyboard.up('w').catch(() => {});
   }
 }
 
@@ -324,11 +399,17 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     const respawned = await pollDump(page, (d) => d.counters.respawns >= 1, 30_000);
     expect(respawned.ok, 'R 重生应记入 respawn 事件').toBe(true);
 
-    // 遥测闭环驾驶：沿路走位（避开路口隔离墩）→ autodrive-lab 触发圈
+    // 遥测闭环驾驶：沿路走位（避开路口隔离墩）→ autodrive-lab 触发圈。
+    // [CC-OBS-STAB] 中间路点 (22,-27) 新增：旧两段式在 (0,-24) 直接转 (28,-28)，
+    // 近 90° 转弯把航迹甩进 SpeedTrap 隔板带（x∈[16.2,17.8] z∈[-29.8,-40.3]）。
+    // 本路点把东向平移段钉在隔板北侧 —— 过 x=14.8/19.2 测速门柱（z∈[-24.4,-24.0]）
+    // 时 z≈-26，对柱与隔板双向净空 ≥1.6m / ≥3.7m（碰撞体枚举实测值）。
     const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 4, timeoutMs: 360_000 });
     expect(leg1.ok, `途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`).toBe(true);
-    const leg2 = await driveTo(page, { x: 28, z: -28 }, { radius: 4.5, timeoutMs: 360_000 });
-    expect(leg2.ok, `泊车位 (28,-28) 应可达（实测 x=${leg2.state.x.toFixed(1)} z=${leg2.state.z.toFixed(1)}）`).toBe(true);
+    const leg2 = await driveTo(page, { x: 22, z: -27 }, { radius: 4, timeoutMs: 360_000 });
+    expect(leg2.ok, `途径点 (22,-27) 应可达（实测 x=${leg2.state.x.toFixed(1)} z=${leg2.state.z.toFixed(1)}）`).toBe(true);
+    const leg3 = await driveTo(page, { x: 28, z: -28 }, { radius: 4.5, timeoutMs: 360_000 });
+    expect(leg3.ok, `泊车位 (28,-28) 应可达（实测 x=${leg3.state.x.toFixed(1)} z=${leg3.state.z.toFixed(1)}）`).toBe(true);
 
     // 触发圈进入（poi-bounding-in → firstPoiIn 首达）
     const entered = await pollDump(page, (d) => d.funnel.firstPoiIn !== null, 60_000);
@@ -380,8 +461,15 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     expect(dump.counters.transforms).toBe(count('world-transform'));
     expect(dump.counters.driveViewToggles).toBe(count('world-drive-view'));
     expect(dump.counters.driveViewToggles).toBe(2);
-    // 城市首幕零锥桶（偏差①）：coneHits 恒 0，覆盖由 OBS-01b 灰盒 dump 补充
-    expect(dump.counters.coneHits).toBe(0);
+    // 城市首幕零锥桶（偏差①）：knockedConeCount 恒 0，cone-hit 覆盖由 OBS-01b
+    // 灰盒 dump 补充。[CC-OBS-STAB] 口径修订（偏差③，见文件头注）：counters.coneHits
+    // 在城市档不再恒 0 —— CC-FXN-C2 把 StreetProps.hitCount（隔离墩接触力）折进
+    // 同一 cone-hit 埋点（src/lab/world/index.ts:366），撞墩即计数。断言改回与
+    // OBS-01b 同构的 counters↔events 互证式：有事件时等于最新 total，无事件时为 0。
+    const cityConeEvents = dump.events.filter((e) => e.type === 'cone-hit');
+    expect(dump.counters.coneHits).toBe(
+      cityConeEvents.length ? cityConeEvents[cityConeEvents.length - 1].data?.total : 0,
+    );
 
     await saveDump(testInfo, FUNNEL_DUMP, dump);
     expect(errors.filter((m) => !isKnownUaError(m)), '漏斗全走零未捕获异常').toEqual([]);
