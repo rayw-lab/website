@@ -1,8 +1,9 @@
 # CC-NAV-C1 F3 R4 破门证据固化单（BROKEN_GATE）
 
 > 本单为 docs-only 证据固化，不含任何代码/配置改动，不代表 #166 产品或用例结论。
-> 禁令遵守：本单未运行任何 playwright/preview/build/install/--list，未修改 src/e2e/config，未触碰 #166 分支。
+> 禁令遵守：本单（证据固化 pass）未运行/重跑任何 playwright test/preview/install/build/--list，未修改 src/e2e/config，未触碰 #166 分支；§2 各项为 R4 会话开跑前的 controller live receipt 引用。
 > 固化时间：2026-08-29 21:30 CST（Asia/Shanghai）；机器：wangleideMacBook-Pro-3.local（macOS 26.6.2, arm64, Apple M5）。
+> 修正记录：2026-08-29 按秘书审计更正 §2 四处事实标签（install / build / 端口预检 / 进程预检与 --list）；孤儿 preview 取证移至 §8 归档。R4 结论 BROKEN_GATE、RAW_EXIT=1、QUALIFIED_82=NOT_RUN 均不变。
 
 ## 1. SHA 与世系
 
@@ -15,13 +16,13 @@
 
 `/tmp/f3r4` 与主仓在原命令执行前 status 均干净（本单开工复核：无任何 porcelain 条目）。
 
-## 2. 准备工作核证（install / build / bind / pre-ps / 84-18 账面）
+## 2. 开跑前准备工作核证（install / build / bind / pre-ps / --list，controller live receipt）
 
-- **install**：无独立日志存活；live 核证 `/tmp/f3r4/node_modules` 存在，且 e2e-results 的 `config.argv` 即从该 node_modules 启动 Playwright CLI → install 已完成。
-- **build**：无独立日志存活；live 核证 `/tmp/f3r4/dist/` 存在 21 项（含 `_astro/`、`about/`、`ai-lab/`、`contact/` 等）→ build 产物在位。
-- **4491 bind**：kill 前 `lsof -nP -iTCP:4491 -sTCP:LISTEN` 实测 LISTEN（node 81069, 127.0.0.1:4491）；孤儿服务 `HTTP GET /website/` 返回 **200**（7ms）→ 服务本体健康。
-- **pre-ps**：`PID 81069, PPID=1`，启动时刻 `Sat Aug 29 21:10:00 2026`，argv `/opt/homebrew/Cellar/node/25.9.0_1/bin/node /private/tmp/f3r4/node_modules/.pnpm/astro@7.2.4_*/node_modules/astro/bin/astro.mjs preview --port 4491 --host 127.0.0.1 --json`。
-- **84/18 账面**：candidate b4694cf 登记 `docs/research/cyber-city-test-framework.md:81`「CC-NAV-C1（#166 合入后）**84 tests / 18 files**」（#182 A-⑤，main@52887e5 基线 81/17 → +3）。本单禁跑 `--list`，未复核计数本体，仅引用登记。
+- **install**：controller live receipt——`pnpm install --frozen-lockfile` 成功（pnpm 10.33.3，`Done in 3.2s`，wall 3.89s）。
+- **build**：controller live receipt——`pnpm build` 成功，Astro 生成 **19 pages**（wall 1.75s）。
+- **端口预检（开跑前）**：Python socket bind 探测 4491 → **PROBE_OK**；失败后的 `lsof` listener / HTTP 200 证据属故障取证（见 §8），不构成本预检。
+- **进程预检（开跑前）**：scoped `ps` 排查既有 e2e / preview 进程 → **NO_E2E_BLOCKERS**。
+- **84/18 复核（开跑前）**：新鲜 `pnpm exec playwright test --list`（2026-08-29 21:09:25 CST）返回 **`Total: 84 tests in 18 files`**；与 candidate b4694cf 登记 `docs/research/cyber-city-test-framework.md:81`「CC-NAV-C1（#166 合入后）84 tests / 18 files」（#182 A-⑤，main@52887e5 基线 81/17 → +3）一致。
 
 ## 3. 原命令与原始结果
 
@@ -63,6 +64,7 @@
 ## 8. 清场结果与临时证据
 
 - PID 81069 精确 kill（kill 前 double-check command 含 `/private/tmp/f3r4` 且监听 4491）；等待后 `lsof -iTCP:4491 -sTCP:LISTEN` 空表（rc=1）→ **4491 无 listener**。
+- 孤儿进程取证（原 §2 误标「4491 bind / pre-ps」，移此归档；仅失败语境，非开跑前预检）：kill 前 `lsof -nP -iTCP:4491 -sTCP:LISTEN` 实测 LISTEN（node 81069, 127.0.0.1:4491）；孤儿服务 `HTTP GET /website/` 返回 **200**（7ms）→ 服务本体健康；`PID 81069, PPID=1`，启动时刻 `Sat Aug 29 21:10:00 2026`，argv `/opt/homebrew/Cellar/node/25.9.0_1/bin/node /private/tmp/f3r4/node_modules/.pnpm/astro@7.2.4_*/node_modules/astro/bin/astro.mjs preview --port 4491 --host 127.0.0.1 --json`。
 - `/tmp/f3r4` worktree：status 干净无用户改动 → 主仓 `git worktree remove` 摘除；本证据 worktree push 后同法摘除。
 - 临时证据（/tmp，易失，本 PR 即持久化载体）：
   - `/tmp/f3r4.log`（435B，原文未动）
