@@ -440,7 +440,7 @@ export class Minimap {
     style.textContent = `
 .world-minimap-root{position:absolute;inset:0;z-index:6;pointer-events:none;font-family:system-ui,-apple-system,'Segoe UI','PingFang SC','Noto Sans CJK SC',sans-serif}
 [data-world-state='robot_idle'] .world-minimap-root,[data-world-state='transforming'] .world-minimap-root{display:none!important}
-.world-minimap-btn{position:absolute;top:1rem;right:1.15rem;pointer-events:auto;font:inherit;font-size:.68rem;letter-spacing:.14em;color:#9fb6b1;cursor:pointer;padding:.34em 1em;border-radius:999px;border:1px solid rgba(73,197,182,.32);background:rgba(12,13,17,.6);transition:color .25s,border-color .25s}
+.world-minimap-btn{position:absolute;top:2.85rem;right:.95rem;pointer-events:auto;font:inherit;font-size:.68rem;letter-spacing:.14em;color:#9fb6b1;cursor:pointer;padding:.34em 1em;border-radius:999px;border:1px solid rgba(73,197,182,.32);background:rgba(12,13,17,.6);transition:color .25s,border-color .25s}
 .world-minimap-btn:hover,.world-minimap-btn:focus-visible{color:#eafffb;border-color:rgba(73,197,182,.7)}
 .world-minimap-btn kbd{font:inherit;font-size:.9em;letter-spacing:.1em;padding:.1em .5em;margin-left:.35em;border:1px solid rgba(234,255,251,.35);border-radius:6px;background:rgba(234,255,251,.08)}
 .world-minimap{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:min(62vmin,calc(100vw - 2rem));max-height:min(78vh,42rem);pointer-events:auto;display:flex;flex-direction:column;gap:.55rem;padding:.85rem .95rem .9rem;color:#eafffb;background:rgba(7,11,18,.93);border:1px solid rgba(73,197,182,.55);border-radius:14px;box-shadow:0 0 30px rgba(73,197,182,.22)}

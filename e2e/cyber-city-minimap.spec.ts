@@ -40,6 +40,7 @@ const SEL = {
   transform: '[data-world-transform]',
   hint: '[data-world-hint]',
   escMenu: '[data-world-esc-menu]',
+  audio: '[data-world-audio]',
   panel: '[data-world-minimap]',
   btn: '[data-world-minimap-btn]',
   closeBtn: '[data-world-minimap-close]',
@@ -151,6 +152,16 @@ const firstOf = (
   pred?: (e: SessionEventEntry) => boolean,
 ): SessionEventEntry | undefined =>
   dump.events.find((e) => e.type === type && (pred?.(e) ?? true));
+
+/** boundingBox 轴对齐矩形不相交（CITY-AUD-01 hit-target 合同） */
+const boxesDisjoint = (
+  a: { x: number; y: number; width: number; height: number },
+  b: { x: number; y: number; width: number; height: number },
+): boolean =>
+  a.x + a.width <= b.x ||
+  b.x + b.width <= a.x ||
+  a.y + a.height <= b.y ||
+  b.y + b.height <= a.y;
 
 test.describe('科技城 M 键小地图（CC-NAV-C1 · world-chromium 串行 project）', () => {
   // 3D 挂载单例互斥（cyber-city.spec.ts 同纪律）；长用例单独 setTimeout 放宽
@@ -305,6 +316,18 @@ test.describe('科技城 M 键小地图（CC-NAV-C1 · world-chromium 串行 pro
     await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 120_000 });
     await expect(btn).toBeVisible();
     await expect(page.locator(SEL.hint)).toContainText('M 地图');
+
+    // —— CITY-AUD-01：HUD 右上小地图钮与静音钮 hit-target 不得相交（#166 盖 #164 补洞）
+    const audioBtn = page.locator(SEL.audio);
+    await expect(audioBtn).toBeVisible();
+    const minimapBox = await btn.boundingBox();
+    const audioBox = await audioBtn.boundingBox();
+    expect(minimapBox, '小地图钮应有 boundingBox').not.toBeNull();
+    expect(audioBox, '静音钮应有 boundingBox').not.toBeNull();
+    expect(
+      boxesDisjoint(minimapBox!, audioBox!),
+      '小地图钮与静音钮 hit-target 不得相交（HUD 右上叠盖拦截）',
+    ).toBe(true);
 
     // —— A1 driving 态开合：W 接管后 M 开面板（非模态——世界不暂停、状态机原地）
     await page.keyboard.down('w');
