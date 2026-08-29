@@ -172,7 +172,7 @@
 
 | 工具 | 用途 |
 |------|------|
-| HUD `[data-ws-fps]`（FpsMeter avg / 1% low） | P1/P2 主读数，截图三件套之一 |
+| HUD `[data-ws-fps]`（FpsMeter avg / 1% low） | 真机 P1/P2 屏读 / 截图三件套之一；**CI 城市档以 `__worldSpike.fps()` 为准**；HUD DOM 仅 world-spike / 真机 `#debug` 屏读 |
 | Chrome DevTools Performance | 桌面 20s 录制互证 + CPU 4x throttle 腿；CPU/GPU 归因分叉 |
 | `chrome://inspect` | 安卓远程调试（human-gate §2.2 既有） |
 | `#debug` 面板 | drawCalls/triangles/FPS 走查（OBS-C2 已合）；GPU ms 行为 v1.1 裁决点（§7.1） |

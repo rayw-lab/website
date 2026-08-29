@@ -87,7 +87,7 @@ dependencies: ['city-perf-chromium'],                // 原 ['world-perf-chromiu
 
 | 底座 | 事实 | 出处 |
 |------|------|------|
-| 取证钩子 | `__worldSpike.backend/fps()/info()/state()` 在 `/` 城市档已挂（两页共用装配段）；`__worldSession.dump()`（OBS-C1 #53）；HUD `[data-ws-fps]`；`data-world-state` 四态 | PERF-RS §3.4 |
+| 取证钩子 | 引擎 `__worldSpike.fps()` / `info()` / `state()` 在 `/` 城市档已挂（两页共用装配段）；`__worldSession.dump()`（OBS-C1 #53）；`data-world-state` 四态；HUD `[data-ws-fps]` DOM 仅灰盒 `/world-spike/` 可选 | PERF-RS §3.4 · CC-PERF-SPEC #183 |
 | 深链 | `?quality=0\|1\|2` 已转正（M9/CC-E7）；dump `env.quality` 已入 schema（CITY-OBS 已断言 ∈ {0,1,2}） | 观测规格 §3.2 |
 | 超时标定 | 挂载 `ready` 210s · `robot_idle` 120s · `car_ready` 120s · `driving` 60s · driveTo 腿 360s（CITY-OBS-01 实战绿） | `e2e/cyber-city.spec.ts` / `cyber-city-observability.spec.ts` |
 | 采样标定 | ≥5s 且 ≥6 帧、封顶 45s、stall 50ms、p50/p95/max/stallCount/stallRatio/approxFps | `e2e/world-spike-perf.spec.ts` |
@@ -102,7 +102,7 @@ dependencies: ['city-perf-chromium'],                // 原 ['world-perf-chromiu
 2. **环境指纹**：`userAgent` / `hardwareConcurrency` / `devicePixelRatio` / `'gpu' in navigator` / viewport / **`__worldSpike.backend`（实际后端，防 SwiftShader WebGPU 回退假象）** / `dump().env.quality` / `ci` 布尔。CI 单腿，不跑 `?gl=1`（§0-1）。
 3. **变形 + 脚本化驾驶 20s 墙钟**：CTA 点击（或 Space）→ `transforming` → `car_ready`（120s；`transformToCarReadyMs` 采集不判定）→ 压 W 至 `driving` + 速度 >2km/h → 补足 20s 墙钟，途中 2 次急转（A/D 各 ~0.6s 脉冲）+ 1 次撞道具尝试（城市档 = 隔离墩/道具，`counters.coneHits` 承接——**尝试同源、命中不判**，防慢动作动线抖动假阴性）+ 1 次 Shift boost（≥1.5s，`boost-first` 事件互证）。
 4. **rAF 帧间隔采样**（驾驶不间断，W 保持按住）：标定全抄 WS-PERF-01——`SAMPLE_MIN_MS 5000` / `SAMPLE_MIN_FRAMES 6` / `SAMPLE_CAP_MS 45000` / `STALL_MS 50`；统计 p50/p95/max/stallCount/stallRatio/approxFps。两档同标定才可横比。
-5. **互证读数**：`__worldSpike.fps()`（avg/low1）+ `info()`（drawCalls/triangles——**城市档负载基线首轮建档**，环境无关、唯一可跨环境硬比读数）+ `state()`（速度证明驾驶真发生）+ HUD `[data-ws-fps]` 文本（`/^\d+ \/ \d+$/`）。
+5. **互证读数**：`__worldSpike.fps()`（avg/low1）+ `info()`（drawCalls/triangles——**城市档负载基线首轮建档**，环境无关、唯一可跨环境硬比读数）+ `state()`（速度证明驾驶真发生）。城市页无 `[data-ws-fps]` HUD DOM（human-gate §5.4）。
 6. **硬断言**（§2.2 清单）执行后——
 7. **证据落盘**：`test-results/city-perf-evidence.jsonl` 追加全量行（§2.5 schema）+ `test.info().attach('city-perf-evidence.json')` + `__worldSession.dump()` 落盘 `test-results/session-dump-city-perf.json` 并 attach（观测规格 §6.1 `session-dump-<case>` 命名族，case = `city-perf`；smoke 分母不收——function-smoke 只读显式 `--dump` 传参，零干扰）。
 
@@ -112,7 +112,7 @@ dependencies: ['city-perf-chromium'],                // 原 ['world-perf-chromiu
 |---|------|------|
 | H1 | 状态机走通 | `ready → robot_idle → car_ready → driving` 依序达成（各步超时 §1.4 标定） |
 | H2 | 驾驶真发生 | `state().speedKmh > 2`（轮询，60s 预算） |
-| H3 | 帧率仪表活着 | `fps().avg > 0` 且 HUD `[data-ws-fps]` 匹配 `/^\d+ \/ \d+$/` |
+| H3 | 帧率仪表活着 | `fps().avg > 0` 且 `fps().low1 > 0`（引擎探针；城市页无 HUD DOM） |
 | H4 | rAF 持续出帧 | 采样 `frames ≥ 6` |
 | H5 | 漏斗互证 | `dump().funnel` 的 `robotIdle`/`carReady`/`driveStart` 非 null 且单调不减 |
 | H6 | 零未捕获异常 | `pageerror` 断零（UA「Transition was skipped」唯一白名单，既有惯例） |
@@ -149,7 +149,7 @@ dependencies: ['city-perf-chromium'],                // 原 ['world-perf-chromiu
            "quality": 0 },
   "timing": { "loadToRobotIdleMs": 0, "transformToCarReadyMs": 0 },   // 采集不判定
   "driveMs": 20000,
-  "hud": { "fpsText": "1 / 0" },
+  "hud": { "fpsText": null, "cityShellNoHudFps": true },
   "meter": { "fps": { "avg": 0, "low1": 0 }, "info": { "drawCalls": 0, "triangles": 0 } },
   "sampling": { "frames": 0, "durationMs": 0, "p50Ms": 0, "p95Ms": 0, "maxMs": 0,
                 "stallCount": 0, "stallRatio": 0, "approxFps": 0 },
@@ -182,7 +182,7 @@ dependencies: ['city-perf-chromium'],                // 原 ['world-perf-chromiu
 2. 断言 `dump().env.quality === 2`（深链生效的机读证明）；
 3. CTA 变形 → `car_ready`（120s）→ W 驾驶（速度 >2km/h）；
 4. driveTo 最近 POI 触发圈（预算 360s；动线打法镜像 CITY-OBS-01 已实战跑绿的 driveTo 遥测闭环）→ `poi-bounding-in` 入 dump → E 进站，route abort 拦下 navigate（跳转前取证合同延续）；
-5. 硬断言：funnel 七步（`reveal…firstPoiInteract`）非 null 且单调不减、`world-poi` 事件在档、HUD 出数、零 pageerror；
+5. 硬断言：funnel 七步（`reveal…firstPoiInteract`）非 null 且单调不减、`world-poi` 事件在档、`fps().avg > 0` 且 `fps().low1 > 0`（引擎探针）、零 pageerror；
 6. 证据：jsonl 精简行（§2.5）——Q2 档 drawCalls/triangles 与 Q0 行对照即梯退表实效的 CI 旁证。
 
 **显式不做**：帧率采样（存在性腿不采样，避免双倍尾巴）；Q2 视觉面判定（归视觉 rubric / AL 对照帧）；reduced-motion × Q2 组合矩阵（既有 CITY-E2E-04 守 reduced-motion 主路径，组合腿按需入 v1.1）。
