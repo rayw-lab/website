@@ -108,6 +108,60 @@ const FUNNEL_STEPS = [
 
 /* ———————————————————— 公共探针 ———————————————————— */
 
+/**
+ * [CC-OBS-H2] dispose console 持久侧信道（OBS-03 取证面）
+ *
+ * 背景（docs/research/cc-loop-audit-aud-c1.md §8.3 机制探针 + §6 条件面 5）：本
+ * chromium 构建（headless-shell 151）卸载期 console 不再经 CDP 送达监听器——
+ * `pagehide(persisted=false)` 正常、facade dispose 照跑、产品语义无回归，被击穿
+ * 的是「用 page.on('console') 收卸载期输出」这一取证方法。同节探针已实证卸载期
+ * 同步 Storage 写入可取回，故改由页内包裹 console.table / console.info 把调用落
+ * 到 `sessionStorage`（同源导航后仍可读），断言在新文档里读回。
+ *
+ * 零 src：包裹发生在测试注入的 init script 内，被测实现（SessionTimeline.dispose
+ * 仍是 table×2 + `[session]` 一行）与观测白名单 / schemaVersion 一字未动。
+ */
+const CONSOLE_CHANNEL_KEY = '__obs03ConsoleChannel';
+
+interface ConsoleRecord {
+  kind: 'table' | 'info';
+  text: string;
+}
+
+/** 必须在首个 goto 之前安装：init script 对本 tab 后续所有文档生效（含离页目标页） */
+async function installConsoleSideChannel(page: Page): Promise<void> {
+  await page.addInitScript((storeKey: string) => {
+    const push = (kind: string, text: string): void => {
+      try {
+        const raw = sessionStorage.getItem(storeKey);
+        const list = raw ? (JSON.parse(raw) as unknown[]) : [];
+        list.push({ kind, text });
+        sessionStorage.setItem(storeKey, JSON.stringify(list));
+      } catch {
+        /* 侧信道故障不得影响被测页（sanitize/quota 同纪律） */
+      }
+    };
+    for (const kind of ['table', 'info'] as const) {
+      const original = console[kind].bind(console);
+      console[kind] = (...args: unknown[]): void => {
+        push(kind, typeof args[0] === 'string' ? args[0] : '');
+        original(...args);
+      };
+    }
+  }, CONSOLE_CHANNEL_KEY);
+}
+
+/** 侧信道回读（同源 sessionStorage，卸载期写入在新文档可见） */
+async function readConsoleSideChannel(page: Page): Promise<ConsoleRecord[]> {
+  return page.evaluate((storeKey: string) => {
+    try {
+      return JSON.parse(sessionStorage.getItem(storeKey) ?? '[]') as { kind: string; text: string }[];
+    } catch {
+      return [];
+    }
+  }, CONSOLE_CHANNEL_KEY) as Promise<ConsoleRecord[]>;
+}
+
 function trackErrors(page: Page): string[] {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
@@ -442,16 +496,17 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
   //       CITY-OBS-02 挂载断言 + 代码评审保证（离页后上下文已换，同页断言不可行）。
   //       bfcache 排除：测试侧挂 unload 监听使页面不进 bfcache（Chromium 语义）——
   //       pagehide(!persisted) → facade dispose 确定性触发（§4.2 时序合同）。
+  //       [CC-OBS-H2] 取证面改造：卸载期 console 不再经 CDP 送达（audit §8.3 机制
+  //       探针），改走 sessionStorage 持久侧信道回读（installConsoleSideChannel）；
+  //       断言口径（table 恰两次 + [session] 摘要恰一行）逐字不变，零 src 改动。
   // ---------------------------------------------------------------------------
   test('CITY-OBS-03 dispose 合同：卸载前可取证 + 卸载时 console 摘要一次（table×2 + [session] 一行）', async ({ page }) => {
     const errors = trackErrors(page);
-    const tables: string[] = [];
-    const infos: string[] = [];
-    page.on('console', (msg) => {
-      if (msg.type() === 'table') tables.push(msg.text());
-      else infos.push(msg.text());
-    });
+    // CDP 通道并行留观（诊断用，不参与判定——本构建卸载期送达为 0 属已知，§8.3）
+    const cdpMessages: string[] = [];
+    page.on('console', (msg) => cdpMessages.push(`${msg.type()}:${msg.text()}`));
 
+    await installConsoleSideChannel(page);
     await page.goto(PAGE_URL);
     await expect(page.locator(SEL.host)).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
 
@@ -464,12 +519,23 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     await page.goto(HOME_URL);
     await page.waitForURL(new RegExp(`${HOME_URL}$`));
 
-    // dispose 摘要（console 消息经 CDP 异步送达，轮询收账）：
+    // dispose 摘要（持久侧信道回读；卸载期写入在离页目标文档同源可见）：
     // console.table(funnel) + console.table(counters) 恰两次 + [session] 摘要恰一行
-    await expect.poll(() => tables.length, { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
+    await expect
+      .poll(async () => (await readConsoleSideChannel(page)).filter((r) => r.kind === 'table').length, {
+        timeout: 15_000,
+      })
+      .toBeGreaterThanOrEqual(2);
+
+    const records = await readConsoleSideChannel(page);
+    const tables = records.filter((r) => r.kind === 'table');
     expect(tables.length, 'dispose 应 console.table 恰两次（funnel + counters）').toBe(2);
-    const summaries = infos.filter((t) => /\[session\] .+ 事件 \d+ 条（丢弃 \d+）/.test(t));
+    const summaries = records.filter(
+      (r) => r.kind === 'info' && /\[session\] .+ 事件 \d+ 条（丢弃 \d+）/.test(r.text),
+    );
     expect(summaries.length, 'dispose 应输出 [session] 摘要恰一行（幂等：二次调用零输出）').toBe(1);
+    // CDP 侧留观计数（零属已知构建行为，不判定）
+    test.info().annotations.push({ type: 'OBS03_CDP_MESSAGES', description: String(cdpMessages.length) });
 
     expect(errors.filter((m) => !isKnownUaError(m))).toEqual([]);
   });
