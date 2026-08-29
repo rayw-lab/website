@@ -362,6 +362,8 @@ DOM 契约（e2e SEL 对齐）：根 `[data-debug-panel]`（`position:fixed` 右
 
 补充纪律：OBS 用例全程监听 `pageerror` 断零（既有惯例）；SwiftShader 下只断存在性/顺序性，**禁止**对 t 值设阈值。
 
+取证面登记（[CC-OBS-H2]，2026-08-29）：CITY-OBS-03 的「卸载过程 console」不再经 `page.on('console')`（CDP）收账——headless-shell 151 起卸载期 console 不送达监听器（机制探针见 `docs/research/cc-loop-audit-aud-c1.md` §8.3：`pagehide(persisted=false)` 正常、dispose 照跑，被击穿的是取证方法而非产品语义）。改为测试侧 init script 包裹 `console.table` / `console.info` 落 `sessionStorage`，离页后在同源目标页回读。**断言口径（table 恰两次 + `[session]` 摘要恰一行）与实现（`SessionTimeline.dispose`）零变更**；事件白名单与 `schemaVersion` 不动。
+
 ---
 
 ## 8. 实现切分与文件域
