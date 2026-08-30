@@ -1,0 +1,18 @@
+REPORT_PATH=test-results/e2e-results.json
+LAST_RUN_PATH=test-results/.last-run.json
+STATS_EXPECTED=6
+STATS_UNEXPECTED=0
+STATS_SKIPPED=0
+STATS_FLAKY=0
+TOP_LEVEL_ERRORS=0
+LAST_RUN_STATUS=passed
+LAST_RUN_FAILED_TESTS=0
+TEST_COUNT=6
+1. FILE=cyber-city-audio.spec.ts PROJECT=world-chromium STATUS=passed RESULT_COUNT=1 TITLE=科技城音效层 @phase0（CC-AUD-C1 · world-chromium 串行 project） › CITY-AUD-01 首手势前零 AudioContext → CTA 解锁 + 变形音计数 → 静音钮持久（localStorage 还原/写回）→ 驾驶引擎层激活
+2. FILE=cyber-city-bgm.spec.ts PROJECT=world-chromium STATUS=passed RESULT_COUNT=1 TITLE=科技城 BGM 氛围垫 @phase0（CC-BGM-C1 · world-chromium 串行 project） › CITY-BGM-01 用例1（无种子挂载）：懒创建回归 + 样式门 + 默认 OFF + 开关钮持久 + user 埋点 + 主静音优先 + 驾驶 ducking + 零音频请求
+3. FILE=cyber-city-bgm.spec.ts PROJECT=world-chromium STATUS=passed RESULT_COUNT=1 TITLE=科技城 BGM 氛围垫 @phase0（CC-BGM-C1 · world-chromium 串行 project） › CITY-BGM-01 用例2（种子 world-bgm-on=1 挂载）：解锁沿自动恢复播放（E）+ restore 埋点（H 后半）
+4. FILE=cyber-city-minimap.spec.ts PROJECT=world-chromium STATUS=passed RESULT_COUNT=1 TITLE=科技城 M 键小地图（CC-NAV-C1 · world-chromium 串行 project） › CITY-NAV-01 全链：M/Esc 开合（壳菜单零双响）→ Tab+Enter 选楼传送 → E 确认进站路由链 + 埋点 seq 序
+5. FILE=cyber-city-minimap.spec.ts PROJECT=world-chromium STATUS=passed RESULT_COUNT=1 TITLE=科技城 M 键小地图（CC-NAV-C1 · world-chromium 串行 project） › CITY-NAV-02 恒等门：robot_idle 按 M 零反应/零面板 DOM/钮 hidden → 键位卡含 M 地图 → driving 态 M 开合
+6. FILE=cyber-city-minimap.spec.ts PROJECT=world-chromium STATUS=passed RESULT_COUNT=1 TITLE=科技城小地图触屏/reduced-motion（CC-NAV-C1 · world-chromium 串行 project） › CITY-NAV-03 触屏+直切：HUD 钮点按开合（reduced-motion 即达终态）→ pin 点按传送落 parkingBay
+JSON_GATE=PASS
+NODE_SUMMARY_EXIT=0

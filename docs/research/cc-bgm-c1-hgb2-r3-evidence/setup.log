@@ -1,0 +1,33 @@
+SETUP_START_UTC=2026-08-30T15:27:08Z
+SETUP_START_BEIJING=2026-08-30T23:27:08+0800
+Preparing worktree (detached HEAD fe46a4f)
+HEAD is now at fe46a4f Merge main R2 evidence ledger into CC-BGM-C1
+WORKTREE_ADD_EXIT=0
+/private/tmp/bgm177-r3
+HEAD=fe46a4f604791e7bf71275efdf3e33e2d3011edf
+parents=d0189262e623a9f67fea5d275db922b818844292 9948bc1f222bbb080e0d03b259f89ebf2c9a970c
+tree=109837e4394bafb2172337787167c24d04e84663
+subject=Merge main R2 evidence ledger into CC-BGM-C1
+committer_time=2026-08-30T23:00:38+08:00
+DIFF_CHECK_FIRST_PARENT_BEGIN
+DIFF_CHECK_FIRST_PARENT_END
+DIFF_CHECK_FIRST_PARENT_EXIT=0
+DIFF_CHECK_MAIN_PARENT_BEGIN
+DIFF_CHECK_MAIN_PARENT_END
+DIFF_CHECK_MAIN_PARENT_EXIT=0
+PORCELAIN_BEGIN
+PORCELAIN_END
+PORCELAIN_EXIT=0
+PORCELAIN_COUNT=0
+DF_H_BEGIN
+Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk3s5   926Gi   639Gi   240Gi    73%    7.4M  2.5G    0%   /System/Volumes/Data
+DF_H_END
+DF_H_EXIT=0
+DF_K_BEGIN
+Filesystem   1024-blocks      Used Available Capacity iused      ifree %iused  Mounted on
+/dev/disk3s5   971298980 669775784 251811900    73% 7420353 2518119000    0%   /System/Volumes/Data
+DF_K_END
+DF_K_EXIT=0
+SETUP_END_UTC=2026-08-30T15:27:08Z
+SETUP_EXIT=0
