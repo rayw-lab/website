@@ -1,4 +1,47 @@
 # Phase 0 提分 Loop 编排看板
+`main` @ `9d21b1b` · 2026-08-30 Asia/Shanghai · **SEC-R9 正式收账窗（#166 已落地）**：MERGE-WAVE 16/17 全量落 main（#166 CC-NAV-C1 squash `9d21b1b` = 现 tip）+ **SEC-R9 CLOSED** · **#177 静态合流已完成、运行态三门 `DEFERRED_BY_USER_LOCAL_LOAD` 保持 draft** · **SEC-R10 仅预留 PENDING** · [#189](https://github.com/rayw-lab/website/pull/189) STAGING 保持 OPEN · [#185](https://github.com/rayw-lab/website/pull/185)/[#104](https://github.com/rayw-lab/website/pull/104) 运行态暂停 · **登记矩阵维持 80 / 73 / 87 / —（不变）** · 范式 `cyber-city-orchestration-paradigm.md` · 本单 = SEC-R9-LEDGER（**#166 落地收账正式登记行**；base = main@`9d21b1b`，改看板单文件，零 src）
+
+> **SEC-R9 正式收账窗（SEC-R9-LEDGER 本单登记核心，事实全 `gh`/git fresh 复核，快照 2026-08-30 Asia/Shanghai，tip = `9d21b1b`）**：**口径**：#182 §D 曾裁「SEC-R9 = #166 落地收账」——**#166 已于 2026-08-30T04:50:48Z squash 合入 main → `9d21b1b`**，本单为 **SEC-R9 落地收账正式行**（区别于 R9 中间收账窗 SEC-R9-pre-LEDGER [#188](https://github.com/rayw-lab/website/pull/188) `32fc34a` 的中间窗登记）。① **#166 正式登记 MERGED → `9d21b1b`**（原 head `b4694cf`，squash 合入；`gh pr view 166` 实测 mergedAt `2026-08-30T04:50:48Z` / mergeCommit `9d21b1b…`）。② **A-④ 双证分列（CI + R7 本地跑道，分立缺一不可）**：**(i) 构建面** = CI 五门在最终 tip `b4694cf` 转绿，run **33234213554** SUCCESS（controller gate receipt + 本单 fresh 复核 `conclusion=success`、`headSha=b4694cf`）；**(ii) e2e 面** = R7 本地跑道 **82 例 0 failed / 0 skipped / 0 flaky** 单次 full attempt，三证齐全，证据件 **[#198](https://github.com/rayw-lab/website/pull/198)**（`0c44fc2`，R7 82/82 PASS evidence；`expected=82 / unexpected=0 / skipped=0 / flaky=0`、`EXIT=0` / `NAV_F3_EXIT=0`、时长 4,193,155.485 ms、墙钟 71m13s）。③ **SEC-R9 CLOSED**：本收账行随 #166 落地闭合，登记链 = R9-pre（[#188](https://github.com/rayw-lab/website/pull/188) `32fc34a`）→ **SEC-R9-LEDGER（本单）**，不重复冒登、不跨 tick 拖欠。④ **MERGE-WAVE 16/17 全量入账**（合入序按 mergedAt，base = #184 `e1d736c` 起，经 EOD 交接档 `eed8640`）：见下方「MERGE-WAVE 16/17 续表」。⑤ **#177 静态合流已完成**——merge commit 父 = `2b00c31 + 9d21b1b`，三冲突文件按 [#189](https://github.com/rayw-lab/website/pull/189) 剧本解毕（SessionTimeline 42 type/10 族/ux 11；observability 合并事件行 + `teleport`；test-framework 单章节三行表 81/17→84/18→86/19），GitHub CI run **33294086298** SUCCESS；**但运行态三门 `DEFERRED_BY_USER_LOCAL_LOAD`**（本地 astro check / fresh Playwright list 86/19 / HG-B2 双用例六例合流树冒烟）——**保持 draft，禁止以 GitHub CI 替代 HG-B2**（HG-B2 是「合流树上重跑双用例」的语义门，CI 不承载该语义，#182 B 门口径不变）。⑥ **登记矩阵维持 80 / 73 / 87 / —**，北极星 **98 / 98 / 90 / 85**（#166 为体验增项 + 工程铺面，不触登记分；性能第四行维持 `—`，解锁条件 = 指挥官真机六腿 → AL-PERF，永不代决；指挥官边界不变——CAM / 真机六腿 / Android S-2 均未触，无新增指挥官决议）。⑦ **SEC-R10 仅预留 PENDING**——#177 落地收账行，**本单不预登 #177 落地完成态**，待 #177 合入后再闭。⑧ **卫生与暂停登记**：9 陈旧 PR 维持 CLOSED（分支保留）；[#189](https://github.com/rayw-lab/website/pull/189) STAGING 保持 OPEN（`6960ea7`，禁提前关闭）；[#185](https://github.com/rayw-lab/website/pull/185)（`c43cd72`，CI 绿）与 [#104](https://github.com/rayw-lab/website/pull/104)（`bbba5a5`，draft · CONFLICTING）**运行态暂停**，ready 单门维持。
+
+> **字面量 grep 诚实登记（`LITERAL_GLOBAL_RG_NOT_ZERO (HISTORY_ONLY)`）**：用户原要求的 `rg '39 type|41 type' src docs` **全局字面量命中非零**——历史记录命中存在于 `cc-bgm-rs` / `audit` / `board` / `handoff` / `thumbstrip` / `orchestration history` 等历史块中（39 与 41 系 #166/#177 合流前各侧自述计数的历史留痕）。**因历史 no-touch 原则不可改写，故不宣称全局零命中。当前合同三文件（`SessionTimeline.ts` / `cyber-city-observability.md` / `cyber-city-test-framework.md`）经 fresh 复核 = 零过期命中**（已统一改写为 **42 type / 10 族**；test-framework 为单章节三行表 81/17 → 84/18 → 86/19）。此项标为 `LITERAL_GLOBAL_RG_NOT_ZERO (HISTORY_ONLY)`，不美化、不改值。
+
+## MERGE-WAVE 16 合流记录（`e1d736c` → `eed8640` 共 7 单入 main；站立授权（docs 直合 / 零 src 由 Composer 与 Opus 5 medium 子代理执行）下父代理执行，2026-08-29 至 08-30 Asia/Shanghai）
+
+| 序 | PR | merge SHA | 内容 |
+|----|-----|-----------|------|
+| 1 | [#187](https://github.com/rayw-lab/website/pull/187) | **`0209dbf`** | **H1b 处置**：漂移 = 慢渲染栈债；案 C——本地跑道闭项，#104 串行化保留，1800s 预算仅触发式 |
+| 2 | [#188](https://github.com/rayw-lab/website/pull/188) | **`32fc34a`** | **SEC-R9-pre 中间收账**（MERGE-WAVE 15 + 在途刷新 + T7–T12 索引 + 9 PR 卫生 close）= R9 中间窗登记核心 |
+| 3 | [#186](https://github.com/rayw-lab/website/pull/186) | **`ed07c0a`** | **H2**：OBS-03 dispose 取证改持久侧信道（零 src；验证窗 OBS 7/7 绿后合入） |
+| 4 | [#190](https://github.com/rayw-lab/website/pull/190) | **`488eaa8`** | **F3 R2 取证**：workers=2 挤兑致 preview 崩溃连坐 21 例；归因窗 HINT 5/5 绿 |
+| 5 | [#191](https://github.com/rayw-lab/website/pull/191) | **`4cf419d`** | **F3 R3 取证**：workers=1：70P/1F/11S；**NAV 3/3 绿**；败点 = OBS-01 泊车腿 |
+| 6 | [#192](https://github.com/rayw-lab/website/pull/192) | **`211d9d9`** | **OBS-01 稳定化**：机制 = 满油开环控速撞 SpeedTrap 隔板楔死（非帧率）；测试侧五改法 + coneHits 硬0→互证式；3/3 绿，**OBS-03 首获在链绿证** |
+| 7 | [#193](https://github.com/rayw-lab/website/pull/193) | **`eed8640`** | **EOD 交接档**（`cc-loop-handoff-2026-08-29-eod.md`；本地编排班收工拍；**merge SHA `eed8640` = Wave16 端点，即 Wave17 起点**） |
+
+## MERGE-WAVE 17 合流记录（`eed8640` → `9d21b1b` 共 6 单入 main；同上授权下父代理执行，2026-08-30 Asia/Shanghai）
+
+| 序 | PR | merge SHA | 内容 |
+|----|-----|-----------|------|
+| 1 | [#194](https://github.com/rayw-lab/website/pull/194) | `5433063` | **R4 host broken-gate 证据**（跨 host 门禁失效取证） |
+| 2 | [#195](https://github.com/rayw-lab/website/pull/195) | `9bffe31` | **R5 double-attempt broken-gate 证据**（双 attempt 门禁失效取证） |
+| 3 | [#196](https://github.com/rayw-lab/website/pull/196) | `226ba2c` | **R6 VIS-02 single failure 证据**（红点单点取证） |
+| 4 | [#197](https://github.com/rayw-lab/website/pull/197) | **`7045619`** | **VIS-02 单快照基线 fix**（`world-esc-menu.png` 重签 `1eb89247…47ca7f` = R6 actual；定向 VIS-02 1/1 + CI 绿；= R7 集成树 main 父） |
+| 5 | [#198](https://github.com/rayw-lab/website/pull/198) | **`0c44fc2`** | **R7 82/82 PASS evidence**：单次 full attempt，`expected=82 / unexpected=0 / skipped=0 / flaky=0`、`EXIT=0` / `NAV_F3_EXIT=0`、三证（证一 NAV_F3_EXIT=0 / 证二 JSON stats 实读 / 证三 本件上链）；**A-④ e2e 面绿证落点** |
+| 6 | [#166](https://github.com/rayw-lab/website/pull/166) | **`9d21b1b`** | **CC-NAV-C1 squash merge**（原 head `b4694cf`；final-head CI run **33234213554** SUCCESS；mergedAt `2026-08-30T04:50:48Z`）= 现 main tip；**SEC-R9 正式收账闭合** |
+
+## 开放 PR 当前表（快照 2026-08-30 Asia/Shanghai · main `9d21b1b` clean · `gh pr list` 实测）
+
+| PR | 状态 | 说明 |
+|----|------|------|
+| **本单 SEC-R9-LEDGER** | OPEN · **本单** | SEC-R9 正式收账（MERGE-WAVE 16/17 + #166 落地 + #177 静态合流 + 矩阵维持）；CI 绿后父代理 squash 合 |
+| **#166 CC-NAV-C1** | **MERGED** ✅ → `9d21b1b` | 已落地收账；A-①②③⑤ 过门 · **A-④ 双证分列**：CI run 33234213554（构建面）+ R7 #198 82/82 三证（e2e 面）；**SEC-R9 CLOSED** |
+| **#177 BGM-C1** | draft · **静态合流已完成** · 运行态 `DEFERRED_BY_USER_LOCAL_LOAD` | head `95bb79a…`；merge commit 父 `2b00c31 + 9d21b1b`；三冲突文件按 #189 解毕；CI run 33294086298 SUCCESS；**运行态三门 `DEFERRED_BY_USER_LOCAL_LOAD` = 本地 astro check / fresh playwright list 86/19 / HG-B2 双用例六例合流树冒烟**；**保持 draft，禁 ready/禁合；禁止以 GitHub CI 替代 HG-B2**（#182 B 门口径） |
+| **#189 STAGING** | draft · **OPEN 维持** | `6960ea7`；预演树 + 剧本留痕；**#177 合入后关闭**（本单不预关） |
+| **#185 PERF 案 A** | draft · **运行态暂停** | head `c43cd72`；CI 绿；PERF 单跑窗验证后置 |
+| **#104 X2** | draft · CONFLICTING · **运行态暂停** | head `bbba5a5`；ready 单门维持 = 全量 e2e 0/0/0 开窗（#182 §D：分母 86、开窗 86−2=84 待兑现）；future ready window paused |
+
+**已闭合（不再占槽）**：**#166 ✅ `9d21b1b`**（SEC-R9 CLOSED）· **#198 ✅ `0c44fc2`**（R7 三证上链）· **#197 ✅ `7045619`**（VIS-02 基线 fix）· MERGE-WAVE 16 七单 ✅（#187/#188/#186/#190/#191/#192/#193）· MERGE-WAVE 17 六单 ✅（#194–#198 + #166）。
+
+**SEC-R10 预留（PENDING，不得预登）**：#177 BGM-C1 落地收账行。**触发条件 = #177 squash 合入 main**；合入前本行一律 `PENDING`，不写「静态合流已完成即视同落地」。合入后必含字段：#177 mergeCommit + mergedAt 实测 · §D 三证 + HG-B1 六项 + HG-B2 合流树六例 + 默认 OFF 四项 + 六门八禁六项逐项对号 · 解冲突留痕（42 type/10 族/ux 11、observability 合并子句 + `teleport` 存活、test-framework 单章节三行表）· e2e 分母 **86/19**（fresh playwright list 实测单源）· #172 §D 失效条款未触发明示结论 · 登记矩阵维持 80/73/87/—（听感验收挂指挥官真机账，不入本行）。
 
 `main` @ `e1d736c` · 2026-08-29 05:30 UTC · **R9 中间收账窗（SEC-R9-pre）：MERGE-WAVE 15 三单落 main（[#182](https://github.com/rayw-lab/website/pull/182) NAV-BGM-MERGE `b7f0c9a` · [#183](https://github.com/rayw-lab/website/pull/183) PERF-SPEC `bce8307` · [#184](https://github.com/rayw-lab/website/pull/184) F3 取证 `e1d736c` = tip）+ loop 已停、编排转本地** · [#166](https://github.com/rayw-lab/website/pull/166) draft A-④ F3 R1 破门（OBS-03）· [#177](https://github.com/rayw-lab/website/pull/177) draft B 门预核 PASS · [#185](https://github.com/rayw-lab/website/pull/185)/[#186](https://github.com/rayw-lab/website/pull/186) draft 验证后置 · [#104](https://github.com/rayw-lab/website/pull/104) ready 单门维持 · 范式 `cyber-city-orchestration-paradigm.md` · 本单 = SEC-R9-pre-LEDGER（**#166 落地收账另开 records 行**，禁与 [#182](https://github.com/rayw-lab/website/pull/182) §D 冲突表述；base = main@`e1d736c`，改看板单文件，零 src）
 
