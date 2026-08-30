@@ -143,7 +143,7 @@ export class BgmLoop {
     this.duckEngineGain = ctx.createGain();
     this.duckPulseGain = ctx.createGain();
     this.busGain = ctx.createGain();
-    this.busGain.gain.value = 0; // 默认 OFF：未开钮/未还原记忆前恒 0（禁项③）
+    this.busGain.gain.setValueAtTime(0, ctx.currentTime); // 默认 OFF：未开钮/未还原记忆前恒 0（禁项③）
     this.highpass
       .connect(this.duckEngineGain)
       .connect(this.duckPulseGain)
@@ -397,10 +397,9 @@ export class BgmLoop {
     // 紧邻音效钮组成右上钮组（§4.1）；零动画（禁项⑦）；robot_idle/transforming
     // 样式门由 WorldAudio 既有选择器扩位承载（同一 display:none 机器兜底）
     style.textContent = `
-.world-bgm-toggle{position:absolute;top:.85rem;right:7.5rem;z-index:6;pointer-events:auto;font:inherit;font-family:system-ui,-apple-system,'Segoe UI','PingFang SC','Noto Sans CJK SC',sans-serif;font-size:.72rem;letter-spacing:.14em;color:#9fb6b1;cursor:pointer;padding:.4em 1.05em;border-radius:999px;border:1px solid rgba(73,197,182,.32);background:rgba(12,13,17,.62);transition:color .25s,border-color .25s}
+.world-bgm-toggle{position:absolute;top:.85rem;right:7.5rem;z-index:6;pointer-events:auto;font:inherit;font-family:system-ui,-apple-system,'Segoe UI','PingFang SC','Noto Sans CJK SC',sans-serif;font-size:.72rem;letter-spacing:.14em;color:#9fb6b1;cursor:pointer;padding:.4em 1.05em;border-radius:999px;border:1px solid rgba(73,197,182,.32);background:rgba(12,13,17,.62)}
 .world-bgm-toggle:hover,.world-bgm-toggle:focus-visible{color:#eafffb;border-color:rgba(73,197,182,.7)}
 .world-bgm-toggle[aria-pressed='false']{color:#6f7d7a;border-color:rgba(120,132,130,.4)}
-@media (prefers-reduced-motion:reduce){.world-bgm-toggle{transition:none}}
 `;
     document.head.appendChild(style);
   }
