@@ -36,6 +36,7 @@ import type { DebugPanel } from './debug/DebugPanel';
 import type { RespawnReason } from './player/Player';
 import type { TransformSystem } from './player/TransformSystem';
 import type { Reveal } from './world/Reveal';
+import type { Minimap } from './ui/Minimap';
 import type { QualityLevel } from './core/Quality';
 import type { SessionDump } from './core/SessionTimeline';
 import { Game } from './core/Game';
@@ -259,6 +260,17 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       // [CC-FXN-C5] ritual 腿目标线激活推迟到 car_ready（poster 恒等，QuestLine 头注）
       deferQuestUntilCarReady: ritualRequested,
     });
+  }
+
+  // [CC-NAV-C1] M 键小地图（NAV 调研 §3/§5 + 董事会 R5-impl-gate §B/§D：DP-1
+  // 传送式两段式）：城市/areas 在场才挂载（动态 import 独立 chunk——非城市路径
+  // 零字节，areas 同纪律）；传送入口经 areas.arrival 显式取消在途进站前奏（R3）。
+  // robot_idle/transforming 恒等由模块内三重保险管（categories 闸门 + CSS 样式门 +
+  // 懒初始化），装配段零状态判断。
+  let minimap: Minimap | null = null;
+  if (city && areas) {
+    const { Minimap: MinimapClass } = await import('./ui/Minimap');
+    minimap = new MinimapClass(game, city.map, { stage, arrival: areas.arrival });
   }
 
   // CC-CAM-VIEW：?poi=&shot= 组合深链 → 应用 camera-shots.json 展示机位（白名单校验
@@ -509,6 +521,8 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       debugPanel = null;
       worldAudio.dispose();
       driveFeedback.dispose();
+      minimap?.dispose();
+      minimap = null;
       areas?.dispose();
       areas = null;
       reveal?.dispose();
