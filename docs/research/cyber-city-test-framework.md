@@ -70,6 +70,16 @@ node scripts/score-loop.mjs --lhci-dir /tmp/ci-lhci     # ①②维改读 CI 工
 COMPOSITE_SCORE=90.5
 ```
 
+## 用例数登记（全量分母单源）
+
+登记口径 = fresh `pnpm exec playwright test --list` 输出总数（含全部 project；HG-B2 明文
+以本单源为准）。上方命令表中的「52 例」为 2026-08-25 实测时点值，仅作耗时参照不作分母。
+
+| 时点 | `--list` 分母 | 变更 |
+|------|--------------|------|
+| main@`52887e5`（2026-08-29 fresh 实测） | 81 tests / 17 files | 基线（#171 预清登记同值） |
+| CC-NAV-C1（#166 合入后） | **84 tests / 18 files** | +3：`e2e/cyber-city-minimap.spec.ts` CITY-NAV-01/02/03，+1 新 spec 文件（#166 NAV-C1 新增；合流后以 fresh `--list` 复核） |
+
 ## 视觉取证与基线图纪律
 
 - **canvas 非空取证**（`e2e/helpers/visual.ts`）：Playwright 合成器截图 → 浏览器端 2D canvas 像素统计

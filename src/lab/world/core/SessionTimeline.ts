@@ -56,6 +56,10 @@ type EventFamily =
  * [CC-AUD-C1] 随行加法（G3 合成音效层可观测面，38 type / 10 族）：ux 族
  * world-audio {enabled, source: 'auto' | 'user'}——首手势解锁沿 = 'auto'
  * （enabled 为非静音记忆态）、静音钮切换 = 'user'（audio/WorldAudio.ts）。
+ * [CC-NAV-C1] ux 族随行加法（M 键小地图/GAP-12，41 type / 10 族）：minimap-open
+ * {via: 'key'|'button'} · minimap-close {via: 'key'|'esc'|'button'|'teleport'} ·
+ * minimap-teleport {id, distanceM}——两段式第一段（pin 点击传送 parkingBay），
+ * 第二段 E 确认走既有 world-poi、漏斗零旁路（ui/Minimap.ts 接线）。
  * 改动纪律（§3.6）：加法（新增 type / data 字段）同 PR 修订规格表、
  * schemaVersion 不动；破坏性（改名/删除/改语义）schemaVersion +1 且消费方同 PR 适配。
  */
@@ -68,7 +72,7 @@ const WHITELIST: Readonly<Record<EventFamily, string>> = {
   goal: 'explore-restore explore-progress explore-complete world-quest',
   challenge: 'world-speedtrap',
   perf: 'quality-auto-drop',
-  ux: 'hint-shown hint-dismissed hint-recall esc-menu-open idle-30s idle-nudge world-audio',
+  ux: 'hint-shown hint-dismissed hint-recall esc-menu-open idle-30s idle-nudge world-audio minimap-close minimap-open minimap-teleport',
   error: 'pageerror context-lost',
 };
 
