@@ -431,7 +431,8 @@ test.describe('科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串
     await page.locator(SEL.transform).click();
     await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 120_000 });
     await expect(hint).toBeVisible();
-    for (const key of ['Space/B 刹车', 'V 切换视角', 'R 回到路口', 'E 进站', 'Esc 菜单']) {
+    // [CC-NAV-C1] 「M 地图」= HINT_TEXT 串尾加法随行断言（Reveal.ts 同 PR 同步）
+    for (const key of ['Space/B 刹车', 'V 切换视角', 'R 回到路口', 'E 进站', 'Esc 菜单', 'M 地图']) {
       await expect(hint, `键位卡应含「${key}」`).toContainText(key);
     }
     await expect(recall).toBeVisible();

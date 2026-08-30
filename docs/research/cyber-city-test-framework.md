@@ -77,8 +77,9 @@ COMPOSITE_SCORE=90.5
 
 | 时点 | `--list` 分母 | 变更 |
 |------|--------------|------|
-| main@`7865a84`（2026-08-28 fresh 实测） | 81 tests / 17 files | 基线（#171 预清登记同值） |
-| CC-BGM-C1（本单合入后） | **83 tests / 18 files** | +2：`e2e/cyber-city-bgm.spec.ts` CITY-BGM-01 双用例串行（HG-B2 双挂载口径：无种子 A–D/F/G/I/J+H-user、种子 E+H-restore），world-chromium 泛匹配收编 |
+| main@`52887e5`（2026-08-29 fresh 实测） | 81 tests / 17 files | 基线（#171 预清登记同值） |
+| CC-NAV-C1（#166 合入后） | **84 tests / 18 files** | +3：`e2e/cyber-city-minimap.spec.ts` CITY-NAV-01/02/03，+1 新 spec 文件（#166 NAV-C1 新增；合流后以 fresh `--list` 复核） |
+| CC-BGM-C1（#177 合入后，**双落终值**） | **86 tests / 19 files** | +2：`e2e/cyber-city-bgm.spec.ts` CITY-BGM-01 双用例串行（HG-B2 双挂载口径）；#177 分支自登「83/18」为 **#166 未合时点值，已由本行接替** |
 
 ## 视觉取证与基线图纪律
 

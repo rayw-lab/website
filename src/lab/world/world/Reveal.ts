@@ -45,9 +45,11 @@ const HINT_FADE_DELAY = 4;
  * [CC-FXN-C1] 键位卡文案（GAP-08 修复：E 进站 / Esc 菜单补进卡片——此前首驶
  * 5 秒后对玩家永久失明）。「V 切换视角」位次维持 VEH spec §8.2 冻结序
  * （插入刹车之后）；串尾加法随行注记见该 spec §8.2。
+ * [CC-NAV-C1] 串尾加「M 地图」（NAV 调研 §3.4 键位卡行；e2e 断言同 PR 同步
+ * ——cyber-city-feedback.spec.ts CITY-HINT-01 ② 文案清单加行）。
  */
 const HINT_TEXT =
-  'W/A/S/D 或方向键驾驶 · Shift 加速 · Space/B 刹车 · V 切换视角 · F 悬挂跳 · R 回到路口 · E 进站 · Esc 菜单';
+  'W/A/S/D 或方向键驾驶 · Shift 加速 · Space/B 刹车 · V 切换视角 · F 悬挂跳 · R 回到路口 · E 进站 · Esc 菜单 · M 地图';
 /** 触屏键位卡（GAP-18：Nipple = 拖动摇杆转向加速 + 点按跳；POI = 点按标点进站；
  *  复位走壳 HUD「回到路口 (R)」按钮——键盘口径对触屏用户是噪声，整卡换稿） */
 const HINT_TEXT_TOUCH =
