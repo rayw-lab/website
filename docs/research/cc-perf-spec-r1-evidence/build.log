@@ -1,0 +1,50 @@
+
+> website@0.1.0 build /private/tmp/perf185-r1
+> astro build
+
+01:21:32 [content] Syncing content
+01:21:32 [content] Synced content
+01:21:32 [types] Generated 159ms
+01:21:32 [build] output: "static"
+01:21:32 [build] mode: "static"
+01:21:32 [build] directory: /private/tmp/perf185-r1/dist/
+01:21:32 [build] Collecting build info...
+01:21:32 [build] ✓ Completed in 180ms.
+01:21:32 [build] Building static entrypoints...
+01:21:32 [vite] ✓ built in 207ms
+01:21:32 [WARN] [vite] [plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+01:21:32 [vite] ✓ built in 179ms
+01:21:32 [build] Rearranging server assets...
+
+ generating static routes 
+01:21:32   ├─ /about/index.html (+4ms) 
+01:21:32   ├─ /ai-lab/multilingual-testcase-generation/index.html (+3ms) 
+01:21:32   ├─ /ai-lab/world-spike-parallel-agents/index.html (+1ms) 
+01:21:32   ├─ /ai-lab/index.html (+1ms) 
+01:21:32   ├─ /contact/index.html (+1ms) 
+01:21:32   ├─ /home/index.html (+2ms) 
+01:21:32   ├─ /insights/cockpit-llm-bottleneck/index.html (+1ms) 
+01:21:32   ├─ /insights/multilingual-review-checklist/index.html (+1ms) 
+01:21:32   ├─ /insights/index.html (+1ms) 
+01:21:32   ├─ /lab/car-configurator/index.html (+3ms) 
+01:21:32   ├─ /lab/tts-cockpit/index.html (+1ms) 
+01:21:32   ├─ /lab/index.html (+0ms) 
+01:21:32   ├─ /now/index.html (+1ms) 
+01:21:32   ├─ /rss.xml (+15ms) 
+01:21:32   ├─ /work/ai-native-workflow/index.html (+1ms) 
+01:21:32   ├─ /work/llm-capability-layering/index.html (+1ms) 
+01:21:32   ├─ /work/multilingual-cockpit/index.html (+1ms) 
+01:21:32   ├─ /work/index.html (+1ms) 
+01:21:32   ├─ /world-spike/index.html (+1ms) 
+01:21:32   ├─ /index.html (+1ms) 
+01:21:32 ✓ Completed in 51ms.
+
+01:21:32 [build] ✓ Completed in 457ms.
+01:21:32 [@astrojs/sitemap] `sitemap-index.xml` created at `dist`
+01:21:32 [build] 19 page(s) built in 642ms
+01:21:32 [build] Complete!
+BUILD_EXIT=0

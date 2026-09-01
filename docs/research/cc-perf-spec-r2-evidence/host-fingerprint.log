@@ -1,0 +1,12 @@
+UTC=2026-09-01T07:27:07Z
+BEIJING=2026-09-01T15:27:07+0800
+ProductName:		macOS
+ProductVersion:		26.6.2
+BuildVersion:		25G82
+Darwin 25.6.0 arm64
+ARCH=arm64
+NODE=v25.9.0
+PNPM=10.33.3
+PLAYWRIGHT=Version 1.62.1
+Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk3s5   926Gi   636Gi   251Gi    72%    7.0M  2.6G    0%   /System/Volumes/Data
