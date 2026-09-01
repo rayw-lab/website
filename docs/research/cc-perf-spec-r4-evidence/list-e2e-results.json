@@ -1,0 +1,2338 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+      "/private/tmp/perf185-r4/node_modules/@playwright/test/cli.js",
+      "test",
+      "--list"
+    ],
+    "configFile": "/private/tmp/perf185-r4/playwright.config.ts",
+    "rootDir": "/private/tmp/perf185-r4/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/private/tmp/perf185-r4/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "desktop-chromium",
+        "name": "desktop-chromium",
+        "testDir": "/private/tmp/perf185-r4/e2e",
+        "testIgnore": [
+          "/mobile\\.spec\\.ts|world-spike.*\\.spec\\.ts|cyber-city.*\\.spec\\.ts|car-configurator\\.spec\\.ts|visual[\\\\/].*\\.spec\\.ts/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/private/tmp/perf185-r4/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "mobile-375",
+        "name": "mobile-375",
+        "testDir": "/private/tmp/perf185-r4/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/mobile\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/private/tmp/perf185-r4/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "car-chromium",
+        "name": "car-chromium",
+        "testDir": "/private/tmp/perf185-r4/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/car-configurator\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/private/tmp/perf185-r4/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "world-chromium",
+        "name": "world-chromium",
+        "testDir": "/private/tmp/perf185-r4/e2e",
+        "testIgnore": [
+          "/cyber-city-perf\\.spec\\.ts/"
+        ],
+        "testMatch": [
+          "/world-spike\\.spec\\.ts|cyber-city.*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/private/tmp/perf185-r4/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "world-perf-chromium",
+        "name": "world-perf-chromium",
+        "testDir": "/private/tmp/perf185-r4/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/world-spike-perf\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/private/tmp/perf185-r4/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "city-perf-chromium",
+        "name": "city-perf-chromium",
+        "testDir": "/private/tmp/perf185-r4/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/cyber-city-perf\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/private/tmp/perf185-r4/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "visual-chromium",
+        "name": "visual-chromium",
+        "testDir": "/private/tmp/perf185-r4/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/visual[\\\\/].*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/e2e-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 2,
+    "webServer": {
+      "command": "pnpm preview --host 127.0.0.1 --port 4321",
+      "url": "http://127.0.0.1:4321/website/",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "home.spec.ts",
+      "file": "home.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "宪法首页 /home/",
+          "file": "home.spec.ts",
+          "line": 11,
+          "column": 6,
+          "specs": [
+            {
+              "title": "HOME-E2E-01 骨架与 SEO 基础：title / h1 / skip-link / canonical",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "d318381359a9b96acb1e-45e30b30142d7ebf3598",
+              "file": "home.spec.ts",
+              "line": 12,
+              "column": 3
+            },
+            {
+              "title": "HOME-E2E-02 顶部导航：品牌 + 五栏目链接均带 base 前缀",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "d318381359a9b96acb1e-58d9b2137422b1b2d9ef",
+              "file": "home.spec.ts",
+              "line": 36,
+              "column": 3
+            },
+            {
+              "title": "HOME-E2E-03 主题切换：html.dark 写入 + localStorage 持久化 + 刷新不回退",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "d318381359a9b96acb1e-a9098f09594ad3640fe0",
+              "file": "home.spec.ts",
+              "line": 60,
+              "column": 3
+            },
+            {
+              "title": "HOME-E2E-04 Lab 证据区：两张 Demo 卡指向 /lab/ 详情页且海报可加载",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "d318381359a9b96acb1e-ddf55ea386c4efac7190",
+              "file": "home.spec.ts",
+              "line": 90,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "宪法首页 /home/（无 JS）",
+          "file": "home.spec.ts",
+          "line": 110,
+          "column": 6,
+          "specs": [
+            {
+              "title": "HOME-E2E-05 禁用 JS：内容完整可读，导航与 Lab 入口不依赖脚本",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "d318381359a9b96acb1e-0183bd1369b112ddeec3",
+              "file": "home.spec.ts",
+              "line": 113,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "lab-index.spec.ts",
+      "file": "lab-index.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Lab 索引页",
+          "file": "lab-index.spec.ts",
+          "line": 12,
+          "column": 6,
+          "specs": [
+            {
+              "title": "LAB-E2E-01 manifest 卡片：2 个 live 模块、LIVE 徽标、预算与技术要点行",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "d4e38b87c29dcd828fcf-9703e344a2f5d65a955e",
+              "file": "lab-index.spec.ts",
+              "line": 13,
+              "column": 3
+            },
+            {
+              "title": "LAB-E2E-02 海报可加载且 view-transition-name 与详情页舞台配对（§9.3 morph 注册表）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "d4e38b87c29dcd828fcf-8825a2fc8737e81f450f",
+              "file": "lab-index.spec.ts",
+              "line": 39,
+              "column": 3
+            },
+            {
+              "title": "LAB-E2E-03 导航链路：卡片进详情页、面包屑回首页",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "d4e38b87c29dcd828fcf-576c4e0ec1ed8e61673b",
+              "file": "lab-index.spec.ts",
+              "line": 58,
+              "column": 3
+            },
+            {
+              "title": "LAB-E2E-04 零 JS 静态页：禁用 JS 后卡片内容完整",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "d4e38b87c29dcd828fcf-ce1b92151e96e2393d7f",
+              "file": "lab-index.spec.ts",
+              "line": 70,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "site-health.spec.ts",
+      "file": "site-health.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "全站健康度",
+          "file": "site-health.spec.ts",
+          "line": 28,
+          "column": 6,
+          "specs": [
+            {
+              "title": "SITE-E2E-01 内链爬取：已交付路由全部 200；待交付路由精确命中白名单且必须仍为 404",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "7befd1d88a9f644f19fb-3de5f1002ce5510d2867",
+              "file": "site-health.spec.ts",
+              "line": 29,
+              "column": 3
+            },
+            {
+              "title": "SITE-E2E-02 未知路由返回 404（GitHub Pages 语义）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "7befd1d88a9f644f19fb-30c94a52f1bc9e9d5878",
+              "file": "site-health.spec.ts",
+              "line": 65,
+              "column": 3
+            },
+            {
+              "title": "SITE-E2E-03 sitemap：索引可达，含 `/`+`/home/`+lab 路由；world-spike（已归档 noindex）必须剔除",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "7befd1d88a9f644f19fb-e163584b2fa6317c68b4",
+              "file": "site-health.spec.ts",
+              "line": 76,
+              "column": 3
+            },
+            {
+              "title": "SITE-E2E-04 world-spike 归档验证入口：烟测可加载且无未捕获异常",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "7befd1d88a9f644f19fb-8074726742d07ba1c9e7",
+              "file": "site-health.spec.ts",
+              "line": 98,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "tts-cockpit.spec.ts",
+      "file": "tts-cockpit.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TTS 座舱可视化",
+          "file": "tts-cockpit.spec.ts",
+          "line": 8,
+          "column": 6,
+          "specs": [
+            {
+              "title": "TTS-E2E-01 facade 生命周期：poster → 自动挂载 ready → 覆盖层淡出 → 控制面解除 inert",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "20aefb3282ee7354173e-a803e481a64e24e0f6bd",
+              "file": "tts-cockpit.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "TTS-E2E-02 播放全链路：speaking → done、逐词字幕点亮、时钟/进度/统计联动",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "20aefb3282ee7354173e-2d9e2b1a1837ee3aea8c",
+              "file": "tts-cockpit.spec.ts",
+              "line": 32,
+              "column": 3
+            },
+            {
+              "title": "TTS-E2E-03 交互切换：语言/场景按钮 aria-pressed 联动 + URL replaceState 深链回写",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "20aefb3282ee7354173e-ad0bb96166491315f916",
+              "file": "tts-cockpit.spec.ts",
+              "line": 61,
+              "column": 3
+            },
+            {
+              "title": "TTS-E2E-04 深链 ?locale=ar-SA&scene=park：阿拉伯语 RTL 镜像 + 场景直达",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "20aefb3282ee7354173e-a6028fbb4920afe3eb66",
+              "file": "tts-cockpit.spec.ts",
+              "line": 89,
+              "column": 3
+            },
+            {
+              "title": "TTS-E2E-05 非法深链 ?locale=xx-XX&scene=bogus：回退默认 zh-CN × nav 不崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "20aefb3282ee7354173e-cebd18f1bb5e2bcc57dd",
+              "file": "tts-cockpit.spec.ts",
+              "line": 114,
+              "column": 3
+            },
+            {
+              "title": "TTS-E2E-06 reduced-motion：自动挂载被拦（data-blocked）、零新增 JS chunk、显式点击仍可启动",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "20aefb3282ee7354173e-8ad1985c2bb3625113cf",
+              "file": "tts-cockpit.spec.ts",
+              "line": 127,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "TTS 座舱可视化（无 JS）",
+          "file": "tts-cockpit.spec.ts",
+          "line": 161,
+          "column": 6,
+          "specs": [
+            {
+              "title": "TTS-E2E-07 禁用 JS：noscript 提示就位，页眉说明与脚注仍可读",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop-chromium",
+                  "projectName": "desktop-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "20aefb3282ee7354173e-ab1713179320fe615a8e",
+              "file": "tts-cockpit.spec.ts",
+              "line": 164,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "mobile.spec.ts",
+      "file": "mobile.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "移动端 375px",
+          "file": "mobile.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "MOB-E2E-01 宪法首页 /home/：无水平溢出、导航横滚可用、主题切换触控目标 ≥ 44px",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 150000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile-375",
+                  "projectName": "mobile-375",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "e79c838550b25e92508e-c9211feb19defe03fa07",
+              "file": "mobile.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "MOB-E2E-02 tts-cockpit：pointerFine=false → 触屏不拦截自动挂载，仪表簇按断点隐藏",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 150000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile-375",
+                  "projectName": "mobile-375",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "e79c838550b25e92508e-00ff8a76183af5615779",
+              "file": "mobile.spec.ts",
+              "line": 32,
+              "column": 3
+            },
+            {
+              "title": "MOB-E2E-03 car-configurator：pointerFine=true → 触屏拦截自动挂载（data-blocked=pointer），显式启动仍可用",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 150000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile-375",
+                  "projectName": "mobile-375",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "e79c838550b25e92508e-78f95e0deb8d51cbb677",
+              "file": "mobile.spec.ts",
+              "line": 47,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "car-configurator.spec.ts",
+      "file": "car-configurator.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "3D 车辆配置器",
+          "file": "car-configurator.spec.ts",
+          "line": 52,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CAR-E2E-01 facade → ready：canvas 呈现、HUD 揭示、后端徽标显示实际渲染后端",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "car-chromium",
+                  "projectName": "car-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c8854a9cf26bfec8ffea-1921bcbce9371d2ccf76",
+              "file": "car-configurator.spec.ts",
+              "line": 53,
+              "column": 3
+            },
+            {
+              "title": "CAR-E2E-02 ?gl=1 强制 WebGL 2 回退（§9.2 保留参数），且交互后参数保持",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "car-chromium",
+                  "projectName": "car-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c8854a9cf26bfec8ffea-61325e4e2a9e8a52c742",
+              "file": "car-configurator.spec.ts",
+              "line": 87,
+              "column": 3
+            },
+            {
+              "title": "CAR-E2E-03 深链 ?paint=&wheels=&livery= 三参组合：选中态与 HUD 全部生效",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "car-chromium",
+                  "projectName": "car-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c8854a9cf26bfec8ffea-b21a496b8006997e8429",
+              "file": "car-configurator.spec.ts",
+              "line": 99,
+              "column": 3
+            },
+            {
+              "title": "CAR-E2E-04 非法深链 ?paint=hotpink&wheels=square&livery=none：忽略并回默认配置",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "car-chromium",
+                  "projectName": "car-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c8854a9cf26bfec8ffea-0aa90f8f68017cc441a4",
+              "file": "car-configurator.spec.ts",
+              "line": 110,
+              "column": 3
+            },
+            {
+              "title": "CAR-E2E-05 交互链路：车漆/分区 Tab/轮毂切换 + URL 回写与默认值清理",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "car-chromium",
+                  "projectName": "car-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c8854a9cf26bfec8ffea-8213c9eccf2b45a544cc",
+              "file": "car-configurator.spec.ts",
+              "line": 124,
+              "column": 3
+            },
+            {
+              "title": "CAR-E2E-06 reduced-motion：自动挂载被拦、不拉 3D 资产；显式启动逃生门可用",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "car-chromium",
+                  "projectName": "car-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c8854a9cf26bfec8ffea-c1071f59a8ad8103d327",
+              "file": "car-configurator.spec.ts",
+              "line": 159,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "3D 车辆配置器（无 JS）",
+          "file": "car-configurator.spec.ts",
+          "line": 189,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CAR-E2E-07 禁用 JS：noscript 提示就位，技术说明/署名静态可读",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "car-chromium",
+                  "projectName": "car-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c8854a9cf26bfec8ffea-06e10624121916a8cf85",
+              "file": "car-configurator.spec.ts",
+              "line": 192,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "cyber-city-audio.spec.ts",
+      "file": "cyber-city-audio.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "科技城音效层 @phase0（CC-AUD-C1 · world-chromium 串行 project）",
+          "file": "cyber-city-audio.spec.ts",
+          "line": 43,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-AUD-01 首手势前零 AudioContext → CTA 解锁 + 变形音计数 → 静音钮持久（localStorage 还原/写回）→ 驾驶引擎层激活",
+              "ok": true,
+              "tags": [
+                "phase0（CC-AUD-C1"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4557fba2d2119f4144ac-3e3eb9db917296c46f4d",
+              "file": "cyber-city-audio.spec.ts",
+              "line": 46,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "cyber-city-bgm.spec.ts",
+      "file": "cyber-city-bgm.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "科技城 BGM 氛围垫 @phase0（CC-BGM-C1 · world-chromium 串行 project）",
+          "file": "cyber-city-bgm.spec.ts",
+          "line": 100,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-BGM-01 用例1（无种子挂载）：懒创建回归 + 样式门 + 默认 OFF + 开关钮持久 + user 埋点 + 主静音优先 + 驾驶 ducking + 零音频请求",
+              "ok": true,
+              "tags": [
+                "phase0（CC-BGM-C1"
+              ],
+              "tests": [
+                {
+                  "timeout": 900000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b49b6260982065e68549-5cad130922220bf07e6f",
+              "file": "cyber-city-bgm.spec.ts",
+              "line": 106,
+              "column": 3
+            },
+            {
+              "title": "CITY-BGM-01 用例2（种子 world-bgm-on=1 挂载）：解锁沿自动恢复播放（E）+ restore 埋点（H 后半）",
+              "ok": true,
+              "tags": [
+                "phase0（CC-BGM-C1"
+              ],
+              "tests": [
+                {
+                  "timeout": 900000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b49b6260982065e68549-f05f4dadac23f55b59fc",
+              "file": "cyber-city-bgm.spec.ts",
+              "line": 209,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "cyber-city-explore.spec.ts",
+      "file": "cyber-city-explore.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 project）",
+          "file": "cyber-city-explore.spec.ts",
+          "line": 269,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-EXP-01 探索计数闭环：深链发现 → 驾驶 +1 → 重复进圈去重 → reload 持久还原（埋点互证）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "1527a5917c0110d10612-fa9cf716274348a62891",
+              "file": "cyber-city-explore.spec.ts",
+              "line": 285,
+              "column": 3
+            },
+            {
+              "title": "CITY-EXP-02 恒等门 + reduced-motion + 完成反馈：robot_idle 隐藏 → 11/12 还原呈现 → 末点集齐完成态（埋点互证）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "1527a5917c0110d10612-8e00a37e4d6c65a18cb2",
+              "file": "cyber-city-explore.spec.ts",
+              "line": 425,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "科技城目标线 v0（CC-FXN-C5 · world-chromium 串行 project）",
+          "file": "cyber-city-explore.spec.ts",
+          "line": 516,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-QST-01 目标线闭环：深链出生链首站到站 → 链推进 shown 步进 → 距离读数 → 折叠偏好（埋点互证）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "1527a5917c0110d10612-261b1f1236d9525d59dc",
+              "file": "cyber-city-explore.spec.ts",
+              "line": 530,
+              "column": 3
+            },
+            {
+              "title": "CITY-QST-02 恒等门 + car_ready 激活 + idle-30s 消费：robot_idle 隐藏零事件 → shown 链首 → 空闲 nudge 呈现（输入即收）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "1527a5917c0110d10612-2216dd696c0de628e28b",
+              "file": "cyber-city-explore.spec.ts",
+              "line": 618,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "cyber-city-feedback.spec.ts",
+      "file": "cyber-city-feedback.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "科技城驾驶反馈包（CC-FXN-C2/C6 · world-chromium 串行 project）",
+          "file": "cyber-city-feedback.spec.ts",
+          "line": 79,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-FB-01…09 反馈全链：恒等门 → boost/刹车双沿 → 悬挂跳脉冲 → respawn toast → 翻车倒计时 → 测速牌驶越",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4d3a6f692df67333bb56-3ad787932c370c59ecd7",
+              "file": "cyber-city-feedback.spec.ts",
+              "line": 104,
+              "column": 3
+            },
+            {
+              "title": "CITY-FB-05 reduced-motion：恒等门生效 + boost/toast 静态呈现不剥夺",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4d3a6f692df67333bb56-a82b7f55431e86cd7eff",
+              "file": "cyber-city-feedback.spec.ts",
+              "line": 299,
+              "column": 3
+            },
+            {
+              "title": "CITY-FB-06 灰盒碰撞脉冲：W 直行撞锥桶 → 碰撞 ×N 脉冲与 HUD 计数同拍呈现",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4d3a6f692df67333bb56-c75693f013857d3eb1b1",
+              "file": "cyber-city-feedback.spec.ts",
+              "line": 349,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串行 project）",
+          "file": "cyber-city-feedback.spec.ts",
+          "line": 392,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-HINT-01 键位卡全链：恒等门 → car_ready 全键位浮现 → 首驶阅读窗 → 淡出 → H/按钮再唤出（埋点互证）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4d3a6f692df67333bb56-3b47ed1e323b3ebc78d9",
+              "file": "cyber-city-feedback.spec.ts",
+              "line": 406,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "科技城触屏文案分稿（CC-FXN-C1 · pointer: coarse）",
+          "file": "cyber-city-feedback.spec.ts",
+          "line": 500,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-HINT-02 触屏分文案：摇杆口径键位卡（零键盘键位）+「操作说明」召回按钮 + env.touch 互证",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4d3a6f692df67333bb56-3809a6aef4ee356a362b",
+              "file": "cyber-city-feedback.spec.ts",
+              "line": 504,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "cyber-city-minimap.spec.ts",
+      "file": "cyber-city-minimap.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "科技城 M 键小地图（CC-NAV-C1 · world-chromium 串行 project）",
+          "file": "cyber-city-minimap.spec.ts",
+          "line": 166,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-NAV-01 全链：M/Esc 开合（壳菜单零双响）→ Tab+Enter 选楼传送 → E 确认进站路由链 + 埋点 seq 序",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "8b5c82c97928826b9585-863d2fb995cc2ac5bf53",
+              "file": "cyber-city-minimap.spec.ts",
+              "line": 177,
+              "column": 3
+            },
+            {
+              "title": "CITY-NAV-02 恒等门：robot_idle 按 M 零反应/零面板 DOM/钮 hidden → 键位卡含 M 地图 → driving 态 M 开合",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "8b5c82c97928826b9585-b84bb46b17c15ca01beb",
+              "file": "cyber-city-minimap.spec.ts",
+              "line": 287,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "科技城小地图触屏/reduced-motion（CC-NAV-C1 · world-chromium 串行 project）",
+          "file": "cyber-city-minimap.spec.ts",
+          "line": 358,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-NAV-03 触屏+直切：HUD 钮点按开合（reduced-motion 即达终态）→ pin 点按传送落 parkingBay",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "8b5c82c97928826b9585-b6edcc04e94a061e03b4",
+              "file": "cyber-city-minimap.spec.ts",
+              "line": 362,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "cyber-city-observability.spec.ts",
+      "file": "cyber-city-observability.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串行 project）",
+          "file": "cyber-city-observability.spec.ts",
+          "line": 349,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-OBS-01 漏斗全走 @funnel：ritual 动线 + V 往返 + R 重生 + 驾驶进 POI + E 进站取证",
+              "ok": true,
+              "tags": [
+                "phase0（CC-OBS-C2",
+                "funnel：ritual"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "735ba2c1994210031cfc-a3bed21b0f8c5bae5cf2",
+              "file": "cyber-city-observability.spec.ts",
+              "line": 362,
+              "column": 3
+            },
+            {
+              "title": "CITY-OBS-01b 锥桶补充取证：灰盒直线撞桩 → cone-hit 事件 + coneHits 计数互证",
+              "ok": true,
+              "tags": [
+                "phase0（CC-OBS-C2"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "735ba2c1994210031cfc-0d9ad4b131c0195b8b19",
+              "file": "cyber-city-observability.spec.ts",
+              "line": 484,
+              "column": 3
+            },
+            {
+              "title": "CITY-OBS-02 导出面契约：__worldSession 仅 dump 一键 + env 落定 + 纯快照语义",
+              "ok": true,
+              "tags": [
+                "phase0（CC-OBS-C2"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "735ba2c1994210031cfc-e5df2485400ad9fd84b6",
+              "file": "cyber-city-observability.spec.ts",
+              "line": 536,
+              "column": 3
+            },
+            {
+              "title": "CITY-OBS-03 dispose 合同：卸载前可取证 + 卸载时 console 摘要一次（table×2 + [session] 一行）",
+              "ok": true,
+              "tags": [
+                "phase0（CC-OBS-C2"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "735ba2c1994210031cfc-03837c325850d2b6c896",
+              "file": "cyber-city-observability.spec.ts",
+              "line": 591,
+              "column": 3
+            },
+            {
+              "title": "CITY-OBS-04 ring 溢出：520 条桥事件 → 丢最旧不失真；白名单外拒收 + 告警",
+              "ok": true,
+              "tags": [
+                "phase0（CC-OBS-C2"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "735ba2c1994210031cfc-48d2e9f9d4a5b05e215a",
+              "file": "cyber-city-observability.spec.ts",
+              "line": 638,
+              "column": 3
+            },
+            {
+              "title": "CITY-OBS-05 #debug 面板：无 hash 零 debug 请求；有 hash 面板只读 + tail + 导出下载",
+              "ok": true,
+              "tags": [
+                "phase0（CC-OBS-C2"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "735ba2c1994210031cfc-29a5c47415620ae1bedd",
+              "file": "cyber-city-observability.spec.ts",
+              "line": 691,
+              "column": 3
+            },
+            {
+              "title": "CITY-OBS-06 冒烟脚本：function-smoke 消费 OBS-01/01b dump → 漏斗满额 + 覆盖齐 + 末行机读",
+              "ok": true,
+              "tags": [
+                "phase0（CC-OBS-C2"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "735ba2c1994210031cfc-f9f508a2790e6f7564b4",
+              "file": "cyber-city-observability.spec.ts",
+              "line": 745,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "cyber-city-poi-arrival.spec.ts",
+      "file": "cyber-city-poi-arrival.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project）",
+          "file": "cyber-city-poi-arrival.spec.ts",
+          "line": 148,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-PA-01 前奏时序：圈内 E → world-poi/shot-apply seq 序 → 定帧后 navigate 被拦（跳转前取证）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b37947870fa18c6b1760-619d46a24466c8bb0424",
+              "file": "cyber-city-poi-arrival.spec.ts",
+              "line": 159,
+              "column": 3
+            },
+            {
+              "title": "CITY-PA-02 驾驶中断：前奏窗内压 W → shot-interrupt{by:drive} seq 序 + 相机回跟随 + 零 navigate",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b37947870fa18c6b1760-e7661000843c9f59bd4b",
+              "file": "cyber-city-poi-arrival.spec.ts",
+              "line": 228,
+              "column": 3
+            },
+            {
+              "title": "CITY-PA-03 reduced-motion：直切定帧（零 tween）+ world-poi 照常 + 进站路径可完成",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b37947870fa18c6b1760-6001f24efc20ef565959",
+              "file": "cyber-city-poi-arrival.spec.ts",
+              "line": 285,
+              "column": 3
+            },
+            {
+              "title": "CITY-PA-04 恒等门：robot_idle 期 E 完全不可达（零事件 + View 零触碰）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b37947870fa18c6b1760-ff17658ff6f399aadc83",
+              "file": "cyber-city-poi-arrival.spec.ts",
+              "line": 338,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "cyber-city-signage.spec.ts",
+      "file": "cyber-city-signage.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "招牌叙事 v2 验收（CC-VIS-X3；world-chromium 串行）",
+          "file": "cyber-city-signage.spec.ts",
+          "line": 83,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-SIGN-01 首幕 stagger：装配台账武装 + 全序点亮完成自摘（6 通道 × 150ms）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 360000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "409666588fbe3320e735-b3b2532e6984f512a257",
+              "file": "cyber-city-signage.spec.ts",
+              "line": 96,
+              "column": 3
+            },
+            {
+              "title": "CITY-SIGN-02 ?city=1 直出终态：零 stagger 瞬态 + 三层招牌/广告板网格逐名清点",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 360000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "409666588fbe3320e735-44ca4b50ab8356c9a2a8",
+              "file": "cyber-city-signage.spec.ts",
+              "line": 128,
+              "column": 3
+            },
+            {
+              "title": "CITY-SIGN-03 reduced-motion 首幕：stagger 不武装、直出终态零瞬态",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 360000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "409666588fbe3320e735-97f2f2d727e37535209c",
+              "file": "cyber-city-signage.spec.ts",
+              "line": 174,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "cyber-city.spec.ts",
+      "file": "cyber-city.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "CITY-VEH-07 相机注册表：drive_third/drive_fpv 登记（spec §7.1 冻结值）+ View 注册表消费 + ritual_idle 冻结守卫",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "world-chromium",
+              "projectName": "world-chromium",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "ba922a5967d543b8e45d-85d68162ebfb8b646b96",
+          "file": "cyber-city.spec.ts",
+          "line": 481,
+          "column": 1
+        }
+      ],
+      "suites": [
+        {
+          "title": "科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium 串行 project）",
+          "file": "cyber-city.spec.ts",
+          "line": 133,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-E2E-01 壳静态段合同：load 事件前零 world 字节 + HTML 零 world 静态标签 + 定位语/poster/noscript 就位",
+              "ok": true,
+              "tags": [
+                "phase0"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ba922a5967d543b8e45d-e1a1a9ce4c06cc4b64a3",
+              "file": "cyber-city.spec.ts",
+              "line": 147,
+              "column": 3
+            },
+            {
+              "title": "CITY-E2E-02 跳过出口：domcontentloaded 即可点 + Tab 第一焦点 → /home/ 落地零 world 字节",
+              "ok": true,
+              "tags": [
+                "phase0"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ba922a5967d543b8e45d-5797046427d8f558869f",
+              "file": "cyber-city.spec.ts",
+              "line": 175,
+              "column": 3
+            },
+            {
+              "title": "CITY-E2E-03 变形仪式：robot_idle → transforming（CTA disabled）→ car_ready，落地即刻 WASD 可开",
+              "ok": true,
+              "tags": [
+                "phase0"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ba922a5967d543b8e45d-305255f0153f63f2b22c",
+              "file": "cyber-city.spec.ts",
+              "line": 207,
+              "column": 3
+            },
+            {
+              "title": "CITY-E2E-04 reduced-motion：不自动挂载零 world 字节；显式进入 → 终态直出；变形为即时切换 + 文字状态提示",
+              "ok": true,
+              "tags": [
+                "phase0"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ba922a5967d543b8e45d-d57cd0b66ecdb16e79b1",
+              "file": "cyber-city.spec.ts",
+              "line": 252,
+              "column": 3
+            },
+            {
+              "title": "CITY-E2E-05 ?gl=1 回退：后端徽标 WebGL 2，变形仪式在回退腿同样可播，零未捕获异常",
+              "ok": true,
+              "tags": [
+                "phase0"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ba922a5967d543b8e45d-a173dffe9c94331303c9",
+              "file": "cyber-city.spec.ts",
+              "line": 287,
+              "column": 3
+            },
+            {
+              "title": "CITY-E2E-06 机器人可见计时：poster 先显（LCP 不等 GLB），world-reveal 计时采集留档",
+              "ok": true,
+              "tags": [
+                "phase0"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ba922a5967d543b8e45d-f0aaa19d5338b7ed5dd1",
+              "file": "cyber-city.spec.ts",
+              "line": 315,
+              "column": 3
+            },
+            {
+              "title": "CITY-VEH-01/02/03/04/06 驾驶双视角：robot_idle 门禁 → car_ready 切 FPV 不触发 driving → FPV 驾驶 → V 往返",
+              "ok": true,
+              "tags": [
+                "phase0"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ba922a5967d543b8e45d-9dbade2a6393ead0edc5",
+              "file": "cyber-city.spec.ts",
+              "line": 347,
+              "column": 3
+            },
+            {
+              "title": "CITY-VEH-05 reduced-motion：instant swap 至 car_ready 后 V 切换仍可往返",
+              "ok": true,
+              "tags": [
+                "phase0"
+              ],
+              "tests": [
+                {
+                  "timeout": 420000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ba922a5967d543b8e45d-bc4ed5f9ae3b1042da5f",
+              "file": "cyber-city.spec.ts",
+              "line": 434,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "world-spike.spec.ts",
+      "file": "world-spike.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "world Spike 灰盒试验场",
+          "file": "world-spike.spec.ts",
+          "line": 117,
+          "column": 6,
+          "specs": [
+            {
+              "title": "WS-E2E-01 壳页静态合同：noindex+canonical→/、标题、逃生链接、poster、点击前零 world 字节",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "664472a8802103699f2f-b5a1157900074169c25b",
+              "file": "world-spike.spec.ts",
+              "line": 118,
+              "column": 3
+            },
+            {
+              "title": "WS-E2E-02 进入试验场：显式启动 → ready，HUD/徽标/遥测揭示，资产仅在点击后拉取",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "664472a8802103699f2f-f01f166695cf6a60a33e",
+              "file": "world-spike.spec.ts",
+              "line": 165,
+              "column": 3
+            },
+            {
+              "title": "WS-E2E-03 WASD 可驾驶：W 加速、空格刹停、R 复位、Shift boost、A 左转、提示消隐",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "664472a8802103699f2f-7724ff891dc593cd4f7f",
+              "file": "world-spike.spec.ts",
+              "line": 221,
+              "column": 3
+            },
+            {
+              "title": "WS-E2E-04 锥桶碰撞 + R 复位闭环：直线撞桩 → 计数/HUD 联动 → 复位清零",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "664472a8802103699f2f-f181280a9072ef57cefd",
+              "file": "world-spike.spec.ts",
+              "line": 293,
+              "column": 3
+            },
+            {
+              "title": "WS-E2E-05 深链：?gl=1 强制 WebGL 2；白名单外参数忽略且 URL 不被改写",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "664472a8802103699f2f-41b97c54a45da9127089",
+              "file": "world-spike.spec.ts",
+              "line": 351,
+              "column": 3
+            },
+            {
+              "title": "WS-E2E-11 ?vehicle=kinematic 运动学回退档：同壳同 HUD 可驾驶、遥测上报回退腿、零异常",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "664472a8802103699f2f-09087fde295590e3c805",
+              "file": "world-spike.spec.ts",
+              "line": 368,
+              "column": 3
+            },
+            {
+              "title": "WS-E2E-06 reduced-motion：静态壳保持零加载，显式「进入」逃生门照常工作",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "664472a8802103699f2f-e8c7d754b809a7ee5b96",
+              "file": "world-spike.spec.ts",
+              "line": 396,
+              "column": 3
+            },
+            {
+              "title": "WS-E2E-07 dispose 再挂载：离页释放零异常，返回后可再次进入并驾驶",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "664472a8802103699f2f-8eb21f2aabe1f147f4a1",
+              "file": "world-spike.spec.ts",
+              "line": 420,
+              "column": 3
+            },
+            {
+              "title": "WS-E2E-08 快速切页：加载中弃页 + 全站五路由快切，零未捕获异常，终局仍可进入",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "664472a8802103699f2f-6046b745ae3d78faef2c",
+              "file": "world-spike.spec.ts",
+              "line": 463,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "world Spike（移动端 375px 触屏）",
+          "file": "world-spike.spec.ts",
+          "line": 495,
+          "column": 6,
+          "specs": [
+            {
+              "title": "WS-E2E-09 触屏摇杆驾驶：随车 3D 摇杆遥测、真触摸驱动、复位按钮、无水平溢出",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "664472a8802103699f2f-d129146c164fc15441cb",
+              "file": "world-spike.spec.ts",
+              "line": 506,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "world Spike（无 JS）",
+          "file": "world-spike.spec.ts",
+          "line": 576,
+          "column": 6,
+          "specs": [
+            {
+              "title": "WS-E2E-10 禁用 JS：noscript 提示就位，操作说明与署名静态可读，壳保持 idle",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-chromium",
+                  "projectName": "world-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "664472a8802103699f2f-9e007a09c84372838d97",
+              "file": "world-spike.spec.ts",
+              "line": 579,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "world-spike-perf.spec.ts",
+      "file": "world-spike-perf.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "world Spike 帧率证据包",
+          "file": "world-spike-perf.spec.ts",
+          "line": 99,
+          "column": 6,
+          "specs": [
+            {
+              "title": "WS-PERF-01 30s 驾驶后采集 HUD/遥测帧率 + rAF 帧间隔采样；p95<50ms 软门禁（OBS 不阻断）",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "world-perf-chromium",
+                  "projectName": "world-perf-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "45c89eac2bba64c45198-444d37095858ecd01957",
+              "file": "world-spike-perf.spec.ts",
+              "line": 100,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "cyber-city-perf.spec.ts",
+      "file": "cyber-city-perf.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromium 殿后 project）",
+          "file": "cyber-city-perf.spec.ts",
+          "line": 297,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CITY-PERF-01 城市档证据包：状态机全走 + 20s 同源驾驶脚本 + rAF 采样 + 漏斗互证；p95<50ms 软门（OBS 不阻断）",
+              "ok": true,
+              "tags": [
+                "phase0（CC-PERF-C1"
+              ],
+              "tests": [
+                {
+                  "timeout": 1200000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "city-perf-chromium",
+                  "projectName": "city-perf-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "8659b83fd0e9f1ca15f2-a53dfaea11855f6a10ee",
+              "file": "cyber-city-perf.spec.ts",
+              "line": 304,
+              "column": 3
+            },
+            {
+              "title": "CITY-PERF-02 Q2 存在腿：?quality=2 深链生效 + 变形驾驶进站核心路径全走 + 漏斗七步 + Q2 负载基线",
+              "ok": true,
+              "tags": [
+                "phase0（CC-PERF-C1"
+              ],
+              "tests": [
+                {
+                  "timeout": 1200000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "city-perf-chromium",
+                  "projectName": "city-perf-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "8659b83fd0e9f1ca15f2-c3ee30948a510002b3fa",
+              "file": "cyber-city-perf.spec.ts",
+              "line": 575,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "visual/world-visual.spec.ts",
+      "file": "visual/world-visual.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "科技城视觉/3D 冒烟取证（visual-chromium 单 worker 顺序执行）",
+          "file": "visual/world-visual.spec.ts",
+          "line": 44,
+          "column": 6,
+          "specs": [
+            {
+              "title": "VIS-01 @visual 壳静态基线：reduced-motion 拦截态整壳截图与入库基线一致",
+              "ok": true,
+              "tags": [
+                "visual"
+              ],
+              "tests": [
+                {
+                  "timeout": 360000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "visual-chromium",
+                  "projectName": "visual-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b2c9ecb42692405341c9-b79903b29dda9ca6a580",
+              "file": "visual/world-visual.spec.ts",
+              "line": 53,
+              "column": 3
+            },
+            {
+              "title": "VIS-02 @smoke3d ESC 菜单：Escape 开 → 双出口链接可见 → 截图基线 → Escape 关",
+              "ok": true,
+              "tags": [
+                "smoke3d"
+              ],
+              "tests": [
+                {
+                  "timeout": 360000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "visual-chromium",
+                  "projectName": "visual-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b2c9ecb42692405341c9-7e69b3395cbcb904511e",
+              "file": "visual/world-visual.spec.ts",
+              "line": 74,
+              "column": 3
+            },
+            {
+              "title": "VIS-03 @smoke3d 首幕取证：挂载 ready + robot_idle 后 canvas 非空（像素统计）+ 取证图落盘",
+              "ok": true,
+              "tags": [
+                "smoke3d"
+              ],
+              "tests": [
+                {
+                  "timeout": 360000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "visual-chromium",
+                  "projectName": "visual-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b2c9ecb42692405341c9-86b0104ec7128e330380",
+              "file": "visual/world-visual.spec.ts",
+              "line": 101,
+              "column": 3
+            },
+            {
+              "title": "VIS-04 @smoke3d POI 深链取证：?poi= 挂载 ready + canvas 非空 + 出生点落 parkingBay",
+              "ok": true,
+              "tags": [
+                "smoke3d"
+              ],
+              "tests": [
+                {
+                  "timeout": 360000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "visual-chromium",
+                  "projectName": "visual-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b2c9ecb42692405341c9-4c36f1d26ee35466822f",
+              "file": "visual/world-visual.spec.ts",
+              "line": 121,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-01T08:57:24.447Z",
+    "duration": 283.16200000000003,
+    "expected": 0,
+    "skipped": 86,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
