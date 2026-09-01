@@ -122,14 +122,27 @@ const fontFaceCss = `
 
     {
       /* GoatCounter（GLB-07 / SRD §5.5）：无 Cookie 匿名计数，仅生产构建注入；
-         count.js 自带 localhost 不上报守卫（§9.5 预览环境口径）。 */
+         延迟至 window.load 后动态注入，且 loopback 不发起请求，避免阻塞首屏 load。 */
       import.meta.env.PROD && (
-        <script
-          is:inline
-          data-goatcounter={GOATCOUNTER_ENDPOINT}
-          async
-          src="https://gc.zgo.at/count.js"
-        />
+        <script is:inline data-goatcounter={GOATCOUNTER_ENDPOINT}>
+          (function () {
+            var h = location.hostname;
+            if (h === 'localhost' || h === '127.0.0.1' || h === '::1' || h === '[::1]') return;
+            var ep = document.currentScript && document.currentScript.dataset.goatcounter;
+            function inject() {
+              var s = document.createElement('script');
+              s.async = true;
+              s.src = 'https://gc.zgo.at/count.js';
+              if (ep) s.setAttribute('data-goatcounter', ep);
+              document.head.appendChild(s);
+            }
+            if (document.readyState === 'complete') {
+              inject();
+            } else {
+              window.addEventListener('load', inject, { once: true });
+            }
+          })();
+        </script>
       )
     }
     <!-- 统计事件契约（SRD §9.5，内联 ≤1KB）：
