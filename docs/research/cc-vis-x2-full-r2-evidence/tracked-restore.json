@@ -1,0 +1,260 @@
+{
+  "count": 23,
+  "restoreCommand": "git restore -- <23 tracked asset paths>",
+  "allMatchedIndex": true,
+  "files": [
+    {
+      "path": "docs/spec/assets/e2e-batch1/car_blocked_reduced_motion.png",
+      "indexBlob": "67b3623919c426b88b489acd90de93f8e13497f5",
+      "preRestoreSize": 432076,
+      "preRestoreBlob": "fca21997f92af5e8563aa98ca81f904536e91ea8",
+      "preRestoreSha256": "9bf80a8eaffc2fe6d6b032217f990cae2ac8622aab9fe7f11ce494a7fdf00907",
+      "postRestoreSize": 400588,
+      "postRestoreBlob": "67b3623919c426b88b489acd90de93f8e13497f5",
+      "postRestoreSha256": "9508dd1c1f99c8bfbe071fb2c676bc19a31a980753066927d35368a48b70f074",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/car_deeplink_graphite_abyss_stealth.png",
+      "indexBlob": "27ab74134f2fa419b2aea4491e6fbd97005e0eb7",
+      "preRestoreSize": 438977,
+      "preRestoreBlob": "e72bf93f0ab7092377c00058c1a0599a81a66b29",
+      "preRestoreSha256": "51a0768c33423dd23c180b71782c18ec13cba0c7661795a6b278b2f91289bbf7",
+      "postRestoreSize": 434781,
+      "postRestoreBlob": "27ab74134f2fa419b2aea4491e6fbd97005e0eb7",
+      "postRestoreSha256": "f85e0a917da7e31e505877f80db45dbe368cf906c27807ec173428178fc3ba1f",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/car_paint_crimson.png",
+      "indexBlob": "98f869cb74ad49040faf414706418d826ed66ebd",
+      "preRestoreSize": 437483,
+      "preRestoreBlob": "9d4e6573da235d72db8091abac167224dcdeba72",
+      "preRestoreSha256": "1b6ec2d8137dc9509af5fe00fa2c9e6b90fa24cd84643a3e6fb70fd68317846b",
+      "postRestoreSize": 392280,
+      "postRestoreBlob": "98f869cb74ad49040faf414706418d826ed66ebd",
+      "postRestoreSha256": "d89b4f2353d1fc5e4cf1fa6a47a113ec44d18ecf55694763df0240d90e66eaec",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/car_ready_default.png",
+      "indexBlob": "ff2b02fc0ea57ec608bcb3b705c3a80559a770db",
+      "preRestoreSize": 455655,
+      "preRestoreBlob": "c58455bd68724ffccacef91bb9c402995ac060c1",
+      "preRestoreSha256": "0ba8817637832633b453beb78cf5887fcf8c736ae70b594f4ba242b823cf854e",
+      "postRestoreSize": 451095,
+      "postRestoreBlob": "ff2b02fc0ea57ec608bcb3b705c3a80559a770db",
+      "postRestoreSha256": "b129177615aa11fbe4b29bbd6be6d38e21a28a38186ea8aaec9142f36d4df9fb",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/home_desktop_dark.png",
+      "indexBlob": "5ce8d41a5e9dc8f4dcf3b204f04f5fd1bfcdd600",
+      "preRestoreSize": 199706,
+      "preRestoreBlob": "ec6b9c0764f687d7791ef48b89c9d02b68ac848e",
+      "preRestoreSha256": "7df13af8678d901548c463a58263d8c542b947fc4b312ee2f2f3c4de98467595",
+      "postRestoreSize": 193224,
+      "postRestoreBlob": "5ce8d41a5e9dc8f4dcf3b204f04f5fd1bfcdd600",
+      "postRestoreSha256": "45b3bce5894c4146a8dca61a6c0ea4bca4e6503cbaae798083bf232d67715f53",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/home_desktop_light.png",
+      "indexBlob": "51aee3c19109ca08661bd43f44e0b81b50c540de",
+      "preRestoreSize": 195734,
+      "preRestoreBlob": "003a057959e8f5571dbeba98342f5e8ee98db818",
+      "preRestoreSha256": "90ea4578c6f7422c4a97abee95bef0cebd8f8364cf456d8e69aac4db0a7ecab2",
+      "postRestoreSize": 189989,
+      "postRestoreBlob": "51aee3c19109ca08661bd43f44e0b81b50c540de",
+      "postRestoreSha256": "55299cffe5cb1dfbf7ff8a7a40b991b5c2a11b64c6799042b4748db6e5684fc8",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/lab_index_cards.png",
+      "indexBlob": "d22dd55190d755f95c07d9cd027f7b52b9e79fa8",
+      "preRestoreSize": 340554,
+      "preRestoreBlob": "753bec1cfc84590ec0e5b5a55ade10ae8c3e6839",
+      "preRestoreSha256": "374ed5c52c97838d4554ca4bb294df1a1bd616ce5e4c0c914f063f044c42d447",
+      "postRestoreSize": 343148,
+      "postRestoreBlob": "d22dd55190d755f95c07d9cd027f7b52b9e79fa8",
+      "postRestoreSha256": "0d9b4eb314280b135bbbc1e6a9ce868351cf94e9f46487e6515b13686ee11603",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/mobile_car_blocked_pointer.png",
+      "indexBlob": "e3255f5ec24b5f6749e164b057aa8b6df9567735",
+      "preRestoreSize": 347643,
+      "preRestoreBlob": "745cc63a91bf9b0eb63d25787f63a0280c4192a7",
+      "preRestoreSha256": "af4f15c1a8865e3c95d00ee7d85ca7677ae7e671e6991e8d7355ff2a45144dae",
+      "postRestoreSize": 349955,
+      "postRestoreBlob": "e3255f5ec24b5f6749e164b057aa8b6df9567735",
+      "postRestoreSha256": "a643d7fc4107122485e966838b0222a76f272a2cf640f09705f4268e3d937072",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/mobile_car_ready_375.png",
+      "indexBlob": "10c83400bf268f2408464b3a8424f3da1afdf44a",
+      "preRestoreSize": 385225,
+      "preRestoreBlob": "eceaef2d6cf4e1a8a2c284c31ebae635520dca98",
+      "preRestoreSha256": "2b1e4c8d83ebee1938ba825280434821362921d733964116a403b2006cfcbcc1",
+      "postRestoreSize": 381012,
+      "postRestoreBlob": "10c83400bf268f2408464b3a8424f3da1afdf44a",
+      "postRestoreSha256": "09ddf90d5c425027584fe3d1620a2327cebb44b827e85c2c77d4ca48102d8479",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/mobile_home_375.png",
+      "indexBlob": "8843397c7168169b35a2918a1f5d54b112535648",
+      "preRestoreSize": 189748,
+      "preRestoreBlob": "746ebed5486e7784bda28da294b837dc12efd2d8",
+      "preRestoreSha256": "253be286cf27ceccc3bb783d37407786848671f3d8d9b3e6efbd81594c04dc09",
+      "postRestoreSize": 185563,
+      "postRestoreBlob": "8843397c7168169b35a2918a1f5d54b112535648",
+      "postRestoreSha256": "f8a88907095f9a76d1a646c243da65239a5ee0e02eb4b7ef8d5bb10c3ea1db24",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/mobile_tts_ready_375.png",
+      "indexBlob": "62c3da650123deae43769f68bb2279ff572d7974",
+      "preRestoreSize": 232707,
+      "preRestoreBlob": "e214ef7cc11209ef6fe7b38ef3ca45fc94c95fee",
+      "preRestoreSha256": "8c41eeaa5883c393bb9acfe9857d6a4530488f64a47546c1466a7f119834a330",
+      "postRestoreSize": 230384,
+      "postRestoreBlob": "62c3da650123deae43769f68bb2279ff572d7974",
+      "postRestoreSha256": "a8c671563d03831b142478a5e8cba6b83f1246db1d4eb3d0aeb7eecb8449c30f",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/tts_blocked_reduced_motion.png",
+      "indexBlob": "aa72c3da9aec0394af8c1efc1260fe00c8e0f700",
+      "preRestoreSize": 246922,
+      "preRestoreBlob": "e7b5ed31b5f462a94ed08ce7f8a42d3d934f1b7e",
+      "preRestoreSha256": "4c58ec524d556fb11605587a43b4b4babc48840405c9cb15514f48280b9256b5",
+      "postRestoreSize": 240760,
+      "postRestoreBlob": "aa72c3da9aec0394af8c1efc1260fe00c8e0f700",
+      "postRestoreSha256": "188d790302847ea6114eb3a139a04f26ca4a382eeb2d216f4aa1bdf483b8a1c9",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/tts_deeplink_ar_rtl_park.png",
+      "indexBlob": "0257d658cc7ea79288bd024e06a1d88552d0d7d7",
+      "preRestoreSize": 150917,
+      "preRestoreBlob": "664996a840b8507b80a8cbd16b114aa68f6cab4d",
+      "preRestoreSha256": "c011bdcafecc6cbcedecb8aaea54864079bf0be5f048c8aef63d26421d22d8da",
+      "postRestoreSize": 131043,
+      "postRestoreBlob": "0257d658cc7ea79288bd024e06a1d88552d0d7d7",
+      "postRestoreSha256": "e7780ff7235ac3e421d68dd2fb37cb33709b685122ae72ebae7cf2c358f28d84",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/tts_playing_zh_nav.png",
+      "indexBlob": "b4c450cac314ba763d7ff8120f0dcda86f611dda",
+      "preRestoreSize": 122205,
+      "preRestoreBlob": "7156d6daab9dc163f58d40ca5371f510ab98e4a6",
+      "preRestoreSha256": "76a2002125472941a58af62a9645908c35569ecbf9b7c477f362f7176322621c",
+      "postRestoreSize": 118639,
+      "postRestoreBlob": "b4c450cac314ba763d7ff8120f0dcda86f611dda",
+      "postRestoreSha256": "51f8e329ebf7495914619ca2483861eb10a174f76269eb858cff2249b6bfe82d",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_after_reset.png",
+      "indexBlob": "2f8c440c2af7eaac83c35c44fb0570ae33c7ce4b",
+      "preRestoreSize": 350543,
+      "preRestoreBlob": "d291b09e82757cf5f12b56d789d8232af82f7c75",
+      "preRestoreSha256": "4fd175c7a831b8f000f6dc39716a2839e15b1fd992e4ee9bc9dbd4e09bede032",
+      "postRestoreSize": 314333,
+      "postRestoreBlob": "2f8c440c2af7eaac83c35c44fb0570ae33c7ce4b",
+      "postRestoreSha256": "924c1bf25fd722026cfbb79b6aaec449339e34415848529e46a7828062829285",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_cone_knocked.png",
+      "indexBlob": "c6cb43f7fb3981f0a4fb1efda68f6afa622fea5c",
+      "preRestoreSize": 316259,
+      "preRestoreBlob": "0d9da686a4f9b8a25380010ea98796e61445c86c",
+      "preRestoreSha256": "aabd5edfd0155f9c34b1443c4f85d823d18dec2a2bff41987020f2ecaa192f96",
+      "postRestoreSize": 293818,
+      "postRestoreBlob": "c6cb43f7fb3981f0a4fb1efda68f6afa622fea5c",
+      "postRestoreSha256": "d4c12491cf4e5658b54dd7f5c531d044238e8ec6ffaa2a842f1cf59f518e954e",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_drive_after_boost.png",
+      "indexBlob": "ce892937dd506065cbde2ebb3bbc46423b854d53",
+      "preRestoreSize": 307940,
+      "preRestoreBlob": "dcb9c401f06f9950ea9047a3435af03f7ab16950",
+      "preRestoreSha256": "0397244e8419bd7712b40ca774cc9aba4b889cd7232babc8f27af196a5e7396b",
+      "postRestoreSize": 293032,
+      "postRestoreBlob": "ce892937dd506065cbde2ebb3bbc46423b854d53",
+      "postRestoreSha256": "0d634dbcb675c9a72dfc469b6264d1f21db59ca0718be75c0cbcc950d754f24c",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_gl1_backend.png",
+      "indexBlob": "8719f76dd65845f8040d09836afb5b72ba093b98",
+      "preRestoreSize": 344933,
+      "preRestoreBlob": "88006dc062fdb802888ce856153469ae6b49b954",
+      "preRestoreSha256": "349d73d0d62152ad7f498a87d21b04976d407291cae8a279a82c2f4cb7894cd4",
+      "postRestoreSize": 325497,
+      "postRestoreBlob": "8719f76dd65845f8040d09836afb5b72ba093b98",
+      "postRestoreSha256": "6f5c0373a143890f5a70fe1aa8bbfead9d5b7fcbc61fa57dd5e45a27ba2fe5ce",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_kinematic_fallback.png",
+      "indexBlob": "497c9adbc852933118b91ab38d063cab09f762d8",
+      "preRestoreSize": 311293,
+      "preRestoreBlob": "b721a597ab3962a7acedd027064d07d2dcfe6b5b",
+      "preRestoreSha256": "7ab149af1c2b8aaf57182c9a5336a32c0bdb02394dedd332aef69e8c38e0d0ef",
+      "postRestoreSize": 299934,
+      "postRestoreBlob": "497c9adbc852933118b91ab38d063cab09f762d8",
+      "postRestoreSha256": "29ef798a9542a1ae092cc77114d6423c21a4f0288c3a1b553e105e46be76e077",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_mobile_joystick.png",
+      "indexBlob": "2002d2744ff4652be05cb7241a7183e35c122814",
+      "preRestoreSize": 371693,
+      "preRestoreBlob": "e900d16dae10c8debe8588a0cb3b31cbbc9ef120",
+      "preRestoreSha256": "44bb9b505c5ffbac600ddc40f295a4519076f3d83398be59aa21ce1415fe9fcf",
+      "postRestoreSize": 303704,
+      "postRestoreBlob": "2002d2744ff4652be05cb7241a7183e35c122814",
+      "postRestoreSha256": "f2e49cb74fd904ae71bf2c64ae7fb6839352e6c5ee83b51f044955c4ea5768cf",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_ready_hud.png",
+      "indexBlob": "5070b0c1a2af8e74db3ed83be7ee904ad220eef7",
+      "preRestoreSize": 344938,
+      "preRestoreBlob": "eb076fc10dec0b152302f32702baaacc712bf854",
+      "preRestoreSha256": "4a6014e2598905c988569580e7a0d2043dd377ed1b515e70b5259072a3036527",
+      "postRestoreSize": 325519,
+      "postRestoreBlob": "5070b0c1a2af8e74db3ed83be7ee904ad220eef7",
+      "postRestoreSha256": "5d5dd44d841aee5695992f9869680eece5b61df02e1c944743e498c47b59e390",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_remount_ready.png",
+      "indexBlob": "65f277daf03d7fc2500ae73c4d0894d4ec380e88",
+      "preRestoreSize": 320641,
+      "preRestoreBlob": "a65585f09202c300df3b0749e2db7eb56d8398ac",
+      "preRestoreSha256": "6363ea5189ef8c89c99fecc48edf417c45a59eeeb978540fb97cc2c341dbf15d",
+      "postRestoreSize": 301837,
+      "postRestoreBlob": "65f277daf03d7fc2500ae73c4d0894d4ec380e88",
+      "postRestoreSha256": "2db3aa8ecfaa34be3412586b6d51ae147d34195155f942948eb75269720bfbb0",
+      "verified": true
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_shell_idle.png",
+      "indexBlob": "0d6dfd8fb5de1a86f9c6afb5e3dd54abea98ac4a",
+      "preRestoreSize": 363783,
+      "preRestoreBlob": "5be18bcd8f9eafcf969bd1bfe3b61abcfa74ccff",
+      "preRestoreSha256": "248b0c97544826d906fd1581096d81722a14e15e9e6c56b1e8314aa8b94992a0",
+      "postRestoreSize": 358053,
+      "postRestoreBlob": "0d6dfd8fb5de1a86f9c6afb5e3dd54abea98ac4a",
+      "postRestoreSha256": "474da03c5f5d133860bb4fdbfb765955681a9544ae6f10cceec7b6b15efb5871",
+      "verified": true
+    }
+  ]
+}
