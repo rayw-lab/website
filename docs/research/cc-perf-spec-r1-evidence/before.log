@@ -1,0 +1,16 @@
+BASELINE_UTC=2026-08-30T17:19:59Z
+BASELINE_CST=2026-08-31T01:19:59+0800
+HOSTNAME=wangleideMacBook-Pro-3.local
+KERN_BOOTTIME={ sec = 1787926318, usec = 519004 } Fri Aug 28 22:11:58 2026
+Darwin wangleideMacBook-Pro-3.local 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:20 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8142 arm64
+ProductName:		macOS
+ProductVersion:		26.6.2
+BuildVersion:		25G82
+Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk3s5   926Gi   638Gi   242Gi    73%    7.3M  2.5G    0%   /System/Volumes/Data
+/dev/disk3s5   926Gi   638Gi   242Gi    73%    7.3M  2.5G    0%   /System/Volumes/Data
+1155988	/Users/wanglei/mywebsite
+worktree /Users/wanglei/mywebsite
+HEAD e0829b81e24a306793e4349e564187554144959f
+branch refs/heads/main
+
