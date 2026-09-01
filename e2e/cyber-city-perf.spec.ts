@@ -8,7 +8,8 @@
 //
 // 断言分层（WS-PERF-01 同款姿势，e2e/world-spike-perf.spec.ts 先例）：
 //   - 硬断言（挡合并）：链路存在性/顺序性/计数——状态机走通、驾驶产生速度、
-//     帧率仪表出数、rAF 持续出帧、漏斗互证、零未捕获异常、证据完整（H1–H7）；
+//     引擎 fps 探针出数（城市页无 [data-ws-fps] HUD）、rAF 持续出帧、漏斗互证、
+//     零未捕获异常、证据完整（H1–H7）；
 //   - 软门（不阻断）：采样期 p95 帧间隔 < 50ms。SwiftShader 下恒预期失败：
 //     登记 OBS annotation + softGate.pass=false + console.warn，用例保持绿。
 //
@@ -57,7 +58,6 @@ const SESSION_DUMP = 'test-results/session-dump-city-perf.json';
 const SEL = {
   host: '[data-world-host]',
   transform: '[data-world-transform]',
-  hudFps: '[data-ws-fps]',
 } as const;
 
 /** UA 级已知异常白名单（既有惯例，仅此一条精确放行——测试方案 §2.2 H6） */
@@ -119,6 +119,29 @@ async function readDump(page: Page): Promise<SessionDump> {
     if (!ws) throw new Error('__worldSession 未挂载');
     return ws.dump() as SessionDump;
   });
+}
+
+async function readFps(page: Page): Promise<{ avg: number; low1: number }> {
+  return page.evaluate(() => {
+    const ws = (window as unknown as { __worldSpike: { fps(): { avg: number; low1: number } } }).__worldSpike;
+    return ws.fps();
+  });
+}
+
+/** 轮询 fps 直至 avg/low1 均 >0；超时返回最后一次读数并置 ok=false（WS-PERF-01 驾驶后读数先例） */
+async function pollFps(
+  page: Page,
+  timeoutMs: number,
+  intervalMs = 400,
+): Promise<{ ok: boolean; fps: { avg: number; low1: number } }> {
+  const deadline = Date.now() + timeoutMs;
+  let fps = await readFps(page);
+  while (!(fps.avg > 0 && fps.low1 > 0)) {
+    if (Date.now() > deadline) return { ok: false, fps };
+    await page.waitForTimeout(intervalMs);
+    fps = await readFps(page);
+  }
+  return { ok: true, fps };
 }
 
 /** 轮询遥测直至谓词满足；超时返回最后一次状态并置 ok=false（WS-PERF-01 先例） */
@@ -398,13 +421,9 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
         `rAF 采样期间渲染循环必须持续出帧（${sampling.durationMs}ms 内 ${sampling.frames} 帧）`,
       ).toBeGreaterThanOrEqual(SAMPLE_MIN_FRAMES);
 
-      // ⑤ 互证读数：HUD + __worldSpike.fps()/info()/state()
-      const hudFps = page.locator(SEL.hudFps);
-      // H3 帧率仪表活着（HUD 每 0.25 世界秒刷新，软渲染下 ~数秒一拍 → 放宽等待）
-      await expect(hudFps, 'HUD 帧率仪表应有「均值 / 1% low」读数').toHaveText(/^\d+ \/ \d+$/, {
-        timeout: 30_000,
-      });
-      const hudFpsText = (await hudFps.textContent())?.trim() ?? '';
+      // ⑤ 互证读数：引擎探针（城市页无 [data-ws-fps] 壳挂点，与 human-gate §5.4 一致）
+      const fpsLive = await pollFps(page, 30_000);
+      expect(fpsLive.ok, 'H3 fps().avg/low1 必须有读数').toBe(true);
       const meter = await page.evaluate(() => {
         const ws = (
           window as unknown as {
@@ -417,7 +436,8 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
         ).__worldSpike;
         return { fps: ws.fps(), info: ws.info(), state: ws.state() as SpikeState };
       });
-      expect(meter.fps.avg, 'H3 帧率仪表 avg 必须有读数').toBeGreaterThan(0);
+      expect(meter.fps.avg, 'H3 fps().avg 必须有读数').toBeGreaterThan(0);
+      expect(meter.fps.low1, 'H3 fps().low1 必须有读数').toBeGreaterThan(0);
 
       // H5 漏斗互证：robotIdle/carReady/driveStart 非 null 且单调不减；
       // 同一 dump 顺带互证 boost-first（脚本步 3 的 Shift boost 沿检测事件，
@@ -461,7 +481,7 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
         env,
         timing: { loadToRobotIdleMs, transformToCarReadyMs },
         driveMs,
-        hud: { fpsText: hudFpsText },
+        hud: { fpsText: null, cityShellNoHudFps: true },
         meter: { fps: meter.fps, info: meter.info },
         sampling,
         softGate,
@@ -622,7 +642,7 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
     }
     expect(interacted, 'Q2 档 E 进站应记 world-poi（核心路径零功能性缺失命题）').toBe(true);
 
-    // ⑤ 硬断言：漏斗七步非 null 且单调不减 + world-poi 事件在档 + HUD 出数
+    // ⑤ 硬断言：漏斗七步非 null 且单调不减 + world-poi 事件在档 + 引擎 fps 探针出数
     const dump = await readDump(page);
     const steps = FUNNEL_STEPS.map((step) => dump.funnel[step]);
     for (const [i, value] of steps.entries()) {
@@ -638,9 +658,11 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
       dump.events.some((e) => e.type === 'world-poi'),
       'world-poi 事件应在档',
     ).toBe(true);
-    await expect(page.locator(SEL.hudFps), 'Q2 档 HUD 帧率仪表应出数').toHaveText(/^\d+ \/ \d+$/, {
-      timeout: 30_000,
-    });
+    // H3 帧率仪表活着（存在腿哨兵——引擎探针，非 HUD DOM）
+    const fpsLive = await pollFps(page, 30_000);
+    expect(fpsLive.ok, 'Q2 档 fps().avg/low1 应有读数').toBe(true);
+    expect(fpsLive.fps.avg, 'Q2 档 fps().avg 应 > 0').toBeGreaterThan(0);
+    expect(fpsLive.fps.low1, 'Q2 档 fps().low1 应 > 0').toBeGreaterThan(0);
 
     // ⑥ 证据：jsonl 精简行（§2.5——无 sampling/softGate/hud/gateReference）；
     // Q2 档 drawCalls/triangles 与 Q0 行对照 = 梯退表实效的 CI 旁证

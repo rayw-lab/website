@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "sessionId": "50d977d8-b8ab-4453-9d0a-60c0f0234949",
+  "startedAt": "2026-08-30T18:27:59.873Z",
+  "env": {
+    "backend": "webgl2",
+    "vehicle": "physics",
+    "quality": 1,
+    "reducedMotion": false,
+    "dpr": 1,
+    "touch": false,
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    }
+  },
+  "events": [
+    {
+      "seq": 1,
+      "t": 0,
+      "type": "mount"
+    },
+    {
+      "seq": 2,
+      "t": 31056,
+      "type": "world-reveal"
+    },
+    {
+      "seq": 3,
+      "t": 42407,
+      "type": "robot-idle"
+    },
+    {
+      "seq": 4,
+      "t": 47413,
+      "type": "world-audio",
+      "data": {
+        "enabled": true,
+        "source": "auto"
+      }
+    },
+    {
+      "seq": 5,
+      "t": 47414,
+      "type": "transform-start",
+      "data": {
+        "to": "car"
+      }
+    },
+    {
+      "seq": 6,
+      "t": 75592,
+      "type": "hint-shown"
+    },
+    {
+      "seq": 7,
+      "t": 75592,
+      "type": "world-transform",
+      "data": {
+        "to": "car"
+      }
+    },
+    {
+      "seq": 8,
+      "t": 75593,
+      "type": "world-quest",
+      "data": {
+        "action": "shown",
+        "step": 1,
+        "targetId": "concept-garage",
+        "elapsedMs": 1
+      }
+    },
+    {
+      "seq": 9,
+      "t": 77818,
+      "type": "world-drive-start"
+    },
+    {
+      "seq": 10,
+      "t": 100775,
+      "type": "boost-first"
+    },
+    {
+      "seq": 11,
+      "t": 113842,
+      "type": "quality-auto-drop",
+      "data": {
+        "from": 0,
+        "to": 1,
+        "avg": 2.1,
+        "low1": 0.1
+      }
+    }
+  ],
+  "dropped": 0,
+  "counters": {
+    "respawns": 0,
+    "coneHits": 0,
+    "poiEnters": 0,
+    "poiInteracts": 0,
+    "transforms": 1,
+    "driveViewToggles": 0,
+    "longFrames": 178
+  },
+  "funnel": {
+    "reveal": 31056,
+    "robotIdle": 42407,
+    "transformStart": 47414,
+    "carReady": 75592,
+    "driveStart": 77818,
+    "firstPoiIn": null,
+    "firstPoiInteract": null
+  }
+}

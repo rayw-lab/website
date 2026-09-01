@@ -1,0 +1,27 @@
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +702
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 702, reused 702, downloaded 0, added 314
+Progress: resolved 702, reused 702, downloaded 0, added 464
+Progress: resolved 702, reused 702, downloaded 0, added 698
+Progress: resolved 702, reused 702, downloaded 0, added 702, done
+
+dependencies:
++ @dimforge/rapier3d 0.20.0
++ three 0.185.1
+
+devDependencies:
++ @astrojs/check 0.9.10
++ @astrojs/mdx 7.0.7
++ @astrojs/rss 4.0.19
++ @astrojs/sitemap 3.7.3
++ @lhci/cli 0.15.1
++ @playwright/test 1.62.1
++ @types/three 0.185.4
++ astro 7.2.4
++ typescript 5.9.3
++ vite-plugin-wasm 3.6.0
+
+Done in 4.2s using pnpm v10.33.3
+INSTALL_EXIT=0

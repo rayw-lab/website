@@ -135,6 +135,16 @@ export class PoiArrival {
     );
   }
 
+  /**
+   * [CC-NAV-C1] 小地图传送入口的显式取消（NAV 调研 §5.3-R3）：teleport 直写
+   * moveTo 不经 actionStart，RELEASE_ACTIONS 拦不到——在途前奏（tween/hold 弃
+   * navigate，防「传送到 B 后仍跳去 A 楼页」）或 done 态定帧 shot 由传送方显式
+   * 释放（相机回玩家跟随）。idle 态空操作（幂等）。
+   */
+  cancel(): void {
+    this.interrupt('teleport');
+  }
+
   /** Areas.dispose 调用：摘监听（场景/总线资源归 Game.dispose） */
   dispose(): void {
     this.setListening(false);
@@ -173,17 +183,21 @@ export class PoiArrival {
     navigate?.();
   }
 
-  /** 驾驶意图释放：中断前奏（tween/hold 弃 navigate）或 done 态交还跟随，同一接线点 */
-  private interrupt(): void {
+  /**
+   * 驾驶意图释放：中断前奏（tween/hold 弃 navigate）或 done 态交还跟随，同一接线点。
+   * [CC-NAV-C1] by 参数化（data 值加法，观测规格 §3.4 shot-interrupt 行随行修订）：
+   * 'drive' = RELEASE_ACTIONS 驾驶意图（既有语义零变）；'teleport' = 小地图传送显式取消。
+   */
+  private interrupt(by: 'drive' | 'teleport' = 'drive'): void {
     if (this.phase === 'idle') return;
     const interrupted = this.phase === 'tween' || this.phase === 'hold';
     this.phase = 'idle';
     this.navigate = null;
     this.setListening(false);
     this.game.view.releaseShot();
-    this.game.session.log('shot-interrupt', { by: 'drive' });
+    this.game.session.log('shot-interrupt', { by });
     console.info(
-      `[poi-arrival] 驾驶意图接管：shot ${this.shotId} 释放` +
+      `[poi-arrival] ${by === 'drive' ? '驾驶意图接管' : '小地图传送接管'}：shot ${this.shotId} 释放` +
         (interrupted ? '（前奏中断，navigate 取消）' : '（定帧交还玩家跟随）'),
     );
     this.shotId = null;

@@ -1,0 +1,104 @@
+Auto-merging docs/research/cyber-city-test-framework.md
+Merge made by the 'ort' strategy.
+ docs/research/cc-bgm-c1-hgb2-r2-evidence.md        | 163 +++++++
+ .../cc-bgm-c1-hgb2-r3-evidence/SHA256SUMS.txt      |  30 ++
+ .../cc-bgm-c1-hgb2-r3-evidence/astro-check.log     | 264 ++++++++++++
+ docs/research/cc-bgm-c1-hgb2-r3-evidence/build.log |  54 +++
+ .../cc-bgm-c1-hgb2-r3-evidence/e2e-results.json    | 463 ++++++++++++++++++++
+ .../cc-bgm-c1-hgb2-r3-evidence/eod-line61.txt      |   1 +
+ .../cc-bgm-c1-hgb2-r3-evidence/formal-run.zsh      |  87 ++++
+ .../cc-bgm-c1-hgb2-r3-evidence/helper-proof.log    |   6 +
+ docs/research/cc-bgm-c1-hgb2-r3-evidence/hgb2.log  |  20 +
+ .../host-fingerprint.log                           |  12 +
+ .../cc-bgm-c1-hgb2-r3-evidence/host-monitor.log    | 154 +++++++
+ .../cc-bgm-c1-hgb2-r3-evidence/install.log         | 116 +++++
+ .../cc-bgm-c1-hgb2-r3-evidence/json-summary.txt    |  18 +
+ .../cc-bgm-c1-hgb2-r3-evidence/last-run.json       |   4 +
+ docs/research/cc-bgm-c1-hgb2-r3-evidence/list.log  |  93 ++++
+ .../cc-bgm-c1-hgb2-r3-evidence/log-sha256.txt      |  20 +
+ .../minimap-driving-open.png                       | Bin 0 -> 499667 bytes
+ .../minimap-open-pin-focused.png                   | Bin 0 -> 477905 bytes
+ .../minimap-teleport-arrived.png                   | Bin 0 -> 641729 bytes
+ .../minimap-touch-open.png                         | Bin 0 -> 471433 bytes
+ .../minimap-touch-teleported.png                   | Bin 0 -> 641729 bytes
+ .../cc-bgm-c1-hgb2-r3-evidence/postflight-git.log  |  10 +
+ .../cc-bgm-c1-hgb2-r3-evidence/postflight-port.log |   2 +
+ .../postflight-vacuum.log                          |   4 +
+ .../cc-bgm-c1-hgb2-r3-evidence/preflight-port.log  |   2 +
+ .../preflight-vacuum.log                           |   5 +
+ .../cc-bgm-c1-hgb2-r3-evidence/run-receipt.md      | 209 +++++++++
+ docs/research/cc-bgm-c1-hgb2-r3-evidence/setup.log |  33 ++
+ .../cc-bgm-c1-hgb2-r3-evidence/shell-state.log     |  15 +
+ .../cc-bgm-c1-hgb2-r3-evidence/source-sha256.txt   |  15 +
+ .../cc-bgm-c1-hgb2-r3-evidence/static-proof.log    |  24 ++
+ .../website-host-vacuum.py                         | 164 +++++++
+ docs/research/cc-h1b-drift-disposition.md          | 128 ++++++
+ docs/research/cc-loop-handoff-2026-08-29-eod.md    |  70 +++
+ docs/research/cc-nav-c1-f3-evidence.md             | 155 +++++++
+ docs/research/cc-nav-c1-f3r2-evidence.md           | 179 ++++++++
+ docs/research/cc-nav-c1-f3r3-evidence.md           | 241 +++++++++++
+ docs/research/cc-nav-c1-f3r4-evidence.md           |  75 ++++
+ docs/research/cc-nav-c1-f3r5-evidence.md           | 195 +++++++++
+ docs/research/cc-nav-c1-f3r6-evidence.md           | 200 +++++++++
+ docs/research/cc-nav-c1-f3r7-evidence.md           | 171 ++++++++
+ .../cyber-city-score-loop-orchestration.md         | 189 +++++++--
+ docs/research/cyber-city-test-framework.md         |  11 +
+ docs/spec/cyber-city-observability.md              |  10 +-
+ e2e/cyber-city-bgm.spec.ts                         | 258 +++++++++++
+ e2e/cyber-city-feedback.spec.ts                    |   3 +-
+ e2e/cyber-city-minimap.spec.ts                     | 414 ++++++++++++++++++
+ e2e/cyber-city-observability.spec.ts               | 240 +++++++++--
+ .../visual-chromium/world-esc-menu.png             | Bin 499555 -> 634328 bytes
+ src/lab/world/areas/PoiArrival.ts                  |  22 +-
+ src/lab/world/audio/BgmLoop.ts                     | 406 ++++++++++++++++++
+ src/lab/world/audio/WorldAudio.ts                  |  42 +-
+ src/lab/world/core/SessionTimeline.ts              |   9 +-
+ src/lab/world/index.ts                             |  14 +
+ src/lab/world/ui/Minimap.ts                        | 470 +++++++++++++++++++++
+ src/lab/world/world/Reveal.ts                      |   4 +-
+ 56 files changed, 5392 insertions(+), 102 deletions(-)
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r2-evidence.md
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/SHA256SUMS.txt
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/astro-check.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/build.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/e2e-results.json
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/eod-line61.txt
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/formal-run.zsh
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/helper-proof.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/hgb2.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/host-fingerprint.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/host-monitor.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/install.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/json-summary.txt
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/last-run.json
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/list.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/log-sha256.txt
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/minimap-driving-open.png
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/minimap-open-pin-focused.png
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/minimap-teleport-arrived.png
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/minimap-touch-open.png
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/minimap-touch-teleported.png
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/postflight-git.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/postflight-port.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/postflight-vacuum.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/preflight-port.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/preflight-vacuum.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/run-receipt.md
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/setup.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/shell-state.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/source-sha256.txt
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/static-proof.log
+ create mode 100644 docs/research/cc-bgm-c1-hgb2-r3-evidence/website-host-vacuum.py
+ create mode 100644 docs/research/cc-h1b-drift-disposition.md
+ create mode 100644 docs/research/cc-loop-handoff-2026-08-29-eod.md
+ create mode 100644 docs/research/cc-nav-c1-f3-evidence.md
+ create mode 100644 docs/research/cc-nav-c1-f3r2-evidence.md
+ create mode 100644 docs/research/cc-nav-c1-f3r3-evidence.md
+ create mode 100644 docs/research/cc-nav-c1-f3r4-evidence.md
+ create mode 100644 docs/research/cc-nav-c1-f3r5-evidence.md
+ create mode 100644 docs/research/cc-nav-c1-f3r6-evidence.md
+ create mode 100644 docs/research/cc-nav-c1-f3r7-evidence.md
+ create mode 100644 e2e/cyber-city-bgm.spec.ts
+ create mode 100644 e2e/cyber-city-minimap.spec.ts
+ create mode 100644 src/lab/world/audio/BgmLoop.ts
+ create mode 100644 src/lab/world/ui/Minimap.ts

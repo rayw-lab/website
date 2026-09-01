@@ -3,6 +3,8 @@
 供提分 Loop（`cyber-city-score-loop-orchestration.md`）各轮复用的端到端测试/取证/计分设施。
 一切命令在仓库根目录执行；计分口径单源在编排文档「综合分口径」表，实现在 `scripts/score-loop.mjs`。
 
+> **PERF 规格恒红（#178/#179 定谳）**：`CITY-PERF-01`/`02` 曾挂 `[data-ws-fps]` DOM 致先天恒红（#182 开窗 −2 扣减）；案 A 改锚 `__worldSpike.fps()` 后清红，全量分母恢复 **86/0/0**（见 `docs/research/cc-perf-spec-fix-rs.md` · CC-PERF-SPEC-IMPL）。
+
 ## 一次性安装（新 VM 只做一遍）
 
 ```bash
@@ -69,6 +71,17 @@ node scripts/score-loop.mjs --lhci-dir /tmp/ci-lhci     # ①②维改读 CI 工
   综合分 90.5/100（按可用权重 100% 归一化；五维齐套)
 COMPOSITE_SCORE=90.5
 ```
+
+## 用例数登记（全量分母单源）
+
+登记口径 = fresh `pnpm exec playwright test --list` 输出总数（含全部 project；HG-B2 明文
+以本单源为准）。上方命令表中的「52 例」为 2026-08-25 实测时点值，仅作耗时参照不作分母。
+
+| 时点 | `--list` 分母 | 变更 |
+|------|--------------|------|
+| main@`52887e5`（2026-08-29 fresh 实测） | 81 tests / 17 files | 基线（#171 预清登记同值） |
+| CC-NAV-C1（#166 合入后） | **84 tests / 18 files** | +3：`e2e/cyber-city-minimap.spec.ts` CITY-NAV-01/02/03，+1 新 spec 文件（#166 NAV-C1 新增；合流后以 fresh `--list` 复核） |
+| CC-BGM-C1（#177 合入后，**双落终值**） | **86 tests / 19 files** | +2：`e2e/cyber-city-bgm.spec.ts` CITY-BGM-01 双用例串行（HG-B2 双挂载口径）；#177 分支自登「83/18」为 **#166 未合时点值，已由本行接替** |
 
 ## 视觉取证与基线图纪律
 

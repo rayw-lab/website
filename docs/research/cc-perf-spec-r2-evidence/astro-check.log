@@ -1,0 +1,260 @@
+15:27:31 [content] Syncing content
+15:27:31 [content] Synced content
+15:27:31 [types] Generated 257ms
+15:27:31 [check] Getting diagnostics for Astro files in /private/tmp/perf185-r2...
+[96me2e/tts-cockpit.spec.ts[0m:[93m3[0m:[93m29[0m - [93mwarning[0m[90m ts(6133): [0m'Page' is declared but its value is never read.
+
+[7m3[0m import { test, expect, type Page } from '@playwright/test';
+[7m [0m [93m                            ~~~~[0m
+
+[96msrc/content.config.ts[0m:[93m125[0m:[93m11[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m125[0m     note: z.string().max(200).optional(),
+[7m   [0m [93m          ~[0m
+[96msrc/content.config.ts[0m:[93m123[0m:[93m14[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m123[0m       .array(z.enum(['tech-exchange', 'collaboration', 'speaking-writing', 'career']))
+[7m   [0m [93m             ~[0m
+[96msrc/content.config.ts[0m:[93m122[0m:[93m13[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m122[0m     openTo: z
+[7m   [0m [93m            ~[0m
+[96msrc/content.config.ts[0m:[93m121[0m:[93m22[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m121[0m     writing: z.array(z.string().max(60)).max(3).default([]),
+[7m   [0m [93m                     ~[0m
+[96msrc/content.config.ts[0m:[93m121[0m:[93m14[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m121[0m     writing: z.array(z.string().max(60)).max(3).default([]),
+[7m   [0m [93m             ~[0m
+[96msrc/content.config.ts[0m:[93m120[0m:[93m26[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m120[0m     researching: z.array(z.string().max(60)).min(1).max(3),
+[7m   [0m [93m                         ~[0m
+[96msrc/content.config.ts[0m:[93m120[0m:[93m18[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m120[0m     researching: z.array(z.string().max(60)).min(1).max(3),
+[7m   [0m [93m                 ~[0m
+[96msrc/content.config.ts[0m:[93m119[0m:[93m14[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m119[0m     updated: z.coerce.date(),
+[7m   [0m [93m             ~[0m
+[96msrc/content.config.ts[0m:[93m118[0m:[93m9[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m118[0m     id: z.string(), // 形如 "2026-08"
+[7m   [0m [93m        ~[0m
+[96msrc/content.config.ts[0m:[93m117[0m:[93m11[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m117[0m   schema: z.object({
+[7m   [0m [93m          ~[0m
+[96msrc/content.config.ts[0m:[93m109[0m:[93m22[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m109[0m     related: z.array(z.union([reference('work'), reference('insights')])).default([]),
+[7m   [0m [93m                     ~[0m
+[96msrc/content.config.ts[0m:[93m109[0m:[93m14[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m109[0m     related: z.array(z.union([reference('work'), reference('insights')])).default([]),
+[7m   [0m [93m             ~[0m
+[96msrc/content.config.ts[0m:[93m108[0m:[93m11[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m108[0m     demo: z.string().regex(/^[a-z0-9-]+$/).optional(),
+[7m   [0m [93m          ~[0m
+[96msrc/content.config.ts[0m:[93m105[0m:[93m21[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m105[0m     hasLimitations: z.literal(true),
+[7m   [0m [93m                    ~[0m
+[96msrc/content.config.ts[0m:[93m103[0m:[93m18[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m103[0m     hasTemplate: z.boolean().default(false),
+[7m   [0m [93m                 ~[0m
+[96msrc/content.config.ts[0m:[93m100[0m:[93m15[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m100[0m       metric: z.string().max(40), // 如 "耗时 -40%（约数）"
+[7m   [0m [93m              ~[0m
+[96msrc/content.config.ts[0m:[93m99[0m:[93m14[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m99[0m       after: z.string().max(80),
+[7m  [0m [93m             ~[0m
+[96msrc/content.config.ts[0m:[93m98[0m:[93m15[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m98[0m       before: z.string().max(80),
+[7m  [0m [93m              ~[0m
+[96msrc/content.config.ts[0m:[93m97[0m:[93m17[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m97[0m     comparison: z.object({
+[7m  [0m [93m                ~[0m
+[96msrc/content.config.ts[0m:[93m95[0m:[93m15[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m95[0m     scenario: z.string().max(80),
+[7m  [0m [93m              ~[0m
+[96msrc/content.config.ts[0m:[93m88[0m:[93m12[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m88[0m     stage: z.enum([
+[7m  [0m [93m           ~[0m
+[96msrc/content.config.ts[0m:[93m86[0m:[93m23[0m - [93mwarning[0m[90m ts(6387): [0mThe signature '(other: ZodObject<{ securityGrade: ZodLiteral<"P2">; sanitizationChecked: ZodLiteral<true>; }, $strip>): ZodObject<{ title: ZodString; ... 8 more ...; sanitizationChecked: ZodLiteral<...>; }, $strip>' of 'publishable.merge' is deprecated.
+
+[7m86[0m   schema: publishable.merge(securityGate).extend({
+[7m  [0m [93m                      ~~~~~[0m
+[96msrc/content.config.ts[0m:[93m78[0m:[93m22[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m78[0m     related: z.array(z.union([reference('work'), reference('ai-lab')])).default([]),
+[7m  [0m [93m                     ~[0m
+[96msrc/content.config.ts[0m:[93m78[0m:[93m14[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m78[0m     related: z.array(z.union([reference('work'), reference('ai-lab')])).default([]),
+[7m  [0m [93m             ~[0m
+[96msrc/content.config.ts[0m:[93m76[0m:[93m13[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m76[0m     thesis: z.string().max(60),
+[7m  [0m [93m            ~[0m
+[96msrc/content.config.ts[0m:[93m70[0m:[93m15[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m70[0m     category: z.enum(['industry-judgment', 'methodology', 'retrospective']),
+[7m  [0m [93m              ~[0m
+[96msrc/content.config.ts[0m:[93m69[0m:[93m23[0m - [93mwarning[0m[90m ts(6387): [0mThe signature '(other: ZodObject<{ securityGrade: ZodLiteral<"P2">; sanitizationChecked: ZodLiteral<true>; }, $strip>): ZodObject<{ title: ZodString; ... 8 more ...; sanitizationChecked: ZodLiteral<...>; }, $strip>' of 'publishable.merge' is deprecated.
+
+[7m69[0m   schema: publishable.merge(securityGate).extend({
+[7m  [0m [93m                      ~~~~~[0m
+[96msrc/content.config.ts[0m:[93m61[0m:[93m22[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m61[0m     related: z.array(z.union([reference('insights'), reference('ai-lab')])).default([]),
+[7m  [0m [93m                     ~[0m
+[96msrc/content.config.ts[0m:[93m61[0m:[93m14[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m61[0m     related: z.array(z.union([reference('insights'), reference('ai-lab')])).default([]),
+[7m  [0m [93m             ~[0m
+[96msrc/content.config.ts[0m:[93m59[0m:[93m11[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m59[0m     demo: z.string().regex(/^[a-z0-9-]+$/).optional(),
+[7m  [0m [93m          ~[0m
+[96msrc/content.config.ts[0m:[93m57[0m:[93m15[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m57[0m     flagship: z.enum(['A', 'B', 'C']).optional(),
+[7m  [0m [93m              ~[0m
+[96msrc/content.config.ts[0m:[93m55[0m:[93m22[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m55[0m     modules: z.array(z.number().int().min(1).max(12)).min(5),
+[7m  [0m [93m                     ~[0m
+[96msrc/content.config.ts[0m:[93m55[0m:[93m14[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m55[0m     modules: z.array(z.number().int().min(1).max(12)).min(5),
+[7m  [0m [93m             ~[0m
+[96msrc/content.config.ts[0m:[93m47[0m:[93m13[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m47[0m     result: z.string().max(80),
+[7m  [0m [93m            ~[0m
+[96msrc/content.config.ts[0m:[93m46[0m:[93m13[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m46[0m     action: z.string().max(80),
+[7m  [0m [93m            ~[0m
+[96msrc/content.config.ts[0m:[93m45[0m:[93m14[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m45[0m     problem: z.string().max(80),
+[7m  [0m [93m             ~[0m
+[96msrc/content.config.ts[0m:[93m43[0m:[93m23[0m - [93mwarning[0m[90m ts(6387): [0mThe signature '(other: ZodObject<{ securityGrade: ZodLiteral<"P2">; sanitizationChecked: ZodLiteral<true>; }, $strip>): ZodObject<{ title: ZodString; ... 8 more ...; sanitizationChecked: ZodLiteral<...>; }, $strip>' of 'publishable.merge' is deprecated.
+
+[7m43[0m   schema: publishable.merge(securityGate).extend({
+[7m  [0m [93m                      ~~~~~[0m
+[96msrc/content.config.ts[0m:[93m36[0m:[93m12[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m36[0m   ogImage: z.string().optional(),
+[7m  [0m [93m           ~[0m
+[96msrc/content.config.ts[0m:[93m34[0m:[93m21[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m34[0m   keywords: z.array(z.string()).max(8).default([]),
+[7m  [0m [93m                    ~[0m
+[96msrc/content.config.ts[0m:[93m34[0m:[93m13[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m34[0m   keywords: z.array(z.string()).max(8).default([]),
+[7m  [0m [93m            ~[0m
+[96msrc/content.config.ts[0m:[93m32[0m:[93m10[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m32[0m   draft: z.boolean().default(false),
+[7m  [0m [93m         ~[0m
+[96msrc/content.config.ts[0m:[93m31[0m:[93m13[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m31[0m   featured: z.boolean().default(false),
+[7m  [0m [93m            ~[0m
+[96msrc/content.config.ts[0m:[93m29[0m:[93m16[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m29[0m   updatedDate: z.coerce.date().optional(),
+[7m  [0m [93m               ~[0m
+[96msrc/content.config.ts[0m:[93m28[0m:[93m16[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m28[0m   publishDate: z.coerce.date(),
+[7m  [0m [93m               ~[0m
+[96msrc/content.config.ts[0m:[93m27[0m:[93m16[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m27[0m   description: z.string().min(20).max(160),
+[7m  [0m [93m               ~[0m
+[96msrc/content.config.ts[0m:[93m25[0m:[93m10[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m25[0m   title: z.string().min(4).max(60),
+[7m  [0m [93m         ~[0m
+[96msrc/content.config.ts[0m:[93m24[0m:[93m21[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m24[0m const publishable = z.object({
+[7m  [0m [93m                    ~[0m
+[96msrc/content.config.ts[0m:[93m20[0m:[93m24[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m20[0m   sanitizationChecked: z.literal(true),
+[7m  [0m [93m                       ~[0m
+[96msrc/content.config.ts[0m:[93m18[0m:[93m18[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m18[0m   securityGrade: z.literal('P2'),
+[7m  [0m [93m                 ~[0m
+[96msrc/content.config.ts[0m:[93m16[0m:[93m22[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m16[0m const securityGate = z.object({
+[7m  [0m [93m                     ~[0m
+[96msrc/content.config.ts[0m:[93m13[0m:[93m22[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m13[0m const evidenceEnum = z.enum(['L1', 'L2', 'L3', 'L4']);
+[7m  [0m [93m                     ~[0m
+[96msrc/content.config.ts[0m:[93m10[0m:[93m20[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m10[0m const pillarEnum = z.enum(['cockpit-i18n', 'edge-cloud-llm', 'ai-workflow']);
+[7m  [0m [93m                   ~[0m
+[96msrc/content.config.ts[0m:[93m4[0m:[93m39[0m - [93mwarning[0m[90m ts(6385): [0m'z' is deprecated.
+
+[7m4[0m import { defineCollection, reference, z } from 'astro:content';
+[7m [0m [93m                                      ~[0m
+
+[96msrc/components/lab/LabStage.astro[0m:[93m49[0m:[93m11[0m - [93mwarning[0m[90m astro(4000): [0mThis script will be treated as if it has the `is:inline` directive because it contains an attribute. Therefore, features that require processing (e.g. using TypeScript or npm packages in the script) are unavailable.
+
+See docs for more details: https://docs.astro.build/en/guides/client-side-scripts/#script-processing.
+
+Add the `is:inline` directive explicitly to silence this hint.
+
+[7m49[0m   <script type="application/json" data-lab-config set:html={configJson} />
+[7m  [0m [93m          ~~~~[0m
+
+[96msrc/layouts/BaseLayout.astro[0m:[93m112[0m:[93m13[0m - [93mwarning[0m[90m astro(4000): [0mThis script will be treated as if it has the `is:inline` directive because it contains an attribute. Therefore, features that require processing (e.g. using TypeScript or npm packages in the script) are unavailable.
+
+See docs for more details: https://docs.astro.build/en/guides/client-side-scripts/#script-processing.
+
+Add the `is:inline` directive explicitly to silence this hint.
+
+[7m112[0m     <script type="application/ld+json" set:html={JSON.stringify(jsonLdAll)} />
+[7m   [0m [93m            ~~~~[0m
+
+[96msrc/pages/index.astro[0m:[93m96[0m:[93m13[0m - [93mwarning[0m[90m astro(4000): [0mThis script will be treated as if it has the `is:inline` directive because it contains an attribute. Therefore, features that require processing (e.g. using TypeScript or npm packages in the script) are unavailable.
+
+See docs for more details: https://docs.astro.build/en/guides/client-side-scripts/#script-processing.
+
+Add the `is:inline` directive explicitly to silence this hint.
+
+[7m96[0m     <script type="application/ld+json" set:html={JSON.stringify(jsonLdAll)} />
+[7m  [0m [93m            ~~~~[0m
+
+[96msrc/pages/about/index.astro[0m:[93m197[0m:[93m18[0m - [93mwarning[0m[90m ts(6387): [0mThe signature '(commandId: string, showUI?: boolean | undefined, value?: string | undefined): boolean' of 'document.execCommand' is deprecated.
+
+[7m197[0m         document.execCommand('copy');
+[7m   [0m [93m                 ~~~~~~~~~~~[0m
+
+Result (156 files): 
+- 0 errors
+- 0 warnings
+- 58 hints
+
+ASTRO_CHECK_EXIT=0

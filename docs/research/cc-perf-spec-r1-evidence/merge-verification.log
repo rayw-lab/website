@@ -1,0 +1,36 @@
+HEAD=0222b3f15603847ebda47b0346f3eddbafc84772
+PARENTS=c43cd7273399c5abbae8d5901abd8924684ea69e e0829b81e24a306793e4349e564187554144959f
+TREE=11130788c277541c802feb897c09c8c692cca12a
+STATUS_BEGIN
+## HEAD (no branch)
+STATUS_END
+DIFF_NAME_STATUS_BEGIN
+M	docs/research/cyber-city-test-framework.md
+M	docs/spec/cyber-city-perf-rubric.md
+M	docs/spec/cyber-city-perf-test-plan.md
+M	docs/spec/e2e-test-plan.md
+M	e2e/cyber-city-perf.spec.ts
+DIFF_NAME_STATUS_END
+DIFF_NUMSTAT_BEGIN
+2	0	docs/research/cyber-city-test-framework.md
+1	1	docs/spec/cyber-city-perf-rubric.md
+5	5	docs/spec/cyber-city-perf-test-plan.md
+2	2	docs/spec/e2e-test-plan.md
+37	15	e2e/cyber-city-perf.spec.ts
+DIFF_NUMSTAT_END
+DIFF_STAT_BEGIN
+ docs/research/cyber-city-test-framework.md |  2 ++
+ docs/spec/cyber-city-perf-rubric.md        |  2 +-
+ docs/spec/cyber-city-perf-test-plan.md     | 10 +++---
+ docs/spec/e2e-test-plan.md                 |  4 +--
+ e2e/cyber-city-perf.spec.ts                | 52 +++++++++++++++++++++---------
+ 5 files changed, 47 insertions(+), 23 deletions(-)
+DIFF_STAT_END
+SRC_DIFF_LINES=0
+DIFF_CHECK_EXIT=0
+WS_PERF_FILE=e2e/world-spike-perf.spec.ts
+WS_PERF_OLD_BLOB=0a88c889bad7e1800fbdf532f0301f66c2406fed
+WS_PERF_NEW_BLOB=0a88c889bad7e1800fbdf532f0301f66c2406fed
+PLAYWRIGHT_OLD_BLOB=ae21df23d14dc37ce88f7b1ae350727afe5ce995
+PLAYWRIGHT_NEW_BLOB=ae21df23d14dc37ce88f7b1ae350727afe5ce995
+WORKTREE_COUNT=2
