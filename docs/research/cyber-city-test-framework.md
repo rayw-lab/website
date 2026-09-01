@@ -3,6 +3,8 @@
 供提分 Loop（`cyber-city-score-loop-orchestration.md`）各轮复用的端到端测试/取证/计分设施。
 一切命令在仓库根目录执行；计分口径单源在编排文档「综合分口径」表，实现在 `scripts/score-loop.mjs`。
 
+> **PERF 规格恒红（#178/#179 定谳）**：`CITY-PERF-01`/`02` 曾挂 `[data-ws-fps]` DOM 致先天恒红（#182 开窗 −2 扣减）；案 A 改锚 `__worldSpike.fps()` 后清红，全量分母恢复 **86/0/0**（见 `docs/research/cc-perf-spec-fix-rs.md` · CC-PERF-SPEC-IMPL）。
+
 ## 一次性安装（新 VM 只做一遍）
 
 ```bash
