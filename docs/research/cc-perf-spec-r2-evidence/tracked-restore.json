@@ -1,0 +1,32 @@
+[
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/lab_index_cards.png",
+    "gitBlobHash": "d22dd55190d755f95c07d9cd027f7b52b9e79fa8",
+    "headSha256": "0d9b4eb3142881bc875de6ffbb86bc1e4564a8b7e1f0b0350ce71b5f1ac41b84",
+    "currentSha256": "50e5119782ce711c389d1d7d913400652f8abeac8a4b1833929d2d46a47fb1b6"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/mobile_car_blocked_pointer.png",
+    "gitBlobHash": "e3255f5ec24b5f6749e164b057aa8b6df9567735",
+    "headSha256": "a643d7fc410759a82dd1ab633d04737cd4f582d4c20ffb4be2eee258b68cecfe",
+    "currentSha256": "af4f15c1a8865e3c95d00ee7d85ca7677ae7e671e6991e8d7355ff2a45144dae"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/mobile_car_ready_375.png",
+    "gitBlobHash": "10c83400bf268f2408464b3a8424f3da1afdf44a",
+    "headSha256": "09ddf90d5c42fb1093d37b317093953b83e98c7f3d580ceb16fe67d986053ffb",
+    "currentSha256": "2b1e4c8d83ebee1938ba825280434821362921d733964116a403b2006cfcbcc1"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/mobile_home_375.png",
+    "gitBlobHash": "8843397c7168169b35a2918a1f5d54b112535648",
+    "headSha256": "f8a88907095fbb82e24f6f890f1512d5bda7b16bb8a5ee1055599509bf6cb943",
+    "currentSha256": "253be286cf27ceccc3bb783d37407786848671f3d8d9b3e6efbd81594c04dc09"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/mobile_tts_ready_375.png",
+    "gitBlobHash": "62c3da650123deae43769f68bb2279ff572d7974",
+    "headSha256": "a8c671563d03a7c11843d6f9f2e0371a5c285335dd9803e57cd0ff0149eaa639",
+    "currentSha256": "4c5de1b04c5ff2ae08924d80fab97224b2ade4d117892407fff754fd5a11f7f5"
+  }
+]
