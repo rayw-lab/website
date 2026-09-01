@@ -1,0 +1,460 @@
+[WebServer] (node:50246) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:50261) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 86 tests using 1 worker
+
+(node:50297) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 [desktop-chromium] › e2e/home.spec.ts:12:3 › 宪法首页 /home/ › HOME-E2E-01 骨架与 SEO 基础：title / h1 / skip-link / canonical (1.0m)
+(node:54763) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   2 [desktop-chromium] › e2e/home.spec.ts:36:3 › 宪法首页 /home/ › HOME-E2E-02 顶部导航：品牌 + 五栏目链接均带 base 前缀 (1.0m)
+(node:57651) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   3 [desktop-chromium] › e2e/home.spec.ts:60:3 › 宪法首页 /home/ › HOME-E2E-03 主题切换：html.dark 写入 + localStorage 持久化 + 刷新不回退 (1.0m)
+(node:58554) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   4 [desktop-chromium] › e2e/home.spec.ts:90:3 › 宪法首页 /home/ › HOME-E2E-04 Lab 证据区：两张 Demo 卡指向 /lab/ 详情页且海报可加载 (1.0m)
+(node:59398) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   5 [desktop-chromium] › e2e/home.spec.ts:113:3 › 宪法首页 /home/（无 JS） › HOME-E2E-05 禁用 JS：内容完整可读，导航与 Lab 入口不依赖脚本 (132ms)
+  ✓   6 [desktop-chromium] › e2e/lab-index.spec.ts:13:3 › Lab 索引页 › LAB-E2E-01 manifest 卡片：2 个 live 模块、LIVE 徽标、预算与技术要点行 (170ms)
+  ✘   7 [desktop-chromium] › e2e/lab-index.spec.ts:39:3 › Lab 索引页 › LAB-E2E-02 海报可加载且 view-transition-name 与详情页舞台配对（§9.3 morph 注册表） (1.0m)
+(node:60031) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   8 [desktop-chromium] › e2e/lab-index.spec.ts:58:3 › Lab 索引页 › LAB-E2E-03 导航链路：卡片进详情页、面包屑回首页 (404ms)
+  ✓   9 [desktop-chromium] › e2e/lab-index.spec.ts:70:3 › Lab 索引页 › LAB-E2E-04 零 JS 静态页：禁用 JS 后卡片内容完整 (121ms)
+  ✘  10 [desktop-chromium] › e2e/site-health.spec.ts:29:3 › 全站健康度 › SITE-E2E-01 内链爬取：已交付路由全部 200；待交付路由精确命中白名单且必须仍为 404 (1.0m)
+(node:60716) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  11 [desktop-chromium] › e2e/site-health.spec.ts:65:3 › 全站健康度 › SITE-E2E-02 未知路由返回 404（GitHub Pages 语义） (94ms)
+  ✓  12 [desktop-chromium] › e2e/site-health.spec.ts:76:3 › 全站健康度 › SITE-E2E-03 sitemap：索引可达，含 `/`+`/home/`+lab 路由；world-spike（已归档 noindex）必须剔除 (11ms)
+  ✓  13 [desktop-chromium] › e2e/site-health.spec.ts:98:3 › 全站健康度 › SITE-E2E-04 world-spike 归档验证入口：烟测可加载且无未捕获异常 (665ms)
+  ✘  14 [desktop-chromium] › e2e/tts-cockpit.spec.ts:9:3 › TTS 座舱可视化 › TTS-E2E-01 facade 生命周期：poster → 自动挂载 ready → 覆盖层淡出 → 控制面解除 inert (1.0m)
+(node:61370) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  15 [desktop-chromium] › e2e/tts-cockpit.spec.ts:32:3 › TTS 座舱可视化 › TTS-E2E-02 播放全链路：speaking → done、逐词字幕点亮、时钟/进度/统计联动 (1.0m)
+(node:61871) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  16 [desktop-chromium] › e2e/tts-cockpit.spec.ts:61:3 › TTS 座舱可视化 › TTS-E2E-03 交互切换：语言/场景按钮 aria-pressed 联动 + URL replaceState 深链回写 (1.0m)
+(node:62478) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  17 [desktop-chromium] › e2e/tts-cockpit.spec.ts:89:3 › TTS 座舱可视化 › TTS-E2E-04 深链 ?locale=ar-SA&scene=park：阿拉伯语 RTL 镜像 + 场景直达 (1.0m)
+(node:65416) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  18 [desktop-chromium] › e2e/tts-cockpit.spec.ts:114:3 › TTS 座舱可视化 › TTS-E2E-05 非法深链 ?locale=xx-XX&scene=bogus：回退默认 zh-CN × nav 不崩溃 (1.0m)
+(node:71391) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  19 [desktop-chromium] › e2e/tts-cockpit.spec.ts:127:3 › TTS 座舱可视化 › TTS-E2E-06 reduced-motion：自动挂载被拦（data-blocked）、零新增 JS chunk、显式点击仍可启动 (1.0m)
+(node:72046) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  20 [desktop-chromium] › e2e/tts-cockpit.spec.ts:164:3 › TTS 座舱可视化（无 JS） › TTS-E2E-07 禁用 JS：noscript 提示就位，页眉说明与脚注仍可读 (181ms)
+(node:72051) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  21 [mobile-375] › e2e/mobile.spec.ts:10:3 › 移动端 375px › MOB-E2E-01 宪法首页 /home/：无水平溢出、导航横滚可用、主题切换触控目标 ≥ 44px (1.3m)
+  ✓  22 [mobile-375] › e2e/mobile.spec.ts:32:3 › 移动端 375px › MOB-E2E-02 tts-cockpit：pointerFine=false → 触屏不拦截自动挂载，仪表簇按断点隐藏 (1.3m)
+  ✓  23 [mobile-375] › e2e/mobile.spec.ts:47:3 › 移动端 375px › MOB-E2E-03 car-configurator：pointerFine=true → 触屏拦截自动挂载（data-blocked=pointer），显式启动仍可用 (1.4m)
+
+
+  1) [desktop-chromium] › e2e/home.spec.ts:12:3 › 宪法首页 /home/ › HOME-E2E-01 骨架与 SEO 基础：title / h1 / skip-link / canonical 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:4581/website/home/", waiting until "load"
+
+
+      11 | test.describe('宪法首页 /home/', () => {
+      12 |   test('HOME-E2E-01 骨架与 SEO 基础：title / h1 / skip-link / canonical', async ({ page }) => {
+    > 13 |     const res = await page.goto(u(HOME));
+         |                            ^
+      14 |     expect(res?.status()).toBe(200);
+      15 |
+      16 |     await expect(page).toHaveTitle(/王磊/);
+        at /private/tmp/perf185-r2/e2e/home.spec.ts:13:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/home-宪法首页-home-HOME-E2E-01-6bd71-itle-h1-skip-link-canonical-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/home-宪法首页-home-HOME-E2E-01-6bd71-itle-h1-skip-link-canonical-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/home-宪法首页-home-HOME-E2E-01-6bd71-itle-h1-skip-link-canonical-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/home-宪法首页-home-HOME-E2E-01-6bd71-itle-h1-skip-link-canonical-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop-chromium] › e2e/home.spec.ts:36:3 › 宪法首页 /home/ › HOME-E2E-02 顶部导航：品牌 + 五栏目链接均带 base 前缀 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:4581/website/home/", waiting until "load"
+
+
+      35 |
+      36 |   test('HOME-E2E-02 顶部导航：品牌 + 五栏目链接均带 base 前缀', async ({ page }) => {
+    > 37 |     await page.goto(u(HOME));
+         |                ^
+      38 |
+      39 |     // 品牌链恒指 `/`（CC-E7 后 = 科技城入口，「回到城市」语义）
+      40 |     const brand = page.locator('.site-header .brand');
+        at /private/tmp/perf185-r2/e2e/home.spec.ts:37:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/home-宪法首页-home-HOME-E2E-02-顶部导航：品牌-五栏目链接均带-base-前缀-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/home-宪法首页-home-HOME-E2E-02-顶部导航：品牌-五栏目链接均带-base-前缀-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/home-宪法首页-home-HOME-E2E-02-顶部导航：品牌-五栏目链接均带-base-前缀-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/home-宪法首页-home-HOME-E2E-02-顶部导航：品牌-五栏目链接均带-base-前缀-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [desktop-chromium] › e2e/home.spec.ts:60:3 › 宪法首页 /home/ › HOME-E2E-03 主题切换：html.dark 写入 + localStorage 持久化 + 刷新不回退 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:4581/website/home/", waiting until "load"
+
+
+      60 |   test('HOME-E2E-03 主题切换：html.dark 写入 + localStorage 持久化 + 刷新不回退', async ({ page }) => {
+      61 |     await page.emulateMedia({ colorScheme: 'light' });
+    > 62 |     await page.goto(u(HOME));
+         |                ^
+      63 |
+      64 |     const html = page.locator('html');
+      65 |     const toggle = page.locator('[data-theme-toggle]').first();
+        at /private/tmp/perf185-r2/e2e/home.spec.ts:62:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/home-宪法首页-home-HOME-E2E-03-46bd0-k-写入-localStorage-持久化-刷新不回退-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/home-宪法首页-home-HOME-E2E-03-46bd0-k-写入-localStorage-持久化-刷新不回退-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/home-宪法首页-home-HOME-E2E-03-46bd0-k-写入-localStorage-持久化-刷新不回退-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/home-宪法首页-home-HOME-E2E-03-46bd0-k-写入-localStorage-持久化-刷新不回退-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [desktop-chromium] › e2e/home.spec.ts:90:3 › 宪法首页 /home/ › HOME-E2E-04 Lab 证据区：两张 Demo 卡指向 /lab/ 详情页且海报可加载 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:4581/website/home/", waiting until "load"
+
+
+      89 |
+      90 |   test('HOME-E2E-04 Lab 证据区：两张 Demo 卡指向 /lab/ 详情页且海报可加载', async ({ page }) => {
+    > 91 |     await page.goto(u(HOME));
+         |                ^
+      92 |     const bento = page.locator('section:has(#live-demos-title)');
+      93 |
+      94 |     const carLink = bento.locator(`a[href*="${u('/lab/car-configurator')}"]`).first();
+        at /private/tmp/perf185-r2/e2e/home.spec.ts:91:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/home-宪法首页-home-HOME-E2E-04-Lab-证据区：两张-Demo-卡指向-lab-详情页且海报可加载-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/home-宪法首页-home-HOME-E2E-04-Lab-证据区：两张-Demo-卡指向-lab-详情页且海报可加载-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/home-宪法首页-home-HOME-E2E-04-Lab-证据区：两张-Demo-卡指向-lab-详情页且海报可加载-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/home-宪法首页-home-HOME-E2E-04-Lab-证据区：两张-Demo-卡指向-lab-详情页且海报可加载-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [desktop-chromium] › e2e/lab-index.spec.ts:39:3 › Lab 索引页 › LAB-E2E-02 海报可加载且 view-transition-name 与详情页舞台配对（§9.3 morph 注册表） 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:4581/website/lab/tts-cockpit/", waiting until "load"
+
+
+      48 |     // 详情页舞台侧同名（配对成立 morph 才会生效）
+      49 |     for (const mod of LIVE_MODULES) {
+    > 50 |       await page.goto(u(`/lab/${mod.slug}/`));
+         |                  ^
+      51 |       await expect(page.locator('[data-lab-stage]')).toHaveAttribute(
+      52 |         'style',
+      53 |         new RegExp(`view-transition-name:\\s*${mod.vtName}`),
+        at /private/tmp/perf185-r2/e2e/lab-index.spec.ts:50:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/lab-index-Lab-索引页-LAB-E2E--8acfd-me-与详情页舞台配对（§9-3-morph-注册表）-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/lab-index-Lab-索引页-LAB-E2E--8acfd-me-与详情页舞台配对（§9-3-morph-注册表）-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/lab-index-Lab-索引页-LAB-E2E--8acfd-me-与详情页舞台配对（§9-3-morph-注册表）-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/lab-index-Lab-索引页-LAB-E2E--8acfd-me-与详情页舞台配对（§9-3-morph-注册表）-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [desktop-chromium] › e2e/site-health.spec.ts:29:3 › 全站健康度 › SITE-E2E-01 内链爬取：已交付路由全部 200；待交付路由精确命中白名单且必须仍为 404 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:4581/website/home/", waiting until "load"
+
+
+      31 |     const found = new Map<string, string>(); // path -> 首个来源页
+      32 |     for (const from of CRAWL_PAGES) {
+    > 33 |       await page.goto(u(from));
+         |                  ^
+      34 |       const refs = await page.evaluate(() => [
+      35 |         ...[...document.querySelectorAll('a[href]')].map((a) => a.getAttribute('href')!),
+      36 |         ...[...document.querySelectorAll('img[src]')].map((i) => i.getAttribute('src')!),
+        at /private/tmp/perf185-r2/e2e/site-health.spec.ts:33:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/site-health-全站健康度-SITE-E2E-e4a46-部-200；待交付路由精确命中白名单且必须仍为-404-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/site-health-全站健康度-SITE-E2E-e4a46-部-200；待交付路由精确命中白名单且必须仍为-404-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/site-health-全站健康度-SITE-E2E-e4a46-部-200；待交付路由精确命中白名单且必须仍为-404-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/site-health-全站健康度-SITE-E2E-e4a46-部-200；待交付路由精确命中白名单且必须仍为-404-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [desktop-chromium] › e2e/tts-cockpit.spec.ts:9:3 › TTS 座舱可视化 › TTS-E2E-01 facade 生命周期：poster → 自动挂载 ready → 覆盖层淡出 → 控制面解除 inert 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:4581/website/lab/tts-cockpit/", waiting until "load"
+
+
+      15 |     expect(html).toContain('tts-cockpit-poster.webp');
+      16 |
+    > 17 |     await page.goto(PAGE_URL);
+         |                ^
+      18 |
+      19 |     const facade = page.locator('[data-lab-facade]');
+      20 |     const controls = page.locator('[data-lab-gated]');
+        at /private/tmp/perf185-r2/e2e/tts-cockpit.spec.ts:17:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tts-cockpit-TTS-座舱可视化-TTS--5827d-ready-→-覆盖层淡出-→-控制面解除-inert-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tts-cockpit-TTS-座舱可视化-TTS--5827d-ready-→-覆盖层淡出-→-控制面解除-inert-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/tts-cockpit-TTS-座舱可视化-TTS--5827d-ready-→-覆盖层淡出-→-控制面解除-inert-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/tts-cockpit-TTS-座舱可视化-TTS--5827d-ready-→-覆盖层淡出-→-控制面解除-inert-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [desktop-chromium] › e2e/tts-cockpit.spec.ts:32:3 › TTS 座舱可视化 › TTS-E2E-02 播放全链路：speaking → done、逐词字幕点亮、时钟/进度/统计联动 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:4581/website/lab/tts-cockpit/", waiting until "load"
+
+
+      31 |
+      32 |   test('TTS-E2E-02 播放全链路：speaking → done、逐词字幕点亮、时钟/进度/统计联动', async ({ page }) => {
+    > 33 |     await page.goto(PAGE_URL);
+         |                ^
+      34 |     await waitLabReady(page);
+      35 |
+      36 |     const screen = page.locator('#screen');
+        at /private/tmp/perf185-r2/e2e/tts-cockpit.spec.ts:33:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tts-cockpit-TTS-座舱可视化-TTS--8c416-ng-→-done、逐词字幕点亮、时钟-进度-统计联动-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tts-cockpit-TTS-座舱可视化-TTS--8c416-ng-→-done、逐词字幕点亮、时钟-进度-统计联动-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/tts-cockpit-TTS-座舱可视化-TTS--8c416-ng-→-done、逐词字幕点亮、时钟-进度-统计联动-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/tts-cockpit-TTS-座舱可视化-TTS--8c416-ng-→-done、逐词字幕点亮、时钟-进度-统计联动-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [desktop-chromium] › e2e/tts-cockpit.spec.ts:61:3 › TTS 座舱可视化 › TTS-E2E-03 交互切换：语言/场景按钮 aria-pressed 联动 + URL replaceState 深链回写 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:4581/website/lab/tts-cockpit/", waiting until "load"
+
+
+      60 |
+      61 |   test('TTS-E2E-03 交互切换：语言/场景按钮 aria-pressed 联动 + URL replaceState 深链回写', async ({ page }) => {
+    > 62 |     await page.goto(PAGE_URL);
+         |                ^
+      63 |     await waitLabReady(page);
+      64 |
+      65 |     // 默认态：zh-CN × nav，URL 无参数
+        at /private/tmp/perf185-r2/e2e/tts-cockpit.spec.ts:62:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tts-cockpit-TTS-座舱可视化-TTS--d448c-ed-联动-URL-replaceState-深链回写-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tts-cockpit-TTS-座舱可视化-TTS--d448c-ed-联动-URL-replaceState-深链回写-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/tts-cockpit-TTS-座舱可视化-TTS--d448c-ed-联动-URL-replaceState-深链回写-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/tts-cockpit-TTS-座舱可视化-TTS--d448c-ed-联动-URL-replaceState-深链回写-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [desktop-chromium] › e2e/tts-cockpit.spec.ts:89:3 › TTS 座舱可视化 › TTS-E2E-04 深链 ?locale=ar-SA&scene=park：阿拉伯语 RTL 镜像 + 场景直达 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:4581/website/lab/tts-cockpit/?locale=ar-SA&scene=park", waiting until "load"
+
+
+      88 |
+      89 |   test('TTS-E2E-04 深链 ?locale=ar-SA&scene=park：阿拉伯语 RTL 镜像 + 场景直达', async ({ page }) => {
+    > 90 |     await page.goto(`${PAGE_URL}?locale=ar-SA&scene=park`);
+         |                ^
+      91 |     await waitLabReady(page);
+      92 |
+      93 |     // 深链选中态
+        at /private/tmp/perf185-r2/e2e/tts-cockpit.spec.ts:90:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tts-cockpit-TTS-座舱可视化-TTS--8569d-scene-park：阿拉伯语-RTL-镜像-场景直达-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tts-cockpit-TTS-座舱可视化-TTS--8569d-scene-park：阿拉伯语-RTL-镜像-场景直达-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/tts-cockpit-TTS-座舱可视化-TTS--8569d-scene-park：阿拉伯语-RTL-镜像-场景直达-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/tts-cockpit-TTS-座舱可视化-TTS--8569d-scene-park：阿拉伯语-RTL-镜像-场景直达-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [desktop-chromium] › e2e/tts-cockpit.spec.ts:114:3 › TTS 座舱可视化 › TTS-E2E-05 非法深链 ?locale=xx-XX&scene=bogus：回退默认 zh-CN × nav 不崩溃 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:4581/website/lab/tts-cockpit/?locale=xx-XX&scene=bogus", waiting until "load"
+
+
+      116 |     page.on('pageerror', (e) => errors.push(e.message));
+      117 |
+    > 118 |     await page.goto(`${PAGE_URL}?locale=xx-XX&scene=bogus`);
+          |                ^
+      119 |     await waitLabReady(page);
+      120 |
+      121 |     await expect(page.locator('[data-locale="zh-CN"]')).toHaveAttribute('aria-pressed', 'true');
+        at /private/tmp/perf185-r2/e2e/tts-cockpit.spec.ts:118:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tts-cockpit-TTS-座舱可视化-TTS--589ea--bogus：回退默认-zh-CN-×-nav-不崩溃-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tts-cockpit-TTS-座舱可视化-TTS--589ea--bogus：回退默认-zh-CN-×-nav-不崩溃-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/tts-cockpit-TTS-座舱可视化-TTS--589ea--bogus：回退默认-zh-CN-×-nav-不崩溃-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/tts-cockpit-TTS-座舱可视化-TTS--589ea--bogus：回退默认-zh-CN-×-nav-不崩溃-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [desktop-chromium] › e2e/tts-cockpit.spec.ts:127:3 › TTS 座舱可视化 › TTS-E2E-06 reduced-motion：自动挂载被拦（data-blocked）、零新增 JS chunk、显式点击仍可启动 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Test timeout of 60000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:4581/website/lab/tts-cockpit/", waiting until "load"
+
+
+      133 |     });
+      134 |
+    > 135 |     await page.goto(PAGE_URL);
+          |                ^
+      136 |     await page.waitForLoadState('networkidle');
+      137 |     const initialJsCount = jsRequests.length;
+      138 |
+        at /private/tmp/perf185-r2/e2e/tts-cockpit.spec.ts:135:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/tts-cockpit-TTS-座舱可视化-TTS--d65f9-cked）、零新增-JS-chunk、显式点击仍可启动-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/tts-cockpit-TTS-座舱可视化-TTS--d65f9-cked）、零新增-JS-chunk、显式点击仍可启动-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/tts-cockpit-TTS-座舱可视化-TTS--d65f9-cked）、零新增-JS-chunk、显式点击仍可启动-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/tts-cockpit-TTS-座舱可视化-TTS--d65f9-cked）、零新增-JS-chunk、显式点击仍可启动-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12 failed
+    [desktop-chromium] › e2e/home.spec.ts:12:3 › 宪法首页 /home/ › HOME-E2E-01 骨架与 SEO 基础：title / h1 / skip-link / canonical 
+    [desktop-chromium] › e2e/home.spec.ts:36:3 › 宪法首页 /home/ › HOME-E2E-02 顶部导航：品牌 + 五栏目链接均带 base 前缀 
+    [desktop-chromium] › e2e/home.spec.ts:60:3 › 宪法首页 /home/ › HOME-E2E-03 主题切换：html.dark 写入 + localStorage 持久化 + 刷新不回退 
+    [desktop-chromium] › e2e/home.spec.ts:90:3 › 宪法首页 /home/ › HOME-E2E-04 Lab 证据区：两张 Demo 卡指向 /lab/ 详情页且海报可加载 
+    [desktop-chromium] › e2e/lab-index.spec.ts:39:3 › Lab 索引页 › LAB-E2E-02 海报可加载且 view-transition-name 与详情页舞台配对（§9.3 morph 注册表） 
+    [desktop-chromium] › e2e/site-health.spec.ts:29:3 › 全站健康度 › SITE-E2E-01 内链爬取：已交付路由全部 200；待交付路由精确命中白名单且必须仍为 404 
+    [desktop-chromium] › e2e/tts-cockpit.spec.ts:9:3 › TTS 座舱可视化 › TTS-E2E-01 facade 生命周期：poster → 自动挂载 ready → 覆盖层淡出 → 控制面解除 inert 
+    [desktop-chromium] › e2e/tts-cockpit.spec.ts:32:3 › TTS 座舱可视化 › TTS-E2E-02 播放全链路：speaking → done、逐词字幕点亮、时钟/进度/统计联动 
+    [desktop-chromium] › e2e/tts-cockpit.spec.ts:61:3 › TTS 座舱可视化 › TTS-E2E-03 交互切换：语言/场景按钮 aria-pressed 联动 + URL replaceState 深链回写 
+    [desktop-chromium] › e2e/tts-cockpit.spec.ts:89:3 › TTS 座舱可视化 › TTS-E2E-04 深链 ?locale=ar-SA&scene=park：阿拉伯语 RTL 镜像 + 场景直达 
+    [desktop-chromium] › e2e/tts-cockpit.spec.ts:114:3 › TTS 座舱可视化 › TTS-E2E-05 非法深链 ?locale=xx-XX&scene=bogus：回退默认 zh-CN × nav 不崩溃 
+    [desktop-chromium] › e2e/tts-cockpit.spec.ts:127:3 › TTS 座舱可视化 › TTS-E2E-06 reduced-motion：自动挂载被拦（data-blocked）、零新增 JS chunk、显式点击仍可启动 
+  63 did not run
+  11 passed (16.1m)
+EXIT=1
