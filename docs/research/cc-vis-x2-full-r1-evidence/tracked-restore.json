@@ -1,0 +1,134 @@
+[
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/car_blocked_reduced_motion.png",
+    "gitBlobHash": "67b3623919c426b88b489acd90de93f8e13497f5",
+    "headSha256": "9508dd1c1f99583093cc37a352c68a87c0655c72f4db4b009dc66f2fa99d9b75",
+    "currentSha256": "9bf80a8eaffc2fe6d6b032217f990cae2ac8622aab9fe7f11ce494a7fdf00907"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/car_deeplink_graphite_abyss_stealth.png",
+    "gitBlobHash": "27ab74134f2fa419b2aea4491e6fbd97005e0eb7",
+    "headSha256": "f85e0a917da7af41bc42a178c928f9423e26c60cbe76e4cb2d26ed697ceba4a5",
+    "currentSha256": "51a0768c33423dd23c180b71782c18ec13cba0c7661795a6b278b2f91289bbf7"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/car_paint_crimson.png",
+    "gitBlobHash": "98f869cb74ad49040faf414706418d826ed66ebd",
+    "headSha256": "d89b4f2353d17cc26bd53dea9c6c3dcb8e06f4ae01160aec682f99f04ffe4e2a",
+    "currentSha256": "1b6ec2d8137dc9509af5fe00fa2c9e6b90fa24cd84643a3e6fb70fd68317846b"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/car_ready_default.png",
+    "gitBlobHash": "ff2b02fc0ea57ec608bcb3b705c3a80559a770db",
+    "headSha256": "b129177615aafe2bf45a325b51370109f937fbea2ae937a65bfa27402ed8f1d1",
+    "currentSha256": "659288b9beb70a832f032561276b3b33be59fe1e99544b7c70543987254c232e"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/home_desktop_dark.png",
+    "gitBlobHash": "5ce8d41a5e9dc8f4dcf3b204f04f5fd1bfcdd600",
+    "headSha256": "45b3bce5894c79d6dd52fb50be0c9bef9ea9523ed99a7bcf66e44c6f67c695aa",
+    "currentSha256": "535cd18e0e4252828e9f8dad0075ec03069154f59d21f7fd5db4343df13b77be"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/home_desktop_light.png",
+    "gitBlobHash": "51aee3c19109ca08661bd43f44e0b81b50c540de",
+    "headSha256": "55299cffe5cbd44d5bb9a8c126912ba6d74a1f78c68bbd8d97cacf2f9b442112",
+    "currentSha256": "409379086fb3c0c339bbe4a2fb70f2b022f07a8916d949a4dd6a3a088d0cee10"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/lab_index_cards.png",
+    "gitBlobHash": "d22dd55190d755f95c07d9cd027f7b52b9e79fa8",
+    "headSha256": "0d9b4eb3142881bc875de6ffbb86bc1e4564a8b7e1f0b0350ce71b5f1ac41b84",
+    "currentSha256": "3d0792e626ce2b6dc5ab152d8add446df4f876b58127e9a99cc3aa0f511d6b5a"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/mobile_car_blocked_pointer.png",
+    "gitBlobHash": "e3255f5ec24b5f6749e164b057aa8b6df9567735",
+    "headSha256": "a643d7fc410759a82dd1ab633d04737cd4f582d4c20ffb4be2eee258b68cecfe",
+    "currentSha256": "af4f15c1a8865e3c95d00ee7d85ca7677ae7e671e6991e8d7355ff2a45144dae"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/mobile_car_ready_375.png",
+    "gitBlobHash": "10c83400bf268f2408464b3a8424f3da1afdf44a",
+    "headSha256": "09ddf90d5c42fb1093d37b317093953b83e98c7f3d580ceb16fe67d986053ffb",
+    "currentSha256": "2b1e4c8d83ebee1938ba825280434821362921d733964116a403b2006cfcbcc1"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/mobile_home_375.png",
+    "gitBlobHash": "8843397c7168169b35a2918a1f5d54b112535648",
+    "headSha256": "f8a88907095fbb82e24f6f890f1512d5bda7b16bb8a5ee1055599509bf6cb943",
+    "currentSha256": "253be286cf27ceccc3bb783d37407786848671f3d8d9b3e6efbd81594c04dc09"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/mobile_tts_ready_375.png",
+    "gitBlobHash": "62c3da650123deae43769f68bb2279ff572d7974",
+    "headSha256": "a8c671563d03a7c11843d6f9f2e0371a5c285335dd9803e57cd0ff0149eaa639",
+    "currentSha256": "26752fb65c2f22302965806796510ed563b0e8f939caace0d0d6900f68092f16"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/tts_blocked_reduced_motion.png",
+    "gitBlobHash": "aa72c3da9aec0394af8c1efc1260fe00c8e0f700",
+    "headSha256": "188d7903028472f0e35c745c9c43c61fad52a16d653d2a3ea19dfdee46718463",
+    "currentSha256": "4c58ec524d556fb11605587a43b4b4babc48840405c9cb15514f48280b9256b5"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/tts_deeplink_ar_rtl_park.png",
+    "gitBlobHash": "0257d658cc7ea79288bd024e06a1d88552d0d7d7",
+    "headSha256": "e7780ff7235ae7796540d331d8538a54cf04f13518d6da08fe2009847fd0111f",
+    "currentSha256": "447d390b7408f3df9992b9ba3260cd99feabeccc02639127922c11295a5850de"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-batch1/tts_playing_zh_nav.png",
+    "gitBlobHash": "b4c450cac314ba763d7ff8120f0dcda86f611dda",
+    "headSha256": "51f8e329ebf7fd9f1c3bf2e70c8c9092f17fdba02f3bd2fe25e7ee87223b7537",
+    "currentSha256": "78aba5b7c45cd8c4522dd43f540f91b122c46d584a868a4f4829bce8b2af2b55"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-integration/world_after_reset.png",
+    "gitBlobHash": "2f8c440c2af7eaac83c35c44fb0570ae33c7ce4b",
+    "headSha256": "924c1bf25fd7bd45977eec3edc8496431e3a3d8f72747ae894caba16ef851d9e",
+    "currentSha256": "4fd175c7a831b8f000f6dc39716a2839e15b1fd992e4ee9bc9dbd4e09bede032"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-integration/world_cone_knocked.png",
+    "gitBlobHash": "c6cb43f7fb3981f0a4fb1efda68f6afa622fea5c",
+    "headSha256": "d4c12491cf4e08b569cb892f8b83c18cbd8716f6b5bb2148044f2325c1453cf1",
+    "currentSha256": "aabd5edfd0155f9c34b1443c4f85d823d18dec2a2bff41987020f2ecaa192f96"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-integration/world_drive_after_boost.png",
+    "gitBlobHash": "ce892937dd506065cbde2ebb3bbc46423b854d53",
+    "headSha256": "0d634dbcb675a7a325c2a096e21d8b9a3f4a7f055a563c1b350bd671cd241909",
+    "currentSha256": "007068ce10d8f76fd22c591e7d2d6c1f68d1a74e2c125976e49b04e9ed2ef22f"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-integration/world_gl1_backend.png",
+    "gitBlobHash": "8719f76dd65845f8040d09836afb5b72ba093b98",
+    "headSha256": "6f5c0373a143c0dd6ea2fe6fbb744da0baccd86c6f97ffb519d9cd66a10ef125",
+    "currentSha256": "349d73d0d62152ad7f498a87d21b04976d407291cae8a279a82c2f4cb7894cd4"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-integration/world_kinematic_fallback.png",
+    "gitBlobHash": "497c9adbc852933118b91ab38d063cab09f762d8",
+    "headSha256": "29ef798a9542f4e95fafc3277c9d69a11fa4d51a597fa35b0b62e29fa67d906b",
+    "currentSha256": "7ab149af1c2b8aaf57182c9a5336a32c0bdb02394dedd332aef69e8c38e0d0ef"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-integration/world_mobile_joystick.png",
+    "gitBlobHash": "2002d2744ff4652be05cb7241a7183e35c122814",
+    "headSha256": "f2e49cb74fd9517fae4435427d08f59383f91f2c39000a373f9d8f7e51421f41",
+    "currentSha256": "4ff1a0907b22f863fdcb3eae120e33e676d6087d86cf1a272541bebc66837159"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-integration/world_remount_ready.png",
+    "gitBlobHash": "65f277daf03d7fc2500ae73c4d0894d4ec380e88",
+    "headSha256": "2db3aa8ecfaa2099db0ffe2d5a2c111b6fc4db4d4aa68073348e560de53dcd43",
+    "currentSha256": "6363ea5189ef8c89c99fecc48edf417c45a59eeeb978540fb97cc2c341dbf15d"
+  },
+  {
+    "relPath": "docs/spec/assets/e2e-integration/world_shell_idle.png",
+    "gitBlobHash": "0d6dfd8fb5de1a86f9c6afb5e3dd54abea98ac4a",
+    "headSha256": "474da03c5f5d609e169625de5a649fd06c2d270d15a47a95959907695287a884",
+    "currentSha256": "248b0c97544826d906fd1581096d81722a14e15e9e6c56b1e8314aa8b94992a0"
+  }
+]
