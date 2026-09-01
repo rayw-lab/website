@@ -1,0 +1,8 @@
+{
+  "monitorStartUtc": "2026-09-01T13:40:31+00:00",
+  "monitorEndUtc": "2026-09-01T15:14:59+00:00",
+  "sampleCount": 1111,
+  "intervalSeconds": 5.0,
+  "allowedRootPid": 21409,
+  "uniqueExternalMatchCount": 0
+}
