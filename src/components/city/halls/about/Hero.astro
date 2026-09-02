@@ -7,8 +7,10 @@ import { PERSON } from '../../../../data/site';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const posterSrc = `${base}/media/about-hall/hero-s0-poster.webp`;
-/** 未来片源；文件未入仓时不写 <source>，组件退化为 poster。 */
-const videoSrc = `${base}/media/about-hall/hero-s0-720p.mp4`;
+/** 片源以媒体清单为单源（G-Hall-8 同账）：src16x9 为空 → 不写 <source>，组件退化为 poster，check-links 不红。 */
+import media from '../../../../data/about-hall-media.json';
+const heroEntry = (media as Array<{ id: string; src16x9: string }>).find((m) => m.id === 'hero-s0');
+const videoSrc = heroEntry?.src16x9 ? `${base}${heroEntry.src16x9}` : '';
 ---
 
 <section
@@ -27,7 +29,7 @@ const videoSrc = `${base}/media/about-hall/hero-s0-720p.mp4`;
       width="1280"
       height="720"
     >
-      <source media="(min-width: 768px)" src={videoSrc} type="video/mp4" />
+      {videoSrc && <source media="(min-width: 768px)" src={videoSrc} type="video/mp4" />}
     </video>
   </div>
   <div class="hall-hero-scrim" aria-hidden="true"></div>
