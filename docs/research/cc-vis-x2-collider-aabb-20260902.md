@@ -1,5 +1,8 @@
 # cc-vis-x2 独立几何复核：leg2 走廊 fixed collider AABB 全表 + Minkowski clearance + 直瞄可达性
 
+> **勘误（2026-09-02，R-1-2）**：本档 §2.2 S1/S2/S3 的 rotY「实测复刻」数值有误。按源码算法重放（`hashStringToSeed('x2-street-props')` = FNV-1a seed `3416619534` + `mulberry32` 单一共享序列，按 PROP_CLUSTERS 簇序 × [Vending, Cabinet, Bin] 逐件消费；重放脚本 [`tools/streetprops-roty-replay.mjs`](tools/streetprops-roty-replay.mjs)）：NE 簇实际 rotY = **Vending −131.66° / Cabinet −141.70° / Bin −139.71°**（原载 −137.1°/−130.9°/−145.6° 系复刻算术错误——外部审计 B-F-P0-001 指控成立）。**修正后 AABB**：S1 `[17.01,18.59]×[-18.60,-17.00]`、S2 `[15.58,17.33]×[-17.27,-15.65]`、S3 `[18.17,19.98]×[-19.93,-18.22]`（与原载外接盒位移 ≤0.06m）。**重验结论**：诊断档楔死 #4 nose 前角 `(15.77,-15.78)` 仍在正确 S2 盒内——S2 归因、楔死循环叙事、H1–H4 判定与 R2 根因结论**全部不变**（算术错误成立、结论性影响为零）。本段为追加勘误，正文数字不改写（冲突处以本段为准）。
+
+
 - 审计者：Lane 3 独立几何复核子代理（双盲，未读任何运行时轨迹/他人结论）
 - 被测树：`/private/tmp/x2-obs-r2-diag-20260902` = R2 exact head `5987641` detached worktree（`git rev-parse` 实测 `598764172250f3a0d6e5a29c36aa564dbd44e009`，工作树干净）
 - 方法：纯静态源码枚举 + 纯算术几何复算（FNV-1a/mulberry32 按 `CityMap.ts:144-163` 源码复刻以还原道具确定性 rotY；BFS 连通性 + 横断面扫描均为本审计自写算术，零产品代码执行、零测试运行、仓库零改动）
