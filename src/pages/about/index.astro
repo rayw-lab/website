@@ -9,6 +9,7 @@ import SectionHeading from '../../components/SectionHeading.astro';
 import CtaButton from '../../components/ui/CtaButton.astro';
 import { PERSON, TITLE_SUFFIX } from '../../data/site';
 import { breadcrumbJsonLd, profilePageJsonLd } from '../../data/jsonld';
+import { problems as problemCopy, timeline, speakerBio } from '../../data/about-copy';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const title = `关于${TITLE_SUFFIX}`;
@@ -25,44 +26,12 @@ const jsonLd = [
   ]),
 ];
 
-// ①专业叙事：按「解决什么问题」组织（与首页三支柱同一口径，锚点均可被站内资产佐证）
-const problems = [
-  {
-    q: '多语种座舱，怎么把「翻译一遍」变成可验收的交付？',
-    how: '多语种不是文案问题，是时间轴、排版与验收口径问题。我的做法是建立「语种 × 功能」能力地图与分级验收标准，把 RTL 镜像、字宽膨胀、语音节奏差异全部纳入可回归的单一口径——需求定义到量产交付全链路把控。',
-    proofHref: `${base}/lab/tts-cockpit/`,
-    proofLabel: '可交互佐证 · 16 语种 TTS 座舱可视化',
-  },
-  {
-    q: '端侧算力有限、云端能力强，大模型能力应该放在哪一侧？',
-    how: '「端云怎么分」不该靠评审会上反复摇摆。我用能力分层框架回答：把每类场景（车控/闲聊/生成/多轮任务）按算力档位、网络状态与时延要求归入端/云/降级三路径，让选型变成有据可依的决策表。',
-    proofHref: `${base}/work/llm-capability-layering/`,
-    proofLabel: '案例 · 端云大模型分层',
-  },
-  {
-    q: 'AI 提效停留在个人技巧，怎么升格为组织流程？',
-    how: '把 AI 当工位而不是外挂：在需求、开发、测试、复盘四个阶段定义节点输入输出契约与风险分级人审点，提效可量化、产出可审计——个人经验变成可复制的工作流资产。',
-    proofHref: `${base}/work/ai-native-workflow/`,
-    proofLabel: '案例 · AI 原生工作流',
-  },
-];
-
-// ②职业演进主线（PRD ABT-01 钦定六站；每站一句「解决了什么」）
-const timeline = [
-  { stage: '物联网', note: '设备连接与数据链路的工程地基' },
-  { stage: '整车前瞻', note: '从单点技术转向整车级系统视角' },
-  { stage: 'AR-HUD', note: '人机界面：显示链路、安全边界与工程落地' },
-  { stage: '多语种座舱', note: '16 语种从需求定义到量产交付的全链路' },
-  { stage: '端云大模型', note: '车端/云端能力分层架构与场景化选型' },
-  { stage: 'AI 工作流', note: '用 AI 重构需求到复盘的交付流程本身' },
-];
-
-// ③第三人称讲者简介（活动物料直接可用；演讲署名统一外链 /now/，PRD ABT-03）
-const speakerBio =
-  `${PERSON.name}，${PERSON.jobTitle}，专注智能座舱多语种本地化、端云大模型架构与 AI 原生工作流三个交叉领域，` +
-  '主张「把复杂技术转化为可决策、可交付、可复用的解决方案」。' +
-  '他的个人网站以可交互 Demo 与脱敏案例公开工程方法（rayw-lab.github.io/website），' +
-  '当前研究方向与开放的合作类型见站内 Now 页。';
+const problems = problemCopy.map((p) => ({
+  q: p.q,
+  how: p.how,
+  proofHref: `${base}${p.proofPath}`,
+  proofLabel: p.proofLabel,
+}));
 ---
 
 <BaseLayout title={title} description={description} jsonLd={jsonLd}>

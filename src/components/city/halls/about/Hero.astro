@@ -1,0 +1,85 @@
+---
+// 第 1 幕 Hero：全屏 poster/video + 左三分之一 DOM 文案。
+// 视频文件未到时 <source> 指向未来路径，error / 无 metadata → 只留 poster。
+// createPointerScrub：仅桌面、有可播视频、且非 reduced-motion 时绑定。
+import { HALL_H1, HALL_SUBTITLE } from '../../../../data/about-copy';
+import { PERSON } from '../../../../data/site';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const posterSrc = `${base}/media/about-hall/hero-s0-poster.webp`;
+/** 未来片源；文件未入仓时不写 <source>，组件退化为 poster。 */
+const videoSrc = `${base}/media/about-hall/hero-s0-720p.mp4`;
+---
+
+<section
+  class="hall-hero"
+  data-scene="s0"
+  data-bind="tagline;proof:/about/"
+  data-hero-scrub
+>
+  <div class="hall-hero-media" aria-hidden="true">
+    <img src={posterSrc} alt="" width="1280" height="720" />
+    <video
+      muted
+      playsinline
+      preload="auto"
+      poster={posterSrc}
+      width="1280"
+      height="720"
+    >
+      <source media="(min-width: 768px)" src={videoSrc} type="video/mp4" />
+    </video>
+  </div>
+  <div class="hall-hero-scrim" aria-hidden="true"></div>
+  <div class="hall-hero-copy">
+    <h1>{HALL_H1}</h1>
+    <p class="hall-hero-lede">{HALL_SUBTITLE}</p>
+    <p class="hall-hero-role">{PERSON.jobTitle}</p>
+    <p class="hall-hero-scroll"><span>↓</span> 滚动进入六站</p>
+  </div>
+</section>
+
+<script>
+  import { createPointerScrub, type ScrubHandle } from '../ScrubVideo';
+
+  const root = document.querySelector<HTMLElement>('[data-hero-scrub]');
+  const video = root?.querySelector('video');
+  if (root && video instanceof HTMLVideoElement) {
+    const source = video.querySelector('source');
+    let handle: ScrubHandle | null = null;
+
+    const mobile = () => matchMedia('(max-width: 767px)').matches;
+    const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const playable = () => {
+      const d = video.duration;
+      return typeof d === 'number' && Number.isFinite(d) && d > 0;
+    };
+
+    const unbind = () => {
+      handle?.destroy();
+      handle = null;
+      video.removeAttribute('data-ready');
+    };
+
+    const bind = () => {
+      if (handle || reduce() || mobile() || !playable()) return;
+      video.dataset.ready = '';
+      handle = createPointerScrub(root, video, { poster: video.poster || undefined });
+    };
+
+    const onFail = () => {
+      unbind();
+    };
+
+    video.addEventListener('error', onFail);
+    source?.addEventListener('error', onFail);
+    video.addEventListener('loadedmetadata', bind);
+
+    const onChange = () => {
+      if (reduce() || mobile() || !playable()) unbind();
+      else bind();
+    };
+    matchMedia('(max-width: 767px)').addEventListener('change', onChange);
+    matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', onChange);
+  }
+</script>

@@ -1,0 +1,13 @@
+[
+  {
+    "id": "hero-s0-poster",
+    "src16x9": "",
+    "poster": "/media/about-hall/hero-s0-poster.webp",
+    "durationS": 0,
+    "bytes": 41678,
+    "sha256": "98ae70f373815dfda951c8c2d31cb6beec0fea5ddcb0e062eed8f3caee1e603e",
+    "fps": 0,
+    "audio": false,
+    "lockedRef": "docs/local-cmd/locked/S0-T-LOCKED-v2.md#first-v2-3"
+  }
+]

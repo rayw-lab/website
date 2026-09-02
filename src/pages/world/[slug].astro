@@ -4,10 +4,15 @@
 // slug 白名单 = src/data/world-halls.json；未知 slug 不生成。
 import WorldHallLayout from '../../layouts/WorldHallLayout.astro';
 import HallChrome from '../../components/city/HallChrome.astro';
+import Hero from '../../components/city/halls/about/Hero.astro';
+import Stations from '../../components/city/halls/about/Stations.astro';
+import Crystal from '../../components/city/halls/about/Crystal.astro';
+import Epilogue from '../../components/city/halls/about/Epilogue.astro';
 import hallsDoc from '../../data/world-halls.json';
 import cityMap from '../../data/cyber-city-buildings.json';
 import { TITLE_SUFFIX } from '../../data/site';
 import { breadcrumbJsonLd } from '../../data/jsonld';
+import { HALL_SUBTITLE } from '../../data/about-copy';
 
 interface HallEntry {
   slug: string;
@@ -36,15 +41,13 @@ interface Props {
 const { hall, building } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const title = `在技术与落地之间架桥${TITLE_SUFFIX}`;
-const description =
-  '汽车智能座舱与 AI 解决方案经理——站在技术、产品、客户与交付的交叉位置，把模糊需求变成可决策、可交付、可复用的方案。';
+const description = HALL_SUBTITLE;
 const homeUrl = new URL(`${base}/`, Astro.site).href;
 const hallUrl = new URL(`${base}/world/${hall.slug}/`, Astro.site).href;
 const jsonLd = breadcrumbJsonLd([
   { name: '首页', url: homeUrl },
   { name: building.title.zh, url: hallUrl },
 ]);
-const posterSrc = `${base}/posters/cyber-city-poster.webp`;
 ---
 
 <WorldHallLayout
@@ -55,53 +58,12 @@ const posterSrc = `${base}/posters/cyber-city-poster.webp`;
   jsonLd={jsonLd}
 >
   <HallChrome slot="ritual" buildingId={hall.buildingId} />
-
-  <header class="hall-hero">
-    <h1>在技术与落地之间架桥</h1>
-    <p class="lede">
-      从物联网、整车前瞻和 AR-HUD，到全球化多语种座舱、端云大模型与 AI 提效——十余年始终在技术与落地之间架桥。
-    </p>
-  </header>
-
-  <section data-scene="s0" data-bind="tagline;proof:/about/">
-    <img
-      src={posterSrc}
-      alt="展厅首屏海报占位"
-      width="1920"
-      height="1080"
-    />
-  </section>
-
-  <p slot="cta">
-    <a href={`${base}/about/`}>纸面介绍 →</a>
-  </p>
+  {hall.slug === 'about-pavilion' && (
+    <>
+      <Hero />
+      <Stations />
+      <Crystal />
+      <Epilogue />
+    </>
+  )}
 </WorldHallLayout>
-
-<style>
-  .hall-hero h1 {
-    font-size: var(--text-display);
-    font-weight: 650;
-    line-height: var(--leading-display);
-    letter-spacing: -0.01em;
-    max-inline-size: 16ch;
-  }
-
-  .lede {
-    margin-block-start: var(--space-5);
-    max-inline-size: var(--measure);
-    color: var(--ink-2);
-    line-height: var(--leading-body);
-  }
-
-  [data-scene='s0'] {
-    margin-block-start: var(--space-7);
-  }
-
-  [data-scene='s0'] img {
-    width: 100%;
-    height: auto;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-card);
-    background: var(--bg-raised);
-  }
-</style>

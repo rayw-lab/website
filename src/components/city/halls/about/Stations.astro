@@ -1,0 +1,90 @@
+---
+// 第 2–6 幕：六站 sticky 长区间。无视频，文字 + 简单 SVG 占位。
+import { hallStations, SCORE_LINE } from '../../../../data/about-copy';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+---
+
+{
+  hallStations.map((station) => (
+    <section
+      class="hall-station"
+      data-scene={station.scene}
+      data-bind={station.bind}
+    >
+      <div class="hall-panel hall-station-sticky">
+        <div class="hall-station-copy">
+          <p class="hall-kicker">{station.kicker}</p>
+          <h2>{station.title}</h2>
+          <ol class="hall-stage-list">
+            {station.stages.map((st) => (
+              <li>
+                <span class="hall-stage-n">{st.n}</span>
+                <div>
+                  <p class="hall-stage-name">{st.name}</p>
+                  <p class="hall-stage-note">{st.note}</p>
+                  <p class="hall-gap">{st.gap}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          {station.question && <p class="hall-question">{station.question}</p>}
+          <p class="hall-station-body">{station.body}</p>
+          {station.scene === 's6' && <p class="hall-score">{SCORE_LINE}</p>}
+          {station.proofPath && station.proofLabel && (
+            <p>
+              <a href={`${base}${station.proofPath}`}>{station.proofLabel} →</a>
+            </p>
+          )}
+        </div>
+        <div class="hall-figure" aria-hidden="true">
+          {station.figure === 'bus' && (
+            <svg viewBox="0 0 320 200" fill="none">
+              <rect x="24" y="70" width="272" height="60" rx="8" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="64" cy="100" r="10" stroke="currentColor" />
+              <circle cx="128" cy="100" r="10" stroke="currentColor" />
+              <circle cx="192" cy="100" r="10" stroke="currentColor" />
+              <circle cx="256" cy="100" r="10" stroke="currentColor" />
+              <path d="M64 100h192" stroke="currentColor" stroke-dasharray="4 6" />
+              <path d="M40 40h40M240 160h40" stroke="currentColor" opacity="0.5" />
+            </svg>
+          )}
+          {station.figure === 'cone' && (
+            <svg viewBox="0 0 320 200" fill="none">
+              <path d="M40 170h240" stroke="currentColor" opacity="0.4" />
+              <path d="M160 36 L70 170 L250 170 Z" stroke="currentColor" stroke-width="1.5" />
+              <path d="M160 70 L110 150 H210 Z" stroke="currentColor" opacity="0.6" />
+              <path d="M80 150 C140 130 180 130 240 150" stroke="currentColor" />
+            </svg>
+          )}
+          {station.figure === 'rings' && (
+            <svg viewBox="0 0 320 200" fill="none">
+              <circle cx="160" cy="100" r="28" stroke="currentColor" />
+              <circle cx="160" cy="100" r="48" stroke="currentColor" opacity="0.8" />
+              <circle cx="160" cy="100" r="68" stroke="currentColor" opacity="0.55" />
+              <circle cx="160" cy="100" r="88" stroke="currentColor" opacity="0.3" />
+            </svg>
+          )}
+          {station.figure === 'scale' && (
+            <svg viewBox="0 0 320 200" fill="none">
+              <path d="M160 28v120" stroke="currentColor" />
+              <path d="M80 70h160" stroke="currentColor" stroke-width="1.5" />
+              <rect x="52" y="70" width="56" height="36" rx="4" stroke="currentColor" />
+              <rect x="212" y="70" width="56" height="36" rx="4" stroke="currentColor" />
+              <path d="M120 160h80" stroke="currentColor" opacity="0.5" />
+            </svg>
+          )}
+          {station.figure === 'dag' && (
+            <svg viewBox="0 0 320 200" fill="none">
+              <rect x="24" y="80" width="56" height="36" rx="4" stroke="currentColor" />
+              <rect x="132" y="28" width="56" height="36" rx="4" stroke="currentColor" />
+              <rect x="132" y="132" width="56" height="36" rx="4" stroke="currentColor" />
+              <rect x="240" y="80" width="56" height="36" rx="4" stroke="currentColor" />
+              <path d="M80 98h52M188 46h20L240 90M188 150h20L240 110" stroke="currentColor" />
+            </svg>
+          )}
+        </div>
+      </div>
+    </section>
+  ))
+}

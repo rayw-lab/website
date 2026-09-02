@@ -1,0 +1,109 @@
+---
+// 第 8 幕：三问题卡翻转 · 讲者简介一键复制 · 四出口 · 回城。
+import { problems, speakerBio, hallExits } from '../../../../data/about-copy';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const cityHref = `${base}/?poi=about-pavilion`;
+---
+
+<section
+  class="hall-epilogue"
+  data-scene="s8"
+  data-bind="stage:none;pillar:none;proof:/contact/"
+>
+  <div class="hall-panel">
+    <p class="hall-kicker">收官 · 工作台</p>
+    <h2>想验证这些说法？</h2>
+
+    <div class="hall-qgrid">
+      {
+        problems.map((p, i) => (
+          <article class="card hall-qcard" data-qcard>
+            <div class="hall-qcard-inner">
+              <div class="hall-qcard-face hall-qcard-front">
+                <p class="hall-kicker">{String(i + 1).padStart(2, '0')}</p>
+                <h3>{p.q}</h3>
+                <button type="button" data-qflip>
+                  看做法
+                </button>
+              </div>
+              <div class="hall-qcard-face hall-qcard-back">
+                <p>{p.how}</p>
+                <a href={`${base}${p.proofPath}`}>{p.proofLabel} →</a>
+                <button type="button" data-qflip>
+                  返回问题
+                </button>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <figure class="card hall-bio">
+      <blockquote id="hall-speaker-bio">{speakerBio}</blockquote>
+      <figcaption class="hall-bio-actions">
+        <button type="button" class="hall-copy-btn" data-copy-target="#hall-speaker-bio">
+          一键复制讲者简介
+        </button>
+        <span class="hall-copy-done data" data-copy-done hidden>已复制 ✓</span>
+        <noscript><span class="data">无 JS 环境请直接选中文本复制。</span></noscript>
+      </figcaption>
+      <p class="hall-bio-note">
+        演讲与播客署名请统一外链 <a href={`${base}/now/`}>/now/</a>；合作与邀约见
+        <a href={`${base}/contact/`}>Contact</a>。
+      </p>
+    </figure>
+
+    <div class="hall-exits">
+      {
+        hallExits.map((ex, i) => (
+          <a
+            class:list={['hall-exit', i === 0 ? 'hall-exit-primary' : 'hall-exit-secondary']}
+            href={`${base}${ex.path}`}
+          >
+            {ex.label}
+          </a>
+        ))
+      }
+      <a class="hall-exit hall-exit-city" href={cityHref}>驾车回城</a>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  document.querySelectorAll('[data-qflip]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var card = btn.closest('[data-qcard]');
+      if (card) card.classList.toggle('is-flipped');
+    });
+  });
+  document.querySelectorAll('[data-copy-target]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = document.querySelector(btn.getAttribute('data-copy-target'));
+      if (!target) return;
+      var text = target.textContent.trim();
+      var done = function () {
+        var tip = btn.parentElement && btn.parentElement.querySelector('[data-copy-done]');
+        if (tip) {
+          tip.hidden = false;
+          setTimeout(function () {
+            tip.hidden = true;
+          }, 2000);
+        }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done);
+      } else {
+        var range = document.createRange();
+        range.selectNodeContents(target);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand('copy');
+        sel.removeAllRanges();
+        done();
+      }
+    });
+  });
+</script>
