@@ -191,6 +191,10 @@
 | 10 | 视觉自评系统性偏乐观 ~2 分 | 父代理按「独立分 ≈ 自评 −2」估水位排期 |
 | 11 | 审计跑测试重写历史截图 | 审计提交前还原，审计分支只保留文档 |
 | 12 | CI artifact 90 天保留期 | 登记 digest + 逐 URL 摘要；到期前转存原始 LHR |
+| 13 | 正式/诊断窗后 `test-results/` 被下一轮运行覆写（`--list` 也会写 JSON reporter 输出） | **每窗前后 `cp -r test-results <archive>` 快照留档**；证据引用一律取快照件（AL-VIS-R3 首轮 75 帧轨迹灭失教训） |
+| 14 | 静态「源码确定性复刻」人工推导出错（PRNG 序列/调用序/种子串任一偏差，rotY 实证差 6°） | 复刻必须附**可执行重放脚本**（自包含内联源码函数 + 源码行号钉死），输出与文档数字 diff=0；先例 `docs/research/tools/streetprops-roty-replay.mjs` |
+| 15 | ledger 块合并后原位勘误（含删除行的编辑）违背 append-only | 勘误一律**追加声明行/新顶部块**（supersede 声明式）；任何看板 commit 删除行数必须为 0；先例 SEC-R14-ERRATA |
+| 16 | 「零触」类绝对化表述被外部审计按 PR 全历史复测反驳 | 表述必须限定 scope：「本 Loop 整改增量（commit X）零触」+ 谱系登记（timeout/预算类历史演化单独登记） |
 
 ## 4. 模板
 
