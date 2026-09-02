@@ -1,7 +1,7 @@
 {
   "schema": "about-hall-gate/v1",
   "ok": true,
-  "generatedAt": "2026-09-02T16:49:09.748Z",
+  "generatedAt": "2026-09-02T22:59:17.333Z",
   "dist": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/dist",
   "notes": [
     "G-Hall-10 由 e2e/about-hall.spec.ts 承担，本脚本不判。",
@@ -157,7 +157,7 @@
     {
       "id": "G-Hall-9",
       "status": "PASS",
-      "detail": "8 个 data-scene 均有 data-bind，其中 URL 在 dist 可解析",
+      "detail": "9 个 data-scene 均有 data-bind，其中 URL 在 dist 可解析",
       "evidence": {
         "sections": [
           {
@@ -166,29 +166,34 @@
             "raw": "<section class=\"hall-hero\" data-scene=\"s0\" data-bind=\"tagline;proof:/about/\" data-hero-scrub>"
           },
           {
+            "scene": "s1",
+            "bind": "stage:none;pillar:none;proof:/about/",
+            "raw": "<section class=\"hall-station\" data-scene=\"s1\" data-bind=\"stage:none;pillar:none;proof:/about/\" data-reveal=\"from-right\" data-station-progress>"
+          },
+          {
             "scene": "s2",
             "bind": "stage:1,2;pillar:none;proof:/about/#timeline-title",
-            "raw": "<section class=\"hall-station\" data-scene=\"s2\" data-bind=\"stage:1,2;pillar:none;proof:/about/#timeline-title\">"
+            "raw": "<section class=\"hall-station\" data-scene=\"s2\" data-bind=\"stage:1,2;pillar:none;proof:/about/#timeline-title\" data-reveal=\"from-bottom\" data-station-progress>"
           },
           {
             "scene": "s3",
             "bind": "stage:3;pillar:none;proof:/about/#timeline-title",
-            "raw": "<section class=\"hall-station\" data-scene=\"s3\" data-bind=\"stage:3;pillar:none;proof:/about/#timeline-title\">"
+            "raw": "<section class=\"hall-station\" data-scene=\"s3\" data-bind=\"stage:3;pillar:none;proof:/about/#timeline-title\" data-reveal=\"wipe-left\" data-station-progress>"
           },
           {
             "scene": "s4",
             "bind": "stage:4;pillar:cockpit-i18n;proof:/lab/tts-cockpit/",
-            "raw": "<section class=\"hall-station\" data-scene=\"s4\" data-bind=\"stage:4;pillar:cockpit-i18n;proof:/lab/tts-cockpit/\">"
+            "raw": "<section class=\"hall-station\" data-scene=\"s4\" data-bind=\"stage:4;pillar:cockpit-i18n;proof:/lab/tts-cockpit/\" data-reveal=\"circle\" data-station-progress>"
           },
           {
             "scene": "s5",
             "bind": "stage:5;pillar:edge-cloud-llm;proof:/work/llm-capability-layering/",
-            "raw": "<section class=\"hall-station\" data-scene=\"s5\" data-bind=\"stage:5;pillar:edge-cloud-llm;proof:/work/llm-capability-layering/\">"
+            "raw": "<section class=\"hall-station\" data-scene=\"s5\" data-bind=\"stage:5;pillar:edge-cloud-llm;proof:/work/llm-capability-layering/\" data-reveal=\"split-y\" data-station-progress>"
           },
           {
             "scene": "s6",
             "bind": "stage:6;pillar:ai-workflow;proof:/work/ai-native-workflow/",
-            "raw": "<section class=\"hall-station\" data-scene=\"s6\" data-bind=\"stage:6;pillar:ai-workflow;proof:/work/ai-native-workflow/\">"
+            "raw": "<section class=\"hall-station\" data-scene=\"s6\" data-bind=\"stage:6;pillar:ai-workflow;proof:/work/ai-native-workflow/\" data-reveal=\"hold\" data-station-progress>"
           },
           {
             "scene": "s7",

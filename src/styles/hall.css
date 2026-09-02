@@ -196,6 +196,10 @@ html:has([data-hall]) .hall-chrome {
 .hall-station {
   min-height: 300vh;
   border-block-start: 1px solid var(--line);
+  --hall-reveal: 1;
+  --hall-tx: 0px;
+  --hall-ty: 0px;
+  --hall-scale: 1;
 }
 
 .hall-station-sticky {
@@ -266,15 +270,107 @@ html:has([data-hall]) .hall-chrome {
   line-height: var(--leading-h3);
 }
 
-.hall-figure {
-  justify-self: center;
-  width: min(28rem, 100%);
-  color: var(--accent);
+.hall-station-visual {
+  justify-self: stretch;
+  width: min(36rem, 100%);
+  margin-inline: auto;
 }
 
-.hall-figure svg {
+.hall-station-figure {
+  margin: 0;
+}
+
+.hall-station-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: #071422;
+}
+
+.hall-station-shot {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  transform-origin: center;
+  transform: translate3d(var(--hall-tx), var(--hall-ty), 0) scale(var(--hall-scale));
+}
+
+.hall-station[data-scene='s1'] {
+  --hall-scale: 1.12;
+  --hall-tx: calc((1 - var(--hall-reveal)) * 20px);
+}
+.hall-station[data-scene='s1'] .hall-station-frame {
+  aspect-ratio: 4 / 3;
+  clip-path: inset(0 0 0 calc((1 - var(--hall-reveal)) * 100%));
+}
+.hall-station[data-scene='s1'] .hall-station-shot {
+  object-position: 82% 38%;
+}
+
+.hall-station[data-scene='s2'] {
+  --hall-scale: 1.18;
+  --hall-ty: calc((1 - var(--hall-reveal)) * 24px);
+}
+.hall-station[data-scene='s2'] .hall-station-frame {
+  aspect-ratio: 1 / 1;
+  clip-path: inset(calc((1 - var(--hall-reveal)) * 100%) 0 0 0);
+}
+.hall-station[data-scene='s2'] .hall-station-shot {
+  object-position: 70% 82%;
+}
+
+.hall-station[data-scene='s3'] {
+  --hall-scale: 1.08;
+}
+.hall-station[data-scene='s3'] .hall-station-frame {
+  aspect-ratio: 5 / 4;
+  clip-path: inset(0 calc((1 - var(--hall-reveal)) * 100%) 0 0);
+}
+.hall-station[data-scene='s3'] .hall-station-shot {
+  object-position: 58% 46%;
+}
+
+.hall-station[data-scene='s4'] {
+  --hall-scale: 1.22;
+}
+.hall-station[data-scene='s4'] .hall-station-frame {
+  aspect-ratio: 1 / 1;
+  clip-path: circle(calc(var(--hall-reveal) * 78%) at 50% 50%);
+}
+.hall-station[data-scene='s4'] .hall-station-shot {
+  object-position: 58% 42%;
+}
+
+.hall-station[data-scene='s5'] {
+  --hall-scale: 1.15;
+}
+.hall-station[data-scene='s5'] .hall-station-frame {
+  aspect-ratio: 4 / 5;
+  clip-path: inset(
+    calc((1 - var(--hall-reveal)) * 50%) 0 calc((1 - var(--hall-reveal)) * 50%) 0
+  );
+}
+.hall-station[data-scene='s5'] .hall-station-shot {
+  object-position: 60% 34%;
+}
+
+.hall-station-placeholder {
+  aspect-ratio: 16 / 10;
+  display: grid;
+  align-content: center;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-card);
+  background:
+    linear-gradient(180deg, rgba(73, 197, 182, 0.07), transparent 48%),
+    #071422;
+  color: var(--ink-2);
+  line-height: var(--leading-body);
 }
 
 /* ---------- Crystal ---------- */
@@ -305,6 +401,12 @@ html:has([data-hall]) .hall-chrome {
   margin-block-start: var(--space-7);
 }
 
+.hall-crystal-visual {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: center;
+}
+
 .hall-hex {
   position: relative;
   width: min(26rem, 100%);
@@ -332,23 +434,39 @@ html:has([data-hall]) .hall-chrome {
   font-weight: 500;
   color: var(--ink-2);
   white-space: nowrap;
-  padding: 0.2em 0.45em;
+  min-height: 2.75rem;
+  padding: 0.35em 0.7em;
   border-radius: var(--radius-chip);
 }
 
 .hall-hex-label:hover,
-.hall-hex-label:focus-visible {
+.hall-hex-label:focus-visible,
+.hall-hex-label.is-active {
   color: var(--ink);
   background: var(--accent-soft);
 }
 
-.hall-hex:has(.hall-hex-label[data-axis='auto']:hover) .pt-auto,
-.hall-hex:has(.hall-hex-label[data-axis='cockpit']:hover) .pt-cockpit,
-.hall-hex:has(.hall-hex-label[data-axis='i18n']:hover) .pt-i18n,
-.hall-hex:has(.hall-hex-label[data-axis='llm']:hover) .pt-llm,
-.hall-hex:has(.hall-hex-label[data-axis='workflow']:hover) .pt-workflow,
-.hall-hex:has(.hall-hex-label[data-axis='delivery']:hover) .pt-delivery {
+.hall-hex-label:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.hall-hex:has(.hall-hex-label[data-axis='auto']:is(:hover, :focus-visible, .is-active)) .pt-auto,
+.hall-hex:has(.hall-hex-label[data-axis='cockpit']:is(:hover, :focus-visible, .is-active)) .pt-cockpit,
+.hall-hex:has(.hall-hex-label[data-axis='i18n']:is(:hover, :focus-visible, .is-active)) .pt-i18n,
+.hall-hex:has(.hall-hex-label[data-axis='llm']:is(:hover, :focus-visible, .is-active)) .pt-llm,
+.hall-hex:has(.hall-hex-label[data-axis='workflow']:is(:hover, :focus-visible, .is-active)) .pt-workflow,
+.hall-hex:has(.hall-hex-label[data-axis='delivery']:is(:hover, :focus-visible, .is-active)) .pt-delivery {
   fill: var(--accent);
+}
+
+.hall-axis-blurb {
+  max-inline-size: 36em;
+  margin: 0;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+  line-height: var(--leading-small);
+  text-wrap: pretty;
 }
 
 .hall-jobs {
@@ -523,6 +641,14 @@ html:has([data-hall]) .hall-chrome {
   font-size: var(--text-data);
 }
 
+.hall-avatar-note {
+  margin-block-start: var(--space-8);
+  color: var(--ink-3);
+  font-size: var(--text-data);
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
 /* ---------- Mobile：单列；视频退化为 poster ---------- */
 
 @media (max-width: 767px) {
@@ -565,6 +691,14 @@ html:has([data-hall]) .hall-chrome {
   .hall-exit-city {
     margin-inline-start: 0;
   }
+
+  .hall-station[data-scene='s1'] .hall-station-frame,
+  .hall-station[data-scene='s2'] .hall-station-frame,
+  .hall-station[data-scene='s3'] .hall-station-frame,
+  .hall-station[data-scene='s4'] .hall-station-frame,
+  .hall-station[data-scene='s5'] .hall-station-frame {
+    aspect-ratio: 16 / 10;
+  }
 }
 
 /* 展厅页：减少动效时关掉本页动画（含到达条脉冲由 HallChrome 自管） */
@@ -587,5 +721,19 @@ html:has([data-hall]) .hall-chrome {
   .hall-qcard.is-flipped .hall-qcard-back {
     transform: none;
     position: relative;
+  }
+
+  .hall-station {
+    --hall-reveal: 1 !important;
+    --hall-tx: 0px !important;
+    --hall-ty: 0px !important;
+  }
+
+  .hall-station-frame {
+    clip-path: none !important;
+  }
+
+  .hall-station-shot {
+    transform: scale(var(--hall-scale, 1)) !important;
   }
 }

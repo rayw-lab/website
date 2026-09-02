@@ -46,7 +46,7 @@ const cityHref = `${base}/?poi=about-pavilion`;
         <button type="button" class="hall-copy-btn" data-copy-target="#hall-speaker-bio">
           一键复制讲者简介
         </button>
-        <span class="hall-copy-done data" data-copy-done hidden>已复制 ✓</span>
+        <span class="hall-copy-done data" data-copy-done hidden aria-live="polite">已复制 ✓</span>
         <noscript><span class="data">无 JS 环境请直接选中文本复制。</span></noscript>
       </figcaption>
       <p class="hall-bio-note">
@@ -68,6 +68,7 @@ const cityHref = `${base}/?poi=about-pavilion`;
       }
       <a class="hall-exit hall-exit-city" href={cityHref}>驾车回城</a>
     </div>
+    <p class="hall-avatar-note">所有画面为程序化生成的化身，非真人照片</p>
   </div>
 </section>
 
@@ -89,7 +90,7 @@ const cityHref = `${base}/?poi=about-pavilion`;
           tip.hidden = false;
           setTimeout(function () {
             tip.hidden = true;
-          }, 2000);
+          }, 1500);
         }
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {

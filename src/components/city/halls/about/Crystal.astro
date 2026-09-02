@@ -1,15 +1,28 @@
 ---
-// 第 7 幕：六向能力交叉。SVG 六边形 + 六标签，hover 高亮对应顶点。
+// 第 7 幕：六向能力交叉。SVG 六边形 + 六标签，hover/focus 高亮对应顶点并朗读一句能力。
 import { crystalAxes, jobEntries } from '../../../../data/about-copy';
 
 const cx = 100;
 const cy = 100;
 const r = 58;
 const labelR = 86;
+
+const AXIS_BLURB: Record<string, string> = {
+  auto: '汽车行业经验：在车规、供应链与量产节奏里做方案，不在实验室空转。',
+  cockpit: '智能座舱：显示链路、HMI 与安全边界，把交互钉在物理路面上。',
+  i18n: '多语种：16 语种从需求定义到量产交付，RTL、字宽与语音节奏进同一口径。',
+  llm: '大模型：按场景、算力与时延把能力放到端、云或降级路径。',
+  workflow: 'AI 工作流：把个人技巧写成可复制的工位契约与人审点。',
+  delivery: '复杂项目交付：把不确定的技术变成团队敢拍板、能复用的方案。',
+};
+
+const IDLE_BLURB = '单项不稀缺。悬停或聚焦一个顶点，看这一向怎么交叉进方案。';
+
 const vertices = crystalAxes.map((axis, i) => {
   const rad = ((-90 + i * 60) * Math.PI) / 180;
   return {
     ...axis,
+    blurb: AXIS_BLURB[axis.id],
     x: cx + r * Math.cos(rad),
     y: cy + r * Math.sin(rad),
     lx: `${((cx + labelR * Math.cos(rad)) / 200) * 100}%`,
@@ -32,33 +45,45 @@ const hexPoints = vertices.map((v) => `${v.x.toFixed(1)},${v.y.toFixed(1)}`).joi
       AI 原生方案工作流。
     </p>
     <div class="hall-crystal-board">
-      <div class="hall-hex">
-        <svg viewBox="0 0 200 200" aria-hidden="true">
-          <polygon
-            points={hexPoints}
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.25"
-            opacity="0.7"
-          ></polygon>
+      <div class="hall-crystal-visual">
+        <div class="hall-hex" role="group" aria-label="六向能力">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <polygon
+              points={hexPoints}
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.25"
+              opacity="0.7"
+            ></polygon>
+            {
+              vertices.map((v) => (
+                <circle
+                  class:list={['hall-hex-pt', `pt-${v.id}`]}
+                  cx={v.x}
+                  cy={v.y}
+                  r="6"
+                />
+              ))
+            }
+          </svg>
           {
             vertices.map((v) => (
-              <circle
-                class:list={['hall-hex-pt', `pt-${v.id}`]}
-                cx={v.x}
-                cy={v.y}
-                r="6"
-              />
+              <button
+                type="button"
+                class="hall-hex-label"
+                data-axis={v.id}
+                aria-pressed="false"
+                aria-describedby="hall-axis-blurb"
+                style={`left:${v.lx};top:${v.ly}`}
+              >
+                {v.label}
+              </button>
             ))
           }
-        </svg>
-        {
-          vertices.map((v) => (
-            <button type="button" class="hall-hex-label" data-axis={v.id} style={`left:${v.lx};top:${v.ly}`}>
-              {v.label}
-            </button>
-          ))
-        }
+        </div>
+        <p class="hall-axis-blurb" id="hall-axis-blurb" data-axis-live aria-live="polite">
+          {IDLE_BLURB}
+        </p>
       </div>
       <div class="hall-jobs">
         {
@@ -73,3 +98,42 @@ const hexPoints = vertices.map((v) => `${v.x.toFixed(1)},${v.y.toFixed(1)}`).joi
     </div>
   </div>
 </section>
+
+<script is:inline>
+  (function () {
+    var blurbs = {
+      auto: '汽车行业经验：在车规、供应链与量产节奏里做方案，不在实验室空转。',
+      cockpit: '智能座舱：显示链路、HMI 与安全边界，把交互钉在物理路面上。',
+      i18n: '多语种：16 语种从需求定义到量产交付，RTL、字宽与语音节奏进同一口径。',
+      llm: '大模型：按场景、算力与时延把能力放到端、云或降级路径。',
+      workflow: 'AI 工作流：把个人技巧写成可复制的工位契约与人审点。',
+      delivery: '复杂项目交付：把不确定的技术变成团队敢拍板、能复用的方案。',
+    };
+    var idle = '单项不稀缺。悬停或聚焦一个顶点，看这一向怎么交叉进方案。';
+    var root = document.querySelector('.hall-hex');
+    var live = document.querySelector('[data-axis-live]');
+    if (!root || !live) return;
+    var buttons = root.querySelectorAll('[data-axis]');
+
+    function setAxis(id) {
+      for (var i = 0; i < buttons.length; i++) {
+        var on = buttons[i].getAttribute('data-axis') === id;
+        buttons[i].classList.toggle('is-active', on);
+        buttons[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
+      live.textContent = (id && blurbs[id]) || idle;
+    }
+
+    for (var j = 0; j < buttons.length; j++) {
+      buttons[j].addEventListener('focus', function () {
+        setAxis(this.getAttribute('data-axis'));
+      });
+      buttons[j].addEventListener('mouseenter', function () {
+        setAxis(this.getAttribute('data-axis'));
+      });
+      buttons[j].addEventListener('click', function () {
+        setAxis(this.getAttribute('data-axis'));
+      });
+    }
+  })();
+</script>
