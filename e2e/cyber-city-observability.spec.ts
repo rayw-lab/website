@@ -408,6 +408,14 @@ test.describe('科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串�
     // z>-33 无裙房台阶）
     const leg1 = await driveTo(page, { x: 20, z: -8 }, { radius: 3, timeoutMs: 360_000 });
     expect(leg1.ok, `途径点 (20,-8) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`).toBe(true);
+    // [CC-VIS-X2-ROUTE-R3] leg2 直瞄两点连线在 Q0/Q1 档不可行驶：bearing 正穿 H12 警示
+    // 隔离墩B [25.02,26.98]×[-15.94,-15.06] 与东北簇 S2 Cabinet（SwiftShader 自动降档使
+    // OBS 长时间运行在道具启用的 Q0/Q1；直瞄楔死停滞循环 6 escapes/350.2s 实证，见
+    // docs/research/cc-vis-x2-obs-r2-diagnosis.md §2/§5）。改走东弧安全走廊：先到 H9
+    // 冷却罐×H7 升降台间隙北口 (33,-16)（Lane 3 静态最坏净距 1.84m，对照腿 0 escape
+    // 实测），再南下泊车位。timeout/radius 业务语义零改动（判定圈仍 r4.5、触发圈 r6）。
+    const leg2a = await driveTo(page, { x: 33, z: -16 }, { radius: 2.5, timeoutMs: 240_000 });
+    expect(leg2a.ok, `途径点 (33,-16) 应可达（实测 x=${leg2a.state.x.toFixed(1)} z=${leg2a.state.z.toFixed(1)}）`).toBe(true);
     const leg2 = await driveTo(page, { x: 28, z: -28 }, { radius: 4.5, timeoutMs: 360_000 });
     expect(leg2.ok, `泊车位 (28,-28) 应可达（实测 x=${leg2.state.x.toFixed(1)} z=${leg2.state.z.toFixed(1)}）`).toBe(true);
 

@@ -617,6 +617,15 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
       leg1.ok,
       `Q2 档途径点 (20,-8) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`,
     ).toBe(true);
+    // [CC-VIS-X2-ROUTE-R3] 与 CITY-OBS-01 同源同步（OBS-01 注记见彼处）：直瞄两点连线
+    // 在 Q0/Q1 档正穿 H12/S2 道具带楔死（Q2 深链世界无道具碰撞体，但同源路线合同要求
+    // 两 spec 走同一走廊）；先到东弧间隙北口 (33,-16) 再南下泊车位。零 timeout/radius
+    // 业务语义改动。依据 = docs/research/cc-vis-x2-obs-r2-diagnosis.md §5 对照实验。
+    const leg2a = await driveTo(page, { x: 33, z: -16 }, { radius: 2.5, timeoutMs: DRIVE_TO_LEG_BUDGET_MS });
+    expect(
+      leg2a.ok,
+      `Q2 档途径点 (33,-16) 应可达（实测 x=${leg2a.state.x.toFixed(1)} z=${leg2a.state.z.toFixed(1)}）`,
+    ).toBe(true);
     const leg2 = await driveTo(page, { x: 28, z: -28 }, { radius: 4.5, timeoutMs: DRIVE_TO_LEG_BUDGET_MS });
     expect(
       leg2.ok,
