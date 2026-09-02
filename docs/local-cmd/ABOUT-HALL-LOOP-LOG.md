@@ -32,3 +32,11 @@
 - 席位变更：磊哥令 agy 全部用 **Gemini 3.8 Flash**；`agy_rescue_cli.py` 已由 LOOP24 会话把 `gemini-3.7-flash` 键映射到 3.8 (High)，agy pin 1.1.24，launcher 零改动即生效。
 - 派：W2c（gate.mjs + e2e + media.json）、W3a（Hero 接 ScrubVideo + 8 幕骨架 + 暗色 chrome）。提交 `f996dff`。
 - NEEDS_LEIGE 未变：`/privacy` 关 ZDR（i2v 唯一阻塞）；原图落盘。
+
+### L4 · 2026-09-03 00:35
+- 收稿：W2c（`about-hall-gate.mjs` G-Hall-1..9 全 PASS；`e2e/about-hall.spec.ts` 6/6 on `desktop-chromium`，跑法 `env -u CI E2E_PORT=<port>`；`about-hall-media.json` 登记 poster）；W3a（Hero 接 ScrubVideo + poster、六站 sticky 骨架、六向晶体 SVG、收官区、`[data-hall]` 暗色站头；三张截图）。宿主回读：check 0 err / build 20 页 / gate 全绿 / e2e 6 passed / check-links 一处红（悬空 `hero-s0-720p.mp4`）→ 指挥官 ≤10 行直改：Hero `<source>` 改由媒体清单驱动，无片不写；复验全绿。提交 `43fca3c`、`d44ea5f`。
+- **指挥官人门（首屏截图）**：暗色站头到位、左侧文案床可读、卡通首屏气质成立；A 维预评 8.0 维持。六站幕为纯文字 + 线框 SVG，待 S1–S5 静帧。
+- i2v：磊哥报 ZDR OK，但两路 i2v（S0-T ×6 调用、S6-T）与指挥官亲跑 canary（00:10）**仍被 ZDR 拒**，原文同前。已告知：若 `/privacy` 行显示 `ZDR · Admin Managed` 需在 xAI 控制台团队级关闭或配 S3 桶。`DEFERRED_EXTERNAL(zdr)` 继续。
+- 工具：ffmpeg 源码重装仍在跑；已在 `~/.codex/state/about-hall/venv` 装 imageio-ffmpeg 静态 7.1 作兜底（`~/.codex/state/about-hall/ffmpeg`）。
+- 派：W3b（S1–S5 first ×3，静帧路线，不出视频）；W5（`arrival-snapshot.ts` + `Areas.ts` 单 writer）；W4（`/about/` 触感 + 手绘插图 + LHCI 自检）。
+- 待办登记：视频到位后 `about-hall-media.json` 需新增 `id: hero-s0` 条目（Hero 按此 id 取 `src16x9`）。

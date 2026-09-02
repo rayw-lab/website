@@ -1,8 +1,8 @@
-# ABOUT-HALL-INDEX · CURRENT AUTHORITY · 2026-09-02 23:50 · L3
+# ABOUT-HALL-INDEX · CURRENT AUTHORITY · 2026-09-03 00:35 · L4
 
 > 本节是当前唯一 ACTIVE TODO。冲突时：live Git / 隔离栈 / 日志 > 本文 > 任何旧看板。
 > 目标：`/world/about-pavilion/` 炫技自我介绍页 + `/about/` 纸面双胞胎。当前 min：全维未开工（A/B/C/D/E 均 —）。
-> 分支 `codex/about-hall-20260902` @ `f996dff` · 基线 `main@c585df9` · 上次合流 — · 上次沉淀 —
+> 分支 `codex/about-hall-20260902` @ `d44ea5f` · 基线 `main@c585df9` · 上次合流 — · 上次沉淀 —
 > **阻塞**：`image_to_video` 被 ZDR 拒（NEEDS_LEIGE：`grok` → `/privacy` 关 ZDR）；其余全部在推进。
 > 人测窗口：none
 
@@ -24,18 +24,19 @@
 | AH-W1e | W1 | 资产 | S1–S5 LOCKED 纸（不生成） | gemini-3.7-flash | `docs/local-cmd/locked/S1..S5-*.md` | D1 | 四段 fence + 硬门齐 | — | MERGED |
 | AH-W2a | W2 | 壳 | `WorldHallLayout` + `[slug].astro` + `world-halls.json` + `HallChrome` + SRD 一行 | glm-5-3-flash（产出）→ 指挥官落盘 | `src/pages/world/`、`src/layouts/WorldHallLayout.astro`、`src/components/city/HallChrome.astro`、`src/data/world-halls.json`、`docs/spec/SRD.md` | D2 | 隔离栈 200；G-Hall 零 world chunk | — | MERGED |
 | AH-W2b | W2 | 壳 | `ScrubVideo.ts` 播放器（Paidax 两段改写）+ Hero 幕接入 | glm-5-3-flash / Grok 编码 | `src/components/city/halls/ScrubVideo.ts`、`halls/about/Hero.astro` | W1b, W2a | 鼠标 scrub 改 currentTime；≤20KB gzip | — | MERGED |
-| AH-W2c | W2 | 门 | `about-hall-gate.mjs` + `about-hall.spec.ts` 首批用例 + `about-hall-media.json` 对账 | glm-5-3-flash | `scripts/`、`e2e/about-hall.spec.ts`、`src/data/about-hall-media.json` | W2a | GATE.json 全绿 | — | DISPATCHED |
-| AH-W3 | W3 | 叙事 | 8 幕 sticky 区间 + data-bind + 六向晶体/六站地轨 + hero-robot 程序化动作 | glm + gemini（分镜文案）| `src/components/city/halls/about/**` | W1c, W2b | 人门 B ≥7；C 100% | — | DISPATCHED(W3a) |
-| AH-W4 | W4 | 双胞胎 | `/about/` 触感 + 四态降级 + 9:16 | glm | `src/pages/about/index.astro`、`src/styles/` | W3 | E 全绿；LHCI 不降 | — | PLANNED |
-| AH-W5 | W5 | 联动 | `arrival-snapshot.ts` + `Areas.ts` 接线 + C 横幅 | glm（Areas 单 writer） | `src/lab/world/arrival-snapshot.ts`、`src/lab/world/areas/Areas.ts`、`src/layouts/BaseLayout.astro` | D2 | e2e 进楼到达条 | — | PLANNED |
+| AH-W2c | W2 | 门 | `about-hall-gate.mjs` + `about-hall.spec.ts` 首批用例 + `about-hall-media.json` 对账 | glm-5-3-flash | `scripts/`、`e2e/about-hall.spec.ts`、`src/data/about-hall-media.json` | W2a | GATE.json 全绿 | — | MERGED |
+| AH-W3 | W3 | 叙事 | 8 幕 sticky 区间 + data-bind + 六向晶体/六站地轨 + hero-robot 程序化动作 | glm + gemini（分镜文案）| `src/components/city/halls/about/**` | W1c, W2b | 人门 B ≥7；C 100% | — | MERGED(W3a) · DISPATCHED(W3b 静帧) |
+| AH-W4 | W4 | 双胞胎 | `/about/` 触感 + 四态降级 + 9:16 | glm | `src/pages/about/index.astro`、`src/styles/` | W3 | E 全绿；LHCI 不降 | — | DISPATCHED |
+| AH-W5 | W5 | 联动 | `arrival-snapshot.ts` + `Areas.ts` 接线 + C 横幅 | glm（Areas 单 writer） | `src/lab/world/arrival-snapshot.ts`、`src/lab/world/areas/Areas.ts`、`src/layouts/BaseLayout.astro` | D2 | e2e 进楼到达条 | — | DISPATCHED |
 | AH-W6 | W6 | 收口 | 全量 e2e、双评、PR、handoff | 指挥官 + 批评者 ×2 | `evidence/about-hall/W6/` | 全部 | 86+n 绿；三维 ≥7 | — | PLANNED |
 
 ## 热点文件持有表（单 writer）
 
 | 文件 | 当前持有票 | 释放条件 |
 |---|---|---|
-| `src/pages/world/[slug].astro` / `WorldHallLayout.astro` | AH-W3a | W3a 收稿 |
-| `src/lab/world/areas/Areas.ts` | — | W5 收稿 |
+| `src/pages/world/[slug].astro` / `WorldHallLayout.astro` | — | 已释放（W3a 收稿） |
+| `src/pages/about/index.astro` | AH-W4 | W4 收稿 |
+| `src/lab/world/areas/Areas.ts` | AH-W5 | W5 收稿 |
 | `src/data/cyber-city-buildings.json` | — | hallPath 加法后 |
 | `docs/spec/SRD.md` | — | W2a 一行后 |
 | `AGENTS.md` | 指挥官 | 本次编排落稿后释放 |
