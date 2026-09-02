@@ -1,0 +1,305 @@
+{
+  "schemaVersion": "1.0.0",
+  "repository": "rayw-lab/website",
+  "snapshot": {
+    "branch": "main",
+    "sha": "4ef7ed4cc9db9bde92180b8498bac7104951dd1d",
+    "verifiedStableAtCloseout": true,
+    "branchProtected": false,
+    "requiredStatusChecks": false
+  },
+  "auditMode": "READ_ONLY_BROWSER_AND_ARITHMETIC",
+  "overall": {
+    "GO_OR_NO_GO": "NO_GO",
+    "p0Count": 0,
+    "p1Count": 3,
+    "reason": "At least C7 and literal C1/C9' remain REFUTED; v2 states any REFUTED => FAIL.",
+    "scoreArithmeticInvalidated": false,
+    "registeredMatrix": {
+      "composite": 94,
+      "visual": 76,
+      "functional": 87,
+      "performance": null
+    }
+  },
+  "checks": {
+    "C1": {
+      "status": "REFUTED_HISTORICAL_PASS_PROSPECTIVE",
+      "reason": "#220 has +2/-1 in-place edit."
+    },
+    "C2": {
+      "status": "PARTIAL_PASS",
+      "reason": "Replay and geometry corrected; numeric and wording residues remain."
+    },
+    "C3": {
+      "status": "PASS_WITH_WORDING_DEFECT",
+      "reason": "No existing gate relaxation in ad93ed1; absolute zero-touch wording false."
+    },
+    "C4": {
+      "status": "TRUST_BASED_RUNTIME_INDEPENDENTLY_VERIFIED_STRUCTURE",
+      "tests": 86,
+      "files": 19,
+      "retries": 0
+    },
+    "C5": {
+      "status": "PASS",
+      "reason": "R2 schema erratum additive; original blob unchanged."
+    },
+    "C6": {
+      "status": "PASS_METADATA_TRUST_BASED_PAYLOAD",
+      "run": 33589801653,
+      "artifact": 9831423112
+    },
+    "C7": {
+      "status": "REFUTED",
+      "reason": "Same model; incomplete receipts; new frame full hash/object chain absent."
+    },
+    "C8": {
+      "status": "PASS",
+      "visual": 76,
+      "composite": 94
+    },
+    "C9prime": {
+      "status": "REFUTED_HISTORICAL_PASS_PROSPECTIVE",
+      "reason": "Same as C1."
+    },
+    "C10": {
+      "status": "PARTIAL_ORIGINAL_AUDIT_SCOPE_UNVERIFIED",
+      "reason": "Historic relaxations true; ad93 added a new radius/timeout leg but did not relax existing target gate."
+    }
+  },
+  "recompute": {
+    "weights": {
+      "V1": 0.2,
+      "V2": 0.2,
+      "V3": 0.15,
+      "V4": 0.15,
+      "V5": 0.15,
+      "V6": 0.1,
+      "V7": 0.05
+    },
+    "originalEvaluation": {
+      "A": {
+        "dimensions": {
+          "V1": 78,
+          "V2": 72,
+          "V3": 80,
+          "V4": 75,
+          "V5": 66,
+          "V6": 76,
+          "V7": 72
+        },
+        "raw": 74.35000000000001,
+        "rounded": 74
+      },
+      "B": {
+        "dimensions": {
+          "V1": 80,
+          "V2": 80,
+          "V3": 80,
+          "V4": 75,
+          "V5": 75,
+          "V6": 75,
+          "V7": 80
+        },
+        "raw": 78.0,
+        "rounded": 78
+      },
+      "consensusDimensions": {
+        "V1": 79,
+        "V2": 76,
+        "V3": 80,
+        "V4": 75,
+        "V5": 71,
+        "V6": 76,
+        "V7": 76
+      },
+      "consensusRaw": 76.3,
+      "consensusRounded": 76
+    },
+    "r2Reevaluation": {
+      "A": {
+        "dimensions": {
+          "V1": 80,
+          "V2": 80,
+          "V3": 75,
+          "V4": 70,
+          "V5": 70,
+          "V6": 70,
+          "V7": 70
+        },
+        "raw": 74.75,
+        "rounded": 75
+      },
+      "B": {
+        "dimensions": {
+          "V1": 85,
+          "V2": 80,
+          "V3": 80,
+          "V4": 85,
+          "V5": 80,
+          "V6": 80,
+          "V7": 85
+        },
+        "selfReported": 83,
+        "raw": 82.0,
+        "rounded": 82,
+        "selfReportCorrect": false
+      },
+      "deltaCorrected": 7,
+      "arbitratedDimensions": {
+        "V1": 80,
+        "V2": 80,
+        "V3": 75,
+        "V4": 75,
+        "V5": 70,
+        "V6": 75,
+        "V7": 75
+      },
+      "arbitratedRaw": 76.25,
+      "arbitratedRounded": 76,
+      "impactRadius": "No change to arbitration trigger, visual 76, or composite 94."
+    },
+    "composite": {
+      "formula": "100*.25 + 100*.15 + 100*.20 + 76*.25 + 100*.15",
+      "value": 94.0,
+      "availableWeight": 1,
+      "missing": []
+    },
+    "geometry": {
+      "correctRotYDegrees": {
+        "Vending": -131.66173232993307,
+        "Cabinet": -141.69886220800433,
+        "Bin": -139.70730044196893
+      },
+      "rotYAbsoluteErrorsDegrees": {
+        "Vending": 5.438267670066921,
+        "Cabinet": 10.798862208004323,
+        "Bin": 5.892699558031069
+      },
+      "maxRotYErrorDegrees": 10.798862208004323,
+      "maxAabbEndpointDeltaMeters": 0.06,
+      "noseInsideCorrectedS2": true,
+      "noseMinimumBoundaryMarginMeters": 0.1332442021000002,
+      "impactRadius": "Root-cause attribution unchanged."
+    }
+  },
+  "priorAuditsReview": {
+    "auditA": {
+      "appendOnlyFinding": "SUSTAINED",
+      "collapseOfScoreClaim": "NOT_SUSTAINED",
+      "C10Scope": "UNVERIFIED_FROM_ORIGINAL_REPORT",
+      "overallNoGo": "CONDITIONALLY_SUSTAINED_IF_APPEND_ONLY_WAS_INDEPENDENT_SUFFICIENT_GATE"
+    },
+    "auditB": {
+      "rotYArithmeticFinding": "SUSTAINED",
+      "P0ConclusionCollapse": "NOT_SUSTAINED_IMPACT_RADIUS_ZERO",
+      "C10Scope": "UNVERIFIED_FROM_ORIGINAL_REPORT",
+      "overallNoGo": "NOT_SUSTAINED_ON_QUOTED_REASONS_BUT_ORIGINAL_REPORT_UNAVAILABLE"
+    }
+  },
+  "classificationCounts": {
+    "INDEPENDENTLY_VERIFIED": 16,
+    "REFUTED": 13,
+    "UNVERIFIED": 3,
+    "TRUST_BASED(receipt)": 2
+  },
+  "findings": [
+    {
+      "id": "F-P1-001",
+      "severity": "P1",
+      "claim": "R-2-1 视觉独立性整改已闭环",
+      "finding": "任务书要求异模型；fallback 也要求完整签名收据。实际 A/B 同为 gpt-5.6-terra；A 无有效 UTC，B 无 UTC 和工具序列，新帧仅短哈希回显。",
+      "counterfactual": "若提供两个不同模型族，或同模型但两个完整不可变收据加新六帧全 SHA/图像，则 C7 可转 PASS；当前直接阻断 GO。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-alvis-r3-eval/r2-eval-a.json | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-alvis-r3-eval/r2-eval-b.json"
+    },
+    {
+      "id": "F-P1-002",
+      "severity": "P1",
+      "claim": "R-1 后 v2 C1/C9' append-only 自检已通过",
+      "finding": "#220 对已合并 SEC-R13 原位 +2/-1 是历史事实；后加声明不能令“所有后续 commit 删除=0”的字面检查回溯通过。",
+      "counterfactual": "将规则拆为 historical exception 与 prospective invariant，并让机检显式白名单 #220，才可能客观 PASS；不影响 94/76。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/220 | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-loop-audit-prompt-v2.md"
+    },
+    {
+      "id": "F-P1-003",
+      "severity": "P1",
+      "claim": "两轮 NO_GO 所有可消项已闭环",
+      "finding": "至少 C7 与字面 C1/C9' 仍 REFUTED；按 v2“任一 REFUTED 即 FAIL”，总体闭环声明不成立。",
+      "counterfactual": "完成 C7 真收据，并把 C1 规则改成可执行的历史/未来分层后，可重新评估 GO。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-loop-audit-prompt-v2.md"
+    },
+    {
+      "id": "F-P2-001",
+      "severity": "P2",
+      "claim": "修正 AABB 相对旧表位移≤0.05m",
+      "finding": "独立复算最大端点差=0.06m（S2 z 下界），不是 0.05m。",
+      "counterfactual": "nose 仍在 S2，最小内边距约 0.133m；根因、视觉76、综合94均不变，影响半径为零。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-vis-x2-collider-aabb-20260902.md | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cyber-city-score-loop-orchestration.md"
+    },
+    {
+      "id": "F-P2-002",
+      "severity": "P2",
+      "claim": "rotY 人工推导误差最大约6°",
+      "finding": "三项差分别为 5.44°/10.80°/5.89°，最大=10.80°。",
+      "counterfactual": "AABB 变动仍≤0.06m，nose 仍在 S2；结论不变，不构成 P0。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cyber-city-orchestration-paradigm.md | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/tools/streetprops-roty-replay.mjs"
+    },
+    {
+      "id": "F-P2-003",
+      "severity": "P2",
+      "claim": "H12 旧措辞已完全修正",
+      "finding": "诊断文档已勘误，但 OBS/PERF 两个可执行 spec 注释仍写“bearing 正穿 H12/S2”。",
+      "counterfactual": "修正注释即可消项；不改变测试逻辑和分数。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/e2e/cyber-city-observability.spec.ts | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/e2e/cyber-city-perf.spec.ts"
+    },
+    {
+      "id": "F-P2-004",
+      "severity": "P2",
+      "claim": "ad93ed1 timeout/radius 零触",
+      "finding": "没有放宽既有终点门，但新增 leg2a 明确包含 radius=2.5 与 timeoutMs=240000，绝对化“零触”不成立。",
+      "counterfactual": "改为“未放宽既有门，只新增绕行腿参数”即可；不改变 R3 通过或 94/76。",
+      "url": "https://api.github.com/repos/rayw-lab/website/commits/ad93ed1"
+    },
+    {
+      "id": "F-P2-005",
+      "severity": "P2",
+      "claim": "R2 评审 B 总分83",
+      "finding": "85×.20+80×.20+80×.15+85×.15+80×.15+80×.10+85×.05=82.00，应为82。",
+      "counterfactual": "A75/B82 仍 |Δ|=7>5，仍触发仲裁；仲裁76、综合94不变。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-alvis-r3-eval/r2-eval-b.json"
+    },
+    {
+      "id": "F-P2-006",
+      "severity": "P2",
+      "claim": "#222 R-1 为3文件+13/-0",
+      "finding": "按合并前后 main 比较，实际4文件+65/-0；PR叙述统计失真。",
+      "counterfactual": "改正文统计即可；R-1 实质勘误/脚本仍存在，不改变总裁决。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/222 | https://api.github.com/repos/rayw-lab/website/compare/3cf1552c4468a10dab16e4e9118e1fc1f56a24d4...23b7032af8a8914c5860c2804d0de1f4ae98d621"
+    },
+    {
+      "id": "F-P2-007",
+      "severity": "P2",
+      "claim": "#223 未提交 v2，#224 补交 v2 且两文件",
+      "finding": "#223 文件 API 已含 v2；#224 实际仅1文件+4/-0，补的是范式坑13–16。",
+      "counterfactual": "最终 main 确实同时拥有 v2 和范式，故最终功能状态不变；仅叙事可信度受损。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/223/files?per_page=100 | https://api.github.com/repos/rayw-lab/website/pulls/224/files?per_page=100"
+    },
+    {
+      "id": "F-P2-008",
+      "severity": "P2",
+      "claim": "main 已具备外部审计所需强制治理",
+      "finding": "main protected=false，required status checks=off。",
+      "counterfactual": "这是路线图 R-3-4 未完成项；不使现有 94/76 算术失效，但降低后续账本可信度。",
+      "url": "https://api.github.com/repos/rayw-lab/website/branches/main"
+    },
+    {
+      "id": "F-U-001",
+      "severity": "UNVERIFIED",
+      "claim": "可确认审计 A/B 每条原裁决的精确 scope 与措辞",
+      "finding": "仓库未检出两份原报告与 v1 任务书；仅能审路线图引述。",
+      "counterfactual": "提供原报告不可变 URL 后，可把 A/B 复审从条件性结论升级为终局结论。",
+      "url": "https://api.github.com/repos/rayw-lab/website/search/code?q=cc-score-loop-board-delta-pr-104-r2.md"
+    }
+  ]
+}

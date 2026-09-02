@@ -137,7 +137,15 @@ function readVisual() {
   }
   if (existsSync(VISUAL_JSON)) {
     const parsed = JSON.parse(readFileSync(VISUAL_JSON, 'utf8'));
-    if (typeof parsed.score === 'number') return { score: parsed.score, source: VISUAL_JSON };
+    // [R-5-5] 登记分健全性：数值但越界 = 登记错误，响亮失败（禁静默计入/禁静默缺失）；
+    // 非数值（含字符串分）→ null 走 missing，missing.length>0 时 --min 拒绝放行（见尾门）
+    if (typeof parsed.score === 'number') {
+      if (!Number.isFinite(parsed.score) || parsed.score < 0 || parsed.score > 100) {
+        console.error(`视觉登记分越界（${VISUAL_JSON} score=${parsed.score}）：须为 0-100 数值——请修正登记档后重跑`);
+        process.exit(2);
+      }
+      return { score: parsed.score, source: VISUAL_JSON };
+    }
   }
   return { score: null, source: null };
 }
@@ -189,7 +197,10 @@ function readRegisteredScore(path) {
   if (!existsSync(path)) return null;
   try {
     const parsed = JSON.parse(readFileSync(path, 'utf8'));
-    return typeof parsed.score === 'number' ? parsed.score : null;
+    // [R-5-5] 越界登记分按缺失处理（northStar 面显式「（缺失）」），禁止非法值入北极星
+    return typeof parsed.score === 'number' && Number.isFinite(parsed.score) && parsed.score >= 0 && parsed.score <= 100
+      ? parsed.score
+      : null;
   } catch {
     return null;
   }
@@ -248,7 +259,13 @@ console.log(
 );
 console.log(`COMPOSITE_SCORE=${composite.toFixed(1)}`);
 
-if (MIN !== null && composite < Number(MIN)) {
-  console.error(`综合分 ${composite.toFixed(1)} < 门槛 ${MIN}`);
+// [R-5-5] --min 门两条件：五维齐套（missing=0）为放行前提——缺维归一化分禁止过 --min；
+// 归一化综合 ≥min 但 missing>0 时以 exit 1 拒绝（对抗「字符串分缺失→归一化反得 100」类假过）
+if (MIN !== null && (missing.length > 0 || composite < Number(MIN))) {
+  console.error(
+    missing.length > 0
+      ? `维度缺失（${missing.join('、')}）——availableWeight=${available}，缺维归一化分不得过 --min 门槛 ${MIN}`
+      : `综合分 ${composite.toFixed(1)} < 门槛 ${MIN}`,
+  );
   process.exit(1);
 }
