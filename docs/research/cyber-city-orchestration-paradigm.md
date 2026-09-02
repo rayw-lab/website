@@ -195,6 +195,7 @@
 | 14 | 静态「源码确定性复刻」人工推导出错（PRNG 序列/调用序/种子串任一偏差，rotY 实证差 6°） | 复刻必须附**可执行重放脚本**（自包含内联源码函数 + 源码行号钉死），输出与文档数字 diff=0；先例 `docs/research/tools/streetprops-roty-replay.mjs` |
 | 15 | ledger 块合并后原位勘误（含删除行的编辑）违背 append-only | 勘误一律**追加声明行/新顶部块**（supersede 声明式）；任何看板 commit 删除行数必须为 0；先例 SEC-R14-ERRATA |
 | 16 | 「零触」类绝对化表述被外部审计按 PR 全历史复测反驳 | 表述必须限定 scope：「本 Loop 整改增量（commit X）零触」+ 谱系登记（timeout/预算类历史演化单独登记） |
+| 17 | PR 正文手写文件数/增删计数与 PR API 事实不符（#222「3 文件 +13」实为 5 文件 +133；#224 confession 二次失真） | **PR 正文一切计数由 `gh pr view --json` / PR files API 生成**；confession/勘误前必须 `gh api` 复核事实 |
 
 ## 4. 模板
 
