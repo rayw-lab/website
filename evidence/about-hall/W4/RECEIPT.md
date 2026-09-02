@@ -62,7 +62,7 @@ node_modules/.pnpm/node_modules/.bin/lighthouse \
   --output=json --output-path=evidence/about-hall/W4/lh-about.json
 ```
 
-`/about/` 四项（Lighthouse 12.6.1，fetchTime `2026-09-02T16:46:xxZ` 墙钟 2026-09-03）：
+`/about/` 四项（Lighthouse 12.6.1，fetchTime `2026-09-02T16:46:52.897Z`，墙钟 2026-09-03）：
 
 | 分类 | 分 |
 |---|---|

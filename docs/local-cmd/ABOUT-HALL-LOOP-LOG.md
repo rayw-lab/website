@@ -40,3 +40,9 @@
 - 工具：ffmpeg 源码重装仍在跑；已在 `~/.codex/state/about-hall/venv` 装 imageio-ffmpeg 静态 7.1 作兜底（`~/.codex/state/about-hall/ffmpeg`）。
 - 派：W3b（S1–S5 first ×3，静帧路线，不出视频）；W5（`arrival-snapshot.ts` + `Areas.ts` 单 writer）；W4（`/about/` 触感 + 手绘插图 + LHCI 自检）。
 - 待办登记：视频到位后 `about-hall-media.json` 需新增 `id: hero-s0` 条目（Hero 按此 id 取 `src16x9`）。
+
+### L5 · 2026-09-03 00:50
+- 收稿：W3b S1–S5 first ×3（15 张）→ **指挥官人门定选** S1#2 / S2#3 / S3#2 / S4#3 / S5#2（S4 #1/#2 彩虹色违反单色霓虹纪律被否），Pillow 转 webp 19–38KB 入仓并登记媒体清单；W5（`arrival-snapshot.ts` + `Areas.ts` hallPath 接线，e2e 7/7，G-Hall 全绿）；W4（`/about/` 触感：问题卡翻转、时间轴聚焦、复制反馈、手绘插图 `S0-H#1`；LHCI **100/96/100/100**；四态截图）。宿主回读 check/build/gate/check-links/e2e 全绿，提交 `e801431`。
+- 派：W3c（六站幕接静帧 + 差异化揭示动效 + Crystal 键盘可达 + Epilogue 打磨）。
+- 磊哥休息，指令：自动推进到 W6；agy 只用 3.8；grok/glm 灵活用。
+- ZDR 仍拦 i2v：每 ~30 分钟由指挥官 canary 一次，解除即自动跑 S0-T/S6-T i2v → 压制 → 媒体清单 `hero-s0` 条目 → Hero 自动接片。
