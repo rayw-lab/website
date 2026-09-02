@@ -1030,6 +1030,9 @@ world 模式仍是「同一套渲染资产的第三种展示模式，无第二�
 | 内页（`/work/`、`/insights/`、`/ai-lab/`、`/lab/`、`/about/` 等） | 完全不动（C-5） | 不变 |
 | `/world-spike/` | **归档**：引擎合体完成后改 ≤ 1KB 静态占位页（noindex + canonical → `/`），一个版本周期后删除路由 | noindex |
 | `/world/` | **不再建立**——v1.1 Hybrid 规划的独立路由被 `/` 取代；世界只有一个入口，避免双路由双份考核 | — |
+| `/world/{slug}/` | 楼内展厅 HTML（动效豁免区）。**不是**世界引擎入口：不挂载 `src/lab/world/**`，不进 Lab manifest，不走 Lab facade。slug 白名单 = `src/data/world-halls.json`；未知 slug 不生成。世界引擎入口仍是 `/`。 | index,follow；canonical 自指（BaseLayout 已去 query）；进 sitemap |
+
+「`/world/` 不再建立」否决的是 v1.1 Hybrid 的**世界引擎独立入口**；楼内展厅 HTML `/world/{slug}/` 不在该禁令范围内，也不构成第二套世界引擎。
 
 **站内链接调整**：全站页头 logo/「首页」→ `/`；页脚与面包屑补「站点总览」→ `/home/`；内容页「返回科技城」→ `/`（`?poi=` + sessionStorage 恢复位置/形态/配色）。
 

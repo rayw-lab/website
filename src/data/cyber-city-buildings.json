@@ -199,6 +199,7 @@
       "footprint": { "w": 36, "d": 36, "h": 40 },
       "neonColor": "#fef3c7",
       "deepLink": "/about/",
+      "hallPath": "/world/about-pavilion/",
       "deepLinkStatus": "live",
       "priority": "P1",
       "unlockPhase": 1,

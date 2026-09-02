@@ -1,0 +1,153 @@
+---
+// HallChrome —— 展厅到达条（ADR-2 §1/§2/§3）。
+// 构建期从 buildings JSON 查楼名/楼色（禁止进 snapshot）。
+// 运行期读 ?from=city&poi= 与 sessionStorage['world-arrival-v1']；
+// 探索 n/N 读 localStorage['world-explore-v1']（与 ExploreProgress 同键，合法 id 计数）。
+// 无 JS 保持 hidden。Hall-0：脚本 is:inline，不另打 chunk。
+import cityMap from '../../data/cyber-city-buildings.json';
+
+interface Props {
+  buildingId: string;
+}
+
+const { buildingId } = Astro.props;
+const building = cityMap.buildings.find((b) => b.id === buildingId);
+if (!building) {
+  throw new Error(`HallChrome: buildingId「${buildingId}」不在 cyber-city-buildings.json`);
+}
+
+const poiIds = cityMap.buildings.map((b) => b.id);
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
+---
+
+<aside
+  class="hall-chrome"
+  data-hall-chrome
+  data-poi={building.id}
+  data-allow={poiIds.join(',')}
+  data-explore-total={String(poiIds.length)}
+  hidden
+  aria-label="从科技城到达"
+>
+  <span
+    class="hall-chrome-dot"
+    style={`background-color: ${building.neonColor}`}
+    aria-hidden="true"
+  ></span>
+  <span class="hall-chrome-name">{building.title.zh}</span>
+  <span class="hall-chrome-explore">
+    探索 <span data-explore-count>0/{poiIds.length}</span>
+  </span>
+  <a class="hall-chrome-back" href={returnHref}>返回科技城</a>
+</aside>
+
+<script is:inline>
+  (function () {
+    function reveal() {
+      var root = document.querySelector('[data-hall-chrome]');
+      if (!root) return;
+      var params = new URLSearchParams(location.search);
+      var from = params.get('from');
+      var poi = params.get('poi');
+      var hallPoi = root.getAttribute('data-poi') || '';
+      var allow = (root.getAttribute('data-allow') || '').split(',').filter(Boolean);
+      if (from !== 'city' || !poi || allow.indexOf(poi) === -1 || poi !== hallPoi) return;
+      try {
+        var raw = sessionStorage.getItem('world-arrival-v1');
+        if (raw) {
+          var snap = JSON.parse(raw);
+          if (snap && typeof snap === 'object' && snap.poi && snap.poi !== poi) return;
+        }
+      } catch (e) {
+        /* 坏快照当缺失：W2 可只凭合法 query 显示到达条 */
+      }
+      var total = Number(root.getAttribute('data-explore-total') || '0');
+      var n = 0;
+      var allowSet = Object.create(null);
+      for (var i = 0; i < allow.length; i++) allowSet[allow[i]] = 1;
+      try {
+        var exp = JSON.parse(localStorage.getItem('world-explore-v1') || '[]');
+        if (Array.isArray(exp)) {
+          for (var j = 0; j < exp.length; j++) {
+            if (typeof exp[j] === 'string' && allowSet[exp[j]]) n++;
+          }
+        }
+      } catch (e2) {
+        n = 0;
+      }
+      var countEl = root.querySelector('[data-explore-count]');
+      if (countEl) countEl.textContent = n + '/' + total;
+      root.hidden = false;
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', reveal);
+    } else {
+      reveal();
+    }
+  })();
+</script>
+
+<style>
+  .hall-chrome {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+    padding: var(--space-3) 0;
+    border-block-end: 1px solid var(--line);
+    color: var(--ink-2);
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+  }
+
+  .hall-chrome[hidden] {
+    display: none !important;
+  }
+
+  .hall-chrome-dot {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    flex: none;
+    box-shadow: 0 0 0.55rem color-mix(in srgb, var(--hall-neon, currentColor) 70%, transparent);
+    animation: hall-chrome-pulse 2.4s ease-in-out infinite;
+  }
+
+  .hall-chrome-name {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .hall-chrome-explore {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+
+  .hall-chrome-back {
+    margin-inline-start: auto;
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    text-underline-offset: 0.2em;
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .hall-chrome-back:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  @keyframes hall-chrome-pulse {
+    50% {
+      opacity: 0.65;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hall-chrome-dot {
+      animation: none;
+    }
+  }
+</style>

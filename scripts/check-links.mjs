@@ -23,6 +23,7 @@
  *        过渡期不因缺链变红（实施方案 §4.4 过渡纪律），E7 切换后转阻断级。
  *      - dist 内全部 `?poi={id}` 深链引用的 id 必须在 buildings JSON 在册（阻断级；
  *        当前 dist 无 ?poi= 链接，空集自然通过——CC-E7/E9 落地深链后自动生效）。
+ *      - 若大楼有 hallPath，则同 deepLink 一样核 dist 存在（ADR-2 G-Hall-7）。
  *      - 壳六导航（`/` 科技城壳指向 /home/ /work/ /insights/ /ai-lab/ /about/ /contact/
  *        的 <a> 导航）无需专项入口：它们是普通内部链接，CC-E7 壳上线即被检查 1 自动覆盖。
  *
@@ -304,7 +305,17 @@ if (existsSync(buildingsPath)) {
     // E7 切换探测器（与 audit-budget.mjs 同款）：/home/ 产物存在 = 路由已切，deepLink 缺链转阻断级
     const e7Switched = !!resolveToFile('/home/');
 
+    let hallPathCount = 0;
     for (const b of buildings) {
+      if (b.hallPath) {
+        hallPathCount++;
+        const hallOk = !!resolveToFile(b.hallPath);
+        if (!hallOk) {
+          const msg = `buildings hallPath：「${b.id}」→ ${b.hallPath} 在 dist 无对应页面（ADR-2 G-Hall-7）`;
+          if (e7Switched) errors.push(msg);
+          else cityWarnings.push(`${msg}——E7 切换前降为警告，切换后阻断`);
+        }
+      }
       if (!b.deepLink) continue;
       const ok = !!resolveToFile(b.deepLink);
       if (b.deepLinkStatus === 'fallback') {
@@ -329,7 +340,7 @@ if (existsSync(buildingsPath)) {
         errors.push(`?poi= 深链失配：${ref.page} → "${ref.url}"：poi「${ref.id}」不在 buildings JSON 在册清单（12 栋）`);
       }
     }
-    cityNote = `科技城深链：核对 ${buildings.length} 栋在册大楼 deepLink × dist 内 ${poiRefs.length} 条 ?poi= 引用（E7 ${e7Switched ? '已切换，缺链为阻断级' : '未切换，缺链降为警告'}）`;
+    cityNote = `科技城深链：核对 ${buildings.length} 栋在册大楼 deepLink、${hallPathCount} 条 hallPath × dist 内 ${poiRefs.length} 条 ?poi= 引用（E7 ${e7Switched ? '已切换，缺链为阻断级' : '未切换，缺链降为警告'}）`;
   }
 } else {
   cityNote = '科技城深链：src/data/cyber-city-buildings.json 不存在，跳过（落库后本检查自动生效）';

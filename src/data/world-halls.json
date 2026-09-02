@@ -1,0 +1,10 @@
+{
+  "halls": [
+    {
+      "slug": "about-pavilion",
+      "buildingId": "about-pavilion",
+      "trick": "tagline",
+      "scenes": []
+    }
+  ]
+}

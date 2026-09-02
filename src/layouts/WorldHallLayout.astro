@@ -1,0 +1,99 @@
+---
+// WorldHallLayout —— 楼内展厅页壳（ADR-2 / ABOUT-HALL-TECH-ARCH §1–§2）。
+// 包 BaseLayout：全站导航 / SEO / JSON-LD / 统计沿用；C 到达横幅代码路径自动存在。
+// 展厅仪式走 HallChrome（ritual 槽）；[data-hall] 下把 C 横幅收成紧凑一行，禁止到达条喊两次。
+// 暗底 token 只作用在展厅主区，页头页脚仍跟全站主题。
+import BaseLayout from './BaseLayout.astro';
+import type { JsonLd } from '../data/jsonld';
+
+interface Props {
+  title: string;
+  description: string;
+  /** world-halls.json slug，写入 [data-hall] */
+  slug: string;
+  /** 本栋 neonColor（buildings JSON），作 --hall-neon；楼色不走 neon-tokens */
+  neonColor: string;
+  jsonLd?: JsonLd | JsonLd[];
+}
+
+const { title, description, slug, neonColor, jsonLd } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <Fragment slot="head"><slot name="head" /></Fragment>
+
+  <div
+    class="hall-scope"
+    data-hall={slug}
+    style={`--hall-neon: ${neonColor}`}
+  >
+    {Astro.slots.has('ritual') && (
+      <div class="hall-ritual">
+        <slot name="ritual" />
+      </div>
+    )}
+    <div class="hall-main">
+      <slot />
+    </div>
+    {Astro.slots.has('cta') && (
+      <div class="hall-cta">
+        <slot name="cta" />
+      </div>
+    )}
+  </div>
+</BaseLayout>
+
+<style is:global>
+  /* 展厅页若 BaseLayout 稍后挂上 C 横幅：收成紧凑一行，仪式以 HallChrome 为准 */
+  body:has([data-hall]) .arrival-banner {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    padding-block: 0.35rem;
+  }
+
+  .hall-scope {
+    color-scheme: dark;
+    --bg: #0c0d0f;
+    --bg-raised: #16181b;
+    --ink: #ecebe6;
+    --ink-2: #a8a8a0;
+    --ink-3: #8a8a82;
+    --line: #26282c;
+    --accent: #ff8a4a;
+    --accent-strong: #ff6b1a;
+    --accent-soft: rgba(255, 122, 26, 0.14);
+    --on-accent: #0c0d0f;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 70svh;
+    padding-block: var(--space-6) var(--space-8);
+  }
+
+  .hall-scope .hall-ritual,
+  .hall-scope .hall-main,
+  .hall-scope .hall-cta {
+    width: min(72rem, calc(100% - 2 * var(--container-pad)));
+    margin-inline: auto;
+  }
+
+  .hall-scope .hall-main {
+    padding-block-start: var(--space-6);
+  }
+
+  .hall-scope .hall-cta {
+    margin-block-start: var(--space-7);
+    padding-block-start: var(--space-5);
+    border-block-start: 1px solid var(--line);
+  }
+
+  .hall-scope a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    text-underline-offset: 0.2em;
+  }
+
+  .hall-scope a:hover {
+    text-decoration-color: var(--accent);
+  }
+</style>
