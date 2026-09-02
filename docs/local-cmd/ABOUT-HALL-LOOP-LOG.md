@@ -24,3 +24,11 @@
 - 文档：TECH-ARCH/WBS-01 预算按 G1 修订；提交 `43286a4`。
 - NEEDS_LEIGE：① 在终端跑 `grok` → `/privacy` → 关闭 ZDR（i2v 唯一阻塞，SuperGrok Heavy 个人账号可自改）；② 原图落 `~/studio-data-root/about-hall/ref/formal.jpg` `selfie.jpg`。
 - 下 loop：收 v2 → 人门配对 → 若 ZDR 已关则 i2v S0-T/S6-T；收 W2a/W2b → 隔离栈开页 → W2c 门脚本单；S0-H #1 交 W4 插图。
+
+### L3 · 2026-09-02 23:50
+- 收稿：S0-T v2 first×3/last×3、S6-T v2 first×3（chibi，REJECT 叶第 1 连）→ 改中景 v3 first×3/last×3；W2a 壳（astro check 0 err、20 页、G-Hall-2..5 零命中、`<script src>`=0、SRD 行在 L1033、check-links 全绿、隔离栈 4612：hall 200 / unknown 404 / about 200、到达条显示「个人档案馆 · 探索 0/12 · 返回科技城」）；W2b ScrubVideo（gzip **1041 B**）；W1e S1–S5 纸；`about-hall-frame-gate.py` 建立并按 ADR-1 §5 修订 G1/G2 口径（登记在 HUMAN-GATE 文件）。
+- **指挥官人门定选**：S0-T 首屏 = `first-v2-3`（A 8.0）；S6-T = `first-v3-3` → `last-v3-2`（A 8.5）。poster `hero-s0-poster.webp` 41.7KB 已进仓。
+- 故障：22:16 网络瞬态（Google TLS 超时 + Ark DNS 失败）打掉 6 路审计与 W1e 首发；W1e 错峰重发成功；审计改由指挥官脚本 + 人门承担（不再重发 6 路）。`brew`（worker 装依赖）升级 openvino 导致 ffmpeg dylib 断裂 → `brew reinstall ffmpeg` 源码编译中；期间用 Pillow 出 webp、`sips` 读尺寸。
+- 席位变更：磊哥令 agy 全部用 **Gemini 3.8 Flash**；`agy_rescue_cli.py` 已由 LOOP24 会话把 `gemini-3.7-flash` 键映射到 3.8 (High)，agy pin 1.1.24，launcher 零改动即生效。
+- 派：W2c（gate.mjs + e2e + media.json）、W3a（Hero 接 ScrubVideo + 8 幕骨架 + 暗色 chrome）。提交 `f996dff`。
+- NEEDS_LEIGE 未变：`/privacy` 关 ZDR（i2v 唯一阻塞）；原图落盘。
