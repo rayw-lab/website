@@ -334,8 +334,9 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     //        备件箱堆北面 4.5m、北距 BL1 基座台阶南沿 8m；
     //      · WP-B (36,-12)：东侧净道 SSE 下行（冷却罐东面距线 3.0m、试车台西面 ≥3.4m）；
     //      · WP-C (-26,-8)：入大街西行 62m（隔离墩 (±17.2,-13.6) 距线 5.6m、
-    //        (±13.6,-17.2) 距线 9.2m；X2 桥腿 (±15.7,-26) 距线 18m、X2 角簇
-    //        ±(18.2~20.8,18.2~20.8) 距线 ≥10m——两树余量均 ≥ 车半宽 1m + 转向余量 1.5m）；
+    //        (±13.6,-17.2) 距线 9.2m；X2 桥腿 (±15.7,-19.5) 距线 11.5m（[CC-VIS-X2-PLUG]
+    //        桥位南移 −26→−19.5 后口径）、X2 角簇距线 ≥9.8m（东北簇内退 (17.8,-17.8)，
+    //        其余簇 ±(18.2~20.8) ≥11.5m）——两树余量均 ≥ 车半宽 1m + 转向余量 1.5m）；
     //      · 终点泊位 (-28,-28)：北上入泊（右转弧线 x 单调西移，隔离墩 x≥-17.2 不可达；
     //        agent-nexus 墙面 x=-32 仅 z≤-32 段，进泊线 z≥-28 全程无障碍）。
     const escaped = await reverseBy(page, 5, 300_000);
@@ -362,8 +363,11 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     await expect(count).toHaveText(`2/${TOTAL}`);
     await page.screenshot({ path: 'test-results/explore-second-discover.png' });
 
-    // —— ③ 去重：驶出触发圈（bounding-out 入账）再驶回（bounding-in 第二次入账）
-    const out = await driveTo(page, { x: target.x + 14, z: target.z + 2 }, { radius: 4, timeoutMs: 300_000 });
+    // —— ③ 去重：驶出触发圈（bounding-out 入账）再驶回（bounding-in 第二次入账）。
+    //    [CC-VIS-X2-TRIAGE] 原东向驶出点 (target.x+14, target.z+2)=(-14,-26) 距左桥腿
+    //    (-15.7,-26) 仅 1.7m（正对撞柱），改南向 (target.x, target.z-14)=(-28,-42)：
+    //    agent-nexus 东墙 x=-32 边距 4m，出入均直线净空
+    const out = await driveTo(page, { x: target.x, z: target.z - 14 }, { radius: 4, timeoutMs: 300_000 });
     expect(out.ok, '应能驶出触发圈').toBe(true);
     const bounded = await pollDump(
       page,
@@ -479,11 +483,17 @@ test.describe('科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 p
     } finally {
       await page.keyboard.up('w');
     }
-    // 原点出圈仍留 (0,-24) 途径点（OBS-01 同款：先出隔离墩阵再入西走廊直线）
+    // 原点出圈仍留 (0,-24) 途径点（先出隔离墩阵再入西走廊）。
+    // [CC-VIS-X2-TRIAGE r1] 原 (0,-24)→(-28,-28) 直线在 x=-15.7 处 z=-26.24，正穿
+    // X2 前景景框左桥腿箱体 (-15.7,-26)±0.62——插入南绕行途径点 (-20,-32.5)
+    // （腿箱南缘 −26.62 与灯杆 (-13.5,-34) 之间槽带，最劣停车圆位形下边距仍
+    // ≥1.1m；西侧无 X1 hero 道具带，agent-nexus 为 footprint 碰撞）
     const target = bayOf(SECOND_POI);
     const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 6, timeoutMs: 480_000 });
     expect(leg1.ok, `途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`).toBe(true);
-    const leg2 = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 600_000 });
+    const legM = await driveTo(page, { x: -20, z: -32.5 }, { radius: 3, timeoutMs: 360_000 });
+    expect(legM.ok, `途径点 (-20,-32.5) 应可达（实测 x=${legM.state.x.toFixed(1)} z=${legM.state.z.toFixed(1)}）`).toBe(true);
+    const leg2 = await driveTo(page, { x: target.x, z: target.z }, { radius: 5.5, timeoutMs: 360_000 });
     expect(leg2.ok, `泊车位 (${target.x},${target.z}) 应可达（实测 x=${leg2.state.x.toFixed(1)} z=${leg2.state.z.toFixed(1)}）`).toBe(true);
 
     const completed = await pollDump(

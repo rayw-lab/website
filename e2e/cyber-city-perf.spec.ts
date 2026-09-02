@@ -573,7 +573,7 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
   // autodrive-lab 泊车圈 (28,-28) → E 进站（route abort 拦下 navigate，跳转前取证）。
   // ---------------------------------------------------------------------------
   test('CITY-PERF-02 Q2 存在腿：?quality=2 深链生效 + 变形驾驶进站核心路径全走 + 漏斗七步 + Q2 负载基线', async ({ page }, testInfo) => {
-    test.setTimeout(1_200_000); // §2.4 600s + driveTo 逐腿 360s 重标定（文件头偏差注记；CITY-OBS-01 同动线 1500s 先例）
+    test.setTimeout(1_500_000); // §2.4 600s + driveTo 逐腿 360s ×3（桥腿绕行途径点）；CITY-OBS-01 同动线先例
     const errors = trackErrors(page);
 
     // 进站目标 = autodrive-lab（parkingBay (28,-28) r6，deepLink /work/——出生 (0,0)
@@ -609,12 +609,22 @@ test.describe('科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromi
       await page.keyboard.up('w');
     }
 
-    // ④ driveTo 泊车圈（逐腿 360s 预算，CITY-OBS-01 原口径；途径点避开路口隔离墩，
-    // OBS-01 同款走位）
-    const leg1 = await driveTo(page, { x: 0, z: -24 }, { radius: 4, timeoutMs: DRIVE_TO_LEG_BUDGET_MS });
+    // ④ driveTo 泊车圈（逐腿 360s 预算，CITY-OBS-01 原口径）。[CC-VIS-X2-TRIAGE r1]
+    // 原 (0,-24)→(28,-28) 直线双障不可通行（X1 充电桩排带墙 + X2 右桥腿正穿），
+    // 改走东西大道路线 E1 (20,-8) → 泊车位（OBS-01 同批口径，注记见彼处）
+    const leg1 = await driveTo(page, { x: 20, z: -8 }, { radius: 3, timeoutMs: DRIVE_TO_LEG_BUDGET_MS });
     expect(
       leg1.ok,
-      `Q2 档途径点 (0,-24) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`,
+      `Q2 档途径点 (20,-8) 应可达（实测 x=${leg1.state.x.toFixed(1)} z=${leg1.state.z.toFixed(1)}）`,
+    ).toBe(true);
+    // [CC-VIS-X2-ROUTE-R3] 与 CITY-OBS-01 同源同步（OBS-01 注记见彼处）：直瞄两点连线
+    // 在 Q0/Q1 档正穿 H12/S2 道具带楔死（Q2 深链世界无道具碰撞体，但同源路线合同要求
+    // 两 spec 走同一走廊）；先到东弧间隙北口 (33,-16) 再南下泊车位。零 timeout/radius
+    // 业务语义改动。依据 = docs/research/cc-vis-x2-obs-r2-diagnosis.md §5 对照实验。
+    const leg2a = await driveTo(page, { x: 33, z: -16 }, { radius: 2.5, timeoutMs: DRIVE_TO_LEG_BUDGET_MS });
+    expect(
+      leg2a.ok,
+      `Q2 档途径点 (33,-16) 应可达（实测 x=${leg2a.state.x.toFixed(1)} z=${leg2a.state.z.toFixed(1)}）`,
     ).toBe(true);
     const leg2 = await driveTo(page, { x: 28, z: -28 }, { radius: 4.5, timeoutMs: DRIVE_TO_LEG_BUDGET_MS });
     expect(

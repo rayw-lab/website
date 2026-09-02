@@ -17,9 +17,13 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  // WebGL（SwiftShader 软渲染）3D 挂载单次约 50s 且吃满 CPU，并行度封顶 2，
-  // 避免多个 3D 上下文互相挤兑导致超时假阴性（首轮实测 4 worker 时 5/7 车配置器用例超时）
-  workers: 2,
+  // WebGL（SwiftShader 软渲染）3D 挂载单次约 50s 且吃满 CPU。
+  // [CC-VIS-X2-TRIAGE] 并行度由 2 收到 1：Playwright 的 project 级 fullyParallel:false
+  // 只串行「同文件」用例，跨文件仍按全局 workers 派发——X2 全量跑实锤 explore 与
+  // feedback 两文件的重 3D 用例全程并发（QST-02 idle 设计秒 20min 轮询耗尽、FB 链
+  // 900s 预算越线均由此起）。SwiftShader 下双 3D 页共抢同一批核，双 worker 并无
+  // 吞吐收益、只有挤兑假阴性；轻量 DOM 段损失的并行以分钟计，0 flaky 硬门优先
+  workers: 1,
   timeout: 60_000,
   // toHaveScreenshot 基线图目录纪律（CC-L0-setup）：基线随 spec 入库，按
   // e2e/visual/__screenshots__/<spec 文件名>/<project>/<截图名>.png 归档；
@@ -93,8 +97,13 @@ export default defineConfig({
       // （观测规格 §7：OBS 用例入 world-chromium 串行 project，同款 3D 独占纪律）
       // [CC-VEH-E2E-FIX] 依赖改指 car-chromium（线性链：desktop+mobile → car →
       // world → world-perf → city-perf → visual，任意时刻至多一个重 3D 上下文）
+      // [CC-VIS-X2-TRIAGE] fullyParallel 显式关死（根配置 fullyParallel:true 会把
+      // 本组同文件不同 describe 的用例拆到多 worker——X2 全量跑时间戳证实 EXP-01
+      // 与 QST-02 同文件并发。注意本开关只管同文件粒度，跨文件独占由全局
+      // workers:1 兜底；car-chromium/city-perf/visual 同款纪律，本组此前漏配）
       name: 'world-chromium',
       testMatch: /world-spike\.spec\.ts|cyber-city.*\.spec\.ts/,
+      fullyParallel: false,
       // [CC-PERF-C1] perf spec 排除（perf 测试方案 §1.3 ①）：cyber-city.*\.spec\.ts
       // 泛匹配会误收编 cyber-city-perf.spec.ts——该 spec 独归 city-perf-chromium
       testIgnore: /cyber-city-perf\.spec\.ts/,
