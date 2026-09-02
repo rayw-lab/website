@@ -115,7 +115,7 @@ Flat 2D hand-drawn illustration, soft charcoal pencil outlines with loose waterc
 | ③ 回审 | 指挥官 | 跑硬门脚本 `scripts/about-hall-frame-gate.py`（掩膜占宽、负空间、色差、OCR） | `FRAME-GATE.json` |
 | ④ 独立审计 | gemini-3.7-flash **另一路** + glm-5-3-flash `--attach-image` | 只看两张图 + LOCKED 硬门；首行 `VERDICT=PASS|REJECT` | `AUDIT-v<k>.md`；REJECT 写命中项与坐标；同叶 3 连熔断 |
 | ⑤ 生视频 | Grok Build lane | `image_to_video`（first 帧 + motion；若工具支持尾帧则同时传 last）6s / 10s | `clip-v<k>.mp4` + ffprobe 回读 |
-| ⑥ 压制 | 指挥官（ffmpeg） | `-vf fps=30 -an -c:v libx264 -preset slow -crf 24 -g 15 -movflags +faststart`（短 GOP 利于 scrub；试 `-g 1` All-Intra 对比体积）；9:16 crop 另出；poster = 第 1 帧 webp q80 | 体积门：首屏 ≤600KB、过渡 ≤1MB、移动 ≤500KB |
+| ⑥ 压制 | 指挥官（ffmpeg） | `-vf fps=30 -an -c:v libx264 -preset slow -crf 24 -g 15 -movflags +faststart`（短 GOP 利于 scrub；试 `-g 1` All-Intra 对比体积）；9:16 crop 另出；poster = 第 1 帧 webp q80 | 体积门（G1 修订草案）：首屏 ≤2.0MB、过渡 ≤3.5MB、移动 ≤1.5MB；真 I2V 收口后锁定 |
 | ⑦ 消费验收 | 指挥官 隔离栈 | 临时 HTML（Paidax 两段提示词的最小实现）载入 mp4，鼠标 scrub 逐帧看伪影 | 人门 A 预评；有形变回 ②换种子 |
 
 Giants（W1 开工前必做，gemini-3.7-flash 一路）：Grok Build `image_to_video` 当前是否接受尾帧图 / seed / aspect 参数（读 `~/.grok/docs` + 实调一次 canary 6s）；scrub 友好编码（All-Intra vs GOP 15 的 seek 延迟实测）；`mix-blend-mode` 对深蓝底的可用性（不是纯黑底 → 可能不用 blend，直接铺满）。
@@ -124,10 +124,10 @@ Giants（W1 开工前必做，gemini-3.7-flash 一路）：Grok Build `image_to_
 
 ```
 public/media/about-hall/
-  hero-s0-<T|H|R>-1080p.mp4      ≤600KB  30fps  无音轨  6s
-  hero-s0-<T|H|R>-portrait.mp4   ≤500KB  9:16
+  hero-s0-<T|H|R>-720p.mp4       ≤2.0MB  30fps  无音轨  6s   （Grok image_gen 只出 1280×720，视频档 720p）
+  hero-s0-<T|H|R>-portrait.mp4   ≤1.5MB  9:16
   hero-s0-poster.webp             ≤60KB
-  transition-s6-1080p.mp4         ≤1MB   10s
+  transition-s6-720p.mp4          ≤3.5MB 10s
   transition-s6-poster.webp
 docs/local-cmd/locked/S0-T-LOCKED-v1.md  S0-H-LOCKED-v1.md  S0-R-LOCKED-v0.md  S6-T-LOCKED-v1.md  (+ S1–S5 纸)
 evidence/about-hall/W1/  GEN-RECEIPT-*.md  AUDIT-*.md  FRAME-GATE-*.json  ffprobe-*.txt  SHA256SUMS

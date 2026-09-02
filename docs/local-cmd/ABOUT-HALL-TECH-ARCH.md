@@ -38,7 +38,7 @@ Stage 3  /about/   纸面双胞胎（现有页 + 触感升级，零 3D，LHCI �
 
 # 3. 播放器（≤20KB gzip，零依赖，`src/components/city/halls/ScrubVideo.ts`）
 
-来源：Paidax 两段提示词（`docs/research/x-paidax-hero-research-2026-09-02/01-*.md`）改写，硬要求：Pointer Events；`progress = clamp((clientX-rect.left)/rect.width,0,1)`；`targetTime = progress*duration`；rAF 驱动、`video.seeking` 时不重复 seek、≤30 次/s；`loadedmetadata` 后 seek 0.02s 防黑屏；`muted playsInline preload="auto" poster`；`duration` NaN/Infinity、宽 0、pointerleave/cancel 全处理；销毁时移监听。滚动段：`position: sticky` 长区间，`progress = clamp(-rect.top/(scrollHeight-innerHeight),0,1)`，**禁 `wheel + preventDefault`**；刷新落在中段要按当前滚动恢复帧；文字动画同一 progress 驱动，区间集中配置。编码侧短 GOP（`-g 15`）或 All-Intra 让 seek 零等待。
+来源：Paidax 两段提示词（`docs/research/x-paidax-hero-research-2026-09-02/01-*.md`）改写，硬要求：Pointer Events；`progress = clamp((clientX-rect.left)/rect.width,0,1)`；`targetTime = progress*duration`；rAF 驱动、`video.seeking` 时不重复 seek、≤30 次/s；`loadedmetadata` 后 seek 0.02s 防黑屏；`muted playsInline preload="auto" poster`；`duration` NaN/Infinity、宽 0、pointerleave/cancel 全处理；销毁时移监听。滚动段：`position: sticky` 长区间，`progress = clamp(-rect.top/(scrollHeight-innerHeight),0,1)`，**禁 `wheel + preventDefault`**；刷新落在中段要按当前滚动恢复帧；文字动画同一 progress 驱动，区间集中配置。编码侧短 GOP（`-g 15`）；All-Intra 只作审计旁路不进 public（G1：静帧已 7.98MB，seek 收益未证）。**不用 `mix-blend-mode`**：Grok 出图左区是午夜青非纯黑，blend 会染字；DOM 文案直接铺负空间，必要时加 `rgba(4,16,32,.35)` scrim。
 
 # 4. 门与脚本
 
@@ -82,11 +82,11 @@ Stage 3  /about/   纸面双胞胎（现有页 + 触感升级，零 3D，LHCI �
 | 项 | 上限 | 依据 |
 |---|---|---|
 | 展厅额外 JS | Hall-0 = 0；Hall-S ≤50KB gzip | 对齐 Lab S，但不是 Lab 模块 |
-| 首屏 mp4 | ≤600KB（6s 1080p crf 24 短 GOP） | 首屏并发拉取 |
-| 过渡 mp4 | ≤1MB（10s） | 进视口前 200px 触发全量缓冲 |
+| 首屏 mp4 | **≤2.0MB**（720p 6s crf 24 g15；G1 实测 600KB 连静帧都过不了；真 I2V 收口后再锁） | 首屏并发拉取；`preload=auto` |
+| 过渡 mp4 | **≤3.5MB**（720p 10s；同上草案） | 进视口前 200px 触发全量缓冲 |
 | 移动 9:16 | ≤500KB/段 | `<source media>` 按需 |
 | poster webp | ≤60KB | LCP |
-| 总媒体载荷 | ≤2.5MB | 全部懒加载除首屏 |
+| 总媒体载荷 | **≤6MB**（草案；首屏之外全部懒加载） | 对齐 Lab M 资产 ≤6MB |
 | 同屏循环动画 | ≤5 处 | master-plan §6 豁免 2 |
 | `/about/` LHCI | 四项 ≥95 | 在册 URL |
 
