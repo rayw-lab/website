@@ -1,0 +1,5 @@
+# R3 preflight 记录（点火前，时点 2026-09-02T05:30Z 前后；会话原始输出转写）
+fresh --list: Total: 86 tests in 19 files
+vacuum scan: 无外部 playwright/chrome-headless/astro 进程（自进程除外，PID 谱系核对全 OWN）
+port 4597 预 bind: BIND_OK（python socket 正证据）
+preview HTTP: 200 (http://127.0.0.1:4597/website/)

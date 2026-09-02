@@ -1,0 +1,9 @@
+# R3 postflight-git (2026-09-02T07:10:03Z)
+?? docs/research/cc-vis-x2-full-r3-evidence/
+?? docs/research/r3-tracked-restore-list.txt
+?? preview-4595.log
+?? preview-4597.log
+?? r3-host-monitor.log
+tracked-modified=0
+6f691fc merge: absorb current main (80888ee, SEC-R11-CORR-1) into x2 candidate
+ad93ed1 fix(x2-e2e): leg2 前插东弧途径点 (33,-16)——绕开 H12/S2 道具带楔死带（CC-VIS-X2-ROUTE-R3）
