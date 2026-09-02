@@ -1,7 +1,7 @@
 {
   "schema": "about-hall-gate/v1",
   "ok": true,
-  "generatedAt": "2026-09-02T16:31:05.257Z",
+  "generatedAt": "2026-09-02T16:49:09.748Z",
   "dist": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/dist",
   "notes": [
     "G-Hall-10 由 e2e/about-hall.spec.ts 承担，本脚本不判。",
@@ -90,7 +90,7 @@
     {
       "id": "G-Hall-8",
       "status": "PASS",
-      "detail": "1 条媒体对账通过（sha256/字节/fps/无音轨/时长）；总载荷 41678B ≤ 2.5MB",
+      "detail": "7 条媒体对账通过（sha256/字节/fps/无音轨/时长）；总载荷 286284B ≤ 2.5MB",
       "evidence": {
         "items": [
           {
@@ -100,9 +100,57 @@
             "resolved": [
               "poster"
             ]
+          },
+          {
+            "id": "about-illustration-s0h",
+            "src16x9": null,
+            "poster": "/media/about-hall/about-illustration-s0h.webp",
+            "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "station-s1",
+            "src16x9": null,
+            "poster": "/media/about-hall/station-s1.webp",
+            "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "station-s2",
+            "src16x9": null,
+            "poster": "/media/about-hall/station-s2.webp",
+            "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "station-s3",
+            "src16x9": null,
+            "poster": "/media/about-hall/station-s3.webp",
+            "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "station-s4",
+            "src16x9": null,
+            "poster": "/media/about-hall/station-s4.webp",
+            "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "station-s5",
+            "src16x9": null,
+            "poster": "/media/about-hall/station-s5.webp",
+            "resolved": [
+              "poster"
+            ]
           }
         ],
-        "totalBytes": 41678,
+        "totalBytes": 286284,
         "capBytes": 2621440
       }
     },

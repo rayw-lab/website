@@ -28,6 +28,34 @@ test.describe('About Hall 到达条', () => {
     await expect(chrome).toContainText('返回科技城');
   });
 
+  test('有卡：world-arrival-v1 的 poi 匹配 → 到达条含「探索」与楼名', async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem(
+        'world-arrival-v1',
+        JSON.stringify({
+          v: 1,
+          poi: 'about-pavilion',
+          sessionId: 'e2e-w5-card',
+          t: 184320,
+          exploreN: 2,
+          exploreTotal: 12,
+          wroteAt: 1_700_000_000_000,
+          maxKmh: 96,
+          coneHits: 3,
+          respawns: 1,
+          poiEnters: 4,
+        }),
+      );
+      localStorage.setItem('world-explore-v1', JSON.stringify(['about-pavilion', 'autodrive-lab']));
+    });
+    const res = await page.goto(u(`${HALL}?from=city&poi=about-pavilion`));
+    expect(res?.status()).toBe(200);
+    const chrome = page.locator(CHROME);
+    await expect(chrome).toBeVisible();
+    await expect(chrome).toContainText('探索');
+    await expect(chrome).toContainText('个人档案馆');
+  });
+
   test('?from=city&poi=not-a-building：到达条 hidden', async ({ page }) => {
     await page.goto(u(`${HALL}?from=city&poi=not-a-building`));
     const chrome = page.locator(CHROME);

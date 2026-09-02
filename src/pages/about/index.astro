@@ -10,6 +10,7 @@ import CtaButton from '../../components/ui/CtaButton.astro';
 import { PERSON, TITLE_SUFFIX } from '../../data/site';
 import { breadcrumbJsonLd, profilePageJsonLd } from '../../data/jsonld';
 import { problems as problemCopy, timeline, speakerBio } from '../../data/about-copy';
+import '../../styles/about.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const title = `关于${TITLE_SUFFIX}`;
@@ -26,120 +27,156 @@ const jsonLd = [
   ]),
 ];
 
-const problems = problemCopy.map((p) => ({
+const problems = problemCopy.map((p, i) => ({
+  n: String(i + 1).padStart(2, '0'),
   q: p.q,
   how: p.how,
   proofHref: `${base}${p.proofPath}`,
   proofLabel: p.proofLabel,
 }));
+
+const stationIds = ['iot', 'vehicle', 'hud', 'cockpit', 'llm', 'workflow'] as const;
+const stations = timeline.map((t, i) => ({
+  id: `station-${stationIds[i]}`,
+  n: String(i + 1).padStart(2, '0'),
+  stage: t.stage,
+  note: t.note,
+}));
+
+const illustSrc = `${base}/media/about-hall/about-illustration-s0h.webp`;
+const hallHref = `${base}/world/about-pavilion/`;
 ---
 
 <BaseLayout title={title} description={description} jsonLd={jsonLd}>
-  <!-- 页头：定位语（叙事入口，非履历入口） -->
-  <header class="page-hero">
-    <div class="container">
-      <nav class="crumb data" aria-label="面包屑">
-        <a href={`${base}/`}>首页</a>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page">关于</span>
-      </nav>
-      <h1>我解决的是「复杂技术 → 可决策方案」这段路</h1>
-      <p class="lede">
-        {PERSON.jobTitle}。十余年从物联网到 AI 工作流的演进里，我反复做的是同一件事：
-        把不确定的新技术，变成团队敢拍板、能交付、可复用的方案。这一页不罗列职责，只讲我解决什么问题。
-      </p>
-    </div>
-  </header>
-
-  <!-- ① 以问题组织的专业叙事 -->
-  <section class="section" aria-labelledby="problems-title">
-    <div class="container">
-      <SectionHeading
-        index="01"
-        label="Problems I Solve"
-        title="解决什么问题"
-        id="problems-title"
-      />
-      <div class="problem-list">
-        {
-          problems.map((p, i) => (
-            <article class="card problem reveal" style={`--reveal-delay: ${i * 6}%`}>
-              <h3>{p.q}</h3>
-              <p>{p.how}</p>
-              <a class="proof data" href={p.proofHref}>{p.proofLabel} →</a>
-            </article>
-          ))
-        }
+  <div class="about-page" data-about-page>
+    <!-- 页头：定位语 + 手绘插图（lazy，不进 LCP） -->
+    <header class="about-hero">
+      <div class="container about-hero-grid">
+        <nav class="crumb data" aria-label="面包屑">
+          <a href={`${base}/`}>首页</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">关于</span>
+        </nav>
+        <h1>我解决的是「复杂技术 → 可决策方案」这段路</h1>
+        <p class="lede">
+          {PERSON.jobTitle}。十余年从物联网到 AI 工作流的演进里，我反复做的是同一件事：
+          把不确定的新技术，变成团队敢拍板、能交付、可复用的方案。这一页不罗列职责，只讲我解决什么问题。
+        </p>
+        <figure class="about-hero-illust">
+          <img
+            src={illustSrc}
+            alt="手绘炭笔肖像：王磊站在连接技术侧与落地侧的桥上"
+            width="794"
+            height="720"
+            loading="lazy"
+            decoding="async"
+            fetchpriority="low"
+          />
+        </figure>
       </div>
-    </div>
-  </section>
+    </header>
 
-  <!-- ② 职业演进主线图 -->
-  <section class="section" aria-labelledby="timeline-title">
-    <div class="container">
-      <SectionHeading
-        index="02"
-        label="Trajectory"
-        title="职业演进主线"
-        id="timeline-title"
-        lede="每一站都在把「更复杂的技术」推向「更接近决策与交付的位置」——结构化履历时间线与一页纸 PDF 随 V1 增补（ABT-02/05）。"
-      />
-      <ol class="timeline">
-        {
-          timeline.map((t, i) => (
-            <li class="reveal" style={`--reveal-delay: ${i * 4}%`}>
-              <span class="tl-index data">{String(i + 1).padStart(2, '0')}</span>
-              <span class="tl-stage">{t.stage}</span>
-              <span class="tl-note">{t.note}</span>
-            </li>
-          ))
-        }
-      </ol>
-    </div>
-  </section>
-
-  <!-- ③ 可复制讲者简介 -->
-  <section class="section" aria-labelledby="bio-title">
-    <div class="container">
-      <SectionHeading
-        index="03"
-        label="Speaker Bio"
-        title="讲者简介（第三人称，可直接复制）"
-        id="bio-title"
-      />
-      <figure class="card bio">
-        <blockquote id="speaker-bio">{speakerBio}</blockquote>
-        <figcaption class="bio-actions">
-          <button type="button" class="copy-btn" data-copy-target="#speaker-bio">
-            一键复制讲者简介
-          </button>
-          <span class="copy-done data" data-copy-done hidden>已复制 ✓</span>
-          <noscript><span class="data">无 JS 环境请直接选中文本复制。</span></noscript>
-        </figcaption>
-      </figure>
-      <p class="bio-note">
-        演讲与播客署名请统一外链 <a href={`${base}/now/`}>/now/</a>（实时近况）；
-        合作与邀约方式见 <a href={`${base}/contact/`}>Contact</a>。
-      </p>
-    </div>
-  </section>
-
-  <!-- 收尾 CTA -->
-  <section class="section" aria-labelledby="about-cta-title">
-    <div class="container">
-      <div class="card band">
-        <p class="ask" id="about-cta-title">想验证这些说法？</p>
-        <div class="actions">
-          <CtaButton href={`${base}/lab/`}>看可交互 Demo →</CtaButton>
-          <CtaButton href={`${base}/now/`} variant="secondary">正在进行</CtaButton>
-          <CtaButton href={`${base}/contact/`} variant="secondary">联系我</CtaButton>
+    <!-- ① 以问题组织的专业叙事：CSS 翻转，无 JS -->
+    <section class="section" aria-labelledby="problems-title">
+      <div class="container">
+        <SectionHeading
+          index="01"
+          label="Problems I Solve"
+          title="解决什么问题"
+          id="problems-title"
+        />
+        <div class="about-qlist">
+          {
+            problems.map((p) => (
+              <article class="about-qcard">
+                <div class="about-qcard-inner">
+                  <div class="about-qcard-face about-qcard-front">
+                    <p class="about-qcard-kicker data">{p.n}</p>
+                    <h3>{p.q}</h3>
+                    <p class="about-qcard-hint data">悬停或聚焦看做法</p>
+                  </div>
+                  <div class="about-qcard-face about-qcard-back">
+                    <p>{p.how}</p>
+                    <a href={p.proofHref}>{p.proofLabel} →</a>
+                  </div>
+                </div>
+              </article>
+            ))
+          }
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- ② 职业演进主线：:target + IO 聚焦，无年份 -->
+    <section class="section" aria-labelledby="timeline-title">
+      <div class="container">
+        <SectionHeading
+          index="02"
+          label="Trajectory"
+          title="职业演进主线"
+          id="timeline-title"
+          lede="每一站都在把「更复杂的技术」推向「更接近决策与交付的位置」——结构化履历时间线与一页纸 PDF 随 V1 增补（ABT-02/05）。"
+        />
+        <ol class="about-timeline">
+          {
+            stations.map((t, i) => (
+              <li id={t.id} class:list={[i === 0 && 'is-current']}>
+                <a class="tl-index data" href={`#${t.id}`}>{t.n}</a>
+                <span class="tl-stage">{t.stage}</span>
+                <span class="tl-note">{t.note}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <!-- ③ 可复制讲者简介 -->
+    <section class="section" aria-labelledby="bio-title">
+      <div class="container">
+        <SectionHeading
+          index="03"
+          label="Speaker Bio"
+          title="讲者简介（第三人称，可直接复制）"
+          id="bio-title"
+        />
+        <figure class="card about-bio">
+          <blockquote id="speaker-bio">{speakerBio}</blockquote>
+          <figcaption class="about-bio-actions">
+            <button type="button" class="about-copy-btn" data-copy-target="#speaker-bio">
+              一键复制讲者简介
+            </button>
+            <span class="about-copy-done data" data-copy-done hidden aria-live="polite">已复制 ✓</span>
+            <noscript><span class="data">无 JS 环境请直接选中文本复制。</span></noscript>
+          </figcaption>
+        </figure>
+        <p class="about-bio-note">
+          演讲与播客署名请统一外链 <a href={`${base}/now/`}>/now/</a>（实时近况）；
+          合作与邀约方式见 <a href={`${base}/contact/`}>Contact</a>。
+        </p>
+      </div>
+    </section>
+
+    <!-- 收尾 CTA（deepLink 语义主 CTA 不变） -->
+    <section class="section" aria-labelledby="about-cta-title">
+      <div class="container">
+        <div class="card about-band">
+          <p class="about-ask" id="about-cta-title">想验证这些说法？</p>
+          <div class="about-actions">
+            <CtaButton href={`${base}/lab/`}>看可交互 Demo →</CtaButton>
+            <CtaButton href={`${base}/now/`} variant="secondary">正在进行</CtaButton>
+            <CtaButton href={`${base}/contact/`} variant="secondary">联系我</CtaButton>
+          </div>
+        </div>
+        <p class="about-hall-link">
+          <a href={hallHref}>想看 3D 版：进入个人档案馆</a>
+        </p>
+      </div>
+    </section>
+  </div>
 </BaseLayout>
 
-<!-- 一键复制（US-16）：Clipboard API + 选区回退；≤30 行（SRD §7 分层守则 3） -->
+<!-- 一键复制（US-16）：Clipboard API + 选区回退；成功态 1.5s -->
 <script is:inline>
   document.querySelectorAll('[data-copy-target]').forEach(function (btn) {
     btn.addEventListener('click', function () {
@@ -152,7 +189,7 @@ const problems = problemCopy.map((p) => ({
           tip.hidden = false;
           setTimeout(function () {
             tip.hidden = true;
-          }, 2000);
+          }, 1500);
         }
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -171,190 +208,26 @@ const problems = problemCopy.map((p) => ({
   });
 </script>
 
-<style>
-  .page-hero {
-    padding-block: var(--space-8) var(--space-7);
-  }
-
-  .crumb {
-    display: flex;
-    gap: var(--space-2);
-    color: var(--ink-3);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .crumb a:hover {
-    color: var(--accent);
-  }
-
-  .page-hero h1 {
-    margin-block-start: var(--space-5);
-    font-size: var(--text-display);
-    font-weight: 650;
-    line-height: var(--leading-display);
-    letter-spacing: -0.01em;
-    max-inline-size: 24ch;
-  }
-
-  .lede {
-    margin-block-start: var(--space-5);
-    max-inline-size: var(--measure);
-    color: var(--ink-2);
-  }
-
-  .section {
-    padding-block: var(--section-pad);
-    border-block-start: 1px solid var(--line);
-  }
-
-  /* ① 问题叙事 */
-  .problem-list {
-    display: grid;
-    gap: var(--grid-gutter);
-  }
-
-  .problem {
-    padding: var(--space-6);
-  }
-
-  .problem h3 {
-    font-size: var(--text-h3);
-    font-weight: 600;
-    line-height: var(--leading-h3);
-  }
-
-  .problem p {
-    margin-block-start: var(--space-3);
-    max-inline-size: var(--measure);
-    color: var(--ink-2);
-  }
-
-  .proof {
-    display: inline-block;
-    margin-block-start: var(--space-4);
-    color: var(--accent);
-  }
-
-  /* ② 演进主线 */
-  .timeline {
-    display: grid;
-    gap: 0;
-  }
-
-  .timeline li {
-    display: grid;
-    grid-template-columns: 3rem 11rem 1fr;
-    gap: var(--space-4);
-    align-items: baseline;
-    padding-block: var(--space-4);
-    border-block-start: 1px solid var(--line);
-  }
-
-  .timeline li:last-child {
-    border-block-end: 1px solid var(--line);
-  }
-
-  .tl-index {
-    color: var(--accent);
-  }
-
-  .tl-stage {
-    font-weight: 600;
-  }
-
-  .tl-note {
-    color: var(--ink-2);
-    font-size: var(--text-small);
-    line-height: var(--leading-small);
-  }
-
-  @media (max-width: 639.98px) {
-    .timeline li {
-      grid-template-columns: 3rem 1fr;
-    }
-
-    .tl-note {
-      grid-column: 2;
-    }
-  }
-
-  /* ③ 讲者简介 */
-  .bio {
-    padding: var(--space-6);
-    max-inline-size: 48rem;
-  }
-
-  .bio blockquote {
-    color: var(--ink);
-    max-inline-size: var(--measure);
-  }
-
-  .bio-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    margin-block-start: var(--space-5);
-  }
-
-  .copy-btn {
-    min-height: 2.75rem;
-    padding: var(--space-2) var(--space-5);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-card);
-    font-size: var(--text-small);
-    font-weight: 500;
-    transition:
-      border-color var(--duration-hover) var(--ease-out),
-      background-color var(--duration-hover) var(--ease-out);
-  }
-
-  .copy-btn:hover {
-    border-color: var(--accent-strong);
-    background: var(--accent-soft);
-  }
-
-  .copy-done {
-    color: var(--accent);
-  }
-
-  .bio-note {
-    margin-block-start: var(--space-5);
-    color: var(--ink-2);
-    font-size: var(--text-small);
-  }
-
-  /* 正文段落内链：下划线区分（axe link-in-text-block，不能只靠颜色） */
-  .bio-note a {
-    color: var(--accent);
-    text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
-    text-underline-offset: 0.2em;
-  }
-
-  .bio-note a:hover {
-    text-decoration-color: var(--accent);
-  }
-
-  /* 收尾 CTA（与首页 NowCta band 同构） */
-  .band {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4) var(--space-6);
-    padding: var(--space-6);
-  }
-
-  .ask {
-    font-size: var(--text-h3);
-    font-weight: 600;
-    line-height: var(--leading-h3);
-  }
-
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-  }
-</style>
+<!-- 六站当前聚焦：IntersectionObserver（≤2KB），无滚动劫持 -->
+<script is:inline>
+  (function () {
+    var root = document.querySelector('[data-about-page]');
+    if (!root || !('IntersectionObserver' in window)) return;
+    var items = root.querySelectorAll('.about-timeline li[id]');
+    if (!items.length) return;
+    var io = new IntersectionObserver(
+      function (entries) {
+        var best = null;
+        for (var i = 0; i < entries.length; i++) {
+          if (!entries[i].isIntersecting) continue;
+          if (!best || entries[i].intersectionRatio > best.intersectionRatio) best = entries[i];
+        }
+        if (!best) return;
+        for (var j = 0; j < items.length; j++) items[j].classList.remove('is-current');
+        best.target.classList.add('is-current');
+      },
+      { rootMargin: '-28% 0px -55% 0px', threshold: [0, 0.25, 0.5, 1] },
+    );
+    for (var k = 0; k < items.length; k++) io.observe(items[k]);
+  })();
+</script>

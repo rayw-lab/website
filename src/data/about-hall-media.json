@@ -9,5 +9,71 @@
     "fps": 0,
     "audio": false,
     "lockedRef": "docs/local-cmd/locked/S0-T-LOCKED-v2.md#first-v2-3"
+  },
+  {
+    "id": "about-illustration-s0h",
+    "src16x9": "",
+    "poster": "/media/about-hall/about-illustration-s0h.webp",
+    "durationS": 0,
+    "bytes": 107916,
+    "sha256": "c72ef1545edb306187675f629724b77620db70650d38f90ac50dfa801a9bc634",
+    "fps": 0,
+    "audio": false,
+    "lockedRef": "docs/local-cmd/locked/S0-H-LOCKED-v1.md#first-frame"
+  },
+  {
+    "id": "station-s1",
+    "src16x9": "",
+    "poster": "/media/about-hall/station-s1.webp",
+    "durationS": 0,
+    "bytes": 23828,
+    "sha256": "15331aa4441f76885b62f05e1a0d0a997d72c494a1d8d81525aed996c4b6f759",
+    "fps": 0,
+    "audio": false,
+    "lockedRef": "docs/local-cmd/locked/S1-T-LOCKED-v1.md#first-v1-2"
+  },
+  {
+    "id": "station-s2",
+    "src16x9": "",
+    "poster": "/media/about-hall/station-s2.webp",
+    "durationS": 0,
+    "bytes": 31032,
+    "sha256": "05fbf864e1f0df3ce21ab85b7569aad9fd64b79ca5ec8abcce4e02b536b2d754",
+    "fps": 0,
+    "audio": false,
+    "lockedRef": "docs/local-cmd/locked/S2-T-LOCKED-v1.md#first-v1-3"
+  },
+  {
+    "id": "station-s3",
+    "src16x9": "",
+    "poster": "/media/about-hall/station-s3.webp",
+    "durationS": 0,
+    "bytes": 19440,
+    "sha256": "5319f17b03244e960dd1afe1ee8d0d43a01d18e0a53d1c6eb9f8542b47dd638b",
+    "fps": 0,
+    "audio": false,
+    "lockedRef": "docs/local-cmd/locked/S3-T-LOCKED-v1.md#first-v1-2"
+  },
+  {
+    "id": "station-s4",
+    "src16x9": "",
+    "poster": "/media/about-hall/station-s4.webp",
+    "durationS": 0,
+    "bytes": 37878,
+    "sha256": "6c1c64676fc7b835d297bb7752f8e96a04a064adc1d651a628f0688010554b08",
+    "fps": 0,
+    "audio": false,
+    "lockedRef": "docs/local-cmd/locked/S4-T-LOCKED-v1.md#first-v1-3"
+  },
+  {
+    "id": "station-s5",
+    "src16x9": "",
+    "poster": "/media/about-hall/station-s5.webp",
+    "durationS": 0,
+    "bytes": 24512,
+    "sha256": "f8c6a9ef1c3029aa0429b40e2787fc599687e0524d26f296679fd9a88148e292",
+    "fps": 0,
+    "audio": false,
+    "lockedRef": "docs/local-cmd/locked/S5-T-LOCKED-v1.md#first-v1-2"
   }
 ]

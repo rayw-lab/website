@@ -1,0 +1,362 @@
+/* about.css —— 仅 /about/ 纸面双胞胎。选择器挂在 [data-about-page]，不改 global.css。
+   方向 C：Eduard 触感 + Brittany 密度。零 3D 场景、零滚动劫持、零视差。 */
+
+.about-page {
+  --about-header-offset: 4.75rem;
+}
+
+/* ---------- 页头：左文右图，插图列 ≤40% ---------- */
+
+.about-hero {
+  padding-block: var(--space-8) var(--space-7);
+}
+
+.about-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 40%);
+  grid-template-areas:
+    'crumb illust'
+    'title illust'
+    'lede illust';
+  column-gap: var(--grid-gutter);
+  row-gap: var(--space-5);
+  align-items: start;
+}
+
+.about-hero .crumb {
+  grid-area: crumb;
+  display: flex;
+  gap: var(--space-2);
+  color: var(--ink-2);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.about-hero .crumb a:hover {
+  color: var(--accent);
+}
+
+.about-hero h1 {
+  grid-area: title;
+  margin: 0;
+  font-size: var(--text-display);
+  font-weight: 650;
+  line-height: var(--leading-display);
+  letter-spacing: -0.01em;
+  max-inline-size: 18ch;
+}
+
+.about-hero .lede {
+  grid-area: lede;
+  margin: 0;
+  max-inline-size: var(--measure);
+  color: var(--ink-2);
+}
+
+.about-hero-illust {
+  grid-area: illust;
+  margin: 0;
+  max-inline-size: 100%;
+}
+
+.about-hero-illust img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 794 / 720;
+  object-fit: cover;
+  object-position: center 20%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--bg-raised);
+}
+
+@media (max-width: 639.98px) {
+  .about-hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'crumb'
+      'title'
+      'lede'
+      'illust';
+  }
+
+  .about-hero h1 {
+    max-inline-size: 22ch;
+  }
+
+  /* 胸针级：小图在标题块下方，避免抢 LCP */
+  .about-hero-illust {
+    max-inline-size: 11.5rem;
+  }
+}
+
+.about-page .section {
+  padding-block: var(--section-pad);
+  border-block-start: 1px solid var(--line);
+}
+
+/* ---------- 三问题卡：hover/focus CSS 翻转；降级直接展开 ---------- */
+
+.about-qlist {
+  display: grid;
+  gap: var(--grid-gutter);
+}
+
+.about-qcard {
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  perspective: 960px;
+}
+
+.about-qcard-inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 400ms var(--ease-out);
+}
+
+.about-qcard:hover .about-qcard-inner,
+.about-qcard:focus-within .about-qcard-inner {
+  transform: rotateY(180deg);
+}
+
+.about-qcard-face {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.about-qcard-back {
+  transform: rotateY(180deg);
+}
+
+.about-qcard-kicker {
+  color: var(--accent);
+}
+
+.about-qcard h3 {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  line-height: var(--leading-h3);
+}
+
+.about-qcard-hint {
+  margin-block-start: auto;
+  color: var(--ink-3);
+}
+
+.about-qcard-back p {
+  max-inline-size: var(--measure);
+  color: var(--ink-2);
+}
+
+.about-qcard-back a {
+  display: inline-block;
+  margin-block-start: auto;
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+.about-qcard-back a:hover {
+  text-decoration-color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce), (hover: none), (max-width: 639.98px) {
+  .about-qcard {
+    perspective: none;
+  }
+
+  .about-qcard-inner {
+    display: flex;
+    flex-direction: column;
+    transform: none;
+    transition: none;
+  }
+
+  .about-qcard:hover .about-qcard-inner,
+  .about-qcard:focus-within .about-qcard-inner {
+    transform: none;
+  }
+
+  .about-qcard-face {
+    grid-area: auto;
+    position: relative;
+    transform: none;
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+  }
+
+  .about-qcard-front {
+    padding-block-end: var(--space-3);
+    border-block-end: 1px solid var(--line);
+  }
+
+  .about-qcard-hint {
+    display: none;
+  }
+}
+
+/* ---------- 六站时间轴：当前站聚焦，无年份 ---------- */
+
+.about-timeline {
+  display: grid;
+  gap: 0;
+}
+
+.about-timeline li {
+  display: grid;
+  grid-template-columns: 3rem 11rem 1fr;
+  gap: var(--space-4);
+  align-items: baseline;
+  padding-block: var(--space-4);
+  padding-inline: var(--space-3);
+  border-block-start: 1px solid var(--line);
+  scroll-margin-block-start: var(--about-header-offset);
+  border-inline-start: 2px solid transparent;
+  transition:
+    background-color var(--duration-hover) var(--ease-out),
+    border-color var(--duration-hover) var(--ease-out);
+}
+
+.about-timeline li:last-child {
+  border-block-end: 1px solid var(--line);
+}
+
+.about-timeline li:target,
+.about-timeline li.is-current {
+  background: var(--accent-soft);
+  border-inline-start-color: var(--accent-strong);
+}
+
+.about-timeline .tl-index {
+  color: var(--accent);
+}
+
+.about-timeline .tl-index:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.about-timeline .tl-stage {
+  font-weight: 600;
+}
+
+.about-timeline .tl-note {
+  color: var(--ink-2);
+  font-size: var(--text-small);
+  line-height: var(--leading-small);
+}
+
+@media (max-width: 639.98px) {
+  .about-timeline li {
+    grid-template-columns: 3rem 1fr;
+  }
+
+  .about-timeline .tl-note {
+    grid-column: 2;
+  }
+}
+
+/* ---------- 讲者简介 ---------- */
+
+.about-bio {
+  padding: var(--space-6);
+  max-inline-size: 48rem;
+}
+
+.about-bio blockquote {
+  color: var(--ink);
+  max-inline-size: var(--measure);
+  user-select: text;
+}
+
+.about-bio-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-block-start: var(--space-5);
+}
+
+.about-copy-btn {
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  font-size: var(--text-small);
+  font-weight: 500;
+  transition:
+    border-color var(--duration-hover) var(--ease-out),
+    background-color var(--duration-hover) var(--ease-out);
+}
+
+.about-copy-btn:hover {
+  border-color: var(--accent-strong);
+  background: var(--accent-soft);
+}
+
+.about-copy-done {
+  color: var(--accent);
+}
+
+.about-bio-note {
+  margin-block-start: var(--space-5);
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+
+.about-bio-note a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+.about-bio-note a:hover {
+  text-decoration-color: var(--accent);
+}
+
+/* ---------- 收尾 CTA + 3D 附加链 ---------- */
+
+.about-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-6);
+  padding: var(--space-6);
+}
+
+.about-ask {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  line-height: var(--leading-h3);
+}
+
+.about-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.about-hall-link {
+  margin-block-start: var(--space-5);
+  font-size: var(--text-small);
+  color: var(--ink-2);
+}
+
+.about-hall-link a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+.about-hall-link a:hover {
+  text-decoration-color: var(--accent);
+}

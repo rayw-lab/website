@@ -24,6 +24,7 @@ import poisRaw from '../../../data/world-pois.json';
 import type { Game } from '../core/Game';
 import type { Building, CyberCityMap } from '../city/CityMap';
 import { createNeonGlowMaterial } from '../rendering/NeonMaterials';
+import { snapshotArrival } from '../arrival-snapshot';
 import { Zones } from '../world/Zones';
 import { RayCursor } from '../inputs/RayCursor';
 import { Area } from './Area';
@@ -126,6 +127,7 @@ export class Areas {
 
     // ———— 逐 POI 装配：触发圈 + 泊车位光圈 + 标点 ————
     const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+    const poiIds = map.buildings.map((item) => item.id);
     const ringGeometryByRadius = new Map<number, THREE.TorusGeometry>();
     const highlightPoi = options.deepLinkPoi ?? null;
 
@@ -176,7 +178,16 @@ export class Areas {
           this.arrival.begin({
             buildingId: building.id,
             navigate:
-              entry.action === 'navigate' ? () => location.assign(`${base}${entryUrl}`) : null,
+              entry.action === 'navigate'
+                ? () => {
+                    snapshotArrival(building, {
+                      dump: game.session.dump(),
+                      poiIds,
+                    });
+                    const dest = building.hallPath ?? building.deepLink;
+                    location.assign(`${base}${dest}?from=city&poi=${building.id}`);
+                  }
+                : null,
           });
         },
       });
