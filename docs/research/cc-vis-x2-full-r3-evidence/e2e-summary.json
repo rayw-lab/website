@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "window": "R3",
+  "head": "6f691fce53dd03e2485d98218e76af6e9a4611da",
+  "totalTests": 86,
+  "totalFiles": 19,
+  "passed": 86,
+  "failed": 0,
+  "skipped": 0,
+  "flaky": 0,
+  "retries": 0,
+  "attemptsPerTest": 1,
+  "durationMs": 4909785.001,
+  "runExit": 0,
+  "workers": 1,
+  "port": 4597,
+  "startedAt": "2026-09-02T05:30:29Z",
+  "endedAt": "2026-09-02T06:52:19Z",
+  "note": "totalTests = Playwright 测试数（86），totalFiles = spec 文件数（19）；本 schema 勘正 R2 evidence 中将文件数 19 误写为 totalTests 的问题（R2 原字节不改，另见 ../../cc-vis-x2-full-r2-evidence/SUMMARY-ERRATUM.md）"
+}

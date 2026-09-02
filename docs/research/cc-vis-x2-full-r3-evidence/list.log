@@ -1,0 +1,88 @@
+Listing tests:
+  [desktop-chromium] › home.spec.ts:12:3 › 宪法首页 /home/ › HOME-E2E-01 骨架与 SEO 基础：title / h1 / skip-link / canonical
+  [desktop-chromium] › home.spec.ts:36:3 › 宪法首页 /home/ › HOME-E2E-02 顶部导航：品牌 + 五栏目链接均带 base 前缀
+  [desktop-chromium] › home.spec.ts:60:3 › 宪法首页 /home/ › HOME-E2E-03 主题切换：html.dark 写入 + localStorage 持久化 + 刷新不回退
+  [desktop-chromium] › home.spec.ts:90:3 › 宪法首页 /home/ › HOME-E2E-04 Lab 证据区：两张 Demo 卡指向 /lab/ 详情页且海报可加载
+  [desktop-chromium] › home.spec.ts:113:3 › 宪法首页 /home/（无 JS） › HOME-E2E-05 禁用 JS：内容完整可读，导航与 Lab 入口不依赖脚本
+  [desktop-chromium] › lab-index.spec.ts:13:3 › Lab 索引页 › LAB-E2E-01 manifest 卡片：2 个 live 模块、LIVE 徽标、预算与技术要点行
+  [desktop-chromium] › lab-index.spec.ts:39:3 › Lab 索引页 › LAB-E2E-02 海报可加载且 view-transition-name 与详情页舞台配对（§9.3 morph 注册表）
+  [desktop-chromium] › lab-index.spec.ts:58:3 › Lab 索引页 › LAB-E2E-03 导航链路：卡片进详情页、面包屑回首页
+  [desktop-chromium] › lab-index.spec.ts:70:3 › Lab 索引页 › LAB-E2E-04 零 JS 静态页：禁用 JS 后卡片内容完整
+  [desktop-chromium] › site-health.spec.ts:29:3 › 全站健康度 › SITE-E2E-01 内链爬取：已交付路由全部 200；待交付路由精确命中白名单且必须仍为 404
+  [desktop-chromium] › site-health.spec.ts:65:3 › 全站健康度 › SITE-E2E-02 未知路由返回 404（GitHub Pages 语义）
+  [desktop-chromium] › site-health.spec.ts:76:3 › 全站健康度 › SITE-E2E-03 sitemap：索引可达，含 `/`+`/home/`+lab 路由；world-spike（已归档 noindex）必须剔除
+  [desktop-chromium] › site-health.spec.ts:98:3 › 全站健康度 › SITE-E2E-04 world-spike 归档验证入口：烟测可加载且无未捕获异常
+  [desktop-chromium] › tts-cockpit.spec.ts:9:3 › TTS 座舱可视化 › TTS-E2E-01 facade 生命周期：poster → 自动挂载 ready → 覆盖层淡出 → 控制面解除 inert
+  [desktop-chromium] › tts-cockpit.spec.ts:32:3 › TTS 座舱可视化 › TTS-E2E-02 播放全链路：speaking → done、逐词字幕点亮、时钟/进度/统计联动
+  [desktop-chromium] › tts-cockpit.spec.ts:61:3 › TTS 座舱可视化 › TTS-E2E-03 交互切换：语言/场景按钮 aria-pressed 联动 + URL replaceState 深链回写
+  [desktop-chromium] › tts-cockpit.spec.ts:89:3 › TTS 座舱可视化 › TTS-E2E-04 深链 ?locale=ar-SA&scene=park：阿拉伯语 RTL 镜像 + 场景直达
+  [desktop-chromium] › tts-cockpit.spec.ts:114:3 › TTS 座舱可视化 › TTS-E2E-05 非法深链 ?locale=xx-XX&scene=bogus：回退默认 zh-CN × nav 不崩溃
+  [desktop-chromium] › tts-cockpit.spec.ts:127:3 › TTS 座舱可视化 › TTS-E2E-06 reduced-motion：自动挂载被拦（data-blocked）、零新增 JS chunk、显式点击仍可启动
+  [desktop-chromium] › tts-cockpit.spec.ts:164:3 › TTS 座舱可视化（无 JS） › TTS-E2E-07 禁用 JS：noscript 提示就位，页眉说明与脚注仍可读
+  [mobile-375] › mobile.spec.ts:10:3 › 移动端 375px › MOB-E2E-01 宪法首页 /home/：无水平溢出、导航横滚可用、主题切换触控目标 ≥ 44px
+  [mobile-375] › mobile.spec.ts:32:3 › 移动端 375px › MOB-E2E-02 tts-cockpit：pointerFine=false → 触屏不拦截自动挂载，仪表簇按断点隐藏
+  [mobile-375] › mobile.spec.ts:47:3 › 移动端 375px › MOB-E2E-03 car-configurator：pointerFine=true → 触屏拦截自动挂载（data-blocked=pointer），显式启动仍可用
+  [car-chromium] › car-configurator.spec.ts:53:3 › 3D 车辆配置器 › CAR-E2E-01 facade → ready：canvas 呈现、HUD 揭示、后端徽标显示实际渲染后端
+  [car-chromium] › car-configurator.spec.ts:87:3 › 3D 车辆配置器 › CAR-E2E-02 ?gl=1 强制 WebGL 2 回退（§9.2 保留参数），且交互后参数保持
+  [car-chromium] › car-configurator.spec.ts:99:3 › 3D 车辆配置器 › CAR-E2E-03 深链 ?paint=&wheels=&livery= 三参组合：选中态与 HUD 全部生效
+  [car-chromium] › car-configurator.spec.ts:110:3 › 3D 车辆配置器 › CAR-E2E-04 非法深链 ?paint=hotpink&wheels=square&livery=none：忽略并回默认配置
+  [car-chromium] › car-configurator.spec.ts:124:3 › 3D 车辆配置器 › CAR-E2E-05 交互链路：车漆/分区 Tab/轮毂切换 + URL 回写与默认值清理
+  [car-chromium] › car-configurator.spec.ts:159:3 › 3D 车辆配置器 › CAR-E2E-06 reduced-motion：自动挂载被拦、不拉 3D 资产；显式启动逃生门可用
+  [car-chromium] › car-configurator.spec.ts:192:3 › 3D 车辆配置器（无 JS） › CAR-E2E-07 禁用 JS：noscript 提示就位，技术说明/署名静态可读
+  [world-chromium] › cyber-city-audio.spec.ts:46:3 › 科技城音效层 @phase0（CC-AUD-C1 · world-chromium 串行 project） › CITY-AUD-01 首手势前零 AudioContext → CTA 解锁 + 变形音计数 → 静音钮持久（localStorage 还原/写回）→ 驾驶引擎层激活
+  [world-chromium] › cyber-city-bgm.spec.ts:106:3 › 科技城 BGM 氛围垫 @phase0（CC-BGM-C1 · world-chromium 串行 project） › CITY-BGM-01 用例1（无种子挂载）：懒创建回归 + 样式门 + 默认 OFF + 开关钮持久 + user 埋点 + 主静音优先 + 驾驶 ducking + 零音频请求
+  [world-chromium] › cyber-city-bgm.spec.ts:209:3 › 科技城 BGM 氛围垫 @phase0（CC-BGM-C1 · world-chromium 串行 project） › CITY-BGM-01 用例2（种子 world-bgm-on=1 挂载）：解锁沿自动恢复播放（E）+ restore 埋点（H 后半）
+  [world-chromium] › cyber-city-explore.spec.ts:285:3 › 科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 project） › CITY-EXP-01 探索计数闭环：深链发现 → 驾驶 +1 → 重复进圈去重 → reload 持久还原（埋点互证）
+  [world-chromium] › cyber-city-explore.spec.ts:429:3 › 科技城探索计数 n/12（CC-FXN-C4 · world-chromium 串行 project） › CITY-EXP-02 恒等门 + reduced-motion + 完成反馈：robot_idle 隐藏 → 11/12 还原呈现 → 末点集齐完成态（埋点互证）
+  [world-chromium] › cyber-city-explore.spec.ts:540:3 › 科技城目标线 v0（CC-FXN-C5 · world-chromium 串行 project） › CITY-QST-01 目标线闭环：深链出生链首站到站 → 链推进 shown 步进 → 距离读数 → 折叠偏好（埋点互证）
+  [world-chromium] › cyber-city-explore.spec.ts:628:3 › 科技城目标线 v0（CC-FXN-C5 · world-chromium 串行 project） › CITY-QST-02 恒等门 + car_ready 激活 + idle-30s 消费：robot_idle 隐藏零事件 → shown 链首 → 空闲 nudge 呈现（输入即收）
+  [world-chromium] › cyber-city-feedback.spec.ts:104:3 › 科技城驾驶反馈包（CC-FXN-C2/C6 · world-chromium 串行 project） › CITY-FB-01…09 反馈全链：恒等门 → boost/刹车双沿 → 悬挂跳脉冲 → respawn toast → 翻车倒计时 → 测速牌驶越
+  [world-chromium] › cyber-city-feedback.spec.ts:299:3 › 科技城驾驶反馈包（CC-FXN-C2/C6 · world-chromium 串行 project） › CITY-FB-05 reduced-motion：恒等门生效 + boost/toast 静态呈现不剥夺
+  [world-chromium] › cyber-city-feedback.spec.ts:349:3 › 科技城驾驶反馈包（CC-FXN-C2/C6 · world-chromium 串行 project） › CITY-FB-06 灰盒碰撞脉冲：W 直行撞锥桶 → 碰撞 ×N 脉冲与 HUD 计数同拍呈现
+  [world-chromium] › cyber-city-feedback.spec.ts:406:3 › 科技城键位卡/首驶引导（CC-FXN-C1 · world-chromium 串行 project） › CITY-HINT-01 键位卡全链：恒等门 → car_ready 全键位浮现 → 首驶阅读窗 → 淡出 → H/按钮再唤出（埋点互证）
+  [world-chromium] › cyber-city-feedback.spec.ts:504:3 › 科技城触屏文案分稿（CC-FXN-C1 · pointer: coarse） › CITY-HINT-02 触屏分文案：摇杆口径键位卡（零键盘键位）+「操作说明」召回按钮 + env.touch 互证
+  [world-chromium] › cyber-city-minimap.spec.ts:177:3 › 科技城 M 键小地图（CC-NAV-C1 · world-chromium 串行 project） › CITY-NAV-01 全链：M/Esc 开合（壳菜单零双响）→ Tab+Enter 选楼传送 → E 确认进站路由链 + 埋点 seq 序
+  [world-chromium] › cyber-city-minimap.spec.ts:287:3 › 科技城 M 键小地图（CC-NAV-C1 · world-chromium 串行 project） › CITY-NAV-02 恒等门：robot_idle 按 M 零反应/零面板 DOM/钮 hidden → 键位卡含 M 地图 → driving 态 M 开合
+  [world-chromium] › cyber-city-minimap.spec.ts:362:3 › 科技城小地图触屏/reduced-motion（CC-NAV-C1 · world-chromium 串行 project） › CITY-NAV-03 触屏+直切：HUD 钮点按开合（reduced-motion 即达终态）→ pin 点按传送落 parkingBay
+  [world-chromium] › cyber-city-observability.spec.ts:362:3 › 科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串行 project） › CITY-OBS-01 漏斗全走 @funnel：ritual 动线 + V 往返 + R 重生 + 驾驶进 POI + E 进站取证
+  [world-chromium] › cyber-city-observability.spec.ts:492:3 › 科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串行 project） › CITY-OBS-01b 锥桶补充取证：灰盒直线撞桩 → cone-hit 事件 + coneHits 计数互证
+  [world-chromium] › cyber-city-observability.spec.ts:544:3 › 科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串行 project） › CITY-OBS-02 导出面契约：__worldSession 仅 dump 一键 + env 落定 + 纯快照语义
+  [world-chromium] › cyber-city-observability.spec.ts:599:3 › 科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串行 project） › CITY-OBS-03 dispose 合同：卸载前可取证 + 卸载时 console 摘要一次（table×2 + [session] 一行）
+  [world-chromium] › cyber-city-observability.spec.ts:646:3 › 科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串行 project） › CITY-OBS-04 ring 溢出：520 条桥事件 → 丢最旧不失真；白名单外拒收 + 告警
+  [world-chromium] › cyber-city-observability.spec.ts:699:3 › 科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串行 project） › CITY-OBS-05 #debug 面板：无 hash 零 debug 请求；有 hash 面板只读 + tail + 导出下载
+  [world-chromium] › cyber-city-observability.spec.ts:753:3 › 科技城可观测性 @phase0（CC-OBS-C2 · world-chromium 串行 project） › CITY-OBS-06 冒烟脚本：function-smoke 消费 OBS-01/01b dump → 漏斗满额 + 覆盖齐 + 末行机读
+  [world-chromium] › cyber-city-poi-arrival.spec.ts:159:3 › 科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project） › CITY-PA-01 前奏时序：圈内 E → world-poi/shot-apply seq 序 → 定帧后 navigate 被拦（跳转前取证）
+  [world-chromium] › cyber-city-poi-arrival.spec.ts:228:3 › 科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project） › CITY-PA-02 驾驶中断：前奏窗内压 W → shot-interrupt{by:drive} seq 序 + 相机回跟随 + 零 navigate
+  [world-chromium] › cyber-city-poi-arrival.spec.ts:285:3 › 科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project） › CITY-PA-03 reduced-motion：直切定帧（零 tween）+ world-poi 照常 + 进站路径可完成
+  [world-chromium] › cyber-city-poi-arrival.spec.ts:338:3 › 科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project） › CITY-PA-04 恒等门：robot_idle 期 E 完全不可达（零事件 + View 零触碰）
+  [world-chromium] › cyber-city-signage.spec.ts:96:3 › 招牌叙事 v2 验收（CC-VIS-X3；world-chromium 串行） › CITY-SIGN-01 首幕 stagger：装配台账武装 + 全序点亮完成自摘（6 通道 × 150ms）
+  [world-chromium] › cyber-city-signage.spec.ts:128:3 › 招牌叙事 v2 验收（CC-VIS-X3；world-chromium 串行） › CITY-SIGN-02 ?city=1 直出终态：零 stagger 瞬态 + 三层招牌/广告板网格逐名清点
+  [world-chromium] › cyber-city-signage.spec.ts:174:3 › 招牌叙事 v2 验收（CC-VIS-X3；world-chromium 串行） › CITY-SIGN-03 reduced-motion 首幕：stagger 不武装、直出终态零瞬态
+  [world-chromium] › cyber-city.spec.ts:147:3 › 科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium 串行 project） › CITY-E2E-01 壳静态段合同：load 事件前零 world 字节 + HTML 零 world 静态标签 + 定位语/poster/noscript 就位
+  [world-chromium] › cyber-city.spec.ts:175:3 › 科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium 串行 project） › CITY-E2E-02 跳过出口：domcontentloaded 即可点 + Tab 第一焦点 → /home/ 落地零 world 字节
+  [world-chromium] › cyber-city.spec.ts:207:3 › 科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium 串行 project） › CITY-E2E-03 变形仪式：robot_idle → transforming（CTA disabled）→ car_ready，落地即刻 WASD 可开
+  [world-chromium] › cyber-city.spec.ts:252:3 › 科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium 串行 project） › CITY-E2E-04 reduced-motion：不自动挂载零 world 字节；显式进入 → 终态直出；变形为即时切换 + 文字状态提示
+  [world-chromium] › cyber-city.spec.ts:287:3 › 科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium 串行 project） › CITY-E2E-05 ?gl=1 回退：后端徽标 WebGL 2，变形仪式在回退腿同样可播，零未捕获异常
+  [world-chromium] › cyber-city.spec.ts:315:3 › 科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium 串行 project） › CITY-E2E-06 机器人可见计时：poster 先显（LCP 不等 GLB），world-reveal 计时采集留档
+  [world-chromium] › cyber-city.spec.ts:347:3 › 科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium 串行 project） › CITY-VEH-01/02/03/04/06 驾驶双视角：robot_idle 门禁 → car_ready 切 FPV 不触发 driving → FPV 驾驶 → V 往返
+  [world-chromium] › cyber-city.spec.ts:434:3 › 科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium 串行 project） › CITY-VEH-05 reduced-motion：instant swap 至 car_ready 后 V 切换仍可往返
+  [world-chromium] › cyber-city.spec.ts:481:1 › CITY-VEH-07 相机注册表：drive_third/drive_fpv 登记（spec §7.1 冻结值）+ View 注册表消费 + ritual_idle 冻结守卫
+  [world-chromium] › world-spike.spec.ts:118:3 › world Spike 灰盒试验场 › WS-E2E-01 壳页静态合同：noindex+canonical→/、标题、逃生链接、poster、点击前零 world 字节
+  [world-chromium] › world-spike.spec.ts:165:3 › world Spike 灰盒试验场 › WS-E2E-02 进入试验场：显式启动 → ready，HUD/徽标/遥测揭示，资产仅在点击后拉取
+  [world-chromium] › world-spike.spec.ts:221:3 › world Spike 灰盒试验场 › WS-E2E-03 WASD 可驾驶：W 加速、空格刹停、R 复位、Shift boost、A 左转、提示消隐
+  [world-chromium] › world-spike.spec.ts:293:3 › world Spike 灰盒试验场 › WS-E2E-04 锥桶碰撞 + R 复位闭环：直线撞桩 → 计数/HUD 联动 → 复位清零
+  [world-chromium] › world-spike.spec.ts:351:3 › world Spike 灰盒试验场 › WS-E2E-05 深链：?gl=1 强制 WebGL 2；白名单外参数忽略且 URL 不被改写
+  [world-chromium] › world-spike.spec.ts:368:3 › world Spike 灰盒试验场 › WS-E2E-11 ?vehicle=kinematic 运动学回退档：同壳同 HUD 可驾驶、遥测上报回退腿、零异常
+  [world-chromium] › world-spike.spec.ts:396:3 › world Spike 灰盒试验场 › WS-E2E-06 reduced-motion：静态壳保持零加载，显式「进入」逃生门照常工作
+  [world-chromium] › world-spike.spec.ts:420:3 › world Spike 灰盒试验场 › WS-E2E-07 dispose 再挂载：离页释放零异常，返回后可再次进入并驾驶
+  [world-chromium] › world-spike.spec.ts:463:3 › world Spike 灰盒试验场 › WS-E2E-08 快速切页：加载中弃页 + 全站五路由快切，零未捕获异常，终局仍可进入
+  [world-chromium] › world-spike.spec.ts:506:3 › world Spike（移动端 375px 触屏） › WS-E2E-09 触屏摇杆驾驶：随车 3D 摇杆遥测、真触摸驱动、复位按钮、无水平溢出
+  [world-chromium] › world-spike.spec.ts:579:3 › world Spike（无 JS） › WS-E2E-10 禁用 JS：noscript 提示就位，操作说明与署名静态可读，壳保持 idle
+  [world-perf-chromium] › world-spike-perf.spec.ts:100:3 › world Spike 帧率证据包 › WS-PERF-01 30s 驾驶后采集 HUD/遥测帧率 + rAF 帧间隔采样；p95<50ms 软门禁（OBS 不阻断）
+  [city-perf-chromium] › cyber-city-perf.spec.ts:304:3 › 科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromium 殿后 project） › CITY-PERF-01 城市档证据包：状态机全走 + 20s 同源驾驶脚本 + rAF 采样 + 漏斗互证；p95<50ms 软门（OBS 不阻断）
+  [city-perf-chromium] › cyber-city-perf.spec.ts:575:3 › 科技城性能证据包 @phase0（CC-PERF-C1 · city-perf-chromium 殿后 project） › CITY-PERF-02 Q2 存在腿：?quality=2 深链生效 + 变形驾驶进站核心路径全走 + 漏斗七步 + Q2 负载基线
+  [visual-chromium] › visual/world-visual.spec.ts:53:3 › 科技城视觉/3D 冒烟取证（visual-chromium 单 worker 顺序执行） › VIS-01 @visual 壳静态基线：reduced-motion 拦截态整壳截图与入库基线一致
+  [visual-chromium] › visual/world-visual.spec.ts:74:3 › 科技城视觉/3D 冒烟取证（visual-chromium 单 worker 顺序执行） › VIS-02 @smoke3d ESC 菜单：Escape 开 → 双出口链接可见 → 截图基线 → Escape 关
+  [visual-chromium] › visual/world-visual.spec.ts:101:3 › 科技城视觉/3D 冒烟取证（visual-chromium 单 worker 顺序执行） › VIS-03 @smoke3d 首幕取证：挂载 ready + robot_idle 后 canvas 非空（像素统计）+ 取证图落盘
+  [visual-chromium] › visual/world-visual.spec.ts:121:3 › 科技城视觉/3D 冒烟取证（visual-chromium 单 worker 顺序执行） › VIS-04 @smoke3d POI 深链取证：?poi= 挂载 ready + canvas 非空 + 出生点落 parkingBay
+Total: 86 tests in 19 files
