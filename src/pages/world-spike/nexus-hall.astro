@@ -6,6 +6,7 @@
  */
 import Yin from '../../components/city/halls/nexus/Yin.astro';
 import Flow from '../../components/city/halls/nexus/Flow.astro';
+import Seal from '../../components/city/halls/nexus/Seal.astro';
 import ledger from '../../data/nexus-ledger.json';
 const site = Astro.site?.href ?? '/';
 const t = ledger.totals as Record<string, number>;
@@ -47,6 +48,9 @@ const stat = [
         </p>
       </div>
       <Flow spanSeconds={16} />
+    </section>
+    <section style="padding:0 clamp(1.5rem,6vw,6rem) clamp(3rem,9vh,6rem)">
+      <Seal limit={24} />
     </section>
   </body>
 </html>
