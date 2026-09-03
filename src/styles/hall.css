@@ -106,6 +106,25 @@ html:has([data-hall]) .hall-chrome {
   position: absolute;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
+}
+
+.hall-hero-media::after {
+  content: '';
+  position: absolute;
+  inset: -18% auto -18% 0;
+  width: 34%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(73, 197, 182, 0.08) 28%,
+    rgba(145, 247, 235, 0.42) 50%,
+    rgba(73, 197, 182, 0.08) 72%,
+    transparent 100%
+  );
+  transform: translateX(-160%) skewX(-14deg);
 }
 
 .hall-hero-media img,
@@ -198,6 +217,30 @@ html:has([data-hall]) .hall-chrome {
 @media (hover: none), (max-width: 899px) {
   .hall-hero[data-hero-live] .hall-hero-ticks {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (max-width: 899px),
+  (prefers-reduced-motion: no-preference) and (hover: none) {
+  .hall-hero[data-mobile-glint='1'] .hall-hero-media::after {
+    animation: hall-mobile-glint 1100ms var(--ease-out) both;
+  }
+}
+
+@keyframes hall-mobile-glint {
+  0% {
+    opacity: 0;
+    transform: translateX(-160%) skewX(-14deg);
+  }
+  18% {
+    opacity: 0.55;
+  }
+  78% {
+    opacity: 0.32;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(390%) skewX(-14deg);
   }
 }
 

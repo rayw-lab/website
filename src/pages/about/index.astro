@@ -31,7 +31,7 @@ const problems = problemCopy.map((p, i) => ({
   n: String(i + 1).padStart(2, '0'),
   q: p.q,
   how: p.how,
-  teaser: (p.how.match(/^[^。]+。/) ?? [p.how])[0],
+  teaser: p.teaser,
   proofHref: `${base}${p.proofPath}`,
   proofLabel: p.proofLabel,
 }));
@@ -58,7 +58,7 @@ const hallHref = `${base}/world/about-pavilion/`;
           <span aria-hidden="true">/</span>
           <span aria-current="page">关于</span>
         </nav>
-        <h1>我解决的是「复杂技术 → 可决策方案」这段路</h1>
+        <h1>我解决的是「<span class="about-hero-term">复杂技术</span> → 可决策方案」这段路</h1>
         <p class="lede">
           {PERSON.jobTitle}。十余年从物联网到 AI 工作流的演进里，我反复做的是同一件事：
           把不确定的新技术，变成团队敢拍板、能交付、可复用的方案。这一页不罗列职责，只讲我解决什么问题。

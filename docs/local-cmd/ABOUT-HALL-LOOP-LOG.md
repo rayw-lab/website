@@ -2,12 +2,14 @@
 
 > tick 规则：指挥官每完成一轮「读态 → Giants → 决策 → 派单 → 收稿 → 更新索引」记 1 loop；每 10 loop 重写顶部看板并把 10 轮前的逐 loop 明细压成一行。tick 文件 `~/.codex/state/about-hall/tick.json`。
 
-## 看板（L1–L10）
+## 看板（当前快照）
 
 | loop | 时间 | 在跑 | 收稿 | min 维 | 下一步 |
 |---|---|---|---|---|---|
-| L1 | 2026-09-02 21:5x | G0 · D1D2 · G1 · S0-T gen · S0-H gen | — | 全维未开工 | 收 G1/D1D2 → 审计 → S6-T |
-| L2 | 2026-09-02 22:25 | 审计 ×6（gemini/glm × S0-T/S0-H/S6-T v1）· S0-T v2 gen · S6-T v2 gen · W1e 纸 · W2a 壳 · W2b 播放器 | G0 digest · ADR-1 · ADR-2 · G1（i2v 被 ZDR 拦；image_gen 720p 无 seed/negative/尾帧；体积门修订；不用 blend）· S0-T/S0-H/S6-T v1 各 6 张 | A 维预评 S0-T 7.0 / S0-H 6.5 / S6-T last 8.5 first 4.0 | 收 v2 → 指挥官人门配对 → NEEDS_LEIGE：磊哥 `grok` 里 `/privacy` 关 ZDR 后 i2v |
+| L1–L10 | 2026-09-02 21:5x–2026-09-03 14:20 | 已收口 | About 壳、八幕、纸面页、馆长、媒体与 93/93 基线 | 视觉 A/B/E 均 ≥7 | 进入城市联动与最终收口 |
+| L11 | 2026-09-03 14:20–17:50 | attempt8 后续 | T1/QE/W1h/VIS/F1/W3e/DOC | About 立面识别 | 最终全量与 W8 |
+| L12 | 2026-09-03 17:50–2026-09-04 00:10 | Node 22 定向复跑 · Grok 两路工程协助 | attempt10 失败归档 · ADR-6 · W8 代码 | 机器门失败 | 完成构建/局部验收 → poster → 最终全量 |
+| L13 | 2026-09-04 00:10–04:54 | final-r2 已收口 | W8、最终画面、Grok 视觉核销、109/109、LHCI 24/24 | 发布链 | commit → push → final SHA CI → merge → Pages |
 
 ## 逐 loop
 
@@ -89,3 +91,16 @@
 - 教训：worker 回执可能与像素相反（W1h"转头"）——初审对图不对文；e2e 禁墙钟阈值（T1b）；`astro preview` 全局单例，worker 起 dev/preview 后必按 pid 收（4630 遗留）；Gemini 400 `User location` = 出口非美区，切换即恢复；ADR 内部矛盾（ADR-3 A#1 vs B 表）要在下一 ADR 显式定谳而非默认。
 - 已 merge `origin/main`（`985d338`，6 单 docs + Tier-C 速度弧 38 行，与我方 HUD 重排正交）。
 - 下一步：attempt8 全量（109 例，:4645，进行中）→ 三席审计（Grok GO_AFTER_P1：P1 全为登记卫生，已修；Gemini/GLM fresh 批评双席）→ Grok xhigh + Opus 双审计 → push → CI required checks 绿 → 合入 #234 → W8 开票。
+
+### L12 · 2026-09-03 17:50–2026-09-04 00:10（attempt10 保全 + W8 前置）
+- attempt10 定谳为失败：97 通过 / 2 失败 / 10 未运行 / 0 flaky / EXIT=1。原始日志、两例 trace、视频、截图和环境已归档到 `evidence/about-hall/W6/attempt10-failure/`；13 张测试改写历史截图先在仓外按 SHA 备份，再从 HEAD 还原。
+- 受控环境使用 Node 22.23.2 + pnpm 10.33.3。定向复跑第一轮先暴露 Astro 7 `preview` 后台化导致 Playwright 报 webServer 提前退出；实际 preview PID 36953 在 4650 端口返回 200，已复用该实例重跑原两例，结果待收。
+- ADR-6 落地：W8 改为 PR #234 合入前完成。已写 About 南/东立面三层招牌及档案图标、手机静帧一次扫光、纸面独立短摘要、G-Hall-8 竖版禁入和展厅 Lighthouse 接线；尚未构建验收。
+- 两路 Grok CLI xhigh 直跑协助 S1 失败诊断与 About 招牌设计核对，不作为自动放行依据。
+
+### L13 · 2026-09-04 00:10–04:54（W8 冻结 + 最终验收）
+- Node 22 定向复跑原两例均通过；确认 attempt10 的两处产品失败在受控环境不可复现，证据边界保持 `UNKNOWN`，不抹掉原失败。另坐实并修复 Astro 7 在代理环境自动后台化导致 Playwright `webServer exited early`：`ASTRO_PREVIEW_BACKGROUND=1` 让 preview 保持前台。
+- W8 完成：About 南/东两面招牌与档案图标、手机一次扫光、独立短摘要、访客文案、竖版禁入正/负控、展厅 LHCI 接线、城市桌面/手机 poster 重拍。Vite 告警来自按需城市运行时，静态壳零预载且预算合格，具名留待城市性能阶段。
+- Grok 首轮视觉复议 7.6/6.3/6.8 抓出三处实质缺陷；修正移动地轨和纸面标题断词、S6 中段标题，补齐城市来源参数与 S1–S5 证据。针对核销 5/5 关闭，最终 A/B/E=8/8/8。
+- final-r1 因工具会话在第 57/109 项中断，保留日志，不判失败。冻结后的 final-r2：109/109、0 failed、0 skipped、0 flaky、EXIT=0，七 project、单 worker、零重试，7013s。8 URL × 3 LHCI 全部断言通过；About 馆中位 99/96/100/100；综合分 95.1，`availableWeight=1`、`missing=[]`。
+- 下一步：提交和推送当前冻结树；CI 必须绑定新的 `head_sha`；随后合入 #234、核 Pages 部署和线上消费端动线，再写最终交接并关闭监控。

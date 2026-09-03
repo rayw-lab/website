@@ -314,6 +314,7 @@ test.describe('About Hall 移动 375（AH-F1）', () => {
     const poster = page.locator('[data-hero-scrub] img').first();
     await expect(poster).toBeVisible();
     await expectImageLoaded(poster);
+    await expect(page.locator('[data-hero-scrub]')).toHaveAttribute('data-mobile-glint', '1');
 
     const videoPlaying = await page.evaluate(() =>
       [...document.querySelectorAll('video')].some(
@@ -321,6 +322,10 @@ test.describe('About Hall 移动 375（AH-F1）', () => {
       ),
     );
     expect(videoPlaying, '375 视口不得播放 Hero video').toBe(false);
+
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.reload();
+    await expect(page.locator('[data-hero-scrub]')).not.toHaveAttribute('data-mobile-glint');
   });
 });
 

@@ -20,7 +20,7 @@ Stage 2  /world/about-pavilion/   展厅页（Astro 静态，BaseLayout → Worl
    │                    每个 <section data-scene data-bind> 绑定六站 id / 支柱 id / URL
    ├─ 六向晶体 / 六站地轨   SVG + CSS（默认）；three 仅当 /world/ 预算允许且为 Hall-S 懒加载
    ├─ 收官 DOM          三问题卡（翻转）· 讲者简介一键复制 · 四出口 · 回城
-   └─ 降级四态          reduced-motion → poster + 静态表；无 JS → 首屏文字 + poster 可见；无 WebGL → 与 reduced-motion 同；移动端 → 9:16 <source media>
+   └─ 降级四态          reduced-motion → poster + 静态表；无 JS → 首屏文字 + poster 可见；无 WebGL → 与 reduced-motion 同；移动端 → poster 静帧 + 一次性 CSS 扫光
 Stage 3  /about/   纸面双胞胎（现有页 + 触感升级，零 3D，LHCI ≥95）
 ```
 
@@ -47,7 +47,7 @@ Stage 3  /about/   纸面双胞胎（现有页 + 触感升级，零 3D，LHCI �
 | `scripts/about-hall-gate.mjs`（W2） | 汇总门：build/check 通过；`dist/world/**/index.html` 零 `_astro/world.`/`models/`/rapier；media JSON 对账（bytes/sha/fps/时长/无音轨）；`data-bind` URL 200；总载荷 ≤6.0MB（注：ADR-3 决策 C 将 2.5MB 放宽至 6.0MB，非首屏资产必须懒加载）；输出 `evidence/about-hall/GATE.json` |
 | `scripts/about-hall-frame-gate.py`（W1） | 静帧硬门：掩膜占宽、负空间纯净度、first↔last 同区色差、OCR 无字（pytesseract 或 macOS Vision） |
 | `e2e/about-hall.spec.ts`（W2–W4） | 首屏 scrub 改变 `currentTime`；滚动区间 progress↔currentTime 单调；reduced-motion 无 animation；noscript 首屏可见；`?from=city&poi=about-pavilion` 到达条出现且非法 poi 不出现 |
-| 既有 | `scripts/audit-budget.mjs`、`scripts/check-links.mjs`、`lighthouserc.json`（`/about/` 在册，展厅第一刀不加）、`e2e/site-health.spec.ts`（爬到展厅必须 200） |
+| 既有 | `scripts/audit-budget.mjs`、`scripts/check-links.mjs`、`lighthouserc.json`（`/about/` 与稳定后的展厅均在册）、`e2e/site-health.spec.ts`（爬到展厅必须 200） |
 
 # 5. 依赖与工具安装（授权 worker 自行安装；装了就在下表补行）
 
@@ -90,7 +90,7 @@ Stage 3  /about/   纸面双胞胎（现有页 + 触感升级，零 3D，LHCI �
 | poster webp | ≤60KB | LCP |
 | 总媒体载荷 | **≤6MB**（草案；首屏之外全部懒加载） | 对齐 Lab M 资产 ≤6MB（ADR-3 决策 C） |
 | 同屏循环动画 | ≤5 处 | master-plan §6 豁免 2 |
-| `/about/` LHCI | 四项 ≥95 | 在册 URL |
+| `/about/` 与 `/world/about-pavilion/` LHCI | 四项 ≥95 | final-r2 中位分别为 100/96/100/100 与 99/96/100/100；8 URL × 3 断言全过 |
 
 # 7. 文件落点（开工时）
 

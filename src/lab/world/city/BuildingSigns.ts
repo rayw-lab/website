@@ -1,6 +1,6 @@
-// [CC-L2-B1] 五栋 hero 楼可读招牌 → [CC-VIS-X3] 招牌叙事 v2 多层体系（design-confirm
+// [CC-L2-B1] hero 与已接展厅楼可读招牌 → [CC-VIS-X3] 招牌叙事 v2 多层体系（design-confirm
 // §4.2 第一/二件；rubric V4「招牌密度」/ V7「楼=产品线帧内自明」扣分点销账）。
-// 每栋 hero 楼三层（B1 两件套扩为 2-3 层）：
+// 每栋参与楼三层（B1 两件套扩为 2-3 层）：
 //   ① 楼顶主匾（全息板）：图标 + EN 楼名——远景认楼（慢呼吸脉动继承 B1 席位，
 //      CITY-03 配额恒 3 席不变：HeroRobot idle + 本件 + 光轨）；
 //   ② 楼身竖幅：zh 楼名逐字竖排（港式挂旗，SignageAtlas 竖排管线）——中景认楼；
@@ -9,8 +9,7 @@
 // 纹理 = SignageAtlas（TextCanvas 管线扩展：竖排/双语/图标合成，零外部资产）；
 // 颜色 = buildings JSON neonColor（A3 色纪律：neonColor 保留给「楼宇身份件」）。
 // draw call 台账（O4 哨兵口径）：每栋 = 全息板 1 + 立面合并几何 1（灯箱+竖幅共用
-// 同一图集/材质，mergeGeometries 合一次 draw）→ 5 栋共 10 draw call，与 v1 持平
-// （多出的层吃进图集合并，零增量）。纯视觉无物理（招牌不碰撞）。
+// 同一图集/材质，mergeGeometries 合一次 draw）。纯视觉无物理（招牌不碰撞）。
 // stagger 点亮：每栋一支 lit uniform（litChannels 距出生点近→远序），由
 // SignageIgnition 在 world-reveal 后 150ms 逐楼点亮（一次性瞬态零配额；
 // reduced-motion / 非首幕路径不接线 = lit 恒 1 直出终态）。
@@ -38,7 +37,7 @@ const PANEL_PROUD = 0.35;
 /**
  * [CC-VIS-X3] 产品线台账（V7「楼=产品线」帧内自明正文；StreetLamps SLOGANS 同款
  * 代码侧常量表——楼名/坐标等数据面归 buildings JSON，招牌文案归呈现层）。
- * 新 hero 楼未登记时回退 title.en + 城区默认图标（CATEGORY_ICONS）。
+ * 新参与楼未登记时回退 title.en + 城区默认图标（CATEGORY_ICONS）。
  */
 const PRODUCT_LINES: Record<string, { line: string; icon: SignIconKind }> = {
   'lingua-tower': { line: '39-LANG L10N', icon: 'lang' },
@@ -46,6 +45,7 @@ const PRODUCT_LINES: Record<string, { line: string; icon: SignIconKind }> = {
   'agent-nexus': { line: 'MASTER AGENT', icon: 'agent' },
   'autodrive-lab': { line: 'AUTODRIVE', icon: 'radar' },
   'concept-garage': { line: 'CAR CONFIGURATOR', icon: 'car' },
+  'about-pavilion': { line: 'PERSONAL DOSSIER', icon: 'profile' },
 };
 
 const CATEGORY_ICONS: Record<DistrictCategory, SignIconKind> = {
@@ -102,16 +102,16 @@ export class BuildingSigns {
 
     // 点亮序 = 距出生点近→远（内环四塔并列取 JSON 序，garage 殿后）
     const spawn = map.world.spawn.position;
-    const heroes = map.buildings
+    const signBuildings = map.buildings
       .map((building, index) => ({ building, index }))
-      .filter(({ building }) => building.lodProfile === 'hero')
+      .filter(({ building }) => building.lodProfile === 'hero' || Boolean(building.hallPath))
       .sort((a, b) => {
         const da = Math.hypot(a.building.position.x - spawn.x, a.building.position.z - spawn.z);
         const db = Math.hypot(b.building.position.x - spawn.x, b.building.position.z - spawn.z);
         return da - db || a.index - b.index;
       });
 
-    for (const { building } of heroes) {
+    for (const { building } of signBuildings) {
       this.addSigns(building);
       this.buildingIds.push(building.id);
     }
@@ -143,16 +143,21 @@ export class BuildingSigns {
     group.position.set(x, 0, z);
     group.rotation.y = (rotationY * Math.PI) / 180;
 
-    // 面向主轴道路的立面槽位（内环四塔各 2 面、concept-garage 1 面）
+    // About 馆首屏从南侧驶近、近景从东侧泊车：固定双面；其余楼按主轴道路自动选面。
     const slots: FacadeSlot[] = [];
-    if (Math.abs(x) <= ROAD_FACING_MAX) {
+    if (building.id === 'about-pavilion') {
+      slots.push(
+        { rotationY: 0, offset: { x: 0, z: d / 2 + PANEL_PROUD }, facadeWidth: w },
+        { rotationY: Math.PI / 2, offset: { x: w / 2 + PANEL_PROUD, z: 0 }, facadeWidth: d },
+      );
+    } else if (Math.abs(x) <= ROAD_FACING_MAX) {
       slots.push(
         x > 0
           ? { rotationY: -Math.PI / 2, offset: { x: -(w / 2 + PANEL_PROUD), z: 0 }, facadeWidth: d }
           : { rotationY: Math.PI / 2, offset: { x: w / 2 + PANEL_PROUD, z: 0 }, facadeWidth: d },
       );
     }
-    if (Math.abs(z) <= ROAD_FACING_MAX) {
+    if (building.id !== 'about-pavilion' && Math.abs(z) <= ROAD_FACING_MAX) {
       slots.push(
         z > 0
           ? { rotationY: Math.PI, offset: { x: 0, z: -(d / 2 + PANEL_PROUD) }, facadeWidth: w }

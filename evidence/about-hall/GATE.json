@@ -1,7 +1,7 @@
 {
   "schema": "about-hall-gate/v1",
   "ok": true,
-  "generatedAt": "2026-09-03T12:12:56.113Z",
+  "generatedAt": "2026-09-03T20:56:05.070Z",
   "dist": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/dist",
   "notes": [
     "G-Hall-10 由 e2e/about-hall.spec.ts 承担，本脚本不判。",
@@ -33,7 +33,7 @@
       "evidence": {
         "files": [
           "world/about-pavilion/index.html",
-          "_astro/Hero.astro_astro_type_script_index_0_lang.DGQkUGYt.js",
+          "_astro/Hero.astro_astro_type_script_index_0_lang.BH8cvvNP.js",
           "_astro/Curator.astro_astro_type_script_index_0_lang.BCw6FaYi.js",
           "_astro/Transition.astro_astro_type_script_index_0_lang.bSAbYaww.js"
         ],
@@ -67,29 +67,29 @@
     {
       "id": "G-Hall-6",
       "status": "PASS",
-      "detail": "额外 JS gzip 2043B ≤ 20KB 目标（Hall-S）",
+      "detail": "额外 JS gzip 2167B ≤ 20KB 目标（Hall-S）",
       "evidence": {
-        "gzipBytes": 2043,
+        "gzipBytes": 2167,
         "targetBytes": 20480,
         "capBytes": 51200,
         "rows": [
           {
-            "url": "/website/_astro/Hero.astro_astro_type_script_index_0_lang.DGQkUGYt.js",
+            "url": "/website/_astro/Hero.astro_astro_type_script_index_0_lang.BH8cvvNP.js",
             "kind": "script",
-            "rel": "_astro/Hero.astro_astro_type_script_index_0_lang.DGQkUGYt.js",
-            "gzipBytes": 611
+            "rel": "_astro/Hero.astro_astro_type_script_index_0_lang.BH8cvvNP.js",
+            "gzipBytes": 730
           },
           {
             "url": "/website/_astro/Curator.astro_astro_type_script_index_0_lang.BCw6FaYi.js",
             "kind": "script",
             "rel": "_astro/Curator.astro_astro_type_script_index_0_lang.BCw6FaYi.js",
-            "gzipBytes": 1043
+            "gzipBytes": 1045
           },
           {
             "url": "/website/_astro/Transition.astro_astro_type_script_index_0_lang.bSAbYaww.js",
             "kind": "script",
             "rel": "_astro/Transition.astro_astro_type_script_index_0_lang.bSAbYaww.js",
-            "gzipBytes": 389
+            "gzipBytes": 392
           }
         ],
         "missing": []

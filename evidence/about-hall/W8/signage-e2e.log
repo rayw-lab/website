@@ -1,0 +1,18 @@
+[WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+[WebServer] (node:68050) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] [WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+[WebServer] (node:68051) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:68063) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:68078) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [world-chromium] › e2e/cyber-city-signage.spec.ts:96:3 › 招牌叙事 v2 验收（CC-VIS-X3；world-chromium 串行） › CITY-SIGN-01 首幕 stagger：装配台账武装 + 全序点亮完成自摘（7 通道 × 150ms） (1.3m)
+  ✓  2 [world-chromium] › e2e/cyber-city-signage.spec.ts:128:3 › 招牌叙事 v2 验收（CC-VIS-X3；world-chromium 串行） › CITY-SIGN-02 ?city=1 直出终态：零 stagger 瞬态 + 三层招牌/广告板网格逐名清点 (42.0s)
+  ✓  3 [world-chromium] › e2e/cyber-city-signage.spec.ts:178:3 › 招牌叙事 v2 验收（CC-VIS-X3；world-chromium 串行） › CITY-SIGN-03 reduced-motion 首幕：stagger 不武装、直出终态零瞬态 (47.7s)
+
+  3 passed (2.8m)

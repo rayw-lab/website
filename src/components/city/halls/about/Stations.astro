@@ -31,7 +31,7 @@ const MEDIA_BY_SCENE: Record<string, string | null> = {
 };
 
 const ALT_BY_SCENE: Record<string, string> = {
-  s1: '程序化生成的化身坐在深色工位前，三块曲面屏显示抽象波形与几何',
+  s1: '程序化生成的化身坐在深色工作台前，三块曲面屏显示抽象波形与几何',
   s2: '程序化生成的化身站在发光地脉平台上，身后是线框车体',
   s3: '程序化生成的化身从指尖投出光锥，贴合弯曲路面',
   s4: '程序化生成的化身被多层光环围绕',
@@ -55,9 +55,9 @@ const desk: StationView = {
   scene: 's1',
   bind: 'stage:none;pillar:none;proof:/about/',
   kicker: '工作台 · 出发',
-  title: '方案从工位开始，不从口号开始',
+  title: '方案从问题现场开始，不从口号开始',
   stages: [],
-  body: '三块屏上是波形、线框和门禁灯，不是演示稿。下面按演进展开：地基、光锥、十六环、天平，最后回家。',
+  body: '三块屏上是波形、线框和状态灯，不是演示稿。下面按演进展开：地基、光锥、十六环、天平，最后回家。',
 };
 
 const scenes: StationView[] = [desk, ...hallStations.filter((s) => s.scene !== 's6')];
@@ -126,7 +126,7 @@ const scenes: StationView[] = [desk, ...hallStations.filter((s) => s.scene !== '
                 </figure>
               ) : (
                 <div class="hall-station-placeholder" role="img" aria-label="人到机甲过渡视频待接入">
-                  <p class="hall-kicker">回家 · 片源待接入</p>
+                  <p class="hall-kicker">回家 · 人与城市相接</p>
                   <p>
                     中景，腰部以上：人站在圆形对接平台，双臂松松交叉；光栅扫过身体，青色光子上飘，同位置凝聚为钛灰块面机甲，青眼最后点亮。固定机位，左四成负空间。片长 10 秒。
                   </p>

@@ -1,0 +1,6 @@
+[WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+Running Lighthouse 3 time(s) on http://127.0.0.1:4660/website/world/about-pavilion/
+Run #1...done.
+Run #2...done.
+Run #3...done.
+Done running Lighthouse!

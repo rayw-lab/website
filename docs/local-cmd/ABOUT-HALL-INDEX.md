@@ -1,8 +1,8 @@
-# ABOUT-HALL-INDEX · CURRENT AUTHORITY · 2026-09-03 17:50 · L11
+# ABOUT-HALL-INDEX · CURRENT AUTHORITY · 2026-09-04 04:54 · L13
 
 > 本节是当前唯一 ACTIVE TODO。冲突时：live Git / 隔离栈 / 日志 > 本文 > 任何旧看板。
 > 目标：`/world/about-pavilion/` 炫技自我介绍页 + `/about/` 纸面双胞胎 + 城→厅连贯转场。状态语义：`MERGED` = 已提交进 topic 分支并推远端；合入 main 以 PR #234 为唯一事件。
-> 分支 `codex/about-hall-20260902` @ HEAD（见 git）· PR #234 Draft · 基线 `main@3c68b2b`（post-merge attempt7 93/93 已过期：其后 W3d/T1a/T1b/QE/W1h/VIS-1/F1/W3e 入库，收口前必须干净端口再跑全量 109 例）
+> 分支 `codex/about-hall-20260902`（本轮提交前基线 `f942a22`）· PR #234 Draft。attempt10 永久保留为失败：97 通过 / 2 失败 / 10 未运行 / 0 flaky / EXIT=1。冻结后的 final-r2 实读分母 109，结果 109 通过 / 0 失败 / 0 跳过 / 0 flaky / EXIT=0；8 URL × 3 次 Lighthouse 断言全过，综合分 95.1。当前状态 `HOST_READBACK_PASS`，待提交、最终 SHA CI、合入与线上核验。
 > **视频叶关闭**：ZDR 13:05 解除；S0 i2v #1/#2 REJECT（头转）→ #3 PASS（LOCKED v4 零头动）；S6 #1 PASS 兜底 / #2 PASS（瘦身首帧）定案。磊哥人拣：R 终止、T 转正 + 偏瘦。ADR-4（第一栋楼=About 北槽 + 转场）、ADR-5（馆长 S1 迎客/S6 让位、9:16 不投）已落。
 > 人测窗口：none
 
@@ -32,9 +32,10 @@
 | AH-W7a | W7 | 债 | `/about/` 问题卡折叠摘要 + 六向因果句 | Grok 4.6 → gemini 初审 | `about/index.astro`、`Crystal.astro` | W6 | LHCI 100/100/100/100 | — | MERGED |
 | AH-W4 | W4 | 双胞胎 | `/about/` 触感 + 四态降级（9:16 已由 ADR-5 B 豁免：移动端不投视频） | glm | `src/pages/about/index.astro`、`src/styles/` | W3 | E 全绿；LHCI 不降 | — | MERGED |
 | AH-W5 | W5 | 联动 | `arrival-snapshot.ts` + `Areas.ts` 接线 + C 横幅 | glm（Areas 单 writer） | `src/lab/world/arrival-snapshot.ts`、`src/lab/world/areas/Areas.ts`、`src/layouts/BaseLayout.astro` | D2 | e2e 进楼到达条 | — | MERGED |
-| AH-W6 | W6 | 收口 | 全量 e2e、双评、PR、handoff | 指挥官 + 批评者 ×2 | `evidence/about-hall/W6/` | 全部 | 86+n 绿；三维 ≥7 | — | HOST_READBACK_PASS(attempt7 93/93 `c463c36` 已过期；收口全量 attempt8 待跑；PR #234 Draft) |
+| AH-W6 | W6 | 收口 | 全量 e2e、双评、PR、handoff | 指挥官 + 批评者 ×2 | `evidence/about-hall/W6/`、`W8/` | 全部 | 最终全量 0 failed/skipped/flaky；三维 ≥7 且差值 ≤1 | — | HOST_READBACK_PASS(final-r2 109/109；Grok 8/8/8) |
 
 | AH-D5 | W7 | 决策 | 馆长 S1 迎客追认 + S5 托举/S6 让位 + 三热路径互斥 + 9:16 不投追认 + L11 登记项 | Grok 董事会 | `adr/ADR-5-curator-presence-and-portrait.md` | D3,D4 | ADR 落地 | ADR-5 | MERGED |
+| AH-D6 | W8 | 决策 | W8 改为 #234 合入前完成；招牌集合、手机扫光、短摘要、竖版禁入与 LHCI 接线 | 磊哥拍板 → 指挥官落稿 | `adr/ADR-6-w8-before-pr234-closeout.md` | D5 | ADR 落地 | ADR-6 | MERGED |
 | AH-M0 | W7 | 债 | 渲染树删 `[[占位]]`（6 gap + 1 gapSolo；字段改可选） | 指挥官直改 | `about-copy.ts`、`Stations.astro` | D4 | `rg '\[\[占位' src`=0 | ADR-4 C | MERGED `5e3c4b6` |
 | AH-W1f | W1 | 资产 | 9 张定选帧 `image_edit` 瘦身（像素差限人物区）+ gemini 一对一审 | Grok lane → gemini | `gen/*/slim/` | 磊哥 13:47 | 9/9 PASS | — | MERGED(磊哥 15:45 人拣通过) |
 | AH-W1g | W1 | 资产 | 瘦身静帧压 webp 进仓 + S0/S6 i2v#2 + 审计 + 压制 | Grok lane | `public/media/about-hall/*.webp`、清单 | W1f | 7 张 ≤60KB | — | MERGED `827308f` |
@@ -47,7 +48,7 @@
 | AH-W3e | W3 | 叙事 | 馆长契约：`data-curator-pose` 四态、S6 yield rAF 真冷、seek/render 同帧互斥 + e2e ×2 | Opus 5 medium | `Curator.astro`、`curator.ts`、`about-hall.spec.ts` | D5 | spec 16/16 ×3 | ADR-5 A | MERGED `5c5ca20` |
 | AH-DOC-1 | W7 | 文档 | TECH-ARCH/WBS/HANDOFF/SRD/AGENTS/README/buildings-map 对齐 | agy gemini-3.8 秘书 | 9 文件 | GAPS C | 抽查事实 2 处纠正 | — | MERGED `c9d5745` |
 | AH-VIS-2 | W7 | 视觉 | S6 电影幅面（78vw/1180px 车道优先）+ 配文 progress 两段揭示；Hero DOM 跟 scrub progress 联动（12px/scrim/6 点） | Opus 5 medium | `Transition.astro`、`Hero.astro`、`hall.css` | W3e | 门全绿；spec 18/18 | — | MERGED `b09de11` |
-| AH-W8 | W8 | 债 | 合入后：about 立面米色招牌（需改 signage 计数契约 → ADR）、城市 poster A10 重拍、履历 `gap` 回填（NEEDS_LEIGE）、S0-R 存档、移动端光缆 CSS 流光、Vite chunk >500KB 告警 | — | — | #234 合入 | — | — | PLANNED |
+| AH-W8 | W8 | 收口增量 | About 南/东立面招牌、城市 poster 重拍、手机静帧一次扫光、问题卡短摘要、竖版禁入、展厅 LHCI、分包归因 | 指挥官 + Grok CLI 协助 | 见 ADR-6 | attempt10 保全 | 局部门 + 最终机器门 + 最终画面 | ADR-6 | HOST_READBACK_PASS(final-r2 + 视觉复议闭合) |
 
 ## 热点文件持有表（单 writer）
 
@@ -65,14 +66,13 @@
 | 项 | 为什么必须磊哥 | 建议 |
 |---|---|---|
 | ~~真人照片~~ / ~~化身终选~~ | 已解决 13:47 | T 转正 + 偏瘦；R 存档 |
-| 六站履历 `gap` 回填 | 履历事实 | 占位已删（M0）；磊哥给事实后回填 `about-copy.ts` gap 字段（W8） |
+| 六站履历 `gap` 回填 | 履历事实 | 本期排除；占位已删（M0），磊哥提供事实后另票回填 |
 | 声音/签名/年份 | 素材 | 可选；没有走替代 |
-| PR #234 合入 main | 磊哥 14:49 令合流 | 序：VIS-2 → merge main → 全量 attempt8 → Grok xhigh + Opus 双审计 → push → CI 绿 → merge |
+| PR #234 合入 main | 磊哥已授权本计划合流 | 序：W8 → 最终全量与视觉复议 → push → 最终 SHA CI 绿 → merge → Pages 线上核验 |
 
 ## DEFERRED
 
 | 项 | 类型 | 解除条件 |
 |---|---|---|
-| Grok 真人脸生成能力 | EXTERNAL | W1d 实测一次 |
 | ~~`image_to_video` ZDR~~ | 已解除 13:05 | 阻断层 = 会话 `/privacy` coding-data opt-out，非 `zdr_access_enabled` |
-| `/world/about-pavilion/` 进 LHCI collect | 内部 | Hall-0 稳定后第二刀 |
+| Vite 大分包告警 | 非阻塞、具名保留 | `three.webgpu`、Draco 与 Basis/Rapier WASM 均为城市按需运行时；静态壳不预载，预算门合格。后续城市性能阶段再拆，不提高阈值消音。 |

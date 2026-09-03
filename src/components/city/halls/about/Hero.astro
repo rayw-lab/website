@@ -56,6 +56,25 @@ const videoSrc = heroEntry?.src16x9 ? `${base}${heroEntry.src16x9}` : '';
 
   const root = document.querySelector<HTMLElement>('[data-hero-scrub]');
   const video = root?.querySelector('video');
+
+  // 手机首屏只在真正进入视口时扫光一次；无 JS、减动效或桌面均保持静态海报。
+  if (
+    root &&
+    matchMedia('(max-width: 899px), (hover: none)').matches &&
+    !matchMedia(REDUCE_MQ).matches &&
+    'IntersectionObserver' in window
+  ) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        root.dataset.mobileGlint = '1';
+        observer.disconnect();
+      },
+      { threshold: 0.25 },
+    );
+    observer.observe(root);
+  }
+
   if (root && video instanceof HTMLVideoElement) {
     const sources = [...video.querySelectorAll('source')];
     let handle: ScrubHandle | null = null;
@@ -134,12 +153,14 @@ const videoSrc = heroEntry?.src16x9 ? `${base}${heroEntry.src16x9}` : '';
      地轨 fixed 底栏会压住首屏最后两行，copy 底留白把职务行抬到轨上。 */
   @media (max-width: 767px) {
     :global(.hall-hero[data-hero-scrub] .hall-hero-media) {
-      height: 32vh;
-      min-height: 11rem;
+      height: 30vh;
+      min-height: 10.5rem;
     }
     :global(.hall-hero[data-hero-scrub] .hall-hero-copy) {
       justify-content: flex-start;
-      padding-bottom: 1.5rem;
+      gap: var(--space-4);
+      padding-top: var(--space-5);
+      padding-bottom: 5.5rem;
     }
     :global(.hall-hero[data-hero-scrub] .hall-hero-scroll) {
       display: none;

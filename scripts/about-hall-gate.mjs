@@ -26,6 +26,7 @@ const PLAYER_CAP_BYTES = 50 * KB;
 const MEDIA_CAP_BYTES = 6 * MB; // ADR-3 决策 C：2.5MB→6.0MB，非首屏必须懒加载
 const HALL_SLUG = 'about-pavilion';
 const MEDIA_JSON = join(ROOT, 'src/data/about-hall-media.json');
+const PUBLIC_MEDIA_DIR = join(ROOT, 'public/media/about-hall');
 const HALLS_JSON = join(ROOT, 'src/data/world-halls.json');
 const BUILDINGS_JSON = join(ROOT, 'src/data/cyber-city-buildings.json');
 const GATE_OUT = join(ROOT, 'evidence/about-hall/GATE.json');
@@ -503,6 +504,10 @@ function readJson(path) {
         const problems = [];
         const items = [];
         const uniqueFiles = new Map();
+        const portraitFiles = walk(PUBLIC_MEDIA_DIR).filter((file) => /portrait/i.test(file));
+        for (const file of portraitFiles) {
+          problems.push(`禁入竖版素材命名命中：${posix.relative(ROOT, file)}`);
+        }
         for (const item of media) {
           const id = item?.id ?? '(no-id)';
           const required = ['id', 'poster', 'durationS', 'bytes', 'sha256', 'fps', 'audio', 'lockedRef'];
@@ -512,6 +517,7 @@ function readJson(path) {
           if (item.audio !== false) problems.push(`${id} audio 必须为 false，实为 ${JSON.stringify(item.audio)}`);
           const src16 = typeof item.src16x9 === 'string' ? item.src16x9.trim() : '';
           const src9 = typeof item.src9x16 === 'string' ? item.src9x16.trim() : '';
+          if (src9) problems.push(`${id} src9x16 必须为空（手机仅使用静帧）`);
           const poster = typeof item.poster === 'string' ? item.poster.trim() : '';
           const paths = [];
           if (src16) paths.push({ role: 'src16x9', url: src16 });
