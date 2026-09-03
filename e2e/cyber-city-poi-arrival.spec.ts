@@ -48,7 +48,8 @@ const buildingsJson = JSON.parse(
 const targetBuilding = buildingsJson.buildings.find((b) => b.id === POI_SLUG);
 if (!targetBuilding) throw new Error(`buildings JSON 缺少 ${POI_SLUG}`);
 /** navigate 目标（route abort 模式；base=/website 同 OBS-01） */
-const NAV_ROUTE = `**/website${targetBuilding.deepLink}`;
+/** ADR-2（About Hall）：进站 navigate 统一带 `?from=city&poi=<id>`；正则容纳可选 query，路径仍以 deepLink 为准 */
+const NAV_ROUTE = new RegExp('/website' + targetBuilding.deepLink.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\?.*)?$');
 
 const cameraShotsJson = JSON.parse(
   readFileSync(new URL('../src/data/camera-shots.json', import.meta.url), 'utf8'),
