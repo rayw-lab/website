@@ -44,7 +44,7 @@ const SEL = {
 
 const buildingsJson = JSON.parse(
   readFileSync(new URL('../src/data/cyber-city-buildings.json', import.meta.url), 'utf8'),
-) as { buildings: Array<{ id: string; deepLink: string }> };
+) as { buildings: Array<{ id: string; deepLink: string; hallPath?: string; neonColor: string }> };
 const targetBuilding = buildingsJson.buildings.find((b) => b.id === POI_SLUG);
 if (!targetBuilding) throw new Error(`buildings JSON 缺少 ${POI_SLUG}`);
 /** navigate 目标（route abort 模式；base=/website 同 OBS-01） */
@@ -369,51 +369,57 @@ test.describe('科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 p
 test.describe('AH-T1b hold overlay（ADR-4 决策 B）', () => {
   test.describe.configure({ timeout: 600_000 });
 
-  test('AH-T1b hold overlay：hold 起帧挂类且 ≤400ms 卸；reduced-motion 不挂', async ({
+  const HOLD_CLASS = 'world-poi-hold-pulse';
+  const aboutPavilion = buildingsJson.buildings.find((b) => b.id === 'about-pavilion');
+  if (!aboutPavilion) throw new Error('buildings JSON 缺少 about-pavilion');
+  const ABOUT_NEON = aboutPavilion.neonColor;
+  const ABOUT_DEST = aboutPavilion.hallPath ?? aboutPavilion.deepLink;
+  const ABOUT_NAV_ROUTE = new RegExp(
+    '/website' + ABOUT_DEST.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\?.*)?$',
+  );
+
+  const overlayOn = (target: Page): Promise<boolean> =>
+    target.evaluate((cls) => document.documentElement.classList.contains(cls), HOLD_CLASS);
+
+  /** 锁存「出现过 + 当时 neon」，不记墙钟（400ms 脉冲会被 poll 间隔漏掉） */
+  const installHoldLatch = (target: Page): Promise<void> =>
+    target.evaluate((cls) => {
+      const w = window as unknown as { __poiHoldLatch?: { seen: boolean; neon: string } };
+      w.__poiHoldLatch = { seen: false, neon: '' };
+      const mark = () => {
+        const root = document.documentElement;
+        if (!root.classList.contains(cls) || w.__poiHoldLatch!.seen) return;
+        w.__poiHoldLatch!.seen = true;
+        w.__poiHoldLatch!.neon = root.style.getPropertyValue('--poi-hold-neon').trim();
+      };
+      new MutationObserver(mark).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class'],
+      });
+      mark();
+    }, HOLD_CLASS);
+
+  const readLatch = (target: Page): Promise<{ seen: boolean; neon: string }> =>
+    target.evaluate(
+      () =>
+        (window as unknown as { __poiHoldLatch?: { seen: boolean; neon: string } }).__poiHoldLatch ?? {
+          seen: false,
+          neon: '',
+        },
+    );
+
+  test('AH-T1b hold overlay：hold 起帧挂类且一次性卸；reduced-motion 不挂', async ({
     page,
     browser,
   }) => {
     test.setTimeout(600_000);
     const errors = trackErrors(page);
-    type PulseLog = { seen: boolean; gone: boolean; addedAt: number; removedAt: number };
 
-    const installPulseProbe = (target: Page): Promise<void> =>
-      target.evaluate(() => {
-        const w = window as unknown as {
-          __poiHoldPulse?: { seen: boolean; gone: boolean; addedAt: number; removedAt: number };
-        };
-        w.__poiHoldPulse = { seen: false, gone: false, addedAt: 0, removedAt: 0 };
-        const log = w.__poiHoldPulse;
-        const on = () => document.documentElement.classList.contains('world-poi-hold-pulse');
-        const mark = () => {
-          if (on()) {
-            if (!log.seen) {
-              log.seen = true;
-              log.addedAt = performance.now();
-            }
-          } else if (log.seen && !log.gone) {
-            log.gone = true;
-            log.removedAt = performance.now();
-          }
-        };
-        const obs = new MutationObserver(mark);
-        obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-        mark();
-      });
-
-    const readPulse = (target: Page): Promise<PulseLog> =>
-      target.evaluate(() => {
-        const w = window as unknown as {
-          __poiHoldPulse?: { seen: boolean; gone: boolean; addedAt: number; removedAt: number };
-        };
-        return w.__poiHoldPulse ?? { seen: false, gone: false, addedAt: 0, removedAt: 0 };
-      });
-
-    await page.route(NAV_ROUTE, (route) => {
+    await page.route(ABOUT_NAV_ROUTE, (route) => {
       void route.abort('aborted');
     });
 
-    await page.goto(`${PAGE_URL}?poi=${POI_SLUG}#debug`);
+    await page.goto(`${PAGE_URL}?poi=about-pavilion#debug`);
     const host = page.locator(SEL.host);
     await expect(host).toBeVisible({ timeout: 60_000 });
     try {
@@ -426,30 +432,29 @@ test.describe('AH-T1b hold overlay（ADR-4 决策 B）', () => {
     const entered = await pollDump(page, (d) => d.funnel.firstPoiIn !== null, 90_000);
     expect(entered.ok, '深链出生应落触发圈内').toBe(true);
 
-    await installPulseProbe(page);
+    await installHoldLatch(page);
     const interacted = await pressEUntil(page, (d) => firstOf(d, 'shot-apply') !== undefined, 120_000);
     expect(interacted.ok, 'E 应触发 shot-apply（前奏开启）').toBe(true);
 
-    // 400ms 脉冲会被 expect.poll 递增间隔漏掉；MutationObserver 在按 E 前挂上。
-    // gone 轮询给 2.5s：SwiftShader ~3fps 下 400ms 墙钟对齐到下一 tick；存在性仍由观察者时间戳断言。
-    await expect.poll(async () => (await readPulse(page)).seen, { timeout: 240_000, intervals: [50, 100] }).toBe(true);
-    await expect.poll(async () => (await readPulse(page)).gone, { timeout: 2_500, intervals: [50] }).toBe(true);
-    const pulse = await readPulse(page);
-    expect(pulse.addedAt, 'overlay 起帧应记下墙钟').toBeGreaterThan(0);
-    expect(pulse.removedAt, 'overlay 卸类应记下墙钟').toBeGreaterThan(pulse.addedAt);
-    expect(
-      pulse.removedAt - pulse.addedAt,
-      'overlay 类存活 ≤400ms + 一帧软渲染对齐（禁 infinite）',
-    ).toBeLessThanOrEqual(1_200);
+    // 状态语义（禁墙钟阈值）：hold 起帧 class 在 + neon 单源 JSON；卸类 poll 等到 false（15s 是等待上限）
+    await expect.poll(async () => (await readLatch(page)).seen, { timeout: 240_000, intervals: [50] }).toBe(true);
+    expect((await readLatch(page)).neon, 'hold 起帧 --poi-hold-neon 须等于 about-pavilion.neonColor').toBe(
+      ABOUT_NEON,
+    );
+    await expect.poll(() => overlayOn(page), { timeout: 15_000, intervals: [50] }).toBe(false);
+    await page.waitForTimeout(1_000);
+    expect(await overlayOn(page), 'overlay 一次性：卸类后 1s 内不得重挂').toBe(false);
 
     // 新页 + 先 emulateMedia 再 goto（CITY-PA-03 同序）；同页后设偏好会错过壳四条件检查
     const rm = await browser.newPage();
     const rmErrors = trackErrors(rm);
+    let rmNavHits = 0;
     await rm.emulateMedia({ reducedMotion: 'reduce' });
-    await rm.route(NAV_ROUTE, (route) => {
+    await rm.route(ABOUT_NAV_ROUTE, (route) => {
+      rmNavHits += 1;
       void route.abort('aborted');
     });
-    await rm.goto(`${PAGE_URL}?poi=${POI_SLUG}#debug`);
+    await rm.goto(`${PAGE_URL}?poi=about-pavilion#debug`);
     const rmHost = rm.locator(SEL.host);
     await expect(rmHost).toHaveAttribute('data-blocked', 'reduced-motion');
     await rmHost.locator(SEL.enter).click();
@@ -461,16 +466,16 @@ test.describe('AH-T1b hold overlay（ADR-4 决策 B）', () => {
     const enteredRm = await pollDump(rm, (d) => d.funnel.firstPoiIn !== null, 90_000);
     expect(enteredRm.ok, 'reduced-motion 深链出生应落触发圈内').toBe(true);
 
-    await installPulseProbe(rm);
+    await installHoldLatch(rm);
     const interactedRm = await pressEUntil(
       rm,
       (d) => firstOf(d, 'shot-apply') !== undefined,
       120_000,
     );
     expect(interactedRm.ok, 'reduced-motion E 应照常 shot-apply').toBe(true);
-    await rm.waitForTimeout(800);
-    const rmPulse = await readPulse(rm);
-    expect(rmPulse.seen, 'reduced-motion 不得挂 hold overlay 类').toBe(false);
+    await expect.poll(() => rmNavHits, { timeout: 240_000, intervals: [200] }).toBeGreaterThanOrEqual(1);
+    expect((await readLatch(rm)).seen, 'reduced-motion 不得挂 hold overlay 类').toBe(false);
+    expect(await overlayOn(rm)).toBe(false);
     await rm.close();
 
     expect(

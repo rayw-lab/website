@@ -1,0 +1,15 @@
+[WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+
+Running 5 tests using 1 worker
+
+(node:26471) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [world-chromium] › e2e/cyber-city-poi-arrival.spec.ts:160:3 › 科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project） › CITY-PA-01 前奏时序：圈内 E → world-poi/shot-apply seq 序 → 定帧后 navigate 被拦（跳转前取证） (1.6m)
+  ✓  2 [world-chromium] › e2e/cyber-city-poi-arrival.spec.ts:229:3 › 科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project） › CITY-PA-02 驾驶中断：前奏窗内压 W → shot-interrupt{by:drive} seq 序 + 相机回跟随 + 零 navigate (1.8m)
+  ✓  3 [world-chromium] › e2e/cyber-city-poi-arrival.spec.ts:286:3 › 科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project） › CITY-PA-03 reduced-motion：直切定帧（零 tween）+ world-poi 照常 + 进站路径可完成 (1.1m)
+  ✓  4 [world-chromium] › e2e/cyber-city-poi-arrival.spec.ts:339:3 › 科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project） › CITY-PA-04 恒等门：robot_idle 期 E 完全不可达（零事件 + View 零触碰） (1.3m)
+  ✓  5 [world-chromium] › e2e/cyber-city-poi-arrival.spec.ts:411:3 › AH-T1b hold overlay（ADR-4 决策 B） › AH-T1b hold overlay：hold 起帧挂类且一次性卸；reduced-motion 不挂 (4.3m)
+
+  Slow test file: [world-chromium] › e2e/cyber-city-poi-arrival.spec.ts (10.0m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  5 passed (10.0m)

@@ -105,3 +105,42 @@ served **Gemini 3.8 Flash (High)**，`identity_ok: true`。首轮 `AGY_NETWORK_T
 **VERDICT: PASS — 泊车机位与首屏同构，脉冲克制不刺眼，到达条人话自然。**
 
 三问：同构 9/10 · 脉冲 9/10 · 到达条 10/10。全文：`evidence/about-hall/T1b/REVIEW-gemini.md`。
+
+## r2 · 墙钟→状态语义（2026-09-03）
+
+指挥官复核：`pnpm preview` + 宿主负载下 `removedAt - addedAt ≤ 1200` 实测 **2280ms** 失败；stash 重建基线同样失败。根因 = e2e 墙钟阈值 × SwiftShader / `Ticker.maxDelta = 1/30`。r1 的 13/13 是 Python 静态伺服 + 低负载。**未改 `PoiArrival.ts`。**
+
+只改 `e2e/cyber-city-poi-arrival.spec.ts` overlay 用例。本票 r2 目标楼改为 `?poi=about-pavilion`（才能断言 JSON about `neonColor`，不是 autodrive-lab 的第二份色）。
+
+### 改前断言
+
+```
+await expect.poll(…readPulse().gone, { timeout: 2_500 }).toBe(true);
+expect(pulse.removedAt - pulse.addedAt, 'overlay 类存活 ≤400ms + 一帧软渲染对齐（禁 infinite）')
+  .toBeLessThanOrEqual(1_200);
+```
+
+gone 轮询 2.5s 也是墙钟上限当判据。
+
+### 改后断言
+
+- hold 起帧：latch `seen === true`（MutationObserver 锁存出现过，不记 ms）且 `--poi-hold-neon` === `about-pavilion.neonColor`（JSON `#fef3c7`）
+- 卸类：`expect.poll(() => classList.contains('world-poi-hold-pulse'), { timeout: 15_000 })` → `false`（15s 是等待上限，不是「必须 ≤Ns 消失」）
+- 一次性：卸后再等 1s，`contains` 仍为 false（不得重挂）
+- reduced-motion：hold 期满（navigate abort）后 `seen === false` 且当前无类
+
+### 验证（pnpm preview :4636，非 Python 静态伺服）
+
+`pnpm build` → `pnpm preview --port 4636 --host 127.0.0.1`（pid 19255）→ 同一命令跑两遍：
+
+```
+env -u CI E2E_PORT=4636 pnpm exec playwright test e2e/cyber-city-poi-arrival.spec.ts --no-deps --workers=1 --retries=0 --reporter=list
+```
+
+| 遍 | 结果 | 墙钟 | 日志 |
+|---|---|---|---|
+| 1 | **5 passed / 0 failed** | 8.2 min | `evidence/about-hall/T1b/e2e-r2-pass1.log` |
+| 2 | **5 passed / 0 failed** | 10.0 min | `evidence/about-hall/T1b/e2e-r2-pass2.log` |
+
+CITY-PA-01…04 未放宽。收工杀 4636。未 commit。
+
