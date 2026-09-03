@@ -1,0 +1,109 @@
+{
+  "source": {
+    "runId": 33711117325,
+    "artifactId": 9877014646,
+    "headSha": "c96dcfce3bc104aae6b436de89662c196bc77fd8",
+    "note": "门禁 workflow lighthouse-results；切片=每 URL 每 run 的四类分+关键 audits；全量 LHR 原件在 GitHub artifact（90 天期）"
+  },
+  "urls": {
+    "http://127.0.0.1:4321/website/": {
+      "runs": 3,
+      "median": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "files": [
+        "lhr-1788405792517.json",
+        "lhr-1788405803511.json",
+        "lhr-1788405814096.json"
+      ]
+    },
+    "http://127.0.0.1:4321/website/about/": {
+      "runs": 3,
+      "median": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "files": [
+        "lhr-1788405920956.json",
+        "lhr-1788405931636.json",
+        "lhr-1788405942270.json"
+      ]
+    },
+    "http://127.0.0.1:4321/website/home/": {
+      "runs": 3,
+      "median": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "files": [
+        "lhr-1788405824964.json",
+        "lhr-1788405835760.json",
+        "lhr-1788405846554.json"
+      ]
+    },
+    "http://127.0.0.1:4321/website/lab/car-configurator/": {
+      "runs": 3,
+      "median": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "files": [
+        "lhr-1788405953143.json",
+        "lhr-1788405964039.json",
+        "lhr-1788405974960.json"
+      ]
+    },
+    "http://127.0.0.1:4321/website/lab/tts-cockpit/": {
+      "runs": 3,
+      "median": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "files": [
+        "lhr-1788405985934.json",
+        "lhr-1788405996960.json",
+        "lhr-1788406007894.json"
+      ]
+    },
+    "http://127.0.0.1:4321/website/work/": {
+      "runs": 3,
+      "median": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "files": [
+        "lhr-1788405857103.json",
+        "lhr-1788405867648.json",
+        "lhr-1788405878177.json"
+      ]
+    },
+    "http://127.0.0.1:4321/website/work/multilingual-cockpit/": {
+      "runs": 3,
+      "median": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "files": [
+        "lhr-1788405888884.json",
+        "lhr-1788405899630.json",
+        "lhr-1788405910321.json"
+      ]
+    }
+  },
+  "slicePolicy": "每 URL 每 run：categories 四项分 + LCP/FCP/CLS/TBT 关键 audits；全量 LHR 原件在 GitHub artifact（90 天期，ID 见 source.artifactId）"
+}

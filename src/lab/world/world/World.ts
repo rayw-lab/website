@@ -48,10 +48,21 @@ export class World {
   ground!: THREE.Mesh;
   cones: WorldObject[] = [];
 
+  /** [Tier-C T-4] 变形落地拍灯光引用（巡航态色温微移消费；setLights 装配） */
+  private hemisphereLight!: THREE.HemisphereLight;
+  private directionalLight!: THREE.DirectionalLight;
+  private readonly reducedMotion =
+    typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   constructor(game: Game) {
     this.game = game;
 
     this.step(0);
+    // [Tier-C T-4] 变形落地拍 → 全城色温 +3% 暖移（巡航态；一次性 ~1s easeOutCubic，
+    // 完成即自毁 tick 监听——稳态循环动画配额占用 0；reduced-motion 直出落位）
+    this.game.events.on('world-transform', () => {
+      this.applyCruiseWarmShift();
+    });
   }
 
   step(step: 0 | 1): void {
@@ -71,20 +82,52 @@ export class World {
   private setLights(): void {
     this.game.scene.background = new THREE.Color('#0d0c11');
 
-    const hemisphere = new THREE.HemisphereLight('#4a4f6d', '#17151c', 1.1);
-    this.game.scene.add(hemisphere);
+    this.hemisphereLight = new THREE.HemisphereLight('#4a4f6d', '#17151c', 1.1);
+    this.game.scene.add(this.hemisphereLight);
 
-    const directional = new THREE.DirectionalLight('#fff4e0', 2.2);
-    directional.position.set(18, 28, 12);
-    directional.castShadow = true;
-    directional.shadow.mapSize.set(1024, 1024);
-    directional.shadow.camera.left = -30;
-    directional.shadow.camera.right = 30;
-    directional.shadow.camera.top = 30;
-    directional.shadow.camera.bottom = -30;
-    directional.shadow.camera.far = 80;
-    directional.shadow.bias = -0.002;
-    this.game.scene.add(directional);
+    this.directionalLight = new THREE.DirectionalLight('#fff4e0', 2.2);
+    this.directionalLight.position.set(18, 28, 12);
+    this.directionalLight.castShadow = true;
+    this.directionalLight.shadow.mapSize.set(1024, 1024);
+    this.directionalLight.shadow.camera.left = -30;
+    this.directionalLight.shadow.camera.right = 30;
+    this.directionalLight.shadow.camera.top = 30;
+    this.directionalLight.shadow.camera.bottom = -30;
+    this.directionalLight.shadow.camera.far = 80;
+    this.directionalLight.shadow.bias = -0.002;
+    this.game.scene.add(this.directionalLight);
+  }
+
+  /**
+   * [Tier-C T-4] 巡航态色温微移：变形落地拍全城灯光 +3% 暖移
+   * （主光 #fff4e0 → #fff0d6、天光 #4a4f6d → #4f4d6d），一次性 ~1.0s easeOutCubic，
+   * 完成即自毁 tick 监听——稳态循环动画配额占用 0（CITY-03 口径）；
+   * reduced-motion / Q2 直出落位不进插值。
+   */
+  private applyCruiseWarmShift(): void {
+    if (!this.hemisphereLight || !this.directionalLight) return;
+    const targetDir = new THREE.Color('#fff0d6');
+    const targetHemi = new THREE.Color('#4f4d6d');
+    const baseDir = this.directionalLight.color.clone();
+    const baseHemi = this.hemisphereLight.color.clone();
+
+    if (this.reducedMotion || this.game.quality.level === 2) {
+      this.directionalLight.color.copy(targetDir);
+      this.hemisphereLight.color.copy(targetHemi);
+      return;
+    }
+
+    let elapsed = 0;
+    const DURATION = 1.0;
+    const onTick = () => {
+      elapsed += this.game.ticker.delta;
+      const progress = Math.min(elapsed / DURATION, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      this.directionalLight.color.lerpColors(baseDir, targetDir, ease);
+      this.hemisphereLight.color.lerpColors(baseHemi, targetHemi, ease);
+      if (progress >= 1) this.game.ticker.events.off('tick', onTick);
+    };
+    this.game.ticker.events.on('tick', onTick);
   }
 
   private setGround(): void {

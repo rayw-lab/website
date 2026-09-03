@@ -1,6 +1,6 @@
 | document | cc-loop-governance-proposal |
 |---|---|
-| status | PROPOSAL（R-3-4 · 执行动作归指挥官） |
+| status | EXECUTED（2026-09-03 D-1 已按 §1 落地；回读收据：required=[门禁（check / build / links / budget / lighthouse）] strict=true / enforce_admins=false / allow_force_pushes=false / allow_deletions=false；artifact 通道方案 A 执行见 docs/research/cc-lhci-artifacts/） |
 | date | 2026-09-02 |
 | 依据 | 长程整改任务书 R-3-4；实证根因 = main 无 branch protection（#213 评论后 14s 抢合、#214 审计收口后 8s 抢合、#220 原位编辑工艺违规）+ 外部审计 LHCI/artifact 只能 TRUST_BASED |
 

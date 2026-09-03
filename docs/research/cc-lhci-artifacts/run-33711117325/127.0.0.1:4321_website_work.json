@@ -1,0 +1,50 @@
+{
+  "url": "http://127.0.0.1:4321/website/work/",
+  "runs": [
+    {
+      "file": "lhr-1788405857103.json",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "audits": {
+        "largest-contentful-paint": "1.5 s",
+        "first-contentful-paint": "0.8 s",
+        "cumulative-layout-shift": "0",
+        "total-blocking-time": "0 ms"
+      }
+    },
+    {
+      "file": "lhr-1788405867648.json",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "audits": {
+        "largest-contentful-paint": "1.5 s",
+        "first-contentful-paint": "0.8 s",
+        "cumulative-layout-shift": "0",
+        "total-blocking-time": "0 ms"
+      }
+    },
+    {
+      "file": "lhr-1788405878177.json",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "audits": {
+        "largest-contentful-paint": "1.5 s",
+        "first-contentful-paint": "0.8 s",
+        "cumulative-layout-shift": "0",
+        "total-blocking-time": "0 ms"
+      }
+    }
+  ]
+}

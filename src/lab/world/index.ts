@@ -358,7 +358,15 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       const beatElapsed = hudClock;
       hudClock = 0;
 
-      if (hudSpeed) hudSpeed.textContent = String(Math.round(speedKmh()));
+      if (hudSpeed) {
+        const kmh = Math.round(speedKmh());
+        hudSpeed.textContent = String(kmh);
+        // [Tier-C T-2] 速度弧线比例（0-1 → CSS --speed-ratio；弧线 stroke-dashoffset 消费）
+        hudSpeed.parentElement?.style.setProperty(
+          '--speed-ratio',
+          Math.min(Math.max(kmh / 120, 0), 1).toFixed(3),
+        );
+      }
       // [CC-PERF-C2-B1] 读数上提：HUD 与自动降档裁决共用同一拍 read()（零新 tick）
       const fpsReading = fps.read();
       if (hudFps) {
