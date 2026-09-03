@@ -171,7 +171,13 @@ export class InkSurface {
     this.lastTime = now;
     const dt = this.opts.fixedStep ?? real;
 
-    this.elapsed += dt;
+    // 🔴 叙事时钟走墙钟，物理步长走夹持值 —— 两个时钟两件事（R19 实测）。
+    // 此前 `elapsed += dt`（夹持后）与 idleSince 犯的是同一个错，当时只修了空转
+    // 判据没修这里：软件渲染 10fps 下每帧只累加 MAX_DT，每秒墙钟仅推进 0.33 秒，
+    // 于是 600 滴的构图在 24 秒墙钟里只落了约 120 滴（实测 x 只铺到 0.16），
+    // 画面塌成左下角一团 —— 而引擎不报错、ready 正常、海报照样生成。
+    // 构图必须在 span 秒内完成，无论帧率；物理仍用夹持 dt 保稳定。
+    this.elapsed += this.opts.fixedStep ?? wall;
     // 🔴 空转判据必须用真实墙钟：此前累加的是被 MAX_DT 夹持后的步长，
     // 低帧率下（软件渲染 10fps）每秒只累加 0.33，12 秒阈值要跑满 36 秒墙钟才触发。
     this.idleSince += wall;

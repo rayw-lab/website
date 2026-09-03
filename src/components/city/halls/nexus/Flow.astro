@@ -5,8 +5,11 @@
  * 每一滴 = 一次真实会话；半径、浓淡、冲量、偏心全部由 `nexus-ledger.json` 派生，
  * **本组件不手写任何数字**（数字由 reducer 从会话日志算出，见 W2 双门）。
  *
- * 空间隐喻（W3 实测定案）：单屏不做时间轴 —— 30 天压进一屏时忙日会堆成一条黑柱。
- * 位置有机散布，**时间只决定落下顺序**，后落的会话推开先落的，叠压本身就是时间的痕迹。
+ * 空间隐喻（R19 改，取代 W3 的「不做时间轴」）：这是一幅**手卷**——
+ * 横轴是真实时间（左=起，右=今），纵轴按席位分成墨带，每带一色。
+ * 旧版是有机撒点：好看，但题为「墨流」、数字取自台账，落点却与数据无关，
+ * 是拿构图冒充信息。忙日堆成浓峰不再当缺陷回避——那几天本来就那么密，
+ * 叠压是密度的诚实呈现。空带同理：没有落点的席位，纸上就该是空的。
  */
 import ledger from '../../../../data/nexus-ledger.json';
 
@@ -25,10 +28,30 @@ const { count, spanSeconds = 14, label } = Astro.props;
 // 墨分五色 → 光学密度。席位的 tone 由 reducer 写在 ink.tone 上。
 const TONE_D: Record<string, number> = { 焦: 1.55, 浓: 1.12, 重: 0.82, 淡: 0.5, 清: 0.3 };
 
-const sessions = (ledger.sessions as Array<Record<string, any>>)
-  .slice(0, count ?? undefined)
-  .map((s) => ({
+const SEATS = ledger.seats as Array<{ id: string; label: string; tone: string }>;
+const bandOf = new Map(SEATS.map((s, i) => [s.id, i] as const));
+const BAND_TOP = 0.1;
+const BAND_H = 0.8 / SEATS.length;
+const bandY = (i: number) => BAND_TOP + (i + 0.5) * BAND_H;
+
+// 确定性抖动：同一份 ledger 每次渲染出同一张纸（构建期海报要可复现）。
+// 只用来把同一小时、同一席位的会话错开，不改变它们所在的格子。
+const jit = (i: number, k: number) => {
+  const v = Math.sin(i * 127.1 + k * 311.7) * 43758.5453;
+  return (v - Math.floor(v)) * 2 - 1;
+};
+
+const picked = (ledger.sessions as Array<Record<string, any>>).slice(0, count ?? undefined);
+const tMin = picked.reduce((m, s) => Math.min(m, s.t0 as number), Infinity);
+const tMax = picked.reduce((m, s) => Math.max(m, s.t0 as number), -Infinity);
+const tSpan = Math.max(1, tMax - tMin);
+
+const sessions = picked
+  .map((s, i) => ({
     t: s.t0,
+    // 横=时间，纵=席位带。抖动幅度小于半格，格子归属不会被抖乱。
+    x: 0.07 + ((s.t0 as number) - tMin) / tSpan * 0.86 + jit(i, 3) * 0.008,
+    y: bandY(bandOf.get(s.seat as string) ?? SEATS.length - 1) + jit(i, 7) * BAND_H * 0.34,
     r: s.ink?.r ?? 0.4,
     d: TONE_D[s.ink?.tone as string] ?? 0.6,
     v: Math.min(1.5, 0.5 + Math.log1p(s.turns ?? 0) / 3), // 上限收到 1.5：2.2 会把 kick 顶到吹散区
@@ -39,8 +62,10 @@ const range = ledger.range as { from?: string; to?: string } | undefined;
 // 无障碍文本同样从数据派生，不手写
 const alt =
   label ??
-  `水墨动画：${sessions.length} 次 AI 协作会话落在同一张宣纸上，` +
-    `时间跨度 ${range?.from ?? ''} 至 ${range?.to ?? ''}。每一滴的大小与浓淡对应一次会话的体量。`;
+  `水墨手卷：${sessions.length} 次 AI 协作会话按真实时间从左向右落在同一张宣纸上，` +
+    `时间跨度 ${range?.from ?? ''} 至 ${range?.to ?? ''}；` +
+    `纵向分为 ${SEATS.length} 条席位墨带，自上而下为 ${SEATS.map((s) => `${s.label}（${s.tone}）`).join('、')}。` +
+    `每一滴是一次会话，大小对应体量，浓淡对应席位墨色；空白的带表示该席位在这段时间没有落点。`;
 ---
 
 <figure class="nexus-flow" data-nexus-flow>
@@ -51,6 +76,16 @@ const alt =
     data-flow-data
     set:html={JSON.stringify({ span: spanSeconds, items: sessions })}
   />
+  <div class="nexus-flow__bands" aria-hidden="true">
+    {SEATS.map((s, i) => (
+      <span class="nexus-flow__band" style={`top:${(bandY(i) * 100).toFixed(2)}%`}>
+        {s.label}<i>{s.tone}</i>
+      </span>
+    ))}
+  </div>
+  <div class="nexus-flow__axis" aria-hidden="true">
+    <span>{range?.from}</span><span>{range?.to}</span>
+  </div>
   <noscript><p class="nexus-flow__fallback">{alt}</p></noscript>
 </figure>
 
@@ -59,6 +94,26 @@ const alt =
   .nexus-flow canvas, .nexus-flow__poster { display: block; width: 100%; height: 100%; object-fit: cover; }
   .nexus-flow__poster[hidden] { display: none; }
   .nexus-flow__fallback { padding: 1rem; color: #d8d4cc; }
+
+  /* 轴标：让「横=时间、纵=席位」这个断言可读。没有它，坐标等于没说。
+     压在纸上而不是挤在画外——手卷的题注本来就写在画心边上。 */
+  .nexus-flow__bands, .nexus-flow__axis {
+    position: absolute; inset: 0; pointer-events: none;
+    font: 400 clamp(.56rem, .72vw, .68rem)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #6b6357; letter-spacing: .04em;
+  }
+  .nexus-flow__band {
+    position: absolute; left: .9%; transform: translateY(-50%);
+    display: inline-flex; align-items: baseline; gap: .3em; white-space: nowrap;
+    opacity: .62;
+  }
+  .nexus-flow__band i {
+    font-style: normal; font-family: "Songti SC", "Noto Serif CJK SC", serif;
+    font-size: 1.05em; color: #8a8070;
+  }
+  .nexus-flow__axis { display: flex; justify-content: space-between; align-items: flex-end; }
+  .nexus-flow__axis span { padding: 0 1.2% 1.4%; opacity: .55; }
+
   @media (max-width: 768px) { .nexus-flow { aspect-ratio: 9 / 14; } }
 </style>
 
@@ -66,7 +121,7 @@ const alt =
   import { InkSurface } from './ink/InkSurface';
   import type { InkEngine } from './ink/InkEngine';
 
-  interface Item { t: number; r: number; d: number; v: number; e: number }
+  interface Item { t: number; x: number; y: number; r: number; d: number; v: number; e: number }
 
   for (const root of document.querySelectorAll<HTMLElement>('[data-nexus-flow]')) {
     const canvas = root.querySelector<HTMLCanvasElement>('[data-flow-canvas]');
@@ -74,15 +129,8 @@ const alt =
     if (!canvas || !raw) continue;
     const { span, items } = JSON.parse(raw) as { span: number; items: Item[] };
     if (items.length === 0) continue;
+    // 时间只决定「落下顺序」，落点本身已由构建期按台账算好（见 frontmatter）
     items.sort((a, b) => a.t - b.t);
-    const t0 = items[0].t;
-    const t1 = items[items.length - 1].t;
-
-    // 确定性伪随机：同一份 ledger 每次渲染出同一张纸（构建期海报才可复现）
-    const rnd = (i: number, k: number) => {
-      const s = Math.sin(i * 127.1 + k * 311.7) * 43758.5453;
-      return s - Math.floor(s);
-    };
 
     let placed = 0;
     // 构建期截海报走 ?poster=1：不开 preserveDrawingBuffer 时 WebGL 内容
@@ -93,14 +141,24 @@ const alt =
       mobile: window.matchMedia('(max-width: 768px)').matches,
       onFrame: (ink: InkEngine, elapsed: number) => {
         const want = Math.min(items.length, Math.floor((elapsed / span) * items.length));
-        while (placed < want) {
+        // 🔴 每帧补齐上限。叙事时钟改走墙钟后（见 InkSurface tick），初始化耗掉的
+        // 那两秒会在**第一帧**一次性要求补落约 85 滴 ≈ 2000 次绘制，渲染线程当场堵死
+        // ——实测表现为构建期截图 30s 超时拿不到稳定帧，页面本身却不报错。
+        // 有上限后慢设备只是把构图拖长，不会卡死；快设备（60fps 需 0.7 滴/帧）永不触顶。
+        let budget = 12;
+        while (placed < want && budget-- > 0) {
           const i = placed++;
           const s = items[i];
-          const u = (s.t - t0) / Math.max(1, t1 - t0);
           ink.drop(
-            0.07 + rnd(i, 11) * 0.72 + u * 0.14, // 轻微右漂：越晚的会话越偏右
-            0.10 + rnd(i, 12) * 0.78,
-            0.011 + s.r * 0.038,
+            s.x,
+            // 🔴 引擎原点在左下，轴标与 y 数据是 CSS 的左上系 —— 在边界翻一次。
+            // 不翻时症状极具迷惑性：画面有墨、无报错，只是每条墨带都落在对面
+            // （Codex+Claude Code 的 502 滴堆到了 agy 的标签行上）。
+            1 - s.y,
+            // 🔴 半径必须相对墨带与日间距定标，不能沿用散点时代的值。
+            // 旧值 0.011+r*0.038 → 直径 0.04~0.096，而一天只有 0.86/40≈0.0215 宽，
+            // 一滴糊住 2~4.5 天，六条墨带连成黑块，密度反而读不出来。
+            0.005 + s.r * 0.009,
             [s.d, s.d, s.d],
             300 + i,
             { vigor: s.v, eccentricity: s.e },
