@@ -1,0 +1,72 @@
+{
+  "site": "https://rayw-lab.github.io/website",
+  "checkedAt": "2026-09-03T21:16:05.233Z",
+  "checks": {
+    "chromiumJourney": {
+      "status": "PASS",
+      "detail": {
+        "signState": {
+          "aboutHolo": true,
+          "aboutPanels": true,
+          "worldState": "robot_idle"
+        },
+        "leftYaw": 0.4886921905584122,
+        "centeredFromQ": 0,
+        "rightYaw": -0.4886921905584122,
+        "centeredFromE": 0,
+        "chromeText": "个人档案馆\n探索\n1/12\n返回科技城",
+        "railNames": [
+          "物联网",
+          "整车前瞻",
+          "AR-HUD",
+          "多语种座舱",
+          "端云大模型",
+          "AI 工作流"
+        ],
+        "backHref": "/website/?poi=about-pavilion",
+        "paperH1": "我解决的是「复杂技术 → 可决策方案」这段路",
+        "cardCount": 3,
+        "pageErrors": [
+          "Transition was skipped"
+        ]
+      }
+    },
+    "chromiumMedia": {
+      "status": "PASS",
+      "detail": {
+        "heroSeek": {
+          "duration": 6.033333,
+          "currentTime": 2
+        },
+        "transitionSeek": {
+          "duration": 10.033333,
+          "currentTime": 4
+        },
+        "mobile": {
+          "mp4Requests": [],
+          "overflow": 0,
+          "mobilePoster": {
+            "complete": true,
+            "width": 1280
+          }
+        },
+        "errors": []
+      }
+    },
+    "staticFallbacks": {
+      "status": "PASS",
+      "detail": {
+        "hallStatus": 200,
+        "hallH1": "在技术与落地之间架桥",
+        "hallPoster": {
+          "complete": true,
+          "width": 1280
+        },
+        "paperStatus": 200,
+        "paperH1": "我解决的是「复杂技术 → 可决策方案」这段路"
+      }
+    }
+  },
+  "errors": [],
+  "status": "PASS"
+}

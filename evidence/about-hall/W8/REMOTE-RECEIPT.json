@@ -1,0 +1,132 @@
+{
+  "recordedAt": "2026-09-04T05:25:00+08:00",
+  "pr": {
+    "headRefOid": "942c7b2ab8540756fd98d816ba92dbf8fda4a4d9",
+    "mergeCommit": {
+      "oid": "c29d386ff40d08711666e210ac679338970403f7"
+    },
+    "mergedAt": "2026-09-03T21:08:34Z",
+    "number": 234,
+    "state": "MERGED",
+    "url": "https://github.com/rayw-lab/website/pull/234"
+  },
+  "prCi": {
+    "conclusion": "success",
+    "headSha": "942c7b2ab8540756fd98d816ba92dbf8fda4a4d9",
+    "status": "completed",
+    "url": "https://github.com/rayw-lab/website/actions/runs/33805711826",
+    "workflowName": "CI"
+  },
+  "mainCi": {
+    "conclusion": "success",
+    "headSha": "c29d386ff40d08711666e210ac679338970403f7",
+    "status": "completed",
+    "url": "https://github.com/rayw-lab/website/actions/runs/33806312097",
+    "workflowName": "CI"
+  },
+  "pages": {
+    "conclusion": "success",
+    "headSha": "c29d386ff40d08711666e210ac679338970403f7",
+    "jobs": [
+      {
+        "completedAt": "2026-09-03T21:09:10Z",
+        "conclusion": "success",
+        "databaseId": 100817513443,
+        "name": "build",
+        "startedAt": "2026-09-03T21:08:41Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-09-03T21:08:46Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-09-03T21:08:42Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-03T21:08:50Z",
+            "conclusion": "success",
+            "name": "Checkout",
+            "number": 2,
+            "startedAt": "2026-09-03T21:08:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-03T21:09:07Z",
+            "conclusion": "success",
+            "name": "Build with Astro",
+            "number": 3,
+            "startedAt": "2026-09-03T21:08:50Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-03T21:09:08Z",
+            "conclusion": "success",
+            "name": "Post Build with Astro",
+            "number": 5,
+            "startedAt": "2026-09-03T21:09:07Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-03T21:09:08Z",
+            "conclusion": "success",
+            "name": "Post Checkout",
+            "number": 6,
+            "startedAt": "2026-09-03T21:09:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-03T21:09:08Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 7,
+            "startedAt": "2026-09-03T21:09:08Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/rayw-lab/website/actions/runs/33806312217/job/100817513443"
+      },
+      {
+        "completedAt": "2026-09-03T21:09:20Z",
+        "conclusion": "success",
+        "databaseId": 100817674791,
+        "name": "deploy",
+        "startedAt": "2026-09-03T21:09:13Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-09-03T21:09:15Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-09-03T21:09:14Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-03T21:09:20Z",
+            "conclusion": "success",
+            "name": "Deploy to GitHub Pages",
+            "number": 2,
+            "startedAt": "2026-09-03T21:09:15Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-03T21:09:20Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 3,
+            "startedAt": "2026-09-03T21:09:20Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/rayw-lab/website/actions/runs/33806312217/job/100817674791"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/rayw-lab/website/actions/runs/33806312217",
+    "workflowName": "Deploy to GitHub Pages"
+  },
+  "publicUrl": "https://rayw-lab.github.io/website/",
+  "remoteMain": "c29d386ff40d08711666e210ac679338970403f7"
+}

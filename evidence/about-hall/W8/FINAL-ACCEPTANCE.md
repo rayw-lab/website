@@ -2,7 +2,7 @@
 
 ## 结论
 
-本地冻结版本达到合入前放行条件：产品增量已完成；正式全量测试、Lighthouse 与视觉复议均通过。结果仍需由最终提交 SHA 的 GitHub CI 复核，随后才能合入并核线上版本。
+本期已经完成合入与线上核验：产品增量、正式全量测试、Lighthouse、视觉复议、最终提交 CI、main CI、Pages 和线上消费路径均通过。真机 iPhone Safari 是唯一未取得的设备证据，按计划单项记 `PARTIAL`。
 
 ## 机器验收
 
@@ -35,10 +35,19 @@
 
 构建仍打印大分包警告。超过 500KB 的主体是城市按需运行时中的 `three.webgpu`、Draco、Basis 和 Rapier WASM；静态首页壳、纸面页和展厅 HTML 不预载这些模块，现有预算门通过。此项不提高阈值消音，留给后续城市性能阶段。
 
+## 远端与线上
+
+- topic SHA：`942c7b2ab8540756fd98d816ba92dbf8fda4a4d9`；PR CI run `33805711826` 成功。
+- PR #234：已合入；merge SHA `c29d386ff40d08711666e210ac679338970403f7`。
+- main CI run `33806312097` 成功；Pages run `33806312217` 的 build/deploy 均成功并绑定 merge SHA。
+- 线上地址：`https://rayw-lab.github.io/website/`。
+- `ONLINE-VERIFICATION.json`：About 招牌、变形后 Q/E、泊位 E 进站、到达条、六站、回家、回城、纸面页、视频 seek、375px 零视频请求/零溢出、无 JS 双页全部通过。
+- `REMOTE-RECEIPT.json`：PR、CI、Pages 与 SHA 的结构化回执。
+
 ## 证明等级
 
 - 本地真实浏览器自动化：已证。
 - 本地 Lighthouse：已证。
 - 独立静态视觉复议：已证。
-- GitHub CI、Pages 部署、线上消费端：待 S4 完成后另记最终回执。
+- GitHub CI、Pages 部署、线上 Chromium 消费端：已证。
 - 真机 iPhone Safari：本期允许的单项 `PARTIAL`；浏览器模拟不冒充真机。

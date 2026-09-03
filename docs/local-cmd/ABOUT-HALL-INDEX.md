@@ -1,10 +1,10 @@
-# ABOUT-HALL-INDEX · CURRENT AUTHORITY · 2026-09-04 04:54 · L13
+# ABOUT-HALL-INDEX · CURRENT AUTHORITY · 2026-09-04 05:28 · L14 · DONE
 
-> 本节是当前唯一 ACTIVE TODO。冲突时：live Git / 隔离栈 / 日志 > 本文 > 任何旧看板。
+> 本节是当前唯一状态入口。冲突时：live Git / 部署回执 / 线上读回 > 本文 > 任何旧看板。本期没有 ACTIVE TODO。
 > 目标：`/world/about-pavilion/` 炫技自我介绍页 + `/about/` 纸面双胞胎 + 城→厅连贯转场。状态语义：`MERGED` = 已提交进 topic 分支并推远端；合入 main 以 PR #234 为唯一事件。
-> 分支 `codex/about-hall-20260902`（本轮提交前基线 `f942a22`）· PR #234 Draft。attempt10 永久保留为失败：97 通过 / 2 失败 / 10 未运行 / 0 flaky / EXIT=1。冻结后的 final-r2 实读分母 109，结果 109 通过 / 0 失败 / 0 跳过 / 0 flaky / EXIT=0；8 URL × 3 次 Lighthouse 断言全过，综合分 95.1。当前状态 `HOST_READBACK_PASS`，待提交、最终 SHA CI、合入与线上核验。
+> PR #234 已于 2026-09-04 05:08（北京时间）合入 main：topic `942c7b2`，merge `c29d386`。attempt10 永久保留为失败：97 通过 / 2 失败 / 10 未运行 / 0 flaky / EXIT=1。冻结后的 final-r2 实读分母 109，结果 109 通过 / 0 失败 / 0 跳过 / 0 flaky / EXIT=0；8 URL × 3 次 Lighthouse 断言全过，综合分 95.1。topic CI、main CI、Pages 与线上自动化均绑定并通过，当前状态 `LIVE_OBSERVED`。
 > **视频叶关闭**：ZDR 13:05 解除；S0 i2v #1/#2 REJECT（头转）→ #3 PASS（LOCKED v4 零头动）；S6 #1 PASS 兜底 / #2 PASS（瘦身首帧）定案。磊哥人拣：R 终止、T 转正 + 偏瘦。ADR-4（第一栋楼=About 北槽 + 转场）、ADR-5（馆长 S1 迎客/S6 让位、9:16 不投）已落。
-> 人测窗口：none
+> 线上地址：`https://rayw-lab.github.io/website/`。真机 iPhone Safari 未取得；本机 Safari 因锁屏不可操作，仅该设备项为 `PARTIAL`。
 
 ## 状态机
 `PLANNED → GIANTS_DONE → DISPATCHED → RECEIVED → HOST_READBACK_PASS|FAIL → MERGED → LIVE_OBSERVED`；只有 `LIVE_OBSERVED` 作验收。
@@ -13,12 +13,12 @@
 
 | 票 | 波 | 维/域 | 目标（一句） | 席位 | write root（唯一） | 依赖 | 最小 Live 验收 | ADR | 状态 |
 |---|---|---|---|---|---|---|---|---|---|
-| AH-G0 | W0 | 全 | Step 0 digest（4 研究包 + 生成栈实证）adopt/adapt/drop | gemini-3.7-flash ×2 | `docs/local-cmd/STEP0-DIGEST.md` | — | 三栏齐；改波次项列出 | — | RECEIVED |
+| AH-G0 | W0 | 全 | Step 0 digest（4 研究包 + 生成栈实证）adopt/adapt/drop | gemini-3.7-flash ×2 | `docs/local-cmd/STEP0-DIGEST.md` | — | 三栏齐；改波次项列出 | — | MERGED |
 | AH-D1 | W0 | 决策 | 化身路线兜底顺序（T/H 先行 → R）与双形态接力 | Grok 董事会 | `docs/local-cmd/adr/ADR-1.md` | G0 | ADR 落地 | ADR-1 | MERGED |
 | AH-D2 | W0 | 决策 | 进楼快照契约 `world-arrival-v1` + `hallPath` 加法 + SRD 补行 | Grok 董事会 | `adr/ADR-2.md` | G0 | ADR 落地 | ADR-2 | MERGED |
 | AH-D3 | W0 | 决策 | 路线 C 双形态正式裁决 + W3 缺口不豁免 + W1 静帧降级/体积门追认（2.0/3.5/6.0） | Grok 董事会 | `adr/ADR-3-dual-form-and-wave-gaps.md` | D1,D2 | ADR 落地；gate 常量同步 | ADR-3 | MERGED |
 | AH-D4 | W7 | 决策 | 第一栋楼=About 布局 + 城→厅转场口径 + 合流序 | Grok 董事会 | `adr/ADR-4-*.md` | D3 | ADR 落地 | ADR-4 | MERGED |
-| AH-G1 | W1 | 生成 | Giants：Grok `image_to_video` 参数实测（尾帧/seed/aspect）+ scrub 编码 GOP 实测 | gemini-3.7-flash + Grok canary | `evidence/about-hall/GIANTS-L1-i2v.md` | — | canary 6s 有 mp4 + ffprobe | — | RECEIVED |
+| AH-G1 | W1 | 生成 | Giants：Grok `image_to_video` 参数实测（尾帧/seed/aspect）+ scrub 编码 GOP 实测 | gemini-3.7-flash + Grok canary | `evidence/about-hall/GIANTS-L1-i2v.md` | — | canary 6s 有 mp4 + ffprobe | — | MERGED |
 | AH-W1a | W1 | 资产 | S0-T / S0-H LOCKED v1 出纸 + first/last 生成 + 独立审计 | 指挥官出纸 → Grok 生成 lane → gemini/glm 审计 | `studio-data-root/about-hall/gen/S0-*/`；`docs/local-cmd/locked/` | G1, D1 | AUDIT PASS ×2 | — | MERGED(瘦身 first 进仓为 poster；i2v 见 W1b) |
 | AH-W1b | W1 | 资产 | S0 `image_to_video` 6s + 压制 + poster + 仓外临时 HTML scrub 验收 | Grok lane → 指挥官 ffmpeg | `public/media/about-hall/hero-*` | W1a | 机器门体积/fps；人门 A 预评 ≥7 | — | MERGED(`hero-s0-720p.mp4` = i2v#3 v3 零头动，审计 PASS，1.05MB；#1/#2 REJECT 存档；配额 3/3) |
 | AH-W1c | W1 | 资产 | S6-T 过渡（人→机甲）LOCKED + 生成 + 10s 视频 | 同上 | `.../gen/S6-T/`；`public/media/about-hall/transition-*` | W1a | 同上 | — | MERGED(`transition-s6-720p.mp4` = i2v#2 瘦身首帧 v2，审计 PASS，2.09MB；#1 兜底存档；配额 2/3) |
@@ -32,7 +32,7 @@
 | AH-W7a | W7 | 债 | `/about/` 问题卡折叠摘要 + 六向因果句 | Grok 4.6 → gemini 初审 | `about/index.astro`、`Crystal.astro` | W6 | LHCI 100/100/100/100 | — | MERGED |
 | AH-W4 | W4 | 双胞胎 | `/about/` 触感 + 四态降级（9:16 已由 ADR-5 B 豁免：移动端不投视频） | glm | `src/pages/about/index.astro`、`src/styles/` | W3 | E 全绿；LHCI 不降 | — | MERGED |
 | AH-W5 | W5 | 联动 | `arrival-snapshot.ts` + `Areas.ts` 接线 + C 横幅 | glm（Areas 单 writer） | `src/lab/world/arrival-snapshot.ts`、`src/lab/world/areas/Areas.ts`、`src/layouts/BaseLayout.astro` | D2 | e2e 进楼到达条 | — | MERGED |
-| AH-W6 | W6 | 收口 | 全量 e2e、双评、PR、handoff | 指挥官 + 批评者 ×2 | `evidence/about-hall/W6/`、`W8/` | 全部 | 最终全量 0 failed/skipped/flaky；三维 ≥7 且差值 ≤1 | — | HOST_READBACK_PASS(final-r2 109/109；Grok 8/8/8) |
+| AH-W6 | W6 | 收口 | 全量 e2e、双评、PR、handoff | 指挥官 + 批评者 ×2 | `evidence/about-hall/W6/`、`W8/` | 全部 | 最终全量 0 failed/skipped/flaky；三维 ≥7 且差值 ≤1 | — | LIVE_OBSERVED(final-r2 109/109；Grok 8/8/8；Pages + online PASS) |
 
 | AH-D5 | W7 | 决策 | 馆长 S1 迎客追认 + S5 托举/S6 让位 + 三热路径互斥 + 9:16 不投追认 + L11 登记项 | Grok 董事会 | `adr/ADR-5-curator-presence-and-portrait.md` | D3,D4 | ADR 落地 | ADR-5 | MERGED |
 | AH-D6 | W8 | 决策 | W8 改为 #234 合入前完成；招牌集合、手机扫光、短摘要、竖版禁入与 LHCI 接线 | 磊哥拍板 → 指挥官落稿 | `adr/ADR-6-w8-before-pr234-closeout.md` | D5 | ADR 落地 | ADR-6 | MERGED |
@@ -48,7 +48,7 @@
 | AH-W3e | W3 | 叙事 | 馆长契约：`data-curator-pose` 四态、S6 yield rAF 真冷、seek/render 同帧互斥 + e2e ×2 | Opus 5 medium | `Curator.astro`、`curator.ts`、`about-hall.spec.ts` | D5 | spec 16/16 ×3 | ADR-5 A | MERGED `5c5ca20` |
 | AH-DOC-1 | W7 | 文档 | TECH-ARCH/WBS/HANDOFF/SRD/AGENTS/README/buildings-map 对齐 | agy gemini-3.8 秘书 | 9 文件 | GAPS C | 抽查事实 2 处纠正 | — | MERGED `c9d5745` |
 | AH-VIS-2 | W7 | 视觉 | S6 电影幅面（78vw/1180px 车道优先）+ 配文 progress 两段揭示；Hero DOM 跟 scrub progress 联动（12px/scrim/6 点） | Opus 5 medium | `Transition.astro`、`Hero.astro`、`hall.css` | W3e | 门全绿；spec 18/18 | — | MERGED `b09de11` |
-| AH-W8 | W8 | 收口增量 | About 南/东立面招牌、城市 poster 重拍、手机静帧一次扫光、问题卡短摘要、竖版禁入、展厅 LHCI、分包归因 | 指挥官 + Grok CLI 协助 | 见 ADR-6 | attempt10 保全 | 局部门 + 最终机器门 + 最终画面 | ADR-6 | HOST_READBACK_PASS(final-r2 + 视觉复议闭合) |
+| AH-W8 | W8 | 收口增量 | About 南/东立面招牌、城市 poster 重拍、手机静帧一次扫光、问题卡短摘要、竖版禁入、展厅 LHCI、分包归因 | 指挥官 + Grok CLI 协助 | 见 ADR-6 | attempt10 保全 | 局部门 + 最终机器门 + 最终画面 | ADR-6 | LIVE_OBSERVED |
 
 ## 热点文件持有表（单 writer）
 
@@ -57,22 +57,16 @@
 | `src/pages/world/[slug].astro` / `WorldHallLayout.astro` | — | 已释放（W3a 收稿） |
 | `src/pages/about/index.astro` | — | 已释放（W7a/VIS-1 收稿） |
 | `src/lab/world/areas/Areas.ts` | — | 已释放（W5 收稿） |
-| `src/data/cyber-city-buildings.json` | — | hallPath 加法后 |
-| `docs/spec/SRD.md` | — | W2a 一行后 |
-| `AGENTS.md` | 指挥官 | 本次编排落稿后释放 |
+| `src/data/cyber-city-buildings.json` | — | 已释放 |
+| `docs/spec/SRD.md` | — | 已释放 |
+| `AGENTS.md` | — | 已释放 |
 
-## NEEDS_LEIGE
+## 剩余事项（本期排除项单表）
 
-| 项 | 为什么必须磊哥 | 建议 |
-|---|---|---|
-| ~~真人照片~~ / ~~化身终选~~ | 已解决 13:47 | T 转正 + 偏瘦；R 存档 |
-| 六站履历 `gap` 回填 | 履历事实 | 本期排除；占位已删（M0），磊哥提供事实后另票回填 |
-| 声音/签名/年份 | 素材 | 可选；没有走替代 |
-| PR #234 合入 main | 磊哥已授权本计划合流 | 序：W8 → 最终全量与视觉复议 → push → 最终 SHA CI 绿 → merge → Pages 线上核验 |
-
-## DEFERRED
-
-| 项 | 类型 | 解除条件 |
-|---|---|---|
-| ~~`image_to_video` ZDR~~ | 已解除 13:05 | 阻断层 = 会话 `/privacy` coding-data opt-out，非 `zdr_access_enabled` |
-| Vite 大分包告警 | 非阻塞、具名保留 | `three.webgpu`、Draco 与 Basis/Rapier WASM 均为城市按需运行时；静态壳不预载，预算门合格。后续城市性能阶段再拆，不提高阈值消音。 |
+| 项 | 状态 | 谁能补 | 如何验 |
+|---|---|---|---|
+| 真机 iPhone Safari | PARTIAL | 磊哥解锁并提供真机窗口 | Safari 打开展厅，确认静帧、文字、地轨、按钮、无横向溢出且网络面无 MP4；模拟器不能替代 |
+| 六站真实履历、年份、业绩与可选照片/声音/签名 | 后续输入 | 磊哥提供一手事实或素材 | 逐条回源后另票，不从现有叙事反推 |
+| 下一栋楼 | 后续阶段 | 新阶段拍板 | 复用 `hallPath`/招牌/进站契约，单独验收 |
+| 全城重做、全站提分与真机性能登记 | 后续阶段 | 城市提分阶段 | 以新阶段看板和真实设备门为准 |
+| Vite 大分包告警 | 非阻塞 | 城市性能阶段 | `three.webgpu`、Draco、Basis、Rapier 为城市按需运行时；静态壳不预载且预算门合格，不提高阈值消音 |
