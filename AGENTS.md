@@ -101,6 +101,7 @@
 | 董事会 | **Grok 4.6 xhigh 常态一路**（`grok -p` 纯推理） | 重大决策裁决 = 磊哥决定，落 `docs/local-cmd/adr/` | 施工；重开已拍死项 |
 | 开发 worker | `glm-5-3-flash@ark-plan`（api_direct，`--attach` 代码 / `--attach-image` 截图） | 组件、脚本、门、像素复核 | 无文件系统：产出由父代理落盘并跑门 |
 | 多面 worker | `gemini-3.7-flash`（agy） | 调研 / 分镜 / 文档 / 秘书 / 批评者 / 小切片 | **不再使用 gemini-3.1-pro** |
+| **前端视觉 worker** | Cursor Task `model: claude-opus-5-thinking-medium`（磊哥 2026-09-03 14:32 指定） | 页面/组件视觉实装、CSS/动效打磨、截图级审美修正；终审仍归指挥官 | 派给 Grok/Gemini 做视觉实装（它们只做逻辑/数据/门/初审） |
 | 生成/编码 worker | Grok Build CLI（`image_gen` / `image_edit` / `image_to_video` {6,10}s；也可编码、联网） | 全部生图生视频 | 引用任何外部生图生视频引擎；生成路与审计路同 lane |
 
 约定：worker 可多轮多路多次；依赖与工具**授权 worker 自行安装**并登记到 TECH-ARCH 依赖表；prompt 文件放 `~/.codex/state/<goal>/prompts/` 0600；一单一 write root；worker 不 commit/push、不占 4321；收稿必宿主回读。i2v 在本仓**解禁**（座舱系列 D-003 不适用），护栏 = 固定机位 + 单一主事件 + first/last 双帧独立审计 + 3 连 REJECT 熔断；diffusion 零文字；六站演进不编年份。

@@ -195,7 +195,7 @@
       "title": { "zh": "个人档案馆", "en": "About Pavilion" },
       "role": "关于王磊：职业叙事与能力图谱",
       "category": "civic",
-      "position": { "x": -44, "z": 150, "rotationY": 0 },
+      "position": { "x": -44, "z": -150, "rotationY": 0 },
       "footprint": { "w": 36, "d": 36, "h": 40 },
       "neonColor": "#fef3c7",
       "deepLink": "/about/",
@@ -204,7 +204,7 @@
       "priority": "P1",
       "unlockPhase": 1,
       "lodProfile": "standard",
-      "parkingBay": { "x": -20, "z": 150, "heading": 270, "radius": 6 }
+      "parkingBay": { "x": -20, "z": -150, "heading": 270, "radius": 6 }
     },
     {
       "id": "contact-beacon",
@@ -260,7 +260,7 @@
       "title": { "zh": "当前状态塔", "en": "Now Signal" },
       "role": "天线塔实时广播「王磊现在在做什么」",
       "category": "ai-core",
-      "position": { "x": -44, "z": -150, "rotationY": 0 },
+      "position": { "x": -44, "z": 150, "rotationY": 0 },
       "footprint": { "w": 20, "d": 20, "h": 72 },
       "neonColor": "#fb7185",
       "deepLink": "/now/",
@@ -268,7 +268,7 @@
       "priority": "P2",
       "unlockPhase": 2,
       "lodProfile": "standard",
-      "parkingBay": { "x": -26, "z": -150, "heading": 270, "radius": 6 }
+      "parkingBay": { "x": -26, "z": 150, "heading": 270, "radius": 6 }
     }
   ],
   "reservedSlots": [
