@@ -703,3 +703,23 @@ test.describe('科技城目标线 v0（CC-FXN-C5 · world-chromium 串行 projec
     expect(errors.filter((m) => !isKnownUaError(m)), 'idle 消费闭环零未捕获异常').toEqual([]);
   });
 });
+
+test.describe('AH-F1 任务链首站（world-chromium）', () => {
+  test('CITY-QUEST-FIRST-STOP-ABOUT：非深链 car_ready 后 HUD 首站含「个人档案馆」', async ({
+    page,
+  }) => {
+    test.setTimeout(300_000);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(PAGE_URL);
+    const host = page.locator(SEL.host);
+    await expect(host).toHaveAttribute('data-blocked', 'reduced-motion');
+    await host.locator('[data-world-enter]').click();
+    await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+    await expect(host).toHaveAttribute('data-world-state', 'robot_idle', { timeout: 120_000 });
+
+    await page.locator(SEL.transform).click();
+    await expect(host).toHaveAttribute('data-world-state', 'car_ready', { timeout: 15_000 });
+    await expect(page.locator(SEL.questName)).toContainText('个人档案馆');
+  });
+});
+

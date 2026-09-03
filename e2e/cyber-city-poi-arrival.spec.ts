@@ -484,3 +484,29 @@ test.describe('AH-T1b hold overlay（ADR-4 决策 B）', () => {
     ).toEqual([]);
   });
 });
+
+test.describe('AH-F1 北槽落点（world-chromium）', () => {
+  test('CITY-POI-ABOUT-NORTH-COORDS：?poi=about-pavilion 出生距 (−20, −150) < 1.5m', async ({
+    page,
+  }) => {
+    test.setTimeout(300_000);
+    await page.goto(`${PAGE_URL}?poi=about-pavilion#debug`);
+    const host = page.locator(SEL.host);
+    await expect(host).toBeVisible({ timeout: 60_000 });
+    try {
+      await expect(host).toHaveAttribute('data-state', 'ready', { timeout: 90_000 });
+    } catch {
+      await host.locator(SEL.enter).click();
+      await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+    }
+
+    const pos = await page.evaluate(() => {
+      const ws = (window as unknown as { __worldSpike?: { state(): { x: number; z: number } } })
+        .__worldSpike;
+      if (!ws) throw new Error('__worldSpike 未挂载');
+      return ws.state();
+    });
+    expect(Math.hypot(pos.x - -20, pos.z - -150)).toBeLessThan(1.5);
+  });
+});
+

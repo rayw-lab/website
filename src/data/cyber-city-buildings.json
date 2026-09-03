@@ -54,7 +54,7 @@
     },
     {
       "id": "ai-core",
-      "title": { "zh": "北城 AI 中枢区", "en": "AI Core District" },
+      "title": { "zh": "AI 中枢区", "en": "AI Core District" },
       "buildings": ["agent-nexus", "edge-cloud-hub", "workflow-foundry", "now-signal"]
     },
     {
@@ -69,7 +69,7 @@
     },
     {
       "id": "civic",
-      "title": { "zh": "西南个人区", "en": "Civic District" },
+      "title": { "zh": "个人区", "en": "Civic District" },
       "buildings": ["about-pavilion", "contact-beacon"]
     }
   ],
