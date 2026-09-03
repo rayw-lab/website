@@ -1,0 +1,14 @@
+{
+  "attempt": 7,
+  "totalTests": 93,
+  "totalFiles": 20,
+  "passed": 93,
+  "failed": 0,
+  "didNotRun": 0,
+  "flaky": 0,
+  "durationMs": 5300419.032,
+  "workers": 1,
+  "retries": 0,
+  "port": 4625,
+  "startTime": "2026-09-03T04:35:08.744Z"
+}
