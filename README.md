@@ -36,7 +36,7 @@
 展厅首屏 Hero 视频支持桌面端指针水平位置驱动 6s 视频 scrub 逐帧交互，过渡段采用 220vh sticky 滚动驱动 S6「回家」过渡片并支持近距 200px 预加载（`src/components/city/halls/ScrubVideo.ts`、`src/components/city/halls/about/Transition.astro`）。
 展厅底部设有六站地轨导航，区分当前站与静态索引层级，支持无障碍键盘 Tab 聚焦与 Enter 一键跳站（`src/components/city/halls/about/StationRail.astro`）。
 三维迎宾馆长机器人由程序化 3D 骨骼渲染与 CSS 驱动，支持凝视、讲解与致意动作状态切换，并在暗色幕布上投射胸灯冷白接地双层反光（`src/components/city/halls/about/Curator.astro`、`src/components/city/halls/about/curator.ts`）。
-展厅全量媒体载荷受严格预算控制且无 9:16 竖版视频多余拉取，静态 JS gzip 仅 1.7KB，已通过 G-Hall 自动化门控对账（`scripts/about-hall-gate.mjs`、`evidence/about-hall/W1h/RECEIPT.md`）。
+展厅全量媒体载荷受严格预算控制且无 9:16 竖版视频多余拉取，初始 JS gzip 以当场 `evidence/about-hall/GATE.json` G-Hall-6 读数为准（目标 ≤20KB），已通过 G-Hall 自动化门控对账（`scripts/about-hall-gate.mjs`、`evidence/about-hall/W1h/RECEIPT.md`）。
 
 ### /about/ 纸面双胞胎（高触感折叠摘要、六向因果晶体、LHCI 四项满分）
 

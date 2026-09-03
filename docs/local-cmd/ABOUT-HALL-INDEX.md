@@ -30,7 +30,7 @@
 | AH-W3 | W3 | 叙事 | 8 幕 sticky 区间 + data-bind + 六向晶体/六站地轨 + hero-robot 程序化动作 | glm + gemini（分镜文案）| `src/components/city/halls/about/**` | W1c, W2b | 人门 B ≥7；C 100% | — | MERGED(骨架/静帧/晶体/收官；馆长+地轨见 W3d/W3e) |
 | AH-W3d | W3 | 叙事 | 馆长三动作（注视/托举/致意）+ 六站地轨 + 右侧车道防重叠 | Grok 4.6 → gemini 初审 → 指挥官终审 | `halls/about/Curator.astro`、`curator.ts`、`StationRail.astro` | D3 | 门 9/9 绿；e2e 7/7；gemini PASS | ADR-3 | MERGED |
 | AH-W7a | W7 | 债 | `/about/` 问题卡折叠摘要 + 六向因果句 | Grok 4.6 → gemini 初审 | `about/index.astro`、`Crystal.astro` | W6 | LHCI 100/100/100/100 | — | MERGED |
-| AH-W4 | W4 | 双胞胎 | `/about/` 触感 + 四态降级 + 9:16 | glm | `src/pages/about/index.astro`、`src/styles/` | W3 | E 全绿；LHCI 不降 | — | MERGED |
+| AH-W4 | W4 | 双胞胎 | `/about/` 触感 + 四态降级（9:16 已由 ADR-5 B 豁免：移动端不投视频） | glm | `src/pages/about/index.astro`、`src/styles/` | W3 | E 全绿；LHCI 不降 | — | MERGED |
 | AH-W5 | W5 | 联动 | `arrival-snapshot.ts` + `Areas.ts` 接线 + C 横幅 | glm（Areas 单 writer） | `src/lab/world/arrival-snapshot.ts`、`src/lab/world/areas/Areas.ts`、`src/layouts/BaseLayout.astro` | D2 | e2e 进楼到达条 | — | MERGED |
 | AH-W6 | W6 | 收口 | 全量 e2e、双评、PR、handoff | 指挥官 + 批评者 ×2 | `evidence/about-hall/W6/` | 全部 | 86+n 绿；三维 ≥7 | — | HOST_READBACK_PASS(attempt7 93/93 `c463c36` 已过期；收口全量 attempt8 待跑；PR #234 Draft) |
 
@@ -45,8 +45,8 @@
 | AH-VIS-1 | W7 | 视觉 | 城市 HUD 叠压 / hold 脉冲可见度 / 展厅地轨-馆长-到达条 / `/about/` 摘要夹取（about 立面身份感 BLOCKED→W8） | Opus 5 medium | 样式层 6 文件 | T1a,T1b,W3d | LHCI /about/ 100×4；门全绿 | — | MERGED `e3a5a82` |
 | AH-F1 | W7 | 补票 | 街区标题去方位词 + e2e ×7（北槽坐标/任务首站/地轨键盘/coneHits/375/纸面摘要翻转/RM） | Grok | 见 F1 RECEIPT | GAPS A/B/C | 7/7 绿 | — | MERGED `fa1dc2d` |
 | AH-W3e | W3 | 叙事 | 馆长契约：`data-curator-pose` 四态、S6 yield rAF 真冷、seek/render 同帧互斥 + e2e ×2 | Opus 5 medium | `Curator.astro`、`curator.ts`、`about-hall.spec.ts` | D5 | spec 16/16 ×3 | ADR-5 A | MERGED `5c5ca20` |
-| AH-D1 | W7 | 文档 | TECH-ARCH/WBS/HANDOFF/SRD/AGENTS/README/buildings-map 对齐 | agy gemini-3.8 秘书 | 9 文件 | GAPS C | 抽查事实 2 处纠正 | — | MERGED `c9d5745` |
-| AH-VIS-2 | W7 | 视觉 | S6 电影幅面 + 配文 progress 揭示；Hero DOM 跟 scrub progress 联动 | Opus 5 medium | `Transition.astro`、`Hero.astro`、`hall.css` | W3e | 门全绿；spec 18/18 | — | DISPATCHED |
+| AH-DOC-1 | W7 | 文档 | TECH-ARCH/WBS/HANDOFF/SRD/AGENTS/README/buildings-map 对齐 | agy gemini-3.8 秘书 | 9 文件 | GAPS C | 抽查事实 2 处纠正 | — | MERGED `c9d5745` |
+| AH-VIS-2 | W7 | 视觉 | S6 电影幅面（78vw/1180px 车道优先）+ 配文 progress 两段揭示；Hero DOM 跟 scrub progress 联动（12px/scrim/6 点） | Opus 5 medium | `Transition.astro`、`Hero.astro`、`hall.css` | W3e | 门全绿；spec 18/18 | — | MERGED `b09de11` |
 | AH-W8 | W8 | 债 | 合入后：about 立面米色招牌（需改 signage 计数契约 → ADR）、城市 poster A10 重拍、履历 `gap` 回填（NEEDS_LEIGE）、S0-R 存档、移动端光缆 CSS 流光、Vite chunk >500KB 告警 | — | — | #234 合入 | — | — | PLANNED |
 
 ## 热点文件持有表（单 writer）
