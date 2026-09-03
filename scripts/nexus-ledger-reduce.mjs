@@ -288,6 +288,52 @@ function claudeLine(s, obj) {
   if (obj.type === 'assistant' && hasText) s.turns += 1;
 }
 
+/**
+ * Cursor transcript 的时间戳**不是标准字段**，而是嵌在用户消息正文里的标签：
+ *   <timestamp>Monday, Aug 24, 2026, 11:27 AM (UTC+8)</timestamp>
+ * 人类可读串，`Date.parse` 不认括号里的时区，必须先规范化。
+ * 取不到时间戳的文件会被 aggregateFile 整条丢弃（静默），所以此处解析成功率
+ * 必须随料交付 —— 见 --selftest-cursor 的正控。
+ */
+const CURSOR_TS_RE =
+  /<timestamp>\s*(?:[A-Za-z]+day,\s*)?([A-Za-z]{3,9}\s+\d{1,2},\s*\d{4},\s*\d{1,2}:\d{2}\s*(?:AM|PM))\s*\(UTC([+-]\d{1,2})(?::?(\d{2}))?\)/i;
+function cursorTs(text) {
+  const m = CURSOR_TS_RE.exec(text);
+  if (!m) return null;
+  const sign = m[2].startsWith('-') ? '-' : '+';
+  const hh = String(Math.abs(Number(m[2]))).padStart(2, '0');
+  const mm = m[3] ?? '00';
+  const t = Date.parse(`${m[1]} GMT${sign}${hh}${mm}`);
+  return Number.isFinite(t) ? t : null;
+}
+
+function cursorLine(s, obj) {
+  // 每个 line 函数都必须记 SEEN_TYPES，否则改分派逻辑会让某类 type 悄悄从
+  // typeCoverage 里消失（本轮实证：cursor 由 claudeLine 改走 cursorLine 后，
+  // turn_ended 立刻从覆盖表蒸发，被正确性门当场抓住）。
+  if (typeof obj.type === 'string') SEEN_TYPES.set(obj.type, (SEEN_TYPES.get(obj.type) ?? 0) + 1);
+  const msg = obj.message;
+  const content = msg && Array.isArray(msg.content) ? msg.content : null;
+  if (!content) return;
+  let hasText = false;
+  for (const c of content) {
+    if (!c || typeof c !== 'object') continue;
+    if (c.type === 'text' && typeof c.text === 'string') {
+      if (c.text.trim()) hasText = true;
+      const ts = cursorTs(c.text);
+      if (ts !== null) {
+        if (s.t0 === null || ts < s.t0) s.t0 = ts;
+        if (s.t1 === null || ts > s.t1) s.t1 = ts;
+      }
+    } else if (c.type === 'tool_use') {
+      s.tools += 1;
+      // 只计数、不记工具名：自定义工具名本身可能含客户/项目代号（agy 漏洞②）
+      if (typeof c.name === 'string' && PATCH_TOOLS.has(c.name)) s.patches += 1;
+    }
+  }
+  if (obj.role === 'assistant' && hasText) s.turns += 1;
+}
+
 function codexLine(s, obj) {
   if (typeof obj.type === 'string') SEEN_TYPES.set(obj.type, (SEEN_TYPES.get(obj.type) ?? 0) + 1);
   const ts = tsOf(obj);
@@ -345,7 +391,7 @@ async function aggregateFile(abs, seat, projKey) {
     // 平票决断用哈希（源路径含用户名，只留哈希绝不外泄）
     hash: createHash('sha256').update(seat + '\u0000' + abs).digest('hex').slice(0, 16),
   };
-  const mapLine = seat === 'codex' ? codexLine : claudeLine;
+  const mapLine = seat === 'codex' ? codexLine : seat === 'cursor' ? cursorLine : claudeLine;
   const rl = readline.createInterface({
     input: createReadStream(abs, { encoding: 'utf8' }),
     crlfDelay: Infinity,

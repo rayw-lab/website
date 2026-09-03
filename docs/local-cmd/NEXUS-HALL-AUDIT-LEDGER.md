@@ -441,3 +441,39 @@ tone 由**席位**决定（codex=焦 / claude-code=浓 / cursor=重 / grok=淡 /
 agy 首轮被我判「没落盘」是误判：它把结果写到了 stdout 而非 `--out` 路径。
 本轮 W2r 同样先在日志里、随后才落盘 `W2-session-schema.md`。
 判据：**agy 席的产出要同时看 `--out` 路径与 stdout 日志**，只看其一会误判为空稿。
+
+## R9 · cursor 接入与第三色（2026-09-04 05:0x–05:4x）
+
+### R9-1 cursor 时间戳解析（正控先行）
+`tsOf()` 只读顶层 `obj.timestamp`，而 cursor transcript 把时间戳嵌在用户消息正文里：
+`<timestamp>Monday, Aug 24, 2026, 11:27 AM (UTC+8)</timestamp>` —— 人类可读串，
+`Date.parse` 不认括号时区。新增 `cursorTs()` 规范化 + `cursorLine()`（turns/tools/patches），
+`mapLine` 三路分派。
+- **正控**：已知样本必须解析出 `2026-08-24T03:27:00.000Z`（= 11:27 UTC+8）✅
+- **成功率反查**（我在注释里承诺的，不能只看"跑通不报错"）：cursor jsonl 93 个，
+  含 `<timestamp>` 标签的 82 个（88%）；实际入账 83 个。
+  未入账的确实**不含**该标签（空会话），不是漏解析。
+  这一步必须做 —— reducer 对取不到时间戳的行是**静默丢弃**，"跑通"与"全丢"症状完全相同。
+- 结果：**第三色到位** —— claude-code 334(浓) + codex 251(焦) + cursor 15(重)，1919 会话 / 40 天。
+- 已知偏差：`PATCH_TOOLS` 是 Claude 工具名集合（Edit/Write/…），cursor 的工具名不同（Shell 等），
+  故 cursor 的 patches 恒 0。记录在案，不构成阻塞。
+
+### R9-2 改分派逻辑让一个 type 从覆盖表蒸发，被门当场抓住
+cursor 由 `claudeLine` 改走 `cursorLine` 后，`turn_ended` 立刻从 `typeCoverage` 消失
+（`SEEN_TYPES` 只在前两个 line 函数里记），正确性门报「1 种 type 未表态」。
+判据：**每个 line 函数都必须记 SEEN_TYPES** —— 覆盖表不能依赖"哪条路径恰好经过"。
+
+### R9-3 🔴 真实数据把 vigor 顶进了"吹散区"——引擎必须自己兜底
+组件页渲染全白，而引擎 `ready` 正常、无降级、console 零错误（最难查的一类）。
+诊断链：数据侧全部正常（ink.r 中位 0.65、d=1.55）→ 但 `v` 频繁触顶 2.2、`e` 频繁触顶 0.7 →
+`kick = 34×(radius/0.03)×vigor` 可达 60+ → **W1b 实测 kick≈66 即把颜料整个吹散**。
+真实数据的 `tools/turns` 比远高于伪随机（如 tools=1017 / turns=19 → 比值 8.9，直接顶到上限）。
+处置：① 引擎侧 `kick` 加**绝对上限 48**（不能指望每个调用方自觉）
+② 调用方 vigor 上限 2.2→1.5（组件与 spike 页均已对齐）。
+
+### R9-4 A/B 定位纠正了我的误判
+我一度认定"组件页空白"，连续两次拿到**一模一样**的像素读数（0.31% / 均值 254.5）——
+三个数字一字不差本身就是"图没变"的信号，我当时没警觉。
+用同一份 ledger 做 A/B（spike 页 vs 组件页）才定谳：**空的是 spike 页**（它的 vigor 仍是 2.2），
+组件页实际 99.71% 非纸色、正常出图。
+判据：**连续两次测量数值完全相同，先怀疑读的是同一份旧产物**，不要急着解释"为什么没变"。

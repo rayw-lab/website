@@ -1,9 +1,9 @@
 # LEDGER-RECEIPT · nexus-ledger-reduce
 
-- reducer: scripts/nexus-ledger-reduce.mjs @ sha256:096cc6bac1b8
-- 确定性: generatedAt = 源最大 mtime（2026-09-03T20:47:35Z），无墙钟、无随机，同输入重跑逐字节一致
-- ledger: src/data/nexus-ledger.json · 387829 bytes · gzip 23036 bytes · sha256 a0a8ff7408da4518a3879c98bc1458f7359e7b695187841f134038c8f2da93d1
-- 会话: 入账 1836 · 明细 600（top 600）· 席位 2 · 天 40
+- reducer: scripts/nexus-ledger-reduce.mjs @ sha256:c957b670b40a
+- 确定性: generatedAt = 源最大 mtime（2026-09-03T21:02:18Z），无墙钟、无随机，同输入重跑逐字节一致
+- ledger: src/data/nexus-ledger.json · 387387 bytes · gzip 23218 bytes · sha256 728799c0842c7019038259dd68977b456019c7b370d9b87611aa1da9d16e6c3e
+- 会话: 入账 1919 · 明细 600（top 600）· 席位 3 · 天 40
 
 ## 源清单
 
@@ -33,14 +33,14 @@
 | claude-code | ~/.claude/projects/-private-tmp-directrun-probe | 3 | 0 | 白名单外，整目录丢弃 |
 | claude-code | ~/.claude/projects/-private-tmp-lineage-probe | 0 | 0 | 白名单外，整目录丢弃 |
 | codex | ~/.codex/sessions | 2164 | 769 | cwd 白名单逐会话判定 |
-| cursor | ~/.cursor/projects/Users-wanglei-mywebsite/agent-transcripts | 78 | 0 | mywebsite |
-| cursor | ~/.cursor/projects/Users-wanglei-Projects-co-agent/agent-transcripts | 15 | 0 | co-agent |
+| cursor | ~/.cursor/projects/Users-wanglei-mywebsite/agent-transcripts | 78 | 71 | mywebsite |
+| cursor | ~/.cursor/projects/Users-wanglei-Projects-co-agent/agent-transcripts | 15 | 12 | co-agent |
 
 ## 丢弃与原因
 
 - 白名单外整目录: 15（涉及文件 403）
 - 白名单外单会话（codex cwd 判定）: 1395
-- 空会话/不可读文件: 100
+- 空会话/不可读文件: 17
 - 行级 JSON 解析失败（跳过该行）: 0
 
 ## 派单与备注

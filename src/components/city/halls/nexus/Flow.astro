@@ -30,7 +30,7 @@ const sessions = (ledger.sessions as Array<Record<string, any>>)
     t: s.t0,
     r: s.ink?.r ?? 0.4,
     d: TONE_D[s.ink?.tone as string] ?? 0.6,
-    v: Math.min(2.2, 0.5 + Math.log1p(s.turns ?? 0) / 3),
+    v: Math.min(1.5, 0.5 + Math.log1p(s.turns ?? 0) / 3), // 上限收到 1.5：2.2 会把 kick 顶到吹散区
     e: (s.turns ?? 0) > 0 ? Math.min(0.7, (s.tools ?? 0) / ((s.turns ?? 1) * 6)) : 0,
   }));
 

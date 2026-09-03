@@ -17,7 +17,7 @@ const flow = ledger.sessions.map((s: any) => ({
   r: s.ink?.r ?? 0.4,
   d: TONE_D[s.ink?.tone as string] ?? 0.6,
   h: s.ink?.hollow ? 1 : 0,
-  v: Math.min(2.2, 0.5 + Math.log1p(s.turns) / 3),        // 冲量 ∝ log(轮数)
+  v: Math.min(1.5, 0.5 + Math.log1p(s.turns) / 3),        // 冲量 ∝ log(轮数)；上限 1.5（2.2 会把小滴 kick 顶进吹散区）
   e: s.turns > 0 ? Math.min(0.7, s.tools / (s.turns * 6)) : 0, // 偏心 ∝ 工具密度
 }));
 const flowRange = { from: ledger.range?.from, to: ledger.range?.to, n: flow.length };
