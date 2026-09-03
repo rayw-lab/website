@@ -1,0 +1,554 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-09-02T13:48:45Z",
+  "repository": "rayw-lab/website",
+  "auditMode": "read-only-browser-equivalent",
+  "targetSnapshot": {
+    "sha": "4ef7ed4cc9db9bde92180b8498bac7104951dd1d",
+    "meaning": "R-1/R-2 terminal snapshot after PR #224"
+  },
+  "observedCurrentMainAtClose": {
+    "sha": "fbb09ebdbf929f60e8025187a429ba334acab86b",
+    "note": "PR #225/#226 landed after target; changed-files do not repair the refuted R-1/R-2 receipts."
+  },
+  "GO_OR_NO_GO": "NO_GO",
+  "result": "FAIL",
+  "reason": "At least one REFUTED claim exists; five were independently refuted. C7 independent dual-eval remains UNVERIFIED.",
+  "minimalCounterexampleChain": [
+    {
+      "claimUrl": "https://api.github.com/repos/rayw-lab/website/pulls/224",
+      "claim": "#224 says #223 had 3 files and #224 supplied 2 files including audit prompt."
+    },
+    {
+      "proofUrl": "https://api.github.com/repos/rayw-lab/website/pulls/223/files?per_page=100",
+      "fact": "#223 actually had 4 files and already included cc-loop-audit-prompt-v2.md."
+    },
+    {
+      "proofUrl": "https://api.github.com/repos/rayw-lab/website/pulls/224/files?per_page=100",
+      "fact": "#224 actually changed only cyber-city-orchestration-paradigm.md."
+    }
+  ],
+  "gate": {
+    "P0": 0,
+    "REFUTED": 5,
+    "rule": "GO only if all five deliverables exist, REFUTED=0 and P0=0.",
+    "passed": false
+  },
+  "claimStatusCounts": {
+    "VERIFIED": 11,
+    "REFUTED": 5,
+    "TRUST_BASED(receipt)": 2,
+    "UNVERIFIED": 1
+  },
+  "proofClassCounts": {
+    "INDEPENDENTLY_VERIFIED": 16,
+    "TRUST_BASED(receipt)": 2,
+    "UNVERIFIED": 1
+  },
+  "severityCounts": {
+    "P1": 5,
+    "P2": 5
+  },
+  "claims": [
+    {
+      "id": "CHAIN-01",
+      "claim": "R-1/R-2 被审终点为 #224 merge 4ef7ed4；审计收口时 main 已到 #226 merge fbb09eb，后两 PR 未回写本案核心文件。",
+      "status": "VERIFIED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "#224/#225/#226 PR 元数据与 changed-files API；#225 仅 sky-forensic，#226 仅其三件继承项+治理/handoff/备忘。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/224 | https://api.github.com/repos/rayw-lab/website/pulls/225/files?per_page=100 | https://api.github.com/repos/rayw-lab/website/pulls/226/files?per_page=100"
+    },
+    {
+      "id": "REC-R1-01",
+      "claim": "#222 Validation：3 文件、+13/−0。",
+      "status": "REFUTED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "PR API 为 changed_files=5、additions=133、deletions=0；changed-files API 也列出 5 路径。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/222 | https://api.github.com/repos/rayw-lab/website/pulls/222/files?per_page=100"
+    },
+    {
+      "id": "REC-R2-01",
+      "claim": "#223 Changed Files 含范式文档，共 5 文件。",
+      "status": "REFUTED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "PR API 为 4 文件；实际包含 audit prompt，但不含 paradigm。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/223 | https://api.github.com/repos/rayw-lab/website/pulls/223/files?per_page=100"
+    },
+    {
+      "id": "REC-R2-02",
+      "claim": "#224 confession：#223 仅 3 件且 audit prompt/paradigm 都未提交；#224 补 2 文件。",
+      "status": "REFUTED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "#223 实际 4 件且 audit prompt 已提交；#224 实际仅 1 件 paradigm。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/224 | https://api.github.com/repos/rayw-lab/website/pulls/223/files?per_page=100 | https://api.github.com/repos/rayw-lab/website/pulls/224/files?per_page=100"
+    },
+    {
+      "id": "C1-HIST",
+      "claim": "SEC-R13 ledger 合并后始终 append-only。",
+      "status": "REFUTED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "#220 对已合并块做 +2/−1 原位编辑。Git 历史仍在，但本项目自立 append-only 合同被违反。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/220 | https://api.github.com/repos/rayw-lab/website/pulls/220/files?per_page=100"
+    },
+    {
+      "id": "C1-FWD",
+      "claim": "R-1 之后，ledger 勘误改为新增 SEC-R14，目标看板未再被 #223/#224/#225/#226 删除式改写。",
+      "status": "VERIFIED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "#222 整体 deletions=0；后续四个 PR changed-files 均不含该看板。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/222 | https://api.github.com/repos/rayw-lab/website/pulls/223/files?per_page=100 | https://api.github.com/repos/rayw-lab/website/pulls/224/files?per_page=100 | https://api.github.com/repos/rayw-lab/website/pulls/225/files?per_page=100 | https://api.github.com/repos/rayw-lab/website/pulls/226/files?per_page=100"
+    },
+    {
+      "id": "C2-ROTY",
+      "claim": "R-1 replay 的 seed、NE 三件 rotY、AABB 与 S2 nose 包含关系。",
+      "status": "VERIFIED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "逐行对译 FNV-1a/mulberry32：seed=3416619534；NE=-131.6617/-141.6989/-139.7073°；nose(15.77, -15.78) inside S2=True。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/50c33d9b98b86155c31ae2749ddbf68bd75bde4c/src/lab/world/city/CityMap.ts | https://raw.githubusercontent.com/rayw-lab/website/50c33d9b98b86155c31ae2749ddbf68bd75bde4c/src/lab/world/city/StreetProps.ts | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/tools/streetprops-roty-replay.mjs | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-vis-x2-collider-aabb-20260902.md"
+    },
+    {
+      "id": "C2-H11H12",
+      "claim": "静态中心线正穿 H11，不是 H12；动态右漂 nose 命中 H12/S2 是另一层叙述。",
+      "status": "VERIFIED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "直线 (20,-8)→(28,-28) 在 H12 z 带对应 x≈22.82–23.18，落 H11 x=[21.55,23.45]，不落 H12 x=[25.02,26.98]。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-vis-x2-collider-aabb-20260902.md | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-vis-x2-obs-r2-diagnosis.md"
+    },
+    {
+      "id": "C3-FIX",
+      "claim": "最小修复增量 5987641..ad93ed1 没有更改 test.setTimeout；主要新增东弧途径点和两份诊断档。",
+      "status": "VERIFIED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "compare API 仅 4 文件；父/子同一行均为 OBS test.setTimeout(1_800_000)，新增 route hunks。",
+      "url": "https://api.github.com/repos/rayw-lab/website/compare/598764172250f3a0d6e5a29c36aa564dbd44e009...ad93ed1efcce66ea9367bb3ca40a95b811c9e393 | https://raw.githubusercontent.com/rayw-lab/website/598764172250f3a0d6e5a29c36aa564dbd44e009/e2e/cyber-city-observability.spec.ts | https://raw.githubusercontent.com/rayw-lab/website/ad93ed1efcce66ea9367bb3ca40a95b811c9e393/e2e/cyber-city-observability.spec.ts"
+    },
+    {
+      "id": "C10-FULL",
+      "claim": "PR #104 全历史确有 timeout 放宽。",
+      "status": "VERIFIED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "最终 PR diff：OBS test.setTimeout 1.5M→1.8M；PERF 1.2M→1.5M。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/104/files?per_page=100 | https://github.com/rayw-lab/website/pull/104.diff"
+    },
+    {
+      "id": "C10-PEDIGREE",
+      "claim": "R-1 文档把上述净变化精确归因于 c912b49/97223b8。",
+      "status": "REFUTED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "c912 的直接 patch 是 OBS 1.5M→2.7M、0.9M→1.5M，且 navigate 0.9M→1.8M；972 是 navigate 1.8M→3.0M。它们是历史谱系节点，但不是文档所写净变化的直接、完整归因。",
+      "url": "https://api.github.com/repos/rayw-lab/website/commits/c912b49f6aea0f07bf71b74d58399ebe83c568a5 | https://api.github.com/repos/rayw-lab/website/commits/97223b8333be48b6b762380c6e208dbb496252aa | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cyber-city-score-loop-orchestration.md | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-loop-audit-prompt-v2.md"
+    },
+    {
+      "id": "C4-AGG",
+      "claim": "R3 全量窗 aggregate：86 expected / 0 unexpected / 0 skipped / 0 flaky。",
+      "status": "VERIFIED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "原始 Playwright JSON stats 与 e2e-summary 聚合字段一致；workers=1、retries=0 也可见。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-vis-x2-full-r3-evidence/e2e-results.json | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-vis-x2-full-r3-evidence/e2e-summary.json"
+    },
+    {
+      "id": "C4-DETAIL",
+      "claim": "全部 86 个 spec 均 results.length=1 且每个 retry=0。",
+      "status": "TRUST_BASED(receipt)",
+      "proof_class": "TRUST_BASED(receipt)",
+      "proof": "浏览器文本中可抽样见单 result/retry0，但本次边界内未对 86 项做完整机器遍历。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-vis-x2-full-r3-evidence/e2e-results.json"
+    },
+    {
+      "id": "C5-SCHEMA",
+      "claim": "e2e-summary 的 totalTests=86、totalFiles=19 口径已分离，历史 R2 摘要以追加式 erratum 纠正。",
+      "status": "VERIFIED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "当前 summary 字段分离；#216 文件列表显示新增 erratum/evidence，而非把历史快照伪装为原始未变事实。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-vis-x2-full-r3-evidence/e2e-summary.json | https://api.github.com/repos/rayw-lab/website/pulls/216/files?per_page=100"
+    },
+    {
+      "id": "C6-CI-ID",
+      "claim": "CI run 与 Lighthouse artifact 身份链存在且 run SUCCESS、artifact 未过期、head SHA 可核。",
+      "status": "VERIFIED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "run 33589801653 conclusion=success、head=6f691fce；artifact 9831423112 size=6,805,356、expired=false、digest 存在。",
+      "url": "https://api.github.com/repos/rayw-lab/website/actions/runs/33589801653 | https://api.github.com/repos/rayw-lab/website/actions/runs/33589801653/artifacts | https://api.github.com/repos/rayw-lab/website/actions/artifacts/9831423112"
+    },
+    {
+      "id": "C6-LHCI",
+      "claim": "artifact 内两 URL 四项中位数均为 100。",
+      "status": "TRUST_BASED(receipt)",
+      "proof_class": "TRUST_BASED(receipt)",
+      "proof": "二进制 zip 按能力边界未下载/解包；只验证了 artifact 元数据与登记 JSON 自洽。",
+      "url": "https://api.github.com/repos/rayw-lab/website/actions/artifacts/9831423112 | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/quality-score-r3.json"
+    },
+    {
+      "id": "C7-INDEP",
+      "claim": "R-2 已完成“单模型双会话 + 签名收据”的可验证独立评审。",
+      "status": "UNVERIFIED",
+      "proof_class": "UNVERIFIED",
+      "proof": "两份均为 gpt-5.6-terra；A timestamp=UNAVAILABLE，B 由父代补录；无可验证签名/会话 ID/工具原始日志，隔离仅自述。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-alvis-r3-eval/r2-eval-a.json | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-alvis-r3-eval/r2-eval-b.json | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cyber-city-visual-rubric-score.json"
+    },
+    {
+      "id": "C8-SCORE",
+      "claim": "综合分 94、视觉登记 76、R2 仲裁仍为 76。",
+      "status": "VERIFIED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "综合=94.00；原视觉 raw=76.30→76；R2 A=74.75→75、B=82.00→82、仲裁=76.25→76。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/quality-score-r3.json | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cyber-city-visual-rubric-score.json | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/scripts/score-loop.mjs"
+    },
+    {
+      "id": "R2-DOCS",
+      "claim": "R2-2 replay、R2-3 范式坑 13–16、R2-4 audit prompt v2 的最终字节均已落库。",
+      "status": "VERIFIED",
+      "proof_class": "INDEPENDENTLY_VERIFIED",
+      "proof": "replay 随 #222；audit prompt 随 #223；paradigm 四行随 #224。最终交付齐，但补交叙述不真。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/tools/streetprops-roty-replay.mjs | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-loop-audit-prompt-v2.md | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cyber-city-orchestration-paradigm.md | https://api.github.com/repos/rayw-lab/website/pulls/223/files?per_page=100 | https://api.github.com/repos/rayw-lab/website/pulls/224/files?per_page=100"
+    }
+  ],
+  "recompute": {
+    "composite": {
+      "dimensions": [
+        {
+          "id": "lhciRoot",
+          "value": 100,
+          "weight": 0.25,
+          "contribution": 25
+        },
+        {
+          "id": "lhciHome",
+          "value": 100,
+          "weight": 0.15,
+          "contribution": 15
+        },
+        {
+          "id": "e2e",
+          "value": 100,
+          "weight": 0.2,
+          "contribution": 20
+        },
+        {
+          "id": "visual",
+          "value": 76,
+          "weight": 0.25,
+          "contribution": 19
+        },
+        {
+          "id": "smoke3d",
+          "value": 100,
+          "weight": 0.15,
+          "contribution": 15
+        }
+      ],
+      "availableWeight": 1.0,
+      "missing": [],
+      "value": 94.0,
+      "matchesReceipt": true
+    },
+    "visualLocked": {
+      "dimensions": [
+        79,
+        76,
+        80,
+        75,
+        71,
+        76,
+        76
+      ],
+      "weights": [
+        0.2,
+        0.2,
+        0.15,
+        0.15,
+        0.15,
+        0.1,
+        0.05
+      ],
+      "raw": 76.3,
+      "rounded": 76
+    },
+    "r2A": {
+      "dimensions": [
+        80,
+        80,
+        75,
+        70,
+        70,
+        70,
+        70
+      ],
+      "weights": [
+        0.2,
+        0.2,
+        0.15,
+        0.15,
+        0.15,
+        0.1,
+        0.05
+      ],
+      "raw": 74.75,
+      "rounded": 75
+    },
+    "r2B": {
+      "dimensions": [
+        85,
+        80,
+        80,
+        85,
+        80,
+        80,
+        85
+      ],
+      "weights": [
+        0.2,
+        0.2,
+        0.15,
+        0.15,
+        0.15,
+        0.1,
+        0.05
+      ],
+      "raw": 82.0,
+      "rounded": 82,
+      "selfReported": 83,
+      "impactRadius": "0: delta remains >5 and final arbitration remains 76"
+    },
+    "r2Arbitration": {
+      "dimensions": [
+        80,
+        80,
+        75,
+        75,
+        70,
+        75,
+        75
+      ],
+      "weights": [
+        0.2,
+        0.2,
+        0.15,
+        0.15,
+        0.15,
+        0.1,
+        0.05
+      ],
+      "raw": 76.25,
+      "rounded": 76
+    },
+    "rotY": {
+      "seed": 3416619534,
+      "allDegrees": [
+        -131.66173232993307,
+        -141.69886220800433,
+        -139.70730044196893,
+        147.79665356839055,
+        132.53640199279516,
+        141.86588628659595,
+        -45.83042599860555,
+        -39.69609901586389,
+        -39.63457977548396,
+        31.914482437055145,
+        33.37100444272727,
+        31.478419374841355,
+        168.51603195712784,
+        193.99372021295991,
+        171.39430364883032,
+        -10.091970013866035,
+        -12.369624972148735,
+        -1.832504782945458
+      ],
+      "stats": {
+        "seed": 3416619534,
+        "mean": 27.24132246569464,
+        "median": 14.822957295947948,
+        "trimmed_mean_1_each_side": 27.378059148596748,
+        "min": -141.69886220800433,
+        "max": 193.99372021295991,
+        "span": 335.69258242096424,
+        "finite_rate": 1.0,
+        "exact_mode_concentration": 0.05555555555555555
+      },
+      "northEast": [
+        {
+          "cluster": "NE",
+          "piece": "PropVending",
+          "rotYDeg": -131.66173232993307,
+          "x": 17.8,
+          "z": -17.8,
+          "aabb": [
+            17.009324992061586,
+            18.590675007938415,
+            -18.604674642567772,
+            -16.99532535743223
+          ]
+        },
+        {
+          "cluster": "NE",
+          "piece": "PropCabinet",
+          "rotYDeg": -141.69886220800433,
+          "x": 16.45649711574556,
+          "z": -16.45649711574556,
+          "aabb": [
+            15.580768019235043,
+            17.332226212256078,
+            -17.266238433560034,
+            -15.646755797931085
+          ]
+        },
+        {
+          "cluster": "NE",
+          "piece": "PropBin",
+          "rotYDeg": -139.70730044196893,
+          "x": 19.072792206135787,
+          "z": -19.072792206135787,
+          "aabb": [
+            18.165777042067067,
+            19.979807370204508,
+            -19.927581208187974,
+            -18.2180032040836
+          ]
+        }
+      ],
+      "nose": [
+        15.77,
+        -15.78
+      ],
+      "noseInsideS2": true,
+      "impactRadius": "0: corrected S2 still contains the cited nose point"
+    },
+    "whatIf": {
+      "visual85": 96.25,
+      "visual0": 75.0,
+      "e2e95": 93.0,
+      "visualMissingNormalized": 100.0
+    }
+  },
+  "priorAuditReassessment": [
+    {
+      "item": "审计 A：#220 append-only",
+      "fact": "成立",
+      "severity_review": "P0→P1",
+      "verdict_effect": "当时 NO_GO 方向可维持；但它证明流程合同被破坏，不证明 94/76 造假。"
+    },
+    {
+      "item": "审计 B：rotY 人工复刻",
+      "fact": "算术错误成立；根因崩塌不成立",
+      "severity_review": "P0→P2",
+      "verdict_effect": "修正 AABB 后 S2 仍命中，影响半径 0；不得单凭此项 NO_GO。"
+    },
+    {
+      "item": "审计 A/B：timeout",
+      "fact": "full PR 有变化；fix increment 无变化",
+      "severity_review": "取决于原 scope",
+      "verdict_effect": "不能一概说前审错，也不能把 full-history 变化当 R-1 增量违规。原 scope 缺失→部分保留。"
+    },
+    {
+      "item": "审计 B：静态 bearing 正穿 H12",
+      "fact": "前审纠正成立",
+      "severity_review": "P2",
+      "verdict_effect": "静态线穿 H11；动态右漂命中 H12/S2 是另一层，需分开叙述。"
+    },
+    {
+      "item": "双评独立性/签名收据",
+      "fact": "前审质疑成立，R-2 仍未独立证明",
+      "severity_review": "P1",
+      "verdict_effect": "重评分 76 可复算，但“独立双评已闭环”不能放行。"
+    },
+    {
+      "item": "综合 94 / 视觉 76",
+      "fact": "成立",
+      "severity_review": "无问题",
+      "verdict_effect": "两轮 NO_GO 不应被表述成登记分必然错误；问题在证据与流程完整性。"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-P1-001",
+      "severity": "P1",
+      "claim": "#224 哑工件差 confession 与补交文件数",
+      "finding": "#224 声称 #223 仅 3 件、audit prompt 与 paradigm 均未提交，且 #224 补 2 件；API 证明 #223 为 4 件且 audit prompt 已在，#224 仅补 paradigm 1 件。当前可见收据正面失真，触发 v2 的 REFUTED→FAIL。",
+      "counterfactual": "只纠正 PR 正文即可消除此反证，不改变仓库字节、视觉 76 或综合 94；但在纠正前不得把“全部可消项闭环”判为真。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/224 | https://api.github.com/repos/rayw-lab/website/pulls/223/files?per_page=100 | https://api.github.com/repos/rayw-lab/website/pulls/224/files?per_page=100"
+    },
+    {
+      "id": "F-P1-002",
+      "severity": "P1",
+      "claim": "#222/#223 changed-files 与 diffstat 收据",
+      "finding": "#222 正文写 3 文件 +13/−0，API 为 5 文件 +133/−0；#223 正文列 5 文件，API 为 4 文件。这不是代码结论错误，但说明验收收据没有由 API 事实自动生成。",
+      "counterfactual": "改正文为 API 实值后，分数和技术结论不变；收据完整性恢复，但 C7 独立性仍会阻塞 GO。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/222 | https://api.github.com/repos/rayw-lab/website/pulls/222/files?per_page=100 | https://api.github.com/repos/rayw-lab/website/pulls/223 | https://api.github.com/repos/rayw-lab/website/pulls/223/files?per_page=100"
+    },
+    {
+      "id": "F-P1-003",
+      "severity": "P1",
+      "claim": "R-2 双评独立性闭环",
+      "finding": "两评同模型；UTC 时间戳缺失/父代补录；所谓 signedReceipt 仅是 JSON 字段，不含可验证签名；会话隔离与未见他分均为自述。R-2 完成了重评分与仲裁，不等于完成独立性证明。",
+      "counterfactual": "补一份异模型评审，或同模型但提供不可变会话 ID、可信 UTC、完整帧 hash、工具序列与签名校验，即可把该项从 UNVERIFIED 提升；登记 76 未必变化。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-alvis-r3-eval/r2-eval-a.json | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-alvis-r3-eval/r2-eval-b.json | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cyber-city-visual-rubric-score.json"
+    },
+    {
+      "id": "F-P1-004",
+      "severity": "P1",
+      "claim": "历史 append-only",
+      "finding": "#220 对已合并 SEC-R13 块做 +2/−1 原位编辑，违反本 Loop 自定合同。R-1 只能建立向前纪律，不能把历史违规改写为从未发生。",
+      "counterfactual": "若 #220 当时采用新增 SEC-R14/ERRATA 块、0 删除，则历史 C1 可通过；分数仍不受影响。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/220 | https://api.github.com/repos/rayw-lab/website/pulls/222"
+    },
+    {
+      "id": "F-P1-005",
+      "severity": "P1",
+      "claim": "前两轮 C10 timeout 裁决被“全部驳回”",
+      "finding": "应拆成两真：PR #104 全历史确有 OBS 1.5M→1.8M、PERF 1.2M→1.5M；最小修复 5987641..ad93ed1 确实零 timeout 改动。没有原始 A/B 任务书，不能证明其本来只审后者，因此整改方把两轮 C10 一概定性为范围错置，证据不足。",
+      "counterfactual": "明确写成“全 PR 有变、fix increment 无变”，并附原审计 scope，便可判定谁混测；当前事实不改变 94/76，但改变对前审是否误判的结论。",
+      "url": "https://api.github.com/repos/rayw-lab/website/pulls/104/files?per_page=100 | https://api.github.com/repos/rayw-lab/website/compare/598764172250f3a0d6e5a29c36aa564dbd44e009...ad93ed1efcce66ea9367bb3ca40a95b811c9e393 | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-loop-audit-prompt-v2.md | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-loop-remediation-roadmap-2026-09-02.md"
+    },
+    {
+      "id": "F-P2-001",
+      "severity": "P2",
+      "claim": "R-1 timeout 谱系的精确 commit 归因",
+      "finding": "c912 的直接 diff 是 OBS 1.5M→2.7M、0.9M→1.5M并加入 navigate 1.8M；972 是 navigate 1.8M→3.0M。它们属于历史谱系，但不能被写成最终净变化的精确直接来源。",
+      "counterfactual": "补全中间提交链并区分 test.setTimeout 与 navigate budget，即可闭环；当前影响半径为 0，仍能确认 full PR 有 timeout 变化、fix increment 没有。",
+      "url": "https://api.github.com/repos/rayw-lab/website/commits/c912b49f6aea0f07bf71b74d58399ebe83c568a5 | https://api.github.com/repos/rayw-lab/website/commits/97223b8333be48b6b762380c6e208dbb496252aa | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cyber-city-score-loop-orchestration.md"
+    },
+    {
+      "id": "F-P2-002",
+      "severity": "P2",
+      "claim": "首轮 B 对 rotY 错算的 P0 严重性",
+      "finding": "人工 rotY 数字确错；独立重放为 NE −131.6617/−141.6989/−139.7073°。但修正 S2 AABB 后 nose (15.77, -15.78) 仍在盒内，因此“根因整体崩塌”不成立。",
+      "counterfactual": "只有修正后 nose 退出所有相关碰撞盒、从而改变根因/修复方向，才有 P0 影响；本案影响半径=0，应降级。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/50c33d9b98b86155c31ae2749ddbf68bd75bde4c/src/lab/world/city/CityMap.ts | https://raw.githubusercontent.com/rayw-lab/website/50c33d9b98b86155c31ae2749ddbf68bd75bde4c/src/lab/world/city/StreetProps.ts | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/tools/streetprops-roty-replay.mjs | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-vis-x2-collider-aabb-20260902.md"
+    },
+    {
+      "id": "F-P2-003",
+      "severity": "P2",
+      "claim": "R2-B 评审总分 83",
+      "finding": "按权重重算为 82.00，不是 82.75/83。文件虽保留 parent_recompute=82.0，但仍保留错误 self report。",
+      "counterfactual": "用 82 替换 83 后，|75−82|=7 仍大于 5，仲裁仍触发，最终 76 不变；影响半径=0。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-alvis-r3-eval/r2-eval-b.json | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cyber-city-visual-rubric-score.json"
+    },
+    {
+      "id": "F-P2-004",
+      "severity": "P2",
+      "claim": "score-loop 输入健壮性",
+      "finding": "CLI override 校验 0–100，但视觉 JSON 文件路径只校验 typeof number；−1、101 等越界值会被计入。字符串分数会被当作缺失并触发可用权重归一化，极端情况下反而得到 100。",
+      "counterfactual": "对所有维度增加 finite + 0≤score≤100 且 `missing.length>0` 时阻止 --min 放行；当前输入均合法，现有 94 影响半径=0。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/scripts/score-loop.mjs"
+    },
+    {
+      "id": "F-P2-005",
+      "severity": "P2",
+      "claim": "前两轮审计原文可复审性",
+      "finding": "仓库只保存整改方对 A/B 的摘要，没有发现两份外部审计原文、不可变快照或原始 scope。因此本报告可复核技术事实与摘要裁决，不能替代逐句复审原报告。",
+      "counterfactual": "保存原始 A/B Markdown、时间戳、会话/模型与证据索引后，才能对“哪两处同行错误”作无条件终局裁定。",
+      "url": "https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-loop-remediation-roadmap-2026-09-02.md | https://raw.githubusercontent.com/rayw-lab/website/4ef7ed4cc9db9bde92180b8498bac7104951dd1d/docs/research/cc-loop-audit-prompt-v2.md"
+    }
+  ],
+  "selfAudit": {
+    "narrativeMisledCount": 2,
+    "newIssuesComparedWithPriorRounds": 4,
+    "note": "Three of the four arose after the prior audits and are not retroactive auditor omissions."
+  },
+  "limitations": [
+    "No Playwright/Node execution.",
+    "No binary artifact download or unzip.",
+    "All 86 per-spec result cardinalities were not machine-enumerated.",
+    "Original Audit A/B full texts and original scopes were not found in the repository."
+  ]
+}

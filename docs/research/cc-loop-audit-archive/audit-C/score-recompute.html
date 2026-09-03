@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CC Loop 第三轮审计｜计分复算板</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --bg:#0b0f14; --panel:#121821; --line:#2b3542; --text:#e9eef5; --muted:#9eabb9;
+  --ok:#41d18a; --bad:#ff6b6b; --warn:#f7c65c; --accent:#73b7ff;
+}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--bg);color:var(--text)}
+main{max-width:1180px;margin:auto;padding:28px}
+h1,h2{font-family:system-ui,-apple-system,sans-serif;letter-spacing:.01em}
+h1{font-size:28px;margin:0 0 8px} h2{font-size:20px;margin-top:30px}
+.sub{color:var(--muted);margin-bottom:20px}
+.banner{border:1px solid var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--panel));padding:16px 18px;border-radius:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:680px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:var(--warn)} .muted{color:var(--muted)}
+code{background:#0005;padding:.12em .35em;border-radius:4px}
+.formula{white-space:pre-wrap;background:#080b10;border:1px solid var(--line);border-radius:8px;padding:12px}
+.kpi{font-size:28px;font-weight:750}
+details{margin-top:12px}
+footer{margin-top:32px;color:var(--muted);font-size:13px}
+@media (max-width:700px){main{padding:18px} table{min-width:620px}}
+</style>
+</head>
+<body>
+<main>
+  <h1>CC Loop 第三轮审计｜计分复算板</h1>
+  <div class="sub">固定快照 <code>4ef7ed4cc9db9bde92180b8498bac7104951dd1d</code> · 生成于 <code>2026-09-02T13:48:45Z</code> · 零外部依赖</div>
+  <div class="banner">
+    <div class="kpi bad" id="verdict">计算中…</div>
+    <div id="gate-detail"></div>
+  </div>
+
+  <h2>1. 综合分 94 逐项复算</h2>
+  <div class="card"><table id="composite-table"></table><div class="formula" id="composite-formula"></div></div>
+
+  <h2>2. 视觉分与 R2 仲裁</h2>
+  <div class="card"><table id="visual-table"></table></div>
+
+  <h2>3. What-if 与缺维归一化</h2>
+  <div class="card"><table id="whatif-table"></table></div>
+
+  <h2>4. Fuzz：当前脚本输入边界</h2>
+  <div class="card"><table id="fuzz-table"></table>
+    <p class="warn">提示：这些是脚本鲁棒性测试，不表示当前登记输入非法。当前输入 visual=76、missing=[]，94 仍成立。</p>
+  </div>
+
+  <h2>5. rotY / AABB 重放摘要</h2>
+  <div class="grid">
+    <div class="card" id="rot-summary"></div>
+    <div class="card"><table id="rot-table"></table></div>
+  </div>
+
+  <details>
+    <summary>内嵌 recompute-data JSON</summary>
+    <pre id="json-view" class="formula"></pre>
+  </details>
+  <footer>本页所有 ✓/✗ 均由浏览器 JavaScript 从内嵌 JSON 重新计算，不读取外部网络。</footer>
+</main>
+<script id="recompute-data" type="application/json">{"generatedAt": "2026-09-02T13:48:45Z", "targetSha": "4ef7ed4cc9db9bde92180b8498bac7104951dd1d", "verdict": "FAIL / NO_GO", "rule": "任一 REFUTED 或 P0 → FAIL", "refutedCount": 5, "p0Count": 0, "weights": [0.2, 0.2, 0.15, 0.15, 0.15, 0.1, 0.05], "composite": {"rows": [{"name": "LHCI /", "value": 100, "weight": 0.25, "expectedContribution": 25}, {"name": "LHCI /home/", "value": 100, "weight": 0.15, "expectedContribution": 15}, {"name": "e2e", "value": 100, "weight": 0.2, "expectedContribution": 20}, {"name": "visual", "value": 76, "weight": 0.25, "expectedContribution": 19}, {"name": "smoke3d", "value": 100, "weight": 0.15, "expectedContribution": 15}], "expected": 94, "availableWeight": 1, "missing": []}, "visualCases": [{"name": "原登记维度", "values": [79, 76, 80, 75, 71, 76, 76], "expectedRaw": 76.3, "expectedRounded": 76}, {"name": "R2-A", "values": [80, 80, 75, 70, 70, 70, 70], "expectedRaw": 74.75, "expectedRounded": 75}, {"name": "R2-B（修正）", "values": [85, 80, 80, 85, 80, 80, 85], "expectedRaw": 82.0, "expectedRounded": 82, "selfReported": 83}, {"name": "R2 仲裁", "values": [80, 80, 75, 75, 70, 75, 75], "expectedRaw": 76.25, "expectedRounded": 76}], "whatIf": [{"name": "visual=85", "values": [100, 100, 100, 85, 100], "weights": [0.25, 0.15, 0.2, 0.25, 0.15], "normalize": true, "expected": 96.25}, {"name": "visual=0", "values": [100, 100, 100, 0, 100], "weights": [0.25, 0.15, 0.2, 0.25, 0.15], "normalize": true, "expected": 75}, {"name": "e2e=95", "values": [100, 100, 95, 76, 100], "weights": [0.25, 0.15, 0.2, 0.25, 0.15], "normalize": true, "expected": 93}, {"name": "visual missing", "values": [100, 100, 100, null, 100], "weights": [0.25, 0.15, 0.2, 0.25, 0.15], "normalize": true, "expected": 100}], "fuzz": [{"name": "visual JSON=-1", "fileValue": -1, "expectedCurrentScriptComposite": 74.75, "shouldAccept": false}, {"name": "visual JSON=101", "fileValue": 101, "expectedCurrentScriptComposite": 100.25, "shouldAccept": false}, {"name": "visual JSON='76'", "fileValue": "76", "expectedCurrentScriptComposite": 100, "shouldAccept": false}, {"name": "visual JSON=76", "fileValue": 76, "expectedCurrentScriptComposite": 94, "shouldAccept": true}], "rotY": {"seed": 3416619534, "northEast": [{"cluster": "NE", "piece": "PropVending", "rotYDeg": -131.66173232993307, "x": 17.8, "z": -17.8, "aabb": [17.009324992061586, 18.590675007938415, -18.604674642567772, -16.99532535743223]}, {"cluster": "NE", "piece": "PropCabinet", "rotYDeg": -141.69886220800433, "x": 16.45649711574556, "z": -16.45649711574556, "aabb": [15.580768019235043, 17.332226212256078, -17.266238433560034, -15.646755797931085]}, {"cluster": "NE", "piece": "PropBin", "rotYDeg": -139.70730044196893, "x": 19.072792206135787, "z": -19.072792206135787, "aabb": [18.165777042067067, 19.979807370204508, -19.927581208187974, -18.2180032040836]}], "allDegrees": [-131.66173232993307, -141.69886220800433, -139.70730044196893, 147.79665356839055, 132.53640199279516, 141.86588628659595, -45.83042599860555, -39.69609901586389, -39.63457977548396, 31.914482437055145, 33.37100444272727, 31.478419374841355, 168.51603195712784, 193.99372021295991, 171.39430364883032, -10.091970013866035, -12.369624972148735, -1.832504782945458], "stats": {"seed": 3416619534, "mean": 27.24132246569464, "median": 14.822957295947948, "trimmed_mean_1_each_side": 27.378059148596748, "min": -141.69886220800433, "max": 193.99372021295991, "span": 335.69258242096424, "finite_rate": 1.0, "exact_mode_concentration": 0.05555555555555555}, "nose": [15.77, -15.78], "noseInsideS2": true}}</script>
+<script>
+const data = JSON.parse(document.getElementById('recompute-data').textContent);
+const eps = 1e-9;
+const close = (a,b,t=1e-8) => Number.isFinite(a) && Math.abs(a-b) <= t;
+const mark = ok => ok ? '<span class="ok">✓</span>' : '<span class="bad">✗</span>';
+function weighted(values, weights, normalize=true) {
+  let sum=0, available=0;
+  values.forEach((v,i)=>{
+    if (typeof v === 'number' && Number.isFinite(v)) { sum += v*weights[i]; available += weights[i]; }
+  });
+  return {value: available ? (normalize ? sum/available : sum) : null, available};
+}
+function esc(x) { return String(x).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+const gatePass = data.refutedCount===0 && data.p0Count===0;
+document.getElementById('verdict').innerHTML = gatePass ? '<span class="ok">GO</span>' : '<span class="bad">FAIL / NO_GO</span>';
+document.getElementById('gate-detail').innerHTML =
+  `规则：${esc(data.rule)}；REFUTED=<b>${data.refutedCount}</b>，P0=<b>${data.p0Count}</b>。`;
+
+// Composite
+let chtml='<tr><th>维度</th><th class="num">值</th><th class="num">权重</th><th class="num">贡献</th><th>核验</th></tr>';
+let csum=0, cw=0, formula=[];
+for (const r of data.composite.rows) {
+  const contribution=r.value*r.weight; csum+=contribution; cw+=r.weight;
+  const ok=close(contribution,r.expectedContribution);
+  formula.push(`${r.value}×${r.weight}`);
+  chtml+=`<tr><td>${esc(r.name)}</td><td class="num">${r.value}</td><td class="num">${r.weight}</td><td class="num">${contribution.toFixed(2)}</td><td>${mark(ok)}</td></tr>`;
+}
+const cval=csum/cw;
+chtml+=`<tr><th>合计</th><th></th><th class="num">${cw.toFixed(2)}</th><th class="num">${cval.toFixed(2)}</th><th>${mark(close(cval,data.composite.expected))}</th></tr>`;
+document.getElementById('composite-table').innerHTML=chtml;
+document.getElementById('composite-formula').textContent=`(${formula.join(' + ')}) / ${cw.toFixed(2)} = ${cval.toFixed(2)}`;
+
+// Visual
+let vhtml='<tr><th>案例</th><th>维度</th><th class="num">复算 raw</th><th class="num">round</th><th>核验</th><th>影响</th></tr>';
+for (const c of data.visualCases) {
+  const r=weighted(c.values,data.weights,false).value, rounded=Math.round(r);
+  const ok=close(r,c.expectedRaw)&&rounded===c.expectedRounded;
+  const impact = c.selfReported ? `自报 ${c.selfReported} → 修正 ${rounded}；门限仍触发，最终不变` : '';
+  vhtml+=`<tr><td>${esc(c.name)}</td><td>${c.values.join(' / ')}</td><td class="num">${r.toFixed(2)}</td><td class="num">${rounded}</td><td>${mark(ok)}</td><td>${esc(impact)}</td></tr>`;
+}
+document.getElementById('visual-table').innerHTML=vhtml;
+
+// What-if
+let whtml='<tr><th>情景</th><th>输入</th><th class="num">可用权重</th><th class="num">复算</th><th>核验</th></tr>';
+for (const c of data.whatIf) {
+  const r=weighted(c.values,c.weights,c.normalize);
+  whtml+=`<tr><td>${esc(c.name)}</td><td>${esc(JSON.stringify(c.values))}</td><td class="num">${r.available.toFixed(2)}</td><td class="num">${r.value.toFixed(2)}</td><td>${mark(close(r.value,c.expected))}</td></tr>`;
+}
+document.getElementById('whatif-table').innerHTML=whtml;
+
+// Simulate current file-input behavior: only typeof number, otherwise missing.
+function currentScriptVisual(fileValue) {
+  const v = typeof fileValue === 'number' ? fileValue : null;
+  return weighted([100,100,100,v,100],[.25,.15,.20,.25,.15],true).value;
+}
+let fhtml='<tr><th>输入</th><th class="num">当前脚本结果</th><th>数值复核</th><th>应接受？</th><th>边界判定</th></tr>';
+for (const c of data.fuzz) {
+  const v=currentScriptVisual(c.fileValue);
+  const rangeOk=typeof c.fileValue==='number' && Number.isFinite(c.fileValue) && c.fileValue>=0 && c.fileValue<=100;
+  fhtml+=`<tr><td>${esc(c.name)}</td><td class="num">${v.toFixed(2)}</td><td>${mark(close(v,c.expectedCurrentScriptComposite))}</td><td>${c.shouldAccept?'是':'否'}</td><td>${rangeOk===c.shouldAccept?mark(true):mark(false)} ${rangeOk?'合法':'应拒绝/缺失'}</td></tr>`;
+}
+document.getElementById('fuzz-table').innerHTML=fhtml;
+
+// rotY
+const rs=data.rotY.stats;
+document.getElementById('rot-summary').innerHTML=
+  `<b>seed</b> = ${data.rotY.seed}<br>`+
+  `<b>mean / median</b> = ${rs.mean.toFixed(6)}° / ${rs.median.toFixed(6)}°<br>`+
+  `<b>min / max / span</b> = ${rs.min.toFixed(6)}° / ${rs.max.toFixed(6)}° / ${rs.span.toFixed(6)}°<br>`+
+  `<b>nose inside S2</b> = ${mark(data.rotY.noseInsideS2)} ${data.rotY.noseInsideS2}`;
+let rhtml='<tr><th>物件</th><th class="num">rotY</th><th>中心</th><th>AABB</th></tr>';
+for (const r of data.rotY.northEast) {
+  rhtml+=`<tr><td>${esc(r.piece)}</td><td class="num">${r.rotYDeg.toFixed(6)}°</td><td>(${r.x.toFixed(6)}, ${r.z.toFixed(6)})</td><td>${r.aabb.map(x=>x.toFixed(6)).join(' / ')}</td></tr>`;
+}
+document.getElementById('rot-table').innerHTML=rhtml;
+document.getElementById('json-view').textContent=JSON.stringify(data,null,2);
+</script>
+</body>
+</html>
