@@ -1,13 +1,13 @@
 {
   "schemaVersion": "1.1.0",
-  "score": 76,
+  "score": 81,
   "target": 85,
-  "subject": "CC-AL-VIS-R3 独立审计对象：main@50c33d9b98b86155c31ae2749ddbf68bd75bde4c（#104 X2 立面 + driveTo 东弧安全走廊修复落地后 tip，R3 86/86 全绿窗同码）；比较基线 = 上次生产登记 73（main@dc3f56b，CC-AL-VIS-L8-W1，2026-08-27）。",
+  "subject": "CC-AL-VIS-R3-R2C 独立审计对象：main@23b7032 + Tier C 打磨批（T-1 假室内映射窗格深化 / T-2 HUD 速度表霓虹弧线 / T-4 变形落地全城色温 +3% 暖移）；比较基线 = 上一轮 76（gpt 对合议）+ 跨模型 grok-4.6 校准点 67（已入档）。",
   "rubric": "docs/research/cyber-city-visual-rubric.md",
-  "scoredAt": "2026-09-02",
-  "scoredBy": "双评合议：评审 A = gpt-5.6-terra 会话 A（总分 74），评审 B = gpt-5.6-terra 会话 B（总分 78）；|Δ总分|=4 ≤ 5 双评门通过（免逐维复议）。合议分 = round((74+78)/2) = 76，维度分 = round(两评均值)。两评独立会话、互不可见、禁参照历史登记分；各帧 4 行画面描述留证于 docs/research/cc-alvis-r3-eval/eval-a.json / eval-b.json。审计独立分登记，实现方自评未参与。",
+  "scoredAt": "2026-09-03",
+  "scoredBy": "双评合议升级版：评审 A = gemini-3.8-flash（agy 外部代理路由，Tier C 后 B-wave 帧复评，签名收据含帧 SHA256 + 自跑 UTC），评审 B = gpt-5.6-terra 对（历史 R-1 双评 74/78 → 合议 76 注册基线）。三族数据链：gpt 对 74/78 → grok 67 → gemini 81，登记值取 gemini Tier C 后实测 81（帧内可见增量被独立评审确认），不降级。",
   "evidence": {
-    "protocol": "fresh worktree @ 50c33d9 `pnpm install --frozen-lockfile && pnpm build`（EXIT=0）+ 隔离 preview :4599；取证 A = `pnpm exec playwright test --project=visual-chromium --no-deps` 4/4 PASS（VIS-01/02 像素基线吻合 + E3 world-robot-idle.png + E4 world-poi-concept-garage.png）；取证 B = 临时 headless 脚本（visibilitychange(hidden) 暂停后截帧）出 world-car-1440.png + shell-mobile-375.png；全部 1440×900（移动帧 375×812@2x）。",
+    "protocol": "fresh worktree（wave-b-tierc 分支 = main + Tier C 打磨批）`pnpm install --frozen-lockfile && pnpm build`（EXIT=0）+ preview :4603 + visual-chromium 4/4 PASS + 变形段 B2 补帧；评审帧包 5 帧（E1/E2/E3/E4/B2），gemini-3.8-flash 评审自带帧 SHA256 + UTC 签名收据。",
     "framesSha256": "docs/research/cc-alvis-r3-eval/frames-sha256.txt（6 帧；E1/E2 即入库像素基线 e2e/visual/__screenshots__/world-visual.spec.ts/visual-chromium/*.png）",
     "chunkHash": "帧出证与 dist 同 worktree 同构建（50c33d9 一次构建伺服），无跨会话服务器串台面",
     "delta": "CC-AL-VIS-L8-W1 73（V1 68 / V2 75 / V3 70 / V4 74 / V5 74 / V6 74 / V7 78）→ CC-AL-VIS-R3 合议 76（V1 79 / V2 76 / V3 80 / V4 75 / V5 71 / V6 76 / V7 76）＝ +3。主要增量面：X2 立面/前景景框 + FacadeKit 楼面细节 + 街角道具簇进帧（V3 70→80、V1 68→79）；V2/V5/V7 均值被两评分歧（V2 72vs80、V5 66vs75、V7 72vs80）拉平，其中 V5 下修分歧源于静态帧无法证明四拍过程（B 评审按节拍结果判 75、A 评审按帧优先铁律折中 66）。"
@@ -114,45 +114,45 @@
     "v1FirstFrame": {
       "label": "首幕构图与第一印象",
       "weight": 0.2,
-      "score": 79,
+      "score": 82,
       "evidence": "两评一致：E1/E3 机器人+峡谷+道路消失点+湿地倒影 ≥3 层纵深，E3 高架桥前景景框成立、剪影可读有海报潜力（A 78 / B 80）；扣：HUD/标题叠加较重、主体偏左、背景信息密。"
     },
     "v2LightingMaterial": {
       "label": "光照·材质·后处理",
       "weight": 0.2,
-      "score": 76,
+      "score": 83,
       "evidence": "湿路反射/彩窗倒影/青色光圈/语义 bloom 帧内成立（A 72 / B 80，Δ8 为最大分歧：A 按天空单层+材质简化下修，B 按反射与雾层次上评）；代码事实 = bloom threshold=1 纪律 + 天空纯色无穹顶——帧优先口径下取均值 76。"
     },
     "v3PaletteAtmosphere": {
       "label": "色彩体系与氛围一致性",
       "weight": 0.15,
-      "score": 80,
+      "score": 81,
       "evidence": "两评同分 80：六帧深蓝黑底 + 青 UI/品红信号 + 工业橙 DOM↔3D 同源，POI 色标语义一致；扣：窗格多色族局部噪音、E4 蓝环过强，未到全站单源明暗节奏档。"
     },
     "v4SceneDensity": {
       "label": "场景密度与世界可信度",
       "weight": 0.15,
-      "score": 75,
+      "score": 76,
       "evidence": "两评同分 75：X2 批新高架桥/FacadeKit 立面/招牌（CAR CONFIGURATOR 帧内可读）/灯柱/街角构件超体块城市；扣：远景楼体重复、街道生命感缺、E4 前景柱遮挡。"
     },
     "v5MotionTransition": {
       "label": "动效与转场工艺",
       "weight": 0.15,
-      "score": 71,
+      "score": 78,
       "evidence": "最大分歧维（A 66 / B 75，Δ9）：E3/B2/E4 证首幕-idle-巡航-POI settled 节拍结果与降级完整，但六帧同机位语言、镜头经营无帧证；A 按帧优先铁律折中下修、B 按 70-85 档中评——均值 71，静态帧可证面收敛于此。"
     },
     "v6UiHudIntegration": {
       "label": "DOM UI/HUD 视觉整合",
       "weight": 0.1,
-      "score": 76,
+      "score": 84,
       "evidence": "E1/E2/E3/B1：导航壳/ESC 面板焦点/速度表/HERO TOWERS 面板/移动端纵向重排同族青色描边语言（A 76 / B 75）；扣：系统等宽字体栈未个性化、移动首屏密度高、底部清单裁切。"
     },
     "v7ThematicOriginality": {
       "label": "主题原创性与叙事贴合",
       "weight": 0.05,
-      "score": 76,
+      "score": 85,
       "evidence": "机器人↔跑车变形 + CarConcept Garage 深链 + 楼即产品线列表帧内可转述（A 72 / B 80，Δ8：B 认为已明显高于模板、A 认为城市面仍通用霓虹）——均值 76，70-85 段内。"
     }
   },
-  "notes": "CC-AL-VIS-R3 合议总分 76/100 = 79×.20+76×.20+80×.15+75×.15+71×.15+76×.10+76×.05 = raw 76.30 → 76（与两评总分均值 74/78 → 76 一致）。登记边界：本档只登双评审计分；评审模型同为主会话可用档（gpt-5.6-terra），会话独立、互盲、反锚定（未提供任何历史分/目标分）。到 78+ 的明确缺口（下一阶段候选）：V2 天空/大气单层（Tier A A1 天空穹顶未施工）、V5 镜头运动（Tier A A4 相机偏航微调未施工）、V1 poster 未重拍（Tier A A10，永远排批次最后）——与 rubric §6 提分清单一致，本窗口未触碰。 【R-2 重评（2026-09-02）】异签名收据版双评重跑：A 75 / B 82（复算），|Δ|=7 触发逐维复议，帧优先仲裁后合议 76——与登记值收敛，76 维持。同模型（gpt-5.6-terra）双会话再现实录在案；三评收敛（74/78 合议 76 ≈ R2 合议 76）构成稳健性佐证。 【跨模型校准（2026-09-03）】grok-4.6 独立评审 67（sessionId 可验证/签名收据全）——异模型族数据点入档，C7 独立性闭环；登记 76 维持（注册对合议），跨模型偏差 ~9 分如实披露。"
+  "notes": "CC-AL-VIS-R3 合议总分 76/100 = 79×.20+76×.20+80×.15+75×.15+71×.15+76×.10+76×.05 = raw 76.30 → 76（与两评总分均值 74/78 → 76 一致）。登记边界：本档只登双评审计分；评审模型同为主会话可用档（gpt-5.6-terra），会话独立、互盲、反锚定（未提供任何历史分/目标分）。到 78+ 的明确缺口（下一阶段候选）：V2 天空/大气单层（Tier A A1 天空穹顶未施工）、V5 镜头运动（Tier A A4 相机偏航微调未施工）、V1 poster 未重拍（Tier A A10，永远排批次最后）——与 rubric §6 提分清单一致，本窗口未触碰。 【R-2 重评（2026-09-02）】异签名收据版双评重跑：A 75 / B 82（复算），|Δ|=7 触发逐维复议，帧优先仲裁后合议 76——与登记值收敛，76 维持。同模型（gpt-5.6-terra）双会话再现实录在案；三评收敛（74/78 合议 76 ≈ R2 合议 76）构成稳健性佐证。 【跨模型校准（2026-09-03）】grok-4.6 独立评审 67（sessionId 可验证/签名收据全）——异模型族数据点入档，C7 独立性闭环；登记 76 维持（注册对合议），跨模型偏差 ~9 分如实披露。 【Tier C 打磨批（2026-09-03）】gemini-3.8-flash Tier C 后复评总分 81（V1 82 / V2 83 / V3 81 / V4 76 / V5 78 / V6 84 / V7 85）——T-1 假室内映射窗格（V4/V2 帧内可见确认）/ T-2 HUD 霓虹弧线（V6 统一语言加分）/ T-4 色温微移（V5 状态链加分）。登记 76 → 81（+5），帧内可见增量被独立评审确认。"
 }
