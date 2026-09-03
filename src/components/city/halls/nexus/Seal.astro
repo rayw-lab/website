@@ -22,7 +22,27 @@ interface Receipt {
   identityOk: boolean | null; exitCode: number | null; sha256: string | null;
 }
 const all = (ledger.receipts ?? []) as Receipt[];
-const seals = all.slice(0, limit).map((r) => {
+// 🔴 跨席位交错取样：receipts 按 mtime 排序，直接 slice 会让前 24 枚**全来自同一席**
+// （实测印文去重后只剩一个 `gemini38f`）。印阵要体现「与多智能体共事」，
+// 不能是同一席的 24 连拍。灰印/白文这类稀有态也要保证被取到。
+const byState = (r: Receipt) => (r.identityOk === true ? 'go' : r.identityOk === false ? 'nogo' : 'unknown');
+const groups = new Map<string, Receipt[]>();
+for (const r of all) {
+  const k = `${r.seat}|${byState(r)}`;
+  if (!groups.has(k)) groups.set(k, []);
+  groups.get(k)!.push(r);
+}
+const picked: Receipt[] = [];
+const keys = [...groups.keys()].sort();
+for (let round = 0; picked.length < limit && round < 200; round++) {
+  let moved = false;
+  for (const k of keys) {
+    const g = groups.get(k)!;
+    if (round < g.length && picked.length < limit) { picked.push(g[round]); moved = true; }
+  }
+  if (!moved) break;
+}
+const seals = picked.map((r) => {
   const state = r.identityOk === true ? 'go' : r.identityOk === false ? 'nogo' : 'unknown';
   // 模型短名：去括注、去空格点划、小写后截断。
   // 直接截 `Gemini 3.8 Flash (High)` 会得到「3.8 Flash」——二十几枚印看着像同一枚，
