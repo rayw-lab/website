@@ -1,5 +1,7 @@
 # ABOUT-HALL 交接（2026-09-03 晨 · L1–L7）
 
+> ⚠️ **【重要状态警示 · 已作废】** 本档写于 L7（09-03 08:40），L8–L11 已全部翻盘：PR #234 已开、attempt5/7 93/93、ZDR 13:05 解除、S0 v3/S6 v2 视频进仓、R 路线终止、about 换北槽、Q/E 环视、Opus 视觉统装——以 `ABOUT-HALL-INDEX.md` + `ABOUT-HALL-LOOP-LOG.md` L11 为准。以下正文仅保留为历史备查，禁止作为当前排期与状态输入。
+
 > 同文副本：`raw/03-Output/规划/handoffs/2026-09-03-website-about-hall-handoff.md`。权威索引：`ABOUT-HALL-INDEX.md`；逐 loop：`ABOUT-HALL-LOOP-LOG.md`。
 
 ## 一、收到哪

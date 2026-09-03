@@ -1149,6 +1149,7 @@ interface Building {
   neonColor: string;                  // 霓虹主色 hex（四主题塔沿用设计提案锁定色标）
   deepLink: string;                   // 站内路由（check-links 存在性校验）
   deepLinkStatus: 'live' | 'fallback';   // fallback = 目标页未建，暂落上级索引（CI 放行但须登记）
+  hallPath?: string;                  // 楼内独立展厅路由（ADR-2 约定，城里 E 键优先进入展厅）
   priority: 'P0' | 'P1' | 'P2';       // 交付优先级（P0 = 出生圈四主题塔 + concept-garage 车库）
   unlockPhase: 0 | 1 | 2;             // 可进入阶段，对应 §12.7.7 CC-P0/P1/P2
   lodProfile: 'hero' | 'standard' | 'skyline';   // 流式档位画像（§12.7.6）
