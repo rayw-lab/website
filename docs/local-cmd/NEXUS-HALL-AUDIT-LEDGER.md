@@ -408,5 +408,10 @@ tone 由**席位**决定（codex=焦 / claude-code=浓 / cursor=重 / grok=淡 /
 
 ### R7-5 待办：cursor 源识别到白名单却入账 0
 `~/.cursor/.../agent-transcripts` 命中 mywebsite(78 文件)/co-agent(15 文件)，但 **kept=0**。
-样本行形如 `{message, role}`，**无顶层 type、疑无标准时间戳** ⇒ `tsOf()` 取不到 t0 即整条丢弃。
-第三色（cursor=重）因此缺席。下一轮定位其时间戳字段。
+样本行形如 `{role, message:{content:[{type:'text', text}]}}`，**无顶层 type、无标准时间戳字段** ⇒
+`tsOf()` 取不到 t0，整条丢弃。第三色（cursor=重）因此缺席。
+🔴 **根因已定位**：时间戳藏在消息正文里的标签内 —— `<timestamp>Monday, Aug 24, 2026, 11:27 AM (UTC+8)</timestamp>`。
+它是**人类可读串**不是 ISO，需要正则提取 + 规范化时区括号后才能 `Date.parse`。
+下一轮实现 `cursorTs()` 并配正控（拿已知样本行断言解析出的时刻落在 2026-08-24 当天）。
+判据提醒：解析成功率要随料交付 —— 用"确知在里面的 N 条"反查命中率，
+不能只看"跑通了不报错"（reducer 对取不到时间戳的行是**静默丢弃**，跑通与全丢症状相同）。
