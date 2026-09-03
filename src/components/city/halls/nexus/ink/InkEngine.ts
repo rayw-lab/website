@@ -53,7 +53,7 @@ export class InkEngine {
 
   private constructor(
     private readonly canvas: HTMLCanvasElement,
-    caps: GLCaps,
+    private readonly caps: GLCaps,
     opts: InkEngineOptions,
   ) {
     this.gl = caps.gl;
@@ -89,14 +89,11 @@ export class InkEngine {
    */
   static create(canvas: HTMLCanvasElement, opts: InkEngineOptions = {}): InkEngine | null {
     const caps = probeGL(canvas);
+    // 环境不支持 → null（调用方报 no-webgl2）。
+    // 🔴 着色器编译/FBO 分配失败**不能**也返回 null：那会被打成 no-webgl2 标签，
+    // 埋点与 e2e 分不清「这台设备不行」和「我们的代码坏了」（xhsapi P1）。
     if (!caps || !caps.halfFloatRenderable) return null;
-    try {
-      return new InkEngine(canvas, caps, opts);
-    } catch (err) {
-      // 着色器编译/FBO 分配失败属于系统边界：记录后降级，不把黑屏留给访客
-      console.warn('[InkEngine] 初始化失败，降级到海报：', err);
-      return null;
-    }
+    return new InkEngine(canvas, caps, opts); // 构造失败向上抛，由 mount 归类为 init-failed
   }
 
   private allocate(): void {
@@ -108,18 +105,21 @@ export class InkEngine {
     const h = this.canvas.height;
     this.aspect = w / h;
 
+    // 半浮点线性过滤缺失时退化为 NEAREST（画质降但仍可跑）。
+    // 此前 probeGL 探测了该能力却从未消费，gl.ts 的注释是空头承诺（xhsapi P2）。
+    const smooth = this.caps.halfFloatLinear ? gl.LINEAR : gl.NEAREST;
     const sim = fit(simResolution, w, h);
     const dye = fit(dyeResolution, w, h);
 
-    this.velocity = new DoubleFBO(gl, sim.w, sim.h, f.rg, gl.LINEAR);
+    this.velocity = new DoubleFBO(gl, sim.w, sim.h, f.rg, smooth);
     this.pressure = new DoubleFBO(gl, sim.w, sim.h, f.r, gl.NEAREST);
     this.divergence = createFBO(gl, sim.w, sim.h, f.r, gl.NEAREST);
     this.curl = createFBO(gl, sim.w, sim.h, f.r, gl.NEAREST);
 
-    this.wet = new DoubleFBO(gl, dye.w, dye.h, f.r, gl.LINEAR);
-    this.ink = new DoubleFBO(gl, dye.w, dye.h, f.rgba, gl.LINEAR);
-    this.fixedLayer = new DoubleFBO(gl, dye.w, dye.h, f.rgba, gl.LINEAR);
-    this.dryMask = createFBO(gl, dye.w, dye.h, f.r, gl.LINEAR);
+    this.wet = new DoubleFBO(gl, dye.w, dye.h, f.r, smooth);
+    this.ink = new DoubleFBO(gl, dye.w, dye.h, f.rgba, smooth);
+    this.fixedLayer = new DoubleFBO(gl, dye.w, dye.h, f.rgba, smooth);
+    this.dryMask = createFBO(gl, dye.w, dye.h, f.r, smooth);
   }
 
   // ---------- 落墨 ----------
@@ -152,6 +152,7 @@ export class InkEngine {
 
   /** 落一滴墨：density 是三个染料分量的光学密度，扩散速度由 CHROMA 决定 */
   splatInk(x: number, y: number, radius: number, density: readonly [number, number, number]): void {
+    if (this.disposed) return;
     if (this.dryAt(x, y) > 0.98) return; // early-out：笔心正落在干纸上，整笔免谈
     this.splat(this.ink, x, y, radius, [density[0], density[1], density[2], 0], true);
   }
@@ -169,6 +170,7 @@ export class InkEngine {
     density: readonly [number, number, number],
     seed = 1,
   ): void {
+    if (this.disposed) return;
     // 🔴 扰动必须随笔触尺寸缩放。W1b 出图实测：冲量写死 34 时，
     // 小笔（r≈0.026）边缘分形漂亮，大笔（r≈0.058）却收敛成纯高斯圆 —— 因为
     // 相对扰动强度 ∝ impulse/radius，笔越大越"平静"。锚点门 A2 会在大笔触上悄悄失效。
@@ -218,6 +220,7 @@ export class InkEngine {
     amount: number,
     impulse: readonly [number, number] = [0, 0],
   ): void {
+    if (this.disposed) return;
     const g = 1 - this.dryAt(x, y);
     this.splat(this.wet, x, y, radius, [amount, 0, 0, 0], true);
     if (impulse[0] !== 0 || impulse[1] !== 0) {
@@ -229,11 +232,13 @@ export class InkEngine {
 
   /** 白墨：破坏性覆盖，用来表达 NO_GO / revert（真擦除，不是盖白） */
   splatWhite(x: number, y: number, radius: number, amount: number): void {
+    if (this.disposed) return;
     this.splat(this.ink, x, y, radius, [0, 0, 0, amount], true);
   }
 
   /** 设置笔位（影响洇的强度）；radius ≤ 0 表示抬笔 */
   setBrush(x: number, y: number, radius: number): void {
+    if (this.disposed) return;
     this.brush = [x, y, radius];
   }
 
@@ -283,6 +288,7 @@ export class InkEngine {
 
   /** 干纸遮罩：值为 1 的像素湿度恒为 0，墨永远进不去（试墨区的指挥官区域） */
   setDryMask(regions: ReadonlyArray<{ x: number; y: number; radius: number }>): void {
+    if (this.disposed) return;
     this.dryRegions = regions;
     const gl = this.gl;
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.dryMask.fbo);
@@ -305,8 +311,33 @@ export class InkEngine {
 
   // ---------- 推进 ----------
 
-  step(dt: number): void {
+  /**
+   * 画布尺寸变化后重建全部场。内容不保留：
+   * 旋转屏幕后重来一笔是可接受的，尺寸失配的画面不是。
+   */
+  resize(): void {
     if (this.disposed) return;
+    const gl = this.gl;
+    for (const d of [this.velocity, this.pressure, this.wet, this.ink, this.fixedLayer]) d.dispose();
+    for (const f of [this.divergence, this.curl, this.dryMask]) {
+      gl.deleteTexture(f.texture);
+      gl.deleteFramebuffer(f.fbo);
+    }
+    this.allocate();
+    // 干纸区是语义资产，不能因为一次旋转就消失
+    if (this.dryRegions.length > 0) this.setDryMask(this.dryRegions);
+  }
+
+  /** 无交互多久后停转（秒）。InkSurface 的 idle 判据从这里取，不再硬编码 */
+  get idleSeconds(): number {
+    return this.params.idleSeconds;
+  }
+
+  step(dtRaw: number): void {
+    if (this.disposed) return;
+    // 上界在引擎入口统一夹：调用方给的 fixedStep / seek stepSize 此前完全没有保护，
+    // 半拉格朗日对流的步长失控会直接毁掉整个场（xhsapi P2）。
+    const dt = Math.min(Math.max(dtRaw, 0), 1 / 30);
     const gl = this.gl;
     const P = this.params;
     const vTexel: [number, number] = [this.velocity.read.texelX, this.velocity.read.texelY];

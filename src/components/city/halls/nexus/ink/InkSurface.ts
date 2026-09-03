@@ -35,6 +35,8 @@ export interface InkSurfaceOptions extends InkEngineOptions {
    * 「确定性海报」就是假的（W1b 由 advisor 指出，已用双截图 diff 自证修复）。
    */
   autoLoop?: boolean;
+  /** 尺寸变化重建场之后触发，调用方在此重新布置场景（内容不会被保留） */
+  onResize?: (engine: InkEngine) => void;
 }
 
 const MAX_DT = 1 / 30;
@@ -49,6 +51,9 @@ export class InkSurface {
   private stepped = false;
   private disposed = false;
   private observer?: IntersectionObserver;
+  private resizeObserver?: ResizeObserver;
+  private guardTimer = 0;
+  private resizeTimer = 0;
   private readonly onVisibility = () => this.sync();
 
   private constructor(
@@ -67,8 +72,18 @@ export class InkSurface {
     this.observer.observe(canvas);
     document.addEventListener('visibilitychange', this.onVisibility);
 
+    // 🔴 旋转/缩放后 backing store 不更新 → canvas 被 CSS 拉伸、FBO 分辨率失配、
+    // texel 步长与噪声尺度全错，且没有任何恢复路径（xhsapi P1）。手机旋转是高频操作。
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => {
+        window.clearTimeout(this.resizeTimer);
+        this.resizeTimer = window.setTimeout(() => this.applyResize(), 180);
+      });
+      this.resizeObserver.observe(canvas);
+    }
+
     // 第五态守卫：进视口 2s 还没跑过一帧，说明环境有问题，主动降级
-    window.setTimeout(() => {
+    this.guardTimer = window.setTimeout(() => {
       if (!this.disposed && !this.stepped && this.inView && this.opts.autoLoop !== false) {
         this.opts.onFallback?.('never-stepped');
       }
@@ -96,7 +111,14 @@ export class InkSurface {
     canvas.width = Math.max(2, Math.round(rect.width * dpr));
     canvas.height = Math.max(2, Math.round(rect.height * dpr));
 
-    const engine = InkEngine.create(canvas, opts);
+    let engine: InkEngine | null = null;
+    try {
+      engine = InkEngine.create(canvas, opts);
+    } catch (err) {
+      console.warn('[InkSurface] 引擎初始化失败，降级到海报：', err);
+      opts.onFallback?.('init-failed');
+      return null;
+    }
     if (!engine) {
       opts.onFallback?.('no-webgl2');
       return null;
@@ -106,6 +128,21 @@ export class InkSurface {
 
   get ink(): InkEngine {
     return this.engine;
+  }
+
+  /** 尺寸变化后重建场。内容不保留——旋转屏幕重来一笔是可接受的，失配画面不是。 */
+  private applyResize(): void {
+    if (this.disposed) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, this.opts.maxDpr ?? 1.5);
+    const rect = this.canvas.getBoundingClientRect();
+    const w = Math.max(2, Math.round(rect.width * dpr));
+    const h = Math.max(2, Math.round(rect.height * dpr));
+    if (w === this.canvas.width && h === this.canvas.height) return;
+    this.canvas.width = w;
+    this.canvas.height = h;
+    this.engine.resize();
+    this.opts.onResize?.(this.engine);
+    this.engine.render();
   }
 
   /** 有交互就续命；试墨区每次 pointer 事件调一次 */
@@ -129,20 +166,25 @@ export class InkSurface {
 
   private readonly tick = (now: number): void => {
     if (this.disposed) return;
-    const real = Math.min((now - this.lastTime) / 1000, MAX_DT);
+    const wall = (now - this.lastTime) / 1000;      // 真实墙钟
+    const real = Math.min(wall, MAX_DT);            // 夹持后的物理步长
     this.lastTime = now;
     const dt = this.opts.fixedStep ?? real;
 
     this.elapsed += dt;
-    this.idleSince += real;
+    // 🔴 空转判据必须用真实墙钟：此前累加的是被 MAX_DT 夹持后的步长，
+    // 低帧率下（软件渲染 10fps）每秒只累加 0.33，12 秒阈值要跑满 36 秒墙钟才触发。
+    this.idleSince += wall;
 
     this.opts.onFrame?.(this.engine, this.elapsed, dt);
     this.engine.step(dt);
     this.engine.render();
     this.stepped = true;
 
-    const idleLimit = this.opts.mobile ? 12 : 12;
-    if (this.idleSince > idleLimit && !this.opts.onFrame) {
+    // 🔴 此前写作 `mobile ? 12 : 12`（死代码）且附加 `!this.opts.onFrame` 条件 ——
+    // 而回放场景 onFrame 恒存在，于是最该省电的那条路径永不停转（xhsapi P1）。
+    // 现在统一按 params.idleSeconds 停转：墨洇完本就该静止，停转不影响观感。
+    if (this.idleSince > this.engine.idleSeconds) {
       this.raf = 0; // 停转，等 poke() 唤醒
       return;
     }
@@ -162,6 +204,9 @@ export class InkSurface {
   }
 
   dispose(): void {
+    window.clearTimeout(this.guardTimer);
+    window.clearTimeout(this.resizeTimer);
+    this.resizeObserver?.disconnect();
     if (this.disposed) return;
     this.disposed = true;
     if (this.raf) cancelAnimationFrame(this.raf);

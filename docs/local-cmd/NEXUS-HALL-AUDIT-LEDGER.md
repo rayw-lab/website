@@ -179,7 +179,7 @@ SPLAT_FS 根本不采样的纹理，且它正是当前 draw FBO 的颜色附件�
   当时把 lobes 一并提到 10，冲量总量约 4 倍把颜料吹散。已补 `ADVECT_VEL` /
   `GRADIENT_SUB` 速度 clamp（xhsapi P2 早已点名：此前仅 VORTICITY 一处有 clamp）。
 
-### R3-10 待处置（不许静默蒸发）
+### R3-10 xhsapi findings 处置表（已全部闭合，2026-09-04 03:4x）
 | 来源 | 项 | 处置 |
 |---|---|---|
 | xhsapi P1 | idle 停转 `mobile?12:12` 死代码 + `!onFrame` 恒 false + `idleSeconds` 未消费 | 待修（W3 真机会撞） |
@@ -189,3 +189,20 @@ SPLAT_FS 根本不采样的纹理，且它正是当前 draw FBO 的颜色附件�
 | xhsapi P2 | `dispose()` 后 public 入口未守 disposed；never-stepped timer 未 clearTimeout | 待修（十行内） |
 | xhsapi P2 | `halfFloatLinear` 探测后从未消费 | 拟删字段 |
 | advisor | sim 256→512 有可见改善但 12 pass × 4 倍像素，中端手机 30fps 目标下需实测 | DEFERRED 至 W3 真机 |
+
+
+### R3-11 P1/P2 逐条闭合 —— 每条都做行为验证，不接受"编译通过"结案
+| finding | 处置 | 验证方式与结果 |
+|---|---|---|
+| P1 idle 停转（`mobile?12:12` 死代码 / `!onFrame` 恒 false / `idleSeconds` 未消费） | 统一按 `params.idleSeconds` 停转，去掉 onFrame 条件 | 行为探针：阈值后连读两次 HUD 时刻 `8.5 → 8.5` ✅ |
+| ↑ 修的过程中发现**更深一层 bug** | `idleSince` 此前累加的是被 `MAX_DT` 夹持后的步长 —— 软件渲染 10fps 时每秒只累加 0.33，**12 秒阈值要跑满 36 秒墙钟**。改为累加真实墙钟 | 首轮验证 `10.8 → 12` FAIL 才暴露；不做行为验证就会当成已修 |
+| P1 无 ResizeObserver | 加 ResizeObserver + 180ms debounce → `engine.resize()` 重建全部场，并**重放干纸区**（语义资产不能因一次旋转消失） | 探针改视口 970→610：backing store 跟随 ✅ / dye 宽高比跟随 ✅ / resize 后仍能落新笔 ✅ |
+| ↑ 判据一度选错量 | 首版判据是"dye 数值变了"，2045→2044 差 1 像素即判 PASS。实则 `fit()` 用固定短边，**dye 只随宽高比变、不随尺寸变**，正确判据是比值 | 判据选错量与实现出错症状相同，先算清「这个量本该怎么变」 |
+| P1 `init-failed` 死枚举 | `create()` 只对「环境不支持」返回 null，构造异常向上抛；`mount()` catch 后归类 `init-failed` | **注入负控**：篡改 `getShaderParameter` 让 COMPILE_STATUS 恒 false → 实报 `init-failed` ✅；配正控（不注入时正常起 ✅） |
+| P2 dt 上界只夹 `real` | 上界移到 `engine.step()` 入口统一夹 `[0, 1/30]`，`fixedStep`/`seek` 一并受保护 | 锚点门复跑全过 |
+| P2 dispose 后 public 入口无守卫 | `splatInk`/`drop`/`splatWater`/`splatWhite`/`setDryMask`/`setBrush` 全加 `if (this.disposed) return` | astro check 0 errors + 门复跑 |
+| P2 never-stepped timer 未清 | 存 id，`dispose()` 里 clearTimeout（连同 resize debounce timer 与 ResizeObserver） | 同上 |
+| P2 `halfFloatLinear` 探测后从未消费 | allocate 内 5 处 `gl.LINEAR` 改为按探测结果取 `LINEAR`/`NEAREST`，兑现 gl.ts 注释的承诺 | 同上 |
+| P2 速度 clamp 只在 VORTICITY | `ADVECT_VEL` / `GRADIENT_SUB` 补 clamp | 见 R3-9（线性 kick 曾把颜料吹散） |
+| P1 `splat()` uTex 死绑定 | 已删（advisor 与 xhsapi 双源独立报出） | R3-5 |
+| P0 干纸只拦扩散不拦落笔 | 逐片元 gate + CPU early-out | R3-4 / R3-7 |
