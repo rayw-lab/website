@@ -1,0 +1,135 @@
+---
+/**
+ * S0 洇 —— 展厅开场：一滴墨在宣纸上洇开，标题随之显影。
+ *
+ * 设计取向（与「作品集炫技感」划清界限）：
+ * - 落墨**不在正中**：中国画的重心从不居中，正中构图是最快显出业余的一步。
+ * - 文字**只淡入、不位移**：「渐显 + 上移 20px」是 2020 年代模板腔，一眼可辨。
+ * - 文字**避开墨**：墨是主体，字是题款；题款压在画心上是外行做法。
+ * - 单色，衬线中文：水墨配无衬线会散，配宋体才立得住。
+ */
+interface Props {
+  /** 主标题两行 */
+  lines?: [string, string];
+  /** 副题（小字） */
+  sub?: string;
+}
+const {
+  lines = ['会话即笔迹，收据即印。', '一个人与多智能体共事的一百天。'],
+  sub = '墨迹 · Ink Ledger',
+} = Astro.props;
+---
+
+<section class="yin" data-nexus-yin>
+  <canvas data-yin-canvas aria-hidden="true"></canvas>
+
+  <div class="yin__type">
+    <p class="yin__sub">{sub}</p>
+    <h1 class="yin__h">
+      <span class="yin__l" style="--d:1.6s">{lines[0]}</span>
+      <span class="yin__l" style="--d:2.9s">{lines[1]}</span>
+    </h1>
+  </div>
+
+  <div class="yin__more" aria-hidden="true"><span></span></div>
+</section>
+
+<style>
+  .yin {
+    position: relative;
+    width: 100%;
+    min-height: 100svh;
+    background: #efe9dc;                 /* 与引擎的纸色同值，降级时也是这张纸 */
+    overflow: hidden;
+  }
+  .yin canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  /* 题款落在右下留白处：墨的重心在左上，字与墨互不相压 */
+  .yin__type {
+    position: absolute;
+    right: clamp(1.5rem, 6vw, 6rem);
+    bottom: clamp(4rem, 12vh, 9rem);
+    text-align: right;
+    /* em 相对的是本元素字号（继承 16px = 544px），不是标题的 46px；
+       用它会把第二行挤成两行。改用 rem 锚定根字号。
+       注：此处曾用全角引号，导致 Astro scoped CSS 整块被静默丢弃且 build 不报错。 */
+    max-width: min(92vw, 48rem);
+    color: #1c1f26;
+  }
+  .yin__sub {
+    margin: 0 0 1.1em;
+    font: 500 clamp(.7rem, 1.1vw, .82rem)/1 ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: .34em;               /* 小字拉开字距，作印章边款用 */
+    text-indent: .34em;
+    opacity: 0;
+    animation: yin-in .9s cubic-bezier(.22,.61,.36,1) .8s forwards;
+  }
+  .yin__h {
+    margin: 0;
+    font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC",
+                 "SimSun", "PingFang SC", serif;
+    font-weight: 400;                    /* 宋体本身有骨，加粗反而俗 */
+    font-size: clamp(1.35rem, 3.4vw, 2.7rem);
+    line-height: 1.85;                   /* 中文正文级行高，给字留呼吸 */
+    letter-spacing: .06em;
+  }
+  .yin__l {
+    display: block;
+    opacity: 0;
+    /* 只淡入，不位移 —— 位移是模板腔 */
+    animation: yin-in 1.5s cubic-bezier(.22,.61,.36,1) var(--d) forwards;
+  }
+  @keyframes yin-in { to { opacity: 1; } }
+
+  .yin__more {
+    position: absolute;
+    left: 50%;
+    bottom: 1.6rem;
+    width: 1px;
+    height: 3.2rem;
+    background: linear-gradient(to bottom, transparent, #1c1f2655);
+    opacity: 0;
+    animation: yin-in 1.2s ease 6s forwards;
+  }
+  .yin__more span {
+    position: absolute; left: 0; top: 0; width: 1px; height: 1.1rem;
+    background: #1c1f26aa;
+    animation: yin-drop 2.6s cubic-bezier(.5,0,.5,1) 6.4s infinite;
+  }
+  @keyframes yin-drop { 0% { transform: translateY(0); opacity: 0 } 30% { opacity: 1 } 100% { transform: translateY(2.1rem); opacity: 0 } }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* 不许动时：字直接在位，墨由构建期海报承担（canvas 由脚本隐藏） */
+    .yin__sub, .yin__l, .yin__more { animation: none; opacity: 1; }
+    .yin__more span { animation: none; }
+  }
+</style>
+
+<script>
+  import { InkSurface } from './ink/InkSurface';
+  import type { InkEngine } from './ink/InkEngine';
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-nexus-yin]')) {
+    const canvas = root.querySelector<HTMLCanvasElement>('[data-yin-canvas]');
+    if (!canvas) continue;
+    let a = false;
+    let b = false;
+    // 构建期截海报走 ?poster=1：不开 preserveDrawingBuffer 时 WebGL 内容
+    // 不进入页面合成截图（实测截整页只剩文字），海报会拍成一张白纸。
+    const poster = new URLSearchParams(location.search).has('poster');
+    InkSurface.mount(canvas, {
+      preserveDrawingBuffer: poster,
+      mobile: window.matchMedia('(max-width: 768px)').matches,
+      onFrame: (ink: InkEngine, t: number) => {
+        // 主笔：偏左上。中国画的重心从不居中。
+        if (!a && t > 0.4) { a = true; ink.drop(0.33, 0.66, 0.066, [1.25, 1.25, 1.25], 19, { vigor: 1.15, eccentricity: 0.24 }); }
+        // 第二笔：小、更右下，与主笔构成疏密与呼应，不做对称
+        if (!b && t > 2.2) { b = true; ink.drop(0.52, 0.30, 0.026, [0.62, 0.62, 0.62], 41, { vigor: 0.9, eccentricity: 0.5 }); }
+      },
+      onFallback: (reason) => {
+        canvas.style.display = 'none';
+        root.dataset.yinFallback = reason;
+      },
+    });
+  }
+</script>

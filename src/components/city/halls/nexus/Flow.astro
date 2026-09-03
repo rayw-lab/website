@@ -82,7 +82,11 @@ const alt =
     };
 
     let placed = 0;
+    // 构建期截海报走 ?poster=1：不开 preserveDrawingBuffer 时 WebGL 内容
+    // 不进入页面合成截图（实测截整页只剩文字），海报会拍成一张白纸。
+    const poster = new URLSearchParams(location.search).has('poster');
     InkSurface.mount(canvas, {
+      preserveDrawingBuffer: poster,
       mobile: window.matchMedia('(max-width: 768px)').matches,
       onFrame: (ink: InkEngine, elapsed: number) => {
         const want = Math.min(items.length, Math.floor((elapsed / span) * items.length));

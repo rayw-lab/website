@@ -26,6 +26,12 @@ export interface InkEngineOptions {
   params?: Partial<InkParams>;
   /** replay 模式用固定步长，保证构建期截图逐像素可复现 */
   fixedStep?: number;
+  /**
+   * 构建期截海报用。不开时 WebGL 内容**不参与页面合成截图**：
+   * 实测同一时刻直接截 canvas 元素得非纸色 90.6%，截整页只有 1.1%（只剩文字）。
+   * 照着整页截图判断会得出「墨根本没渲染」的错误结论。生产默认关。
+   */
+  preserveDrawingBuffer?: boolean;
 }
 
 type Vec4 = readonly [number, number, number, number];
@@ -88,7 +94,7 @@ export class InkEngine {
    * 半浮点不可渲染是硬否决：整条光学密度链路建立在 16F 之上。
    */
   static create(canvas: HTMLCanvasElement, opts: InkEngineOptions = {}): InkEngine | null {
-    const caps = probeGL(canvas);
+    const caps = probeGL(canvas, opts.preserveDrawingBuffer ?? false);
     // 环境不支持 → null（调用方报 no-webgl2）。
     // 🔴 着色器编译/FBO 分配失败**不能**也返回 null：那会被打成 no-webgl2 标签，
     // 埋点与 e2e 分不清「这台设备不行」和「我们的代码坏了」（xhsapi P1）。

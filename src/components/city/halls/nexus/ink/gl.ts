@@ -21,14 +21,17 @@ export interface TexFormat {
   type: number;
 }
 
-export function probeGL(canvas: HTMLCanvasElement): GLCaps | null {
+export function probeGL(canvas: HTMLCanvasElement, preserve = false): GLCaps | null {
   const gl = canvas.getContext('webgl2', {
     alpha: false,
     depth: false,
     stencil: false,
     antialias: false,
-    // 我们自己管重绘时机；保留缓冲避免每帧清屏开销
-    preserveDrawingBuffer: false,
+    // 我们自己管重绘时机；保留缓冲避免每帧清屏开销。
+    // 🔴 构建期截海报必须开：不开时 WebGL 内容**不参与页面合成截图** ——
+    // 实测同一时刻直接截 canvas 元素得非纸色 90.6%，而截整页/截父节点只有 1.1%（只有文字）。
+    // 若照着整页截图判断，会得出"墨根本没渲染"的错误结论。生产默认关（省每帧开销）。
+    preserveDrawingBuffer: preserve,
     powerPreference: 'high-performance',
   });
   if (!gl) return null;

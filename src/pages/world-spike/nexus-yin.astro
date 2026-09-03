@@ -1,0 +1,14 @@
+---
+/** W3 spike · S0 洇组件的部署态自证。noindex,follow + canonical → `/`。 */
+import Yin from '../../components/city/halls/nexus/Yin.astro';
+const site = Astro.site?.href ?? '/';
+---
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,follow" /><link rel="canonical" href={site} />
+    <title>W3 spike · S0 洇</title>
+    <style>html,body{margin:0;background:#efe9dc}</style>
+  </head>
+  <body><Yin /></body>
+</html>
