@@ -1,6 +1,6 @@
 ---
-id: ADR-2
-title: 手卷横向平移 vs 纯竖滚
+id: ADR-7
+title: 手卷横向平移 vs 纯竖滚（墨迹厅）
 status: accepted
 date: 2026-09-04
 decided_by: 草案 §附录（line 309）「移动端纯竖滚，不做横向平移」+ TECH-ARCH §3

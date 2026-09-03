@@ -1,5 +1,5 @@
 ---
-id: ADR-3
+id: ADR-8
 title: 合流序 —— 是否等 about-hall 合入再开工
 status: accepted
 date: 2026-09-04

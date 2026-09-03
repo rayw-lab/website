@@ -1,6 +1,6 @@
 ---
-id: ADR-1
-title: 数据白名单与公开尺度
+id: ADR-6
+title: 数据白名单与公开尺度（墨迹厅）
 status: accepted
 date: 2026-09-04
 decided_by: 磊哥（charter §0.1 第 2 条「同意草案 §3.2 候选名单」）

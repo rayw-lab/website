@@ -16,7 +16,7 @@
 |---|---|---|---|---|---|---|---|
 | NX-W0a | W0 | charter + INDEX + 草案入库 | 执行方 | `docs/local-cmd/` | — | 三文件在分支上 | **BUILT** |
 | NX-W0b | W0 | 草案对抗审（P0/P1/P2 register） | xhsapi | `~/.codex/state/nexus-hall/out/W0-draft-audit.md` | — | findings 逐条亲核裁决 | **AUDITED**（11 采纳 / 3 驳回，见流水 R1） |
-| NX-W0c | W0 | 董事会 ADR ×3（白名单尺度 / 手卷横向 vs 竖滚 / 合流序） | Grok 董事会 | `docs/local-cmd/adr/` | W0b | ADR 落地 | PLANNED |
+| NX-W0c | W0 | 董事会 ADR ×3（白名单尺度 / 手卷横向 vs 竖滚 / 合流序） | Grok 董事会 | `docs/local-cmd/adr/` | W0b | ADR 落地 | **BUILT**（ADR-6/7/8 固化落地） |
 | NX-W1r | W1 | 三家水墨/流体引擎 teardown + 20 条高级感视觉参考 | agy | `~/.codex/state/nexus-hall/out/W1-ink-engine-teardown.md`、`~/studio-data-root/refs/nexus-hall/` | — | 报告有 file:line 锚点 + 许可裁定 + E 节「明确没证的」 | **AUDITED**（两处数字与源码不符已纠，见 R2） |
 | NX-W1a | W1 | `InkEngine` 六场十二 pass + display + `?demo` 确定性 | 执行方 | `src/components/city/halls/nexus/ink/` | W1r | spike 页一滴墨洇开；8.2KB gzip[实测]；RM 不起 rAF[实测] | **AUDITED**（xhsapi 引擎审 1×P0 4×P1 6×P2） |
 | NX-W1b | W1 | LOCKED 纸色墨谱 + 干纸拒墨行为门 + 锚点门固化 | 执行方 | 同上 + `evidence/nexus-hall/anchors/` | W1a | 锚点门 5/5 PASS[实测]；LOCKED 出图落盘 | **GATE_PASS**（`scripts-local-nexus-w1b-gate.mjs`） |
