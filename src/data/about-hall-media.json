@@ -11,6 +11,19 @@
     "lockedRef": "docs/local-cmd/locked/S0-T-LOCKED-v2.md#first-v2-3"
   },
   {
+    "id": "hero-s0",
+    "src16x9": "/media/about-hall/hero-s0-720p.mp4",
+    "poster": "/media/about-hall/hero-s0-poster.webp",
+    "durationS": 6.033,
+    "bytes": 1054456,
+    "sha256": "e33946e2888b00702ab9319c350ba5f36794ed5caebfc138ac5bca84a2855112",
+    "fps": 30,
+    "audio": false,
+    "lockedRef": "docs/local-cmd/locked/S0-T-LOCKED-v2.md#first-v2-3",
+    "width": 1280,
+    "height": 720
+  },
+  {
     "id": "about-illustration-s0h",
     "src16x9": "",
     "poster": "/media/about-hall/about-illustration-s0h.webp",
@@ -75,5 +88,18 @@
     "fps": 0,
     "audio": false,
     "lockedRef": "docs/local-cmd/locked/S5-T-LOCKED-v1.md#first-v1-2"
+  },
+  {
+    "id": "transition-s6",
+    "src16x9": "/media/about-hall/transition-s6-720p.mp4",
+    "poster": "/media/about-hall/transition-s6-poster.webp",
+    "durationS": 10.033,
+    "bytes": 2091449,
+    "sha256": "cc61a2eb8087e5ffa23b0fa81eab15f3856c2afba198c99344767a9e031d69aa",
+    "fps": 30,
+    "audio": false,
+    "lockedRef": "docs/local-cmd/locked/S6-T-LOCKED-v4.md#clip-v3-2",
+    "width": 1280,
+    "height": 720
   }
 ]

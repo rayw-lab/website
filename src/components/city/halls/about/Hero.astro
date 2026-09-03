@@ -1,7 +1,7 @@
 ---
 // 第 1 幕 Hero：全屏 poster/video + 左三分之一 DOM 文案。
-// 视频文件未到时 <source> 指向未来路径，error / 无 metadata → 只留 poster。
-// createPointerScrub：仅桌面、有可播视频、且非 reduced-motion 时绑定。
+// 清单无 src16x9 → 不写 <source>。桌面 pointer scrub；移动端静态首帧（不 autoplay）。
+// prefers-reduced-motion / 无 JS：只留 poster。
 import { HALL_H1, HALL_SUBTITLE } from '../../../../data/about-copy';
 import { PERSON } from '../../../../data/site';
 
@@ -9,7 +9,9 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const posterSrc = `${base}/media/about-hall/hero-s0-poster.webp`;
 /** 片源以媒体清单为单源（G-Hall-8 同账）：src16x9 为空 → 不写 <source>，组件退化为 poster，check-links 不红。 */
 import media from '../../../../data/about-hall-media.json';
-const heroEntry = (media as Array<{ id: string; src16x9: string }>).find((m) => m.id === 'hero-s0');
+
+type HeroMedia = { id: string; src16x9?: string };
+const heroEntry = (media as HeroMedia[]).find((m) => m.id === 'hero-s0');
 const videoSrc = heroEntry?.src16x9 ? `${base}${heroEntry.src16x9}` : '';
 ---
 
@@ -29,7 +31,9 @@ const videoSrc = heroEntry?.src16x9 ? `${base}${heroEntry.src16x9}` : '';
       width="1280"
       height="720"
     >
-      {videoSrc && <source media="(min-width: 768px)" src={videoSrc} type="video/mp4" />}
+      {videoSrc && (
+        <source media="(min-width: 900px) and (hover: hover)" src={videoSrc} type="video/mp4" />
+      )}
     </video>
   </div>
   <div class="hall-hero-scrim" aria-hidden="true"></div>
@@ -44,14 +48,17 @@ const videoSrc = heroEntry?.src16x9 ? `${base}${heroEntry.src16x9}` : '';
 <script>
   import { createPointerScrub, type ScrubHandle } from '../ScrubVideo';
 
+  const POINTER_MQ = '(min-width: 900px) and (hover: hover)';
+  const REDUCE_MQ = '(prefers-reduced-motion: reduce)';
+
   const root = document.querySelector<HTMLElement>('[data-hero-scrub]');
   const video = root?.querySelector('video');
   if (root && video instanceof HTMLVideoElement) {
-    const source = video.querySelector('source');
+    const sources = [...video.querySelectorAll('source')];
     let handle: ScrubHandle | null = null;
 
-    const mobile = () => matchMedia('(max-width: 767px)').matches;
-    const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduce = () => matchMedia(REDUCE_MQ).matches;
+    const pointerOk = () => matchMedia(POINTER_MQ).matches;
     const playable = () => {
       const d = video.duration;
       return typeof d === 'number' && Number.isFinite(d) && d > 0;
@@ -60,28 +67,69 @@ const videoSrc = heroEntry?.src16x9 ? `${base}${heroEntry.src16x9}` : '';
     const unbind = () => {
       handle?.destroy();
       handle = null;
-      video.removeAttribute('data-ready');
     };
 
-    const bind = () => {
-      if (handle || reduce() || mobile() || !playable()) return;
+    const bindPointer = () => {
+      if (handle || reduce() || !pointerOk() || !playable()) return;
       video.dataset.ready = '';
       handle = createPointerScrub(root, video, { poster: video.poster || undefined });
     };
 
-    const onFail = () => {
+    const hideVideo = () => {
       unbind();
+      video.removeAttribute('data-ready');
+      video.pause();
+    };
+
+    const sync = () => {
+      if (reduce() || !pointerOk() || !playable()) {
+        hideVideo();
+        return;
+      }
+      bindPointer();
+    };
+
+    const onFail = () => {
+      hideVideo();
     };
 
     video.addEventListener('error', onFail);
-    source?.addEventListener('error', onFail);
-    video.addEventListener('loadedmetadata', bind);
+    for (const source of sources) source.addEventListener('error', onFail);
+    video.addEventListener('loadedmetadata', sync);
 
-    const onChange = () => {
-      if (reduce() || mobile() || !playable()) unbind();
-      else bind();
-    };
-    matchMedia('(max-width: 767px)').addEventListener('change', onChange);
-    matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', onChange);
+    matchMedia(POINTER_MQ).addEventListener('change', sync);
+    matchMedia(REDUCE_MQ).addEventListener('change', sync);
   }
 </script>
+
+<style>
+  /* 桌面：img 与 video 叠在同一绝对层，video 在上。否则二者 height:100% 会上下排，
+     video 被 .hall-hero overflow 裁掉，scrub 改 currentTime 但画面仍是 poster。 */
+  :global(.hall-hero[data-hero-scrub] .hall-hero-media img),
+  :global(.hall-hero[data-hero-scrub] .hall-hero-media video) {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* 移动/无 hover：不抬 video。hall.css ≤767 已 display:none；静态首帧 = poster <img>。
+     地轨 fixed 底栏会压住首屏最后两行，copy 底留白把职务行抬到轨上。 */
+  @media (max-width: 767px) {
+    :global(.hall-hero[data-hero-scrub] .hall-hero-media) {
+      height: 32vh;
+      min-height: 11rem;
+    }
+    :global(.hall-hero[data-hero-scrub] .hall-hero-copy) {
+      justify-content: flex-start;
+      padding-bottom: 1.5rem;
+    }
+    :global(.hall-hero[data-hero-scrub] .hall-hero-scroll) {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.hall-hero[data-hero-scrub] .hall-hero-media video) {
+      display: none;
+      opacity: 0;
+    }
+  }
+</style>

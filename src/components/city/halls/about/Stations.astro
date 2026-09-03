@@ -1,7 +1,7 @@
 ---
-// 第 2–6 幕 + 工作台出发幕：sticky 长区间，左文右图。
-// S1–S5 静帧按媒体清单 id 取 poster；S6 回家片源未到，占位不放静帧。
-import { hallStations, SCORE_LINE } from '../../../../data/about-copy';
+// 第 2–5 幕 + 工作台出发幕：sticky 长区间，左文右图。
+// S1–S5 静帧按媒体清单 id 取 poster；S6「回家」在 Transition.astro，本文件不渲。
+import { hallStations } from '../../../../data/about-copy';
 import mediaDoc from '../../../../data/about-hall-media.json';
 import StationRail from './StationRail.astro';
 
@@ -60,7 +60,7 @@ const desk: StationView = {
   body: '三块屏上是波形、线框和门禁灯，不是演示稿。下面按演进展开：地基、光锥、十六环、天平，最后回家。',
 };
 
-const scenes: StationView[] = [desk, ...hallStations];
+const scenes: StationView[] = [desk, ...hallStations.filter((s) => s.scene !== 's6')];
 ---
 
 <StationRail />
@@ -102,7 +102,6 @@ const scenes: StationView[] = [desk, ...hallStations];
             {station.gapSolo && <p class="hall-gap">{station.gapSolo}</p>}
             {station.question && <p class="hall-question">{station.question}</p>}
             <p class="hall-station-body">{station.body}</p>
-            {station.scene === 's6' && <p class="hall-score">{SCORE_LINE}</p>}
             {station.proofPath && station.proofLabel && (
               <p>
                 <a href={`${base}${station.proofPath}`}>{station.proofLabel} →</a>

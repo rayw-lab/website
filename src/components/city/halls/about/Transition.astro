@@ -1,0 +1,134 @@
+---
+// S6「回家」：sticky 长区间，滚动进度 → transition-s6 currentTime。
+// 文案两行，只引用 about-copy 六站单源。进视口前 200px 才 preload。无 three。
+import { hallStations } from '../../../../data/about-copy';
+import mediaDoc from '../../../../data/about-hall-media.json';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+type MediaRow = {
+  id: string;
+  src16x9?: string;
+  poster: string;
+};
+const clip = (mediaDoc as MediaRow[]).find((m) => m.id === 'transition-s6');
+const home = hallStations.find((s) => s.scene === 's6');
+if (!home) throw new Error('about-copy hallStations 缺 s6');
+
+const posterSrc = clip?.poster ? `${base}${clip.poster}` : '';
+const src16 = clip?.src16x9 ? `${base}${clip.src16x9}` : '';
+const stage = home.stages[0];
+const line2 = stage ? `${stage.name}。${stage.note}` : home.body;
+---
+
+<section
+  class="hall-station hall-homecoming"
+  data-scene="s6"
+  data-bind={home.bind}
+  data-s6-scrub
+>
+  <div class="hall-panel hall-station-sticky">
+    <div class="hall-station-copy">
+      <p class="hall-kicker">{home.kicker}</p>
+      <p class="hall-station-body">{line2}</p>
+    </div>
+    <div class="hall-station-visual">
+      <figure class="hall-station-figure">
+        <div class="hall-station-frame hall-homecoming-frame">
+          {posterSrc && (
+            <img
+              class="hall-station-shot"
+              src={posterSrc}
+              alt=""
+              width="1280"
+              height="720"
+              loading="lazy"
+              decoding="async"
+            />
+          )}
+          {src16 && (
+            <video
+              class="hall-station-shot"
+              muted
+              playsinline
+              preload="none"
+              poster={posterSrc}
+              width="1280"
+              height="720"
+            >
+              <source media="(min-width: 900px) and (hover: hover)" src={src16} type="video/mp4" />
+            </video>
+          )}
+        </div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { createScrollScrub, type ScrubHandle } from '../ScrubVideo';
+
+  const section = document.querySelector<HTMLElement>('[data-s6-scrub]');
+  const video = section?.querySelector('video');
+  if (section && video instanceof HTMLVideoElement) {
+    const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let handle: ScrubHandle | null = null;
+
+    const bind = () => {
+      if (handle || reduce()) return;
+      handle = createScrollScrub(section, video, {
+        poster: video.poster || undefined,
+        preload: 'none',
+        preloadWhenNearPx: 200,
+      });
+    };
+
+    const unbind = () => {
+      handle?.destroy();
+      handle = null;
+      video.pause();
+    };
+
+    bind();
+    matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => {
+      if (reduce()) unbind();
+      else bind();
+    });
+  }
+</script>
+
+<style>
+  :global(section.hall-homecoming.hall-station) {
+    min-height: 220vh;
+  }
+
+  :global(.hall-homecoming .hall-station-visual) {
+    width: min(48rem, 100%);
+  }
+
+  :global(.hall-homecoming-frame) {
+    aspect-ratio: 16 / 9;
+  }
+
+  :global(.hall-homecoming-frame video.hall-station-shot) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    mix-blend-mode: normal;
+  }
+
+  @media (max-width: 899px), (hover: none) {
+    :global(.hall-homecoming-frame video) {
+      visibility: hidden;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.hall-homecoming-frame video) {
+      visibility: hidden;
+    }
+  }
+</style>

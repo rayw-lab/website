@@ -16,6 +16,10 @@ export type ScrubHandle = {
 export type ScrubVideoOpts = {
   onProgress?: (progress: number) => void;
   poster?: string;
+  /** 默认 auto。滚动段先 none，进视口前再升 auto。 */
+  preload?: 'none' | 'metadata' | 'auto';
+  /** 距视口此像素内才把 preload 升为 auto 并 load()。 */
+  preloadWhenNearPx?: number;
 };
 
 function clamp(n: number, lo: number, hi: number): number {
@@ -32,13 +36,17 @@ function prefersReducedMotion(): boolean {
   return matchMedia(REDUCE_MQ).matches;
 }
 
-function applyVideoShell(video: HTMLVideoElement, poster: string | undefined): void {
+function applyVideoShell(
+  video: HTMLVideoElement,
+  poster: string | undefined,
+  preload: NonNullable<ScrubVideoOpts['preload']> = 'auto',
+): void {
   video.muted = true;
   video.defaultMuted = true;
   video.autoplay = false;
   video.controls = false;
   video.loop = false;
-  video.preload = 'auto';
+  video.preload = preload;
   video.playsInline = true;
   video.setAttribute('playsinline', '');
   video.setAttribute('webkit-playsinline', '');
@@ -121,7 +129,7 @@ export function createPointerScrub(
   video: HTMLVideoElement,
   opts: ScrubVideoOpts = {},
 ): ScrubHandle {
-  applyVideoShell(video, opts.poster);
+  applyVideoShell(video, opts.poster, opts.preload ?? 'auto');
   if (prefersReducedMotion()) return { destroy() {} };
 
   const clock = createClock(video, opts.onProgress);
@@ -165,7 +173,9 @@ export function createScrollScrub(
   video: HTMLVideoElement,
   opts: ScrubVideoOpts = {},
 ): ScrubHandle {
-  applyVideoShell(video, opts.poster);
+  const nearPx = opts.preloadWhenNearPx;
+  const initialPreload = opts.preload ?? (nearPx != null ? 'none' : 'auto');
+  applyVideoShell(video, opts.poster, initialPreload);
   if (prefersReducedMotion()) return { destroy() {} };
 
   const clock = createClock(video, opts.onProgress);
@@ -191,6 +201,23 @@ export function createScrollScrub(
     read();
     clock.primeFromMetadata();
   });
+
+  if (nearPx != null) {
+    const arm = (): void => {
+      video.preload = 'auto';
+      if (video.readyState < HTMLMediaElement.HAVE_METADATA) video.load();
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        arm();
+        io.disconnect();
+      },
+      { root: null, rootMargin: `${nearPx}px 0px`, threshold: 0 },
+    );
+    io.observe(section);
+    signal.addEventListener('abort', () => io.disconnect(), { once: true });
+  }
 
   return {
     destroy(): void {
