@@ -27,41 +27,39 @@ const line2 = stage ? `${stage.name}。${stage.note}` : home.body;
   data-bind={home.bind}
   data-s6-scrub
 >
-  <div class="hall-panel hall-station-sticky">
-    <div class="hall-station-copy">
-      <p class="hall-kicker">{home.kicker}</p>
-      <p class="hall-station-body">{line2}</p>
-    </div>
-    <div class="hall-station-visual">
-      <figure class="hall-station-figure">
-        <div class="hall-station-frame hall-homecoming-frame">
-          {posterSrc && (
-            <img
-              class="hall-station-shot"
-              src={posterSrc}
-              alt=""
-              width="1280"
-              height="720"
-              loading="lazy"
-              decoding="async"
-            />
-          )}
-          {src16 && (
-            <video
-              class="hall-station-shot"
-              muted
-              playsinline
-              preload="none"
-              poster={posterSrc}
-              width="1280"
-              height="720"
-            >
-              <source media="(min-width: 900px) and (hover: hover)" src={src16} type="video/mp4" />
-            </video>
-          )}
-        </div>
-      </figure>
-    </div>
+  <div class="hall-station-sticky hall-homecoming-sticky">
+    <figure class="hall-station-figure hall-homecoming-stage">
+      <div class="hall-station-frame hall-homecoming-frame">
+        {posterSrc && (
+          <img
+            class="hall-station-shot"
+            src={posterSrc}
+            alt=""
+            width="1280"
+            height="720"
+            loading="lazy"
+            decoding="async"
+          />
+        )}
+        {src16 && (
+          <video
+            class="hall-station-shot"
+            muted
+            playsinline
+            preload="none"
+            poster={posterSrc}
+            width="1280"
+            height="720"
+          >
+            <source media="(min-width: 900px) and (hover: hover)" src={src16} type="video/mp4" />
+          </video>
+        )}
+      </div>
+      <figcaption class="hall-homecoming-copy">
+        <p class="hall-kicker" data-s6-line="open">{home.kicker}</p>
+        <p class="hall-station-body" data-s6-line="close">{line2}</p>
+      </figcaption>
+    </figure>
   </div>
 </section>
 
@@ -74,19 +72,25 @@ const line2 = stage ? `${stage.name}。${stage.note}` : home.body;
     const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
     let handle: ScrubHandle | null = null;
 
+    // 文案两段揭示与视频同一 progress：复用 createScrollScrub 的 onProgress，
+    // 不新增第二个滚动监听。data-s6-live 缺席（RM / 无 JS）时 CSS 让两句同时可见。
     const bind = () => {
       if (handle || reduce()) return;
       handle = createScrollScrub(section, video, {
         poster: video.poster || undefined,
         preload: 'none',
         preloadWhenNearPx: 200,
+        onProgress: (p) => section.style.setProperty('--s6-progress', p.toFixed(3)),
       });
+      section.dataset.s6Live = '1';
     };
 
     const unbind = () => {
       handle?.destroy();
       handle = null;
       video.pause();
+      delete section.dataset.s6Live;
+      section.style.removeProperty('--s6-progress');
     };
 
     bind();
@@ -100,14 +104,34 @@ const line2 = stage ? `${stage.name}。${stage.note}` : home.body;
 <style>
   :global(section.hall-homecoming.hall-station) {
     min-height: 220vh;
+    --s6-lane: 0px;
   }
 
-  :global(.hall-homecoming .hall-station-visual) {
-    width: min(48rem, 100%);
+  /* 220vh 的高潮片给电影幅面：不套 .hall-panel 的 72rem，只留极窄安全边。 */
+  :global(.hall-station-sticky.hall-homecoming-sticky) {
+    width: min(100rem, calc(100% - 2rem));
+    margin-inline: auto;
+    grid-template-columns: 1fr;
+    place-items: center;
+    padding-inline-end: var(--s6-lane);
+  }
+
+  /* 宽度取四者最小：78vw 目标 / 1180px 上限 / 让开馆长车道后的余量 / 视口高度换算的 16:9 上限。 */
+  :global(.hall-homecoming-stage) {
+    position: relative;
+    width: min(
+      78vw,
+      1180px,
+      100%,
+      calc((100svh - var(--hall-header-stack) - 6rem) * 16 / 9)
+    );
+    margin-inline: auto;
   }
 
   :global(.hall-homecoming-frame) {
     aspect-ratio: 16 / 9;
+    border-radius: 4px;
+    border-color: rgb(254 243 199 / 0.1);
   }
 
   :global(.hall-homecoming-frame video.hall-station-shot) {
@@ -118,6 +142,59 @@ const line2 = stage ? `${stage.name}。${stage.note}` : home.body;
     max-width: none;
     object-fit: cover;
     mix-blend-mode: normal;
+  }
+
+  :global(.hall-homecoming-copy) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-4);
+    margin-block-start: var(--space-5);
+  }
+
+  :global(.hall-homecoming-copy .hall-station-body) {
+    max-inline-size: 34em;
+  }
+
+  /* 馆长在场时（≥900px 才挂）视频整体让开右侧车道，避免与 yield 姿态重叠。 */
+  :global(html[data-hall-curator='on'] .hall-homecoming) {
+    --s6-lane: var(--hall-curator-lane, 260px);
+  }
+
+  @media (min-width: 900px) {
+    /* 文案床压在片子左侧（与 Hero 同构）：暗渐变兜底可读性，不用 mix-blend。 */
+    :global(.hall-homecoming-copy) {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: min(46%, 26rem);
+      margin-block-start: 0;
+      padding: var(--space-6);
+      background: linear-gradient(
+        to right,
+        rgb(4 16 32 / 0.82) 0%,
+        rgb(4 16 32 / 0.52) 62%,
+        rgb(4 16 32 / 0) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* 两段揭示同一 --s6-progress 驱动：0–0.34 开场句，0.62–1 落点句，中段两句都淡出。 */
+    :global(.hall-homecoming[data-s6-live] [data-s6-line='open']) {
+      opacity: clamp(0, (0.34 - var(--s6-progress, 0)) / 0.12, 1);
+      transform: translate3d(calc(var(--s6-progress, 0) * -8px), 0, 0);
+    }
+
+    :global(.hall-homecoming[data-s6-live] [data-s6-line='close']) {
+      opacity: clamp(0, (var(--s6-progress, 0) - 0.62) / 0.12, 1);
+      transform: translate3d(calc((1 - var(--s6-progress, 0)) * 8px), 0, 0);
+    }
+  }
+
+  /* 窄屏没有文案床可留，片子直接吃满安全区。 */
+  @media (max-width: 899px) {
+    :global(.hall-homecoming-stage) {
+      width: 100%;
+    }
   }
 
   @media (max-width: 899px), (hover: none) {

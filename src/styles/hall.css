@@ -126,13 +126,79 @@ html:has([data-hall]) .hall-chrome {
   inset: 0 auto 0 0;
   width: min(52%, 42rem);
   z-index: 1;
+  /* 底层是地板：左缘 .62 恒定，保住文案对比度。 */
   background: linear-gradient(
     to right,
     rgba(4, 16, 32, 0.62) 0%,
-    rgba(4, 16, 32, 0.35) 58%,
+    rgba(4, 16, 32, 0.15) 58%,
     rgba(4, 16, 32, 0) 100%
   );
   pointer-events: none;
+}
+
+/* 可变层：指针推到片尾时淡出，左区 58% 处合成后由 .32 提亮到 .15。 */
+.hall-hero-scrim::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(4, 16, 32, 0) 0%,
+    rgba(4, 16, 32, 0.2) 58%,
+    rgba(4, 16, 32, 0) 100%
+  );
+  opacity: calc(1 - var(--hero-progress, 0));
+}
+
+/* ---------- Hero 指针 scrub 的 DOM 反馈（AH-VIS-2） ---------- */
+
+.hall-hero-lede,
+.hall-hero-role,
+.hall-hero-scroll {
+  transform: translate3d(calc(var(--hero-progress, 0) * 12px), 0, 0);
+}
+
+.hall-hero-ticks {
+  display: none;
+  position: absolute;
+  z-index: 2;
+  inset-block: 0;
+  inset-inline-end: var(--container-pad);
+  align-content: center;
+  gap: 0.6rem;
+  pointer-events: none;
+}
+
+.hall-hero[data-hero-live] .hall-hero-ticks {
+  display: grid;
+}
+
+.hall-hero-ticks span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  /* 第 i 个点对应第 i 秒：progress × 6 越过 i 即点亮。 */
+  opacity: clamp(0.16, (var(--hero-progress, 0) * 6 - var(--i)) * 4, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hall-hero[data-hero-live]:not([data-hero-scrubbing]) .hall-hero-lede,
+  .hall-hero[data-hero-live]:not([data-hero-scrubbing]) .hall-hero-role,
+  .hall-hero[data-hero-live]:not([data-hero-scrubbing]) .hall-hero-scroll {
+    transition: transform 300ms var(--ease-out);
+  }
+
+  .hall-hero[data-hero-live]:not([data-hero-scrubbing]) .hall-hero-scrim::after,
+  .hall-hero[data-hero-live]:not([data-hero-scrubbing]) .hall-hero-ticks span {
+    transition: opacity 300ms var(--ease-out);
+  }
+}
+
+@media (hover: none), (max-width: 899px) {
+  .hall-hero[data-hero-live] .hall-hero-ticks {
+    display: none;
+  }
 }
 
 .hall-hero-copy {

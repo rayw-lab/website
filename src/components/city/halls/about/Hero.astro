@@ -37,6 +37,9 @@ const videoSrc = heroEntry?.src16x9 ? `${base}${heroEntry.src16x9}` : '';
     </video>
   </div>
   <div class="hall-hero-scrim" aria-hidden="true"></div>
+  <div class="hall-hero-ticks" aria-hidden="true">
+    {[0, 1, 2, 3, 4, 5].map((i) => <span style={`--i:${i}`}></span>)}
+  </div>
   <div class="hall-hero-copy">
     <h1>{HALL_H1}</h1>
     <p class="hall-hero-lede">{HALL_SUBTITLE}</p>
@@ -69,17 +72,33 @@ const videoSrc = heroEntry?.src16x9 ? `${base}${heroEntry.src16x9}` : '';
       handle = null;
     };
 
+    // 文案床/光晕/进度点与视频同一 progress：消费 createPointerScrub 的 onProgress 出口，
+    // 不另开监听、不改 ScrubVideo 逻辑。data-hero-live 缺席时 DOM 保持 progress 0 静态态。
     const bindPointer = () => {
       if (handle || reduce() || !pointerOk() || !playable()) return;
       video.dataset.ready = '';
-      handle = createPointerScrub(root, video, { poster: video.poster || undefined });
+      handle = createPointerScrub(root, video, {
+        poster: video.poster || undefined,
+        onProgress: (p) => root.style.setProperty('--hero-progress', p.toFixed(3)),
+      });
+      root.dataset.heroLive = '1';
     };
 
     const hideVideo = () => {
       unbind();
       video.removeAttribute('data-ready');
       video.pause();
+      delete root.dataset.heroLive;
+      root.style.removeProperty('--hero-progress');
     };
+
+    // 抬指回 0 要 300ms 缓动，scrub 途中必须即时跟手 —— 用属性切换 transition，而不是插值。
+    root.addEventListener('pointermove', () => {
+      if (root.dataset.heroLive && !root.dataset.heroScrubbing) root.dataset.heroScrubbing = '1';
+    });
+    const settle = () => delete root.dataset.heroScrubbing;
+    root.addEventListener('pointerleave', settle);
+    root.addEventListener('pointercancel', settle);
 
     const sync = () => {
       if (reduce() || !pointerOk() || !playable()) {
