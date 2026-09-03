@@ -79,3 +79,12 @@
 - **磊哥人拣**：R 真人路线终止（3 first + 1 last 存档，肖像政策未触发，面部 5/5）；**T 转正 + 体型偏瘦** → W1f image_edit 瘦身批（9 帧）在跑；LOCKED S0-T v3（motion 收紧 + 四帧双镜片抽检）/ S6-T v4 出纸。
 - 新主线（磊哥令）：合流 main + 「第一栋楼 = About」+ 城→厅转场。事实：about-pavilion 在出生点**正后方** 156m。Gemini 3.8 提案 `proposals/AH-T1-*.md`；指挥官加方案 (d) about↔now-signal 换位；董事会 ADR-4 在裁。
 - agy 别名：`gemini-3.7-flash` 实际路由 3.8 Flash；13:47–13:54 出口非美区时 Gemini 400 `User location is not supported`，切换后恢复。
+
+### L11 · 2026-09-03 14:20–17:50（合流主线 + 查缺补票）
+- **ADR-4**（第一栋楼 = About：(c) 任务链置首 ⊕ (d) about↔now-signal 换北/南槽，泊位按足迹重算；转场方案 1 机位同构 + 400ms 楼色脉冲签名 + 到达条驾驶卡；合流序）。T1a `5c7087f`（audit-x2 8/8，e2e 14/14）；T1b `df497c4`（e2e 13/13；Opus 抓出 hold 用例墙钟 flake → r2 状态语义 `1963f7b`）。M0 删占位 `5e3c4b6`。
+- **Q/E 环视**（磊哥 14:35 令）：agy 调研 `proposals/AH-QE-lookaround.md` → Opus 实现 `bbdf4ee`（圈外 E 环视/圈内 E 进站状态机接管；120°/s ±135° 0.35s；r2 门放宽 car_ready）。
+- **视频叶关闭**：W1f 瘦身 9/9（磊哥 15:45 通过）→ W1g 静帧进仓 `827308f`；S0 i2v #2 REJECT（头转）→ 磊哥选 A → LOCKED v4 零头动 → #3 PASS（头部位移 0.81%，光缆 Δ>4）；S6 #2（瘦身）PASS 定案。W1h `909a209`：Hero 指针 scrub + S6 220vh 滚动 scrub；竖版删除（移动 poster only）；总载荷 3.22MB。
+- **Opus 视觉席**（磊哥 14:32 指定）：VIS-1 `e3a5a82` 四债清、about 立面身份感 BLOCKED（signage 计数契约）→ W8；VIS-2 在途。
+- **查缺三路**（GAPS A/B/C）：A 判 MERGE-BLOCKED（全量 e2e 过期、远端落后——均在收口序内）+ P1 馆长偏差 → **ADR-5**（S1 迎客追认、S5 托举/S6 让位、互斥、9:16 不投）→ W3e `5c5ca20`（pose 四态、rAF 真冷、16/16×3）；B 无 P0/P1；C 抓 8 票漏记 + L11 断代 + 街区方位词倒挂 → F1 `fa1dc2d`（7 例）+ D1 文档对齐 `c9d5745` + 本段。
+- 教训：worker 回执可能与像素相反（W1h"转头"）——初审对图不对文；e2e 禁墙钟阈值（T1b）；`astro preview` 全局单例，worker 起 dev/preview 后必按 pid 收（4630 遗留）；Gemini 400 `User location` = 出口非美区，切换即恢复；ADR 内部矛盾（ADR-3 A#1 vs B 表）要在下一 ADR 显式定谳而非默认。
+- 下一步：VIS-2 收稿 → merge `origin/main`（docs-only 6 单）→ 干净端口全量 e2e attempt8（109 例）→ Grok xhigh + Opus 双审计 → push → CI required checks 绿 → 合入 #234 → W8 开票。
