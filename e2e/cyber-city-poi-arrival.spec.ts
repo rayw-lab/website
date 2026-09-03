@@ -365,3 +365,117 @@ test.describe('科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 p
     expect(errors.filter((m) => !isKnownUaError(m)), '恒等门零未捕获异常').toEqual([]);
   });
 });
+
+test.describe('AH-T1b hold overlay（ADR-4 决策 B）', () => {
+  test.describe.configure({ timeout: 600_000 });
+
+  test('AH-T1b hold overlay：hold 起帧挂类且 ≤400ms 卸；reduced-motion 不挂', async ({
+    page,
+    browser,
+  }) => {
+    test.setTimeout(600_000);
+    const errors = trackErrors(page);
+    type PulseLog = { seen: boolean; gone: boolean; addedAt: number; removedAt: number };
+
+    const installPulseProbe = (target: Page): Promise<void> =>
+      target.evaluate(() => {
+        const w = window as unknown as {
+          __poiHoldPulse?: { seen: boolean; gone: boolean; addedAt: number; removedAt: number };
+        };
+        w.__poiHoldPulse = { seen: false, gone: false, addedAt: 0, removedAt: 0 };
+        const log = w.__poiHoldPulse;
+        const on = () => document.documentElement.classList.contains('world-poi-hold-pulse');
+        const mark = () => {
+          if (on()) {
+            if (!log.seen) {
+              log.seen = true;
+              log.addedAt = performance.now();
+            }
+          } else if (log.seen && !log.gone) {
+            log.gone = true;
+            log.removedAt = performance.now();
+          }
+        };
+        const obs = new MutationObserver(mark);
+        obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        mark();
+      });
+
+    const readPulse = (target: Page): Promise<PulseLog> =>
+      target.evaluate(() => {
+        const w = window as unknown as {
+          __poiHoldPulse?: { seen: boolean; gone: boolean; addedAt: number; removedAt: number };
+        };
+        return w.__poiHoldPulse ?? { seen: false, gone: false, addedAt: 0, removedAt: 0 };
+      });
+
+    await page.route(NAV_ROUTE, (route) => {
+      void route.abort('aborted');
+    });
+
+    await page.goto(`${PAGE_URL}?poi=${POI_SLUG}#debug`);
+    const host = page.locator(SEL.host);
+    await expect(host).toBeVisible({ timeout: 60_000 });
+    try {
+      await expect(host).toHaveAttribute('data-state', 'ready', { timeout: 90_000 });
+    } catch {
+      await host.locator(SEL.enter).click();
+      await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+    }
+
+    const entered = await pollDump(page, (d) => d.funnel.firstPoiIn !== null, 90_000);
+    expect(entered.ok, '深链出生应落触发圈内').toBe(true);
+
+    await installPulseProbe(page);
+    const interacted = await pressEUntil(page, (d) => firstOf(d, 'shot-apply') !== undefined, 120_000);
+    expect(interacted.ok, 'E 应触发 shot-apply（前奏开启）').toBe(true);
+
+    // 400ms 脉冲会被 expect.poll 递增间隔漏掉；MutationObserver 在按 E 前挂上。
+    // gone 轮询给 2.5s：SwiftShader ~3fps 下 400ms 墙钟对齐到下一 tick；存在性仍由观察者时间戳断言。
+    await expect.poll(async () => (await readPulse(page)).seen, { timeout: 240_000, intervals: [50, 100] }).toBe(true);
+    await expect.poll(async () => (await readPulse(page)).gone, { timeout: 2_500, intervals: [50] }).toBe(true);
+    const pulse = await readPulse(page);
+    expect(pulse.addedAt, 'overlay 起帧应记下墙钟').toBeGreaterThan(0);
+    expect(pulse.removedAt, 'overlay 卸类应记下墙钟').toBeGreaterThan(pulse.addedAt);
+    expect(
+      pulse.removedAt - pulse.addedAt,
+      'overlay 类存活 ≤400ms + 一帧软渲染对齐（禁 infinite）',
+    ).toBeLessThanOrEqual(1_200);
+
+    // 新页 + 先 emulateMedia 再 goto（CITY-PA-03 同序）；同页后设偏好会错过壳四条件检查
+    const rm = await browser.newPage();
+    const rmErrors = trackErrors(rm);
+    await rm.emulateMedia({ reducedMotion: 'reduce' });
+    await rm.route(NAV_ROUTE, (route) => {
+      void route.abort('aborted');
+    });
+    await rm.goto(`${PAGE_URL}?poi=${POI_SLUG}#debug`);
+    const rmHost = rm.locator(SEL.host);
+    await expect(rmHost).toHaveAttribute('data-blocked', 'reduced-motion');
+    await rmHost.locator(SEL.enter).click();
+    await expect(rmHost).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+
+    const dump0 = await readDump(rm);
+    expect(dump0.env.reducedMotion).toBe(true);
+
+    const enteredRm = await pollDump(rm, (d) => d.funnel.firstPoiIn !== null, 90_000);
+    expect(enteredRm.ok, 'reduced-motion 深链出生应落触发圈内').toBe(true);
+
+    await installPulseProbe(rm);
+    const interactedRm = await pressEUntil(
+      rm,
+      (d) => firstOf(d, 'shot-apply') !== undefined,
+      120_000,
+    );
+    expect(interactedRm.ok, 'reduced-motion E 应照常 shot-apply').toBe(true);
+    await rm.waitForTimeout(800);
+    const rmPulse = await readPulse(rm);
+    expect(rmPulse.seen, 'reduced-motion 不得挂 hold overlay 类').toBe(false);
+    await rm.close();
+
+    expect(
+      [...errors, ...rmErrors].filter((m) => !isKnownUaError(m)),
+      'hold overlay 腿零未捕获异常',
+    ).toEqual([]);
+  });
+});

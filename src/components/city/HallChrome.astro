@@ -39,6 +39,7 @@ const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
   <span class="hall-chrome-explore">
     探索 <span data-explore-count>0/{poiIds.length}</span>
   </span>
+  <span class="hall-chrome-drive" data-hall-drive hidden></span>
   <a class="hall-chrome-back" href={returnHref}>返回科技城</a>
 </aside>
 
@@ -53,11 +54,15 @@ const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
       var hallPoi = root.getAttribute('data-poi') || '';
       var allow = (root.getAttribute('data-allow') || '').split(',').filter(Boolean);
       if (from !== 'city' || !poi || allow.indexOf(poi) === -1 || poi !== hallPoi) return;
+      var snap = null;
       try {
         var raw = sessionStorage.getItem('world-arrival-v1');
         if (raw) {
-          var snap = JSON.parse(raw);
-          if (snap && typeof snap === 'object' && snap.poi && snap.poi !== poi) return;
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') {
+            if (parsed.poi && parsed.poi !== poi) return;
+            snap = parsed;
+          }
         }
       } catch (e) {
         /* 坏快照当缺失：W2 可只凭合法 query 显示到达条 */
@@ -78,6 +83,18 @@ const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
       }
       var countEl = root.querySelector('[data-explore-count]');
       if (countEl) countEl.textContent = n + '/' + total;
+      // ADR-4 决策 B 文案模板：有 maxKmh → 否则 coneHits>0 → 否则保底探索 n/N（探索行已在）
+      var driveText = '';
+      if (snap && typeof snap.maxKmh === 'number' && isFinite(snap.maxKmh)) {
+        driveText = '最高巡航 ' + Math.round(snap.maxKmh) + ' km/h';
+      } else if (snap && typeof snap.coneHits === 'number' && snap.coneHits > 0) {
+        driveText = '途中碰倒 ' + snap.coneHits + ' 个锥桶';
+      }
+      var driveEl = root.querySelector('[data-hall-drive]');
+      if (driveEl) {
+        driveEl.textContent = driveText;
+        driveEl.hidden = !driveText;
+      }
       root.hidden = false;
     }
     if (document.readyState === 'loading') {
@@ -119,9 +136,22 @@ const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
     font-weight: 600;
   }
 
+  .hall-chrome:not([hidden]) {
+    animation: hall-chrome-in 400ms ease-out;
+  }
+
   .hall-chrome-explore {
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.02em;
+  }
+
+  .hall-chrome-drive {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-2);
+  }
+
+  .hall-chrome-drive[hidden] {
+    display: none;
   }
 
   .hall-chrome-back {
@@ -145,7 +175,17 @@ const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
     }
   }
 
+  @keyframes hall-chrome-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .hall-chrome:not([hidden]),
     .hall-chrome-dot {
       animation: none;
     }

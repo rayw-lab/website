@@ -112,3 +112,46 @@ test.describe('About Hall 未知 slug', () => {
     expect(res?.status()).toBe(404);
   });
 });
+
+test.describe('About Hall 驾驶卡短句（AH-T1b / ADR-4 决策 B）', () => {
+  test('完整快照写最高巡航；空快照保底探索 n/N', async ({ browser }) => {
+    const hallUrl = u(`${HALL}?from=city&poi=about-pavilion`);
+
+    const full = await browser.newPage();
+    await full.addInitScript(() => {
+      sessionStorage.setItem(
+        'world-arrival-v1',
+        JSON.stringify({
+          v: 1,
+          poi: 'about-pavilion',
+          sessionId: 'e2e-t1b-full',
+          t: 184320,
+          exploreN: 2,
+          exploreTotal: 12,
+          wroteAt: 1_700_000_000_000,
+          maxKmh: 96,
+          coneHits: 3,
+        }),
+      );
+      localStorage.setItem('world-explore-v1', JSON.stringify(['about-pavilion', 'autodrive-lab']));
+    });
+    const fullRes = await full.goto(hallUrl);
+    expect(fullRes?.status()).toBe(200);
+    const fullChrome = full.locator(CHROME);
+    await expect(fullChrome).toBeVisible();
+    await expect(fullChrome).toContainText('最高巡航 96 km/h');
+    await expect(fullChrome).toContainText('个人档案馆');
+    await expect(fullChrome).toContainText('探索');
+    await full.close();
+
+    const empty = await browser.newPage();
+    const emptyRes = await empty.goto(hallUrl);
+    expect(emptyRes?.status()).toBe(200);
+    const emptyChrome = empty.locator(CHROME);
+    await expect(emptyChrome).toBeVisible();
+    await expect(emptyChrome).toContainText(/探索\s+\d+\/\d+/);
+    await expect(emptyChrome).not.toContainText('最高巡航');
+    await expect(emptyChrome).not.toContainText('途中碰倒');
+    await empty.close();
+  });
+});

@@ -1,7 +1,8 @@
 // [CC-FXN-C3] POI 进站前奏（CAM F1，P0）——设计正本 docs/research/cyber-city-camera-design.md
 // F1 条 + 断言合同 docs/spec/cyber-city-function-test-plan.md §3.3：
 //   圈内 E/Enter/点标点 → 0.8s 缓动至该楼 poi_showcase-* 机位 → 定帧 0.4s → navigate 进站
-//   （v0 直跳，overlay/View Transition 归 CC-P1）。
+//   [AH-T1b / ADR-4 决策 B] hold 起帧挂一次性 DOM 边缘脉冲（楼 neonColor 单源），
+//   400ms 呼吸淡出后卸类；reduced-motion 不挂；驾驶中断立即卸。无 named VT。
 // 三条红线（design F1 / 顾问 §4.2 行 4）：
 //   · 驾驶意图至上：tween/定帧期间任何 RELEASE_ACTIONS 动作立即中断回 drive 跟随
 //     （actionStart 同步事件 = 同帧中断，满足「0.1s 内交还」上限；SRD「世界永远能开」）；
@@ -25,6 +26,11 @@ import { lerp, smallestAngle } from '../utils/maths';
 const TWEEN_DURATION = 0.8;
 /** showcase 定帧驻留（游戏秒，design F1 冻结：0.4s 后 navigate） */
 const HOLD_DURATION = 0.4;
+/** hold 边缘脉冲墙钟时长（ms，ADR-4 决策 B：400ms 呼吸淡出；与 HOLD_DURATION 数字分列，禁止改 0.4s） */
+const HOLD_OVERLAY_MS = 400;
+const HOLD_OVERLAY_CLASS = 'world-poi-hold-pulse';
+const HOLD_OVERLAY_VAR = '--poi-hold-neon';
+const HOLD_OVERLAY_STYLE_ID = 'world-poi-hold-style';
 
 /** smoothstep 缓动（power2InOut 数值近邻；InteractivePoints 手写缓动同纪律，G5 零依赖） */
 const easeInOut = (t: number): number => t * t * (3 - 2 * t);
@@ -55,9 +61,15 @@ export class PoiArrival {
   private to: ViewShotPose | null = null;
   private navigate: (() => void) | null = null;
   private listening = false;
+  /** 当前前奏楼 id（hold overlay 查 neonColor；idle 时空） */
+  private buildingId: string | null = null;
+  private overlayTimer: ReturnType<typeof setTimeout> | null = null;
+  /** hold 脉冲起墙钟（performance.now）；0 = 未挂。卸类走墙钟 400ms，不跟 HOLD_DURATION 游戏秒 */
+  private overlayStartedAt = 0;
 
   /** 前奏推进（ticker.delta 游戏时基——SwiftShader 慢动作下时序仍与设计秒同构） */
   private readonly tickHandler = (): void => {
+    this.expireHoldOverlay();
     if (this.phase !== 'tween' && this.phase !== 'hold') return;
     this.elapsed += this.game.ticker.delta;
 
@@ -67,6 +79,7 @@ export class PoiArrival {
       if (t >= 1) {
         this.phase = 'hold';
         this.elapsed = 0;
+        this.mountHoldOverlay();
       }
     } else if (this.elapsed >= HOLD_DURATION) {
       this.finish();
@@ -108,6 +121,7 @@ export class PoiArrival {
     }
 
     this.shotId = shotId;
+    this.buildingId = request.buildingId;
     this.to = pose;
     this.navigate = request.navigate;
     this.elapsed = 0;
@@ -120,6 +134,7 @@ export class PoiArrival {
       this.from = null;
       this.game.view.applyShot(pose, shotId);
       this.phase = 'hold';
+      this.mountHoldOverlay();
     } else {
       // t=0 帧即应用（= 当前取景恒等改写）：基线采集/焦点钉扎与埋点同帧落定
       this.from = this.game.view.captureShotPose();
@@ -147,10 +162,12 @@ export class PoiArrival {
 
   /** Areas.dispose 调用：摘监听（场景/总线资源归 Game.dispose） */
   dispose(): void {
+    this.clearHoldOverlay();
     this.setListening(false);
     this.game.ticker.events.off('tick', this.tickHandler);
     this.phase = 'idle';
     this.navigate = null;
+    this.buildingId = null;
   }
 
   /* ———————————————————— 内部 ———————————————————— */
@@ -177,6 +194,7 @@ export class PoiArrival {
 
   /** 定帧期满：发 navigate（route abort/console 型下页面存续——监听留岗等驾驶接管） */
   private finish(): void {
+    this.clearHoldOverlay();
     this.phase = 'done';
     const navigate = this.navigate;
     this.navigate = null;
@@ -191,6 +209,7 @@ export class PoiArrival {
   private interrupt(by: 'drive' | 'teleport' = 'drive'): void {
     if (this.phase === 'idle') return;
     const interrupted = this.phase === 'tween' || this.phase === 'hold';
+    this.clearHoldOverlay();
     this.phase = 'idle';
     this.navigate = null;
     this.setListening(false);
@@ -201,6 +220,68 @@ export class PoiArrival {
         (interrupted ? '（前奏中断，navigate 取消）' : '（定帧交还玩家跟随）'),
     );
     this.shotId = null;
+    this.buildingId = null;
+  }
+
+  /**
+   * hold 起帧：一次性全屏边缘脉冲。颜色从 buildings JSON neonColor 读，禁止第二份 hex。
+   * reduced-motion 不挂；无 neon 则跳过。墙钟 400ms 后卸类（不占 CITY-03、无 infinite）。
+   */
+  private mountHoldOverlay(): void {
+    if (this.reducedMotion) return;
+    const id = this.buildingId;
+    if (!id) return;
+    const neon = this.map.buildings.find((entry) => entry.id === id)?.neonColor;
+    if (typeof neon !== 'string' || neon.length === 0) return;
+    if (typeof document === 'undefined') return;
+    // 已在呼吸：禁止 clear+重挂（会把 400ms 定时器重置，类永远不卸）
+    if (document.documentElement.classList.contains(HOLD_OVERLAY_CLASS)) return;
+
+    this.clearHoldOverlay();
+    this.ensureOverlayStyles();
+    const root = document.documentElement;
+    root.style.setProperty(HOLD_OVERLAY_VAR, neon);
+    root.classList.add(HOLD_OVERLAY_CLASS);
+    this.overlayStartedAt = performance.now();
+    // 正常 60fps：setTimeout 准时；Playwright 后台页会钳短定时器，ticker 墙钟兜底
+    this.overlayTimer = setTimeout(() => {
+      this.overlayTimer = null;
+      this.clearHoldOverlay();
+    }, HOLD_OVERLAY_MS);
+  }
+
+  /** 墙钟 400ms 到点卸类（每 tick 查；不占 CITY-03、与 HOLD_DURATION 游戏秒分列） */
+  private expireHoldOverlay(): void {
+    if (this.overlayStartedAt === 0) return;
+    if (performance.now() - this.overlayStartedAt < HOLD_OVERLAY_MS) return;
+    this.clearHoldOverlay();
+  }
+
+  private clearHoldOverlay(): void {
+    this.overlayStartedAt = 0;
+    if (this.overlayTimer !== null) {
+      clearTimeout(this.overlayTimer);
+      this.overlayTimer = null;
+    }
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    root.classList.remove(HOLD_OVERLAY_CLASS);
+    root.style.removeProperty(HOLD_OVERLAY_VAR);
+  }
+
+  private ensureOverlayStyles(): void {
+    if (typeof document === 'undefined') return;
+    if (document.getElementById(HOLD_OVERLAY_STYLE_ID)) return;
+    const style = document.createElement('style');
+    style.id = HOLD_OVERLAY_STYLE_ID;
+    // 全屏 inset 霓虹边，暗底 #05070d 不动；400ms 一次呼吸，无 infinite / 无扫描线 / 无 named VT
+    style.textContent =
+      `html.${HOLD_OVERLAY_CLASS}::after{content:"";position:fixed;inset:0;z-index:40;pointer-events:none;` +
+      `box-shadow:inset 0 0 5rem 1.1rem color-mix(in srgb,var(${HOLD_OVERLAY_VAR}) 70%,transparent);` +
+      `animation:world-poi-hold-pulse .4s ease-out forwards}` +
+      `@keyframes world-poi-hold-pulse{0%{opacity:.18}38%{opacity:1}100%{opacity:0}}` +
+      `@media (prefers-reduced-motion:reduce){html.${HOLD_OVERLAY_CLASS}::after{content:none;animation:none}}`;
+    document.head.appendChild(style);
   }
 
   private setListening(on: boolean): void {

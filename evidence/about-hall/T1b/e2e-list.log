@@ -1,0 +1,25 @@
+[WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+
+Running 13 tests using 1 worker
+
+(node:86717) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › e2e/about-hall.spec.ts:10:3 › About Hall 到达条 › 无 query：200，H1 含「架桥」，到达条 hidden (319ms)
+  ✓   2 [desktop-chromium] › e2e/about-hall.spec.ts:20:3 › About Hall 到达条 › ?from=city&poi=about-pavilion：到达条可见且含「个人档案馆」与「返回科技城」 (235ms)
+  ✓   3 [desktop-chromium] › e2e/about-hall.spec.ts:31:3 › About Hall 到达条 › 有卡：world-arrival-v1 的 poi 匹配 → 到达条含「探索」与楼名 (234ms)
+  ✓   4 [desktop-chromium] › e2e/about-hall.spec.ts:59:3 › About Hall 到达条 › ?from=city&poi=not-a-building：到达条 hidden (240ms)
+  ✓   5 [desktop-chromium] › e2e/about-hall.spec.ts:68:3 › About Hall reduced-motion › prefers-reduced-motion：无正在运行的 CSS animation (226ms)
+  ✓   6 [desktop-chromium] › e2e/about-hall.spec.ts:97:3 › About Hall 无 JS › 禁用 JS：首屏 H1 与 poster <img> 可见 (248ms)
+  ✓   7 [desktop-chromium] › e2e/about-hall.spec.ts:110:3 › About Hall 未知 slug › 未知 slug 404 (58ms)
+  ✓   8 [desktop-chromium] › e2e/about-hall.spec.ts:117:3 › About Hall 驾驶卡短句（AH-T1b / ADR-4 决策 B） › 完整快照写最高巡航；空快照保底探索 n/N (563ms)
+(node:86744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [world-chromium] › e2e/cyber-city-poi-arrival.spec.ts:160:3 › 科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project） › CITY-PA-01 前奏时序：圈内 E → world-poi/shot-apply seq 序 → 定帧后 navigate 被拦（跳转前取证） (1.7m)
+  ✓  10 [world-chromium] › e2e/cyber-city-poi-arrival.spec.ts:229:3 › 科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project） › CITY-PA-02 驾驶中断：前奏窗内压 W → shot-interrupt{by:drive} seq 序 + 相机回跟随 + 零 navigate (1.5m)
+  ✓  11 [world-chromium] › e2e/cyber-city-poi-arrival.spec.ts:286:3 › 科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project） › CITY-PA-03 reduced-motion：直切定帧（零 tween）+ world-poi 照常 + 进站路径可完成 (1.1m)
+  ✓  12 [world-chromium] › e2e/cyber-city-poi-arrival.spec.ts:339:3 › 科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 project） › CITY-PA-04 恒等门：robot_idle 期 E 完全不可达（零事件 + View 零触碰） (1.4m)
+  ✓  13 [world-chromium] › e2e/cyber-city-poi-arrival.spec.ts:372:3 › AH-T1b hold overlay（ADR-4 决策 B） › AH-T1b hold overlay：hold 起帧挂类且 ≤400ms 卸；reduced-motion 不挂 (4.7m)
+
+  Slow test file: [world-chromium] › e2e/cyber-city-poi-arrival.spec.ts (10.4m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  13 passed (10.5m)
