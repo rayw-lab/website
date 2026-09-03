@@ -1,0 +1,52 @@
+---
+/**
+ * W3/W4 spike · 展厅连续体验雏形：S0 洇 → S1 墨流。
+ * 只验「两幕能否连起来」与滚动节奏；手卷横向平移（ADR-7）留 W4，正式路由留 W5。
+ * /world-spike/ 既定纪律：noindex,follow + canonical → `/`。
+ */
+import Yin from '../../components/city/halls/nexus/Yin.astro';
+import Flow from '../../components/city/halls/nexus/Flow.astro';
+import ledger from '../../data/nexus-ledger.json';
+const site = Astro.site?.href ?? '/';
+const t = ledger.totals as Record<string, number>;
+const r = ledger.range as { from: string; to: string };
+// 数字全部由 ledger 派生，正文里一个都不手写
+const stat = [
+  { k: '会话', v: t.sessions },
+  { k: '天', v: t.days },
+  { k: '席位', v: t.seats },
+];
+---
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,follow" /><link rel="canonical" href={site} />
+    <title>W3 spike · 展厅雏形</title>
+    <style>
+      html { background: #efe9dc; scroll-behavior: smooth; }
+      body { margin: 0; color: #1c1f26;
+             font-family: "Songti SC","STSong","Source Han Serif SC","Noto Serif CJK SC","SimSun",serif; }
+      .band { min-height: 100svh; display: grid; grid-template-rows: auto 1fr; gap: 1.4rem;
+              padding: clamp(2rem,7vh,5rem) clamp(1.5rem,6vw,6rem) clamp(3rem,9vh,6rem); }
+      .band__head { display: flex; align-items: baseline; justify-content: space-between;
+                    gap: 1.5rem; flex-wrap: wrap; border-bottom: 1px solid #1c1f2622; padding-bottom: .9rem; }
+      .band__t { margin: 0; font-size: clamp(1.05rem,2vw,1.5rem); font-weight: 400; letter-spacing: .05em; }
+      .band__n { margin: 0; font: 400 clamp(.72rem,1.1vw,.84rem)/1.7 ui-sans-serif,system-ui,sans-serif;
+                 letter-spacing: .12em; opacity: .62; }
+      .band__n b { font-weight: 600; opacity: .9; }
+    </style>
+  </head>
+  <body>
+    <Yin />
+    <section class="band">
+      <div class="band__head">
+        <h2 class="band__t">墨流 · 这一百天落在同一张纸上</h2>
+        <p class="band__n">
+          {stat.map((s) => (<span><b>{s.v}</b> {s.k}　</span>))}
+          {r.from} — {r.to}
+        </p>
+      </div>
+      <Flow spanSeconds={16} />
+    </section>
+  </body>
+</html>
