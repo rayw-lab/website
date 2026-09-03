@@ -1,6 +1,7 @@
 ---
 // 展厅馆长：空位始终在 DOM。S0 不挂 three（ADR-3）；S1 进视口才出现并 300ms 淡入。
 // three 仅宽屏 + no-preference 时动态 import。
+// 姿态单源（ADR-5 A.3/A.6）：本文件按主导幕写宿主 data-curator-pose，curator.ts 只跟随。
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const modelUrl = `${base}/models/hero-robot/HeroRobot.glb`;
 ---
@@ -22,13 +23,18 @@ const modelUrl = `${base}/models/hero-robot/HeroRobot.glb`;
     let footerOn = false;
     let watching = false;
 
+    // 探测一次即缓存：syncPresence 现在挂在 scroll 上，每次真建 WebGL 上下文太贵。
+    let webgl: boolean | undefined;
     const hasWebGL = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'));
-      } catch {
-        return false;
+      if (webgl === undefined) {
+        try {
+          const canvas = document.createElement('canvas');
+          webgl = Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+        } catch {
+          webgl = false;
+        }
       }
+      return webgl;
     };
 
     const bestScene = (): string => {
@@ -52,15 +58,33 @@ const modelUrl = `${base}/models/hero-robot/HeroRobot.glb`;
       else document.documentElement.removeAttribute('data-hall-curator');
     };
 
+    // ADR-5 A.3 三动作表 + yield：present 只有 s5（天平幕），s6 让位，s8 致意一次，
+    // 其余在场幕（s1–s4 / s7）落 gaze 默认。
+    const POSE_BY_SCENE: Record<string, string> = { s5: 'present', s6: 'yield', s8: 'salute' };
+
     const syncPresence = () => {
       const scene = bestScene();
       const leftHero = scene !== 's0';
       const show = wideMq.matches && leftHero && !footerOn;
       host.classList.toggle('is-on', show);
       host.dataset.curatorOn = show ? '1' : '0';
+      host.dataset.curatorScene = scene;
+      // reduced-motion / 无 WebGL：不播骨骼，pose 停在静态 gaze。
+      const pose = !show
+        ? ''
+        : !playMq.matches || !hasWebGL()
+          ? 'gaze'
+          : (POSE_BY_SCENE[scene] ?? 'gaze');
+      if (pose) host.dataset.curatorPose = pose;
+      else delete host.dataset.curatorPose;
       syncLane();
       if (show) start();
     };
+
+    // IntersectionObserver 只在跨阈值时回调，s6 是 220vh（自身比例到不了 0.5 阈值），
+    // 中段停住会让 pose 停在旧值。scroll 事件每帧至多一次，读 9 个幕的 rect 即可，
+    // 且 curator.ts 已不再每帧扫 DOM——净开销比改前更低。
+    window.addEventListener('scroll', syncPresence, { passive: true });
 
     const stop = () => {
       destroy?.();
@@ -103,6 +127,8 @@ const modelUrl = `${base}/models/hero-robot/HeroRobot.glb`;
     playMq.addEventListener('change', () => {
       if (playMq.matches) start();
       else stop();
+      // 中途切到 reduced-motion：three 已卸，pose 必须跟着回落成静态 gaze。
+      syncPresence();
     });
     wideMq.addEventListener('change', syncPresence);
     laneMq.addEventListener('change', syncLane);
@@ -207,6 +233,24 @@ const modelUrl = `${base}/models/hero-robot/HeroRobot.glb`;
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  /* [AH-W3e / ADR-5 A.4] S6 让位：rAF 已取消，画面冻在 gaze 末姿（不做新动作），
+     只把不透明度压到 ADR 上限以下 —— 读作「侧身让位看片」。回 s7 时 300ms 淡回。
+     位移/动画一概不加；transition 关在 no-preference 里，RM 下馆长根本不挂 three。 */
+  .hall-curator[data-curator-pose='yield'] .hall-curator-stage :global(canvas) {
+    opacity: 0.4;
+  }
+
+  .hall-curator[data-curator-pose='yield'] .hall-curator-stage::after {
+    opacity: 0.4;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hall-curator-stage :global(canvas),
+    .hall-curator-stage::after {
+      transition: opacity 300ms var(--ease-out);
+    }
   }
 </style>
 

@@ -234,4 +234,210 @@ test.describe('About Hall 驾驶卡短句（AH-T1b / ADR-4 决策 B）', () => {
     await expect(emptyChrome).not.toContainText('途中碰倒');
     await empty.close();
   });
+
+  test('HALL-CHROME-DRIVE-CONEHITS：快照只有 coneHits:4 时到达条含碰倒锥桶', async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem(
+        'world-arrival-v1',
+        JSON.stringify({
+          v: 1,
+          poi: 'about-pavilion',
+          sessionId: 'e2e-f1-cones',
+          t: 184320,
+          exploreN: 2,
+          exploreTotal: 12,
+          wroteAt: 1_700_000_000_000,
+          coneHits: 4,
+        }),
+      );
+    });
+    const res = await page.goto(u(`${HALL}?from=city&poi=about-pavilion`));
+    expect(res?.status()).toBe(200);
+    await expect(page.locator(CHROME)).toBeVisible();
+    await expect(page.locator('[data-hall-drive]')).toHaveText('途中碰倒 4 个锥桶');
+  });
+});
+
+test.describe('About Hall 地轨键盘（AH-F1）', () => {
+  test('HALL-RAIL-KEYBOARD-NAV：Tab 到第 2 节点 Enter → scrollY 增长且目标幕入视口', async ({
+    page,
+  }) => {
+    const res = await page.goto(u(HALL));
+    expect(res?.status()).toBe(200);
+    const second = page.locator('.hall-rail-stop').nth(1);
+    await expect(second).toBeVisible();
+    const scene = await second.getAttribute('data-rail-scene');
+    expect(scene, '第 2 地轨节点应有 data-rail-scene').toBeTruthy();
+
+    let focused = false;
+    for (let i = 0; i < 40; i++) {
+      await page.keyboard.press('Tab');
+      if (await second.evaluate((el) => el === document.activeElement)) {
+        focused = true;
+        break;
+      }
+    }
+    expect(focused, 'Tab 应能到达地轨第 2 节点').toBe(true);
+
+    const y0 = await page.evaluate(() => window.scrollY);
+    await page.keyboard.press('Enter');
+    await expect
+      .poll(async () => page.evaluate(() => window.scrollY), { timeout: 8_000 })
+      .toBeGreaterThan(y0);
+
+    await expect
+      .poll(async () =>
+        page.evaluate((s) => {
+          const el = document.querySelector(`[data-scene="${s}"]`);
+          if (!(el instanceof HTMLElement)) return false;
+          const r = el.getBoundingClientRect();
+          return r.bottom > 0 && r.top < window.innerHeight;
+        }, scene),
+      )
+      .toBe(true);
+  });
+});
+
+test.describe('About Hall 移动 375（AH-F1）', () => {
+  test.use({ viewport: { width: 375, height: 667 } });
+
+  test('HALL-MOBILE-375-NO-OVERFLOW：无横向溢出，Hero poster 可见且无 video 播放', async ({
+    page,
+  }) => {
+    const res = await page.goto(u(HALL));
+    expect(res?.status()).toBe(200);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - window.innerWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+
+    const poster = page.locator('[data-hero-scrub] img').first();
+    await expect(poster).toBeVisible();
+    await expectImageLoaded(poster);
+
+    const videoPlaying = await page.evaluate(() =>
+      [...document.querySelectorAll('video')].some(
+        (v) => !v.paused && !v.ended && v.currentTime > 0,
+      ),
+    );
+    expect(videoPlaying, '375 视口不得播放 Hero video').toBe(false);
+  });
+});
+
+// [AH-W3e] 馆长契约（ADR-5 决策 A）：四态 pose 硬门 + S6 让位 + 同屏 GPU 互斥。
+test.describe('AH-W3e 馆长契约', () => {
+  // 只追加本块：Page 类型走 inline import，不动文件头的 import 行（AH-F1 同文件在改）。
+  type Page = import('@playwright/test').Page;
+  const CURATOR = '[data-curator]';
+  /** ADR-5 A.4 让位不透明度上限 */
+  const YIELD_OPACITY_MAX = 0.45;
+
+  /** 把某幕滚成「主导幕」：幕内 frac 处对齐视口中线（bestScene 取可见高度最大者）。 */
+  const scrollToScene = async (page: Page, scene: string, frac: number): Promise<void> => {
+    await page.evaluate(
+      ({ scene, frac }) => {
+        const el = document.querySelector(`[data-scene="${scene}"]`);
+        if (!(el instanceof HTMLElement)) throw new Error(`missing ${scene}`);
+        const rect = el.getBoundingClientRect();
+        const top = rect.top + window.scrollY;
+        window.scrollTo(0, Math.max(0, top + rect.height * frac - window.innerHeight * 0.5));
+      },
+      { scene, frac },
+    );
+  };
+
+  const poseAt = (page: Page): Promise<string> =>
+    page.locator(CURATOR).evaluate((el) => (el as HTMLElement).dataset.curatorPose ?? '');
+
+  const expectPose = async (page: Page, scene: string, pose: string, frac = 0.5): Promise<void> => {
+    await scrollToScene(page, scene, frac);
+    await expect
+      .poll(() => poseAt(page), { timeout: 10_000, message: `${scene} 应为 ${pose}` })
+      .toBe(pose);
+  };
+
+  const framesAt = (page: Page): Promise<number> =>
+    page.evaluate(() => window.__hallDebug?.curatorFrames ?? -1);
+
+  test('桌面非 RM：s1=gaze / s5=present / s6=yield（冻帧 + 降透明 + rAF 冷）/ s8=salute', async ({
+    page,
+  }) => {
+    await page.goto(u(HALL));
+
+    // S0 主导：不在场，pose 属性不写（ADR-5 A.3 末行）
+    expect(await poseAt(page), 'S0 不得写 pose').toBe('');
+
+    // S1 相交才允许 import('./curator')；canvas 出现 = chunk 已到位
+    await expectPose(page, 's1', 'gaze', 0.3);
+    const canvas = page.locator(`${CURATOR} canvas`);
+    await expect(canvas).toHaveCount(1, { timeout: 30_000 });
+
+    // 天平幕才托举
+    await expectPose(page, 's5', 'present');
+
+    // S6 中段：让位
+    await expectPose(page, 's6', 'yield');
+    // 降透明走 300ms transition，poll 等它落位（不是等动画：RM 下这条 transition 不存在）
+    await expect
+      .poll(
+        () => canvas.evaluate((el) => Number.parseFloat(getComputedStyle(el).opacity)),
+        { timeout: 5_000, message: `yield 时 canvas opacity 应 ≤${YIELD_OPACITY_MAX}` },
+      )
+      .toBeLessThanOrEqual(YIELD_OPACITY_MAX);
+    await expect
+      .poll(
+        () =>
+          page.locator(CURATOR).evaluate((el) => (el as HTMLElement).dataset.curatorRaf ?? ''),
+        { timeout: 5_000 },
+      )
+      .toBe('0');
+
+    // 连采 5 帧：renderer 不渲染（帧计数不动）
+    const frames = await page.evaluate(
+      () =>
+        new Promise<number[]>((resolve) => {
+          const out: number[] = [];
+          const step = (): void => {
+            out.push(window.__hallDebug?.curatorFrames ?? -1);
+            if (out.length < 5) requestAnimationFrame(step);
+            else resolve(out);
+          };
+          requestAnimationFrame(step);
+        }),
+    );
+    expect(
+      frames.every((n) => n >= 0),
+      `curatorFrames 探针应存在：${JSON.stringify(frames)}`,
+    ).toBe(true);
+    expect(new Set(frames).size, `s6 中段不得渲染：${JSON.stringify(frames)}`).toBe(1);
+
+    // 离开 S6 恢复 rAF
+    await expectPose(page, 's7', 'gaze');
+    const before = await framesAt(page);
+    await expect.poll(() => framesAt(page), { timeout: 5_000 }).toBeGreaterThan(before);
+
+    await expectPose(page, 's8', 'salute', 0.3);
+  });
+
+  test('reduced-motion：pose 属性仍在（静态 gaze）、无 animation、curatorFrames 不增长', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(u(HALL));
+    await expectPose(page, 's5', 'gaze');
+
+    const report = await page.evaluate(() => ({
+      anims: document.getAnimations().length,
+      running: document.getAnimations().filter((a) => a.playState === 'running').length,
+      canvases: document.querySelectorAll('[data-curator] canvas').length,
+      frames: window.__hallDebug?.curatorFrames ?? 0,
+    }));
+    expect(report.running, 'RM 不得有 running animation').toBe(0);
+    expect(report.anims, 'RM 下 getAnimations() 应为 0').toBe(0);
+    expect(report.canvases, 'RM 不挂 three').toBe(0);
+
+    await page.waitForTimeout(600);
+    const after = await page.evaluate(() => window.__hallDebug?.curatorFrames ?? 0);
+    expect(after, 'RM 下 curatorFrames 不得增长').toBe(report.frames);
+  });
 });

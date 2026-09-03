@@ -1,7 +1,7 @@
 {
   "schema": "about-hall-gate/v1",
   "ok": true,
-  "generatedAt": "2026-09-03T06:09:18.083Z",
+  "generatedAt": "2026-09-03T09:41:47.764Z",
   "dist": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/dist",
   "notes": [
     "G-Hall-10 由 e2e/about-hall.spec.ts 承担，本脚本不判。",
@@ -29,11 +29,13 @@
     {
       "id": "G-Hall-2",
       "status": "PASS",
-      "detail": "扫描 2 个文件（HTML + 静态 JS），零 lab/world / initAllLabFacades / mountWorld（未用 _astro/world. 文件名）",
+      "detail": "扫描 4 个文件（HTML + 静态 JS），零 lab/world / initAllLabFacades / mountWorld（未用 _astro/world. 文件名）",
       "evidence": {
         "files": [
           "world/about-pavilion/index.html",
-          "_astro/Curator.astro_astro_type_script_index_0_lang.DIP8kSzK.js"
+          "_astro/Hero.astro_astro_type_script_index_0_lang.dqtotLqD.js",
+          "_astro/Curator.astro_astro_type_script_index_0_lang.BCw6FaYi.js",
+          "_astro/Transition.astro_astro_type_script_index_0_lang.y00SbV5G.js"
         ],
         "hits": []
       }
@@ -65,17 +67,29 @@
     {
       "id": "G-Hall-6",
       "status": "PASS",
-      "detail": "额外 JS gzip 930B ≤ 20KB 目标（Hall-S）",
+      "detail": "额外 JS gzip 1838B ≤ 20KB 目标（Hall-S）",
       "evidence": {
-        "gzipBytes": 930,
+        "gzipBytes": 1838,
         "targetBytes": 20480,
         "capBytes": 51200,
         "rows": [
           {
-            "url": "/website/_astro/Curator.astro_astro_type_script_index_0_lang.DIP8kSzK.js",
+            "url": "/website/_astro/Hero.astro_astro_type_script_index_0_lang.dqtotLqD.js",
             "kind": "script",
-            "rel": "_astro/Curator.astro_astro_type_script_index_0_lang.DIP8kSzK.js",
-            "gzipBytes": 930
+            "rel": "_astro/Hero.astro_astro_type_script_index_0_lang.dqtotLqD.js",
+            "gzipBytes": 480
+          },
+          {
+            "url": "/website/_astro/Curator.astro_astro_type_script_index_0_lang.BCw6FaYi.js",
+            "kind": "script",
+            "rel": "_astro/Curator.astro_astro_type_script_index_0_lang.BCw6FaYi.js",
+            "gzipBytes": 1043
+          },
+          {
+            "url": "/website/_astro/Transition.astro_astro_type_script_index_0_lang.y00SbV5G.js",
+            "kind": "script",
+            "rel": "_astro/Transition.astro_astro_type_script_index_0_lang.y00SbV5G.js",
+            "gzipBytes": 315
           }
         ],
         "missing": []
@@ -98,7 +112,7 @@
     {
       "id": "G-Hall-8",
       "status": "PASS",
-      "detail": "7 条媒体对账通过（sha256/字节/fps/无音轨/时长）；总载荷 286284B ≤ 6.0MB",
+      "detail": "9 条媒体对账通过（sha256/字节/fps/无音轨/时长）；总载荷 3379813B ≤ 6.0MB",
       "evidence": {
         "items": [
           {
@@ -106,6 +120,15 @@
             "src16x9": null,
             "poster": "/media/about-hall/hero-s0-poster.webp",
             "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "hero-s0",
+            "src16x9": "/media/about-hall/hero-s0-720p.mp4",
+            "poster": "/media/about-hall/hero-s0-poster.webp",
+            "resolved": [
+              "src16x9",
               "poster"
             ]
           },
@@ -156,9 +179,18 @@
             "resolved": [
               "poster"
             ]
+          },
+          {
+            "id": "transition-s6",
+            "src16x9": "/media/about-hall/transition-s6-720p.mp4",
+            "poster": "/media/about-hall/transition-s6-poster.webp",
+            "resolved": [
+              "src16x9",
+              "poster"
+            ]
           }
         ],
-        "totalBytes": 286284,
+        "totalBytes": 3379813,
         "capBytes": 6291456
       }
     },
@@ -171,7 +203,7 @@
           {
             "scene": "s0",
             "bind": "tagline;proof:/about/",
-            "raw": "<section class=\"hall-hero\" data-scene=\"s0\" data-bind=\"tagline;proof:/about/\" data-hero-scrub>"
+            "raw": "<section class=\"hall-hero\" data-scene=\"s0\" data-bind=\"tagline;proof:/about/\" data-hero-scrub data-astro-cid-oz3wak26>"
           },
           {
             "scene": "s1",
@@ -201,7 +233,7 @@
           {
             "scene": "s6",
             "bind": "stage:6;pillar:ai-workflow;proof:/work/ai-native-workflow/",
-            "raw": "<section class=\"hall-station\" data-scene=\"s6\" data-bind=\"stage:6;pillar:ai-workflow;proof:/work/ai-native-workflow/\" data-reveal=\"hold\" data-station-progress>"
+            "raw": "<section class=\"hall-station hall-homecoming\" data-scene=\"s6\" data-bind=\"stage:6;pillar:ai-workflow;proof:/work/ai-native-workflow/\" data-s6-scrub data-astro-cid-7j466k7a>"
           },
           {
             "scene": "s7",

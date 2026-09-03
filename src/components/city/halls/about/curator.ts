@@ -1,7 +1,11 @@
 /**
  * About Hall 馆长：轻量 WebGL 渲染 HeroRobot.glb。
  * 禁止 import src/lab/world/**、rapier、three/webgpu。
- * 程序化三动作（注视 / 托举 / 致意）叠在 Idle 剪辑上，不加新剪辑。
+ * 程序化四态（gaze / present / yield / salute）叠在 Idle 剪辑上，不加新剪辑。
+ *
+ * 姿态单源 = 宿主 `data-curator-pose`（由 Curator.astro 按主导幕写）。ADR-5 A：
+ * present 仅 s5；s6 让位 = 冻最后一帧 + 降不透明度 + `cancelAnimationFrame`（冷 ≠ 空转挂环）。
+ * 同屏 GPU 互斥（ADR-5 A.5）：Hero 指针 seek / S6 滚动 seek / renderer.render 同帧至多一条。
  */
 import * as THREE from 'three';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -13,9 +17,19 @@ const EYE = 0x49c5b6;
 const CREAM = 0xfef3c7;
 const HALL_BG = 0x041020;
 const MAX_GAZE = (15 * Math.PI) / 180;
-const LIFT_SCENES = new Set(['s2', 's3', 's4', 's5', 's6']);
+/** Hero 指针 scrub「活动期」窗口：最后一次落在 Hero 内的 pointer 事件之后这段时间算热。 */
+const HERO_POINTER_HOT_MS = 400;
+
+export type CuratorPose = 'gaze' | 'present' | 'yield' | 'salute';
 
 export type CuratorHandle = { destroy(): void };
+
+declare global {
+  interface Window {
+    /** 只读调试出口（`__worldSpike` 同段纪律：挂载写、destroy 删）。 */
+    __hallDebug?: { curatorFrames: number };
+  }
+}
 
 type BoneBag = {
   head: THREE.Bone | null;
@@ -79,38 +93,6 @@ function hasWebGL(): boolean {
   }
 }
 
-function sceneOf(el: Element): string {
-  return (el as HTMLElement).dataset.scene ?? '';
-}
-
-function revealOf(el: HTMLElement): number {
-  const raw = getComputedStyle(el).getPropertyValue('--hall-reveal').trim();
-  const n = Number.parseFloat(raw);
-  return Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : 1;
-}
-
-function currentHallState(): { scene: string; station: number } {
-  const nodes = document.querySelectorAll<HTMLElement>('[data-scene]');
-  let best: HTMLElement | null = null;
-  let bestScore = -1;
-  for (const el of nodes) {
-    const r = el.getBoundingClientRect();
-    const visible = Math.min(r.bottom, innerHeight) - Math.max(r.top, 0);
-    if (visible > bestScore) {
-      bestScore = visible;
-      best = el;
-    }
-  }
-  const scene = best ? sceneOf(best) : 's0';
-  let station = 0;
-  if (scene === 's2') station = revealOf(best!) < 0.5 ? 1 : 2;
-  else if (scene === 's3') station = 3;
-  else if (scene === 's4') station = 4;
-  else if (scene === 's5') station = 5;
-  else if (scene === 's6') station = 6;
-  return { scene, station };
-}
-
 function fitRobot(model: THREE.Object3D, targetHeight: number): void {
   const box = new THREE.Box3().setFromObject(model);
   const native = Math.max(box.max.y - box.min.y, 0.001);
@@ -142,10 +124,13 @@ export function mountCurator(host: HTMLElement): CuratorHandle {
 
   let disposed = false;
   let raf = 0;
+  // preserveDrawingBuffer：让位（rAF 取消）后画面必须留在 canvas 上。默认 false 时
+  // 合成完成即隐式清空 drawing buffer，「冻最后一帧」会变成馆长凭空消失。
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
     alpha: true,
     powerPreference: 'low-power',
+    preserveDrawingBuffer: true,
   });
   renderer.setClearColor(HALL_BG, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -192,6 +177,14 @@ export function mountCurator(host: HTMLElement): CuratorHandle {
   let pointerLive = false;
   let idleLook = 0;
   let draco: DRACOLoader | null = null;
+  let ready = false;
+  let heroPointerAt = Number.NEGATIVE_INFINITY;
+  /** 让位已冻帧：pose=yield 且手臂已落回 gaze 末姿，此后 rAF 冷。 */
+  let frozen = false;
+  let yieldFrames = 0;
+
+  const debug = window.__hallDebug ?? { curatorFrames: 0 };
+  window.__hallDebug = debug;
 
   const resize = (): void => {
     const w = Math.max(1, stage.clientWidth);
@@ -201,25 +194,65 @@ export function mountCurator(host: HTMLElement): CuratorHandle {
     camera.updateProjectionMatrix();
   };
 
+  const poseOf = (): CuratorPose => {
+    const raw = host.dataset.curatorPose;
+    return raw === 'present' || raw === 'yield' || raw === 'salute' ? raw : 'gaze';
+  };
+
+  /**
+   * 冷 = cancelAnimationFrame。让位（s6）与离场都必须真的把环摘掉。
+   * yield 允许一段有上限的收势（托举的手落回下垂），落定即冻，之后一帧不渲染。
+   */
+  const wantsLoop = (): boolean =>
+    ready && !disposed && host.classList.contains('is-on') && !(poseOf() === 'yield' && frozen);
+
+  /** 同帧至多一条热路径：Hero 指针 scrub 或 S6 滚动 scrub 正在 seek 时，本帧不 render。 */
+  const seekHot = (now: number): boolean => {
+    const hero = document.querySelector<HTMLVideoElement>('[data-hero-scrub] video');
+    if (hero?.seeking && now - heroPointerAt < HERO_POINTER_HOT_MS) return true;
+    const s6 = document.querySelector<HTMLVideoElement>('[data-scene="s6"] video');
+    return Boolean(s6?.seeking);
+  };
+
   const onPointer = (ev: PointerEvent): void => {
     pointerLive = true;
     pointerX = (ev.clientX / window.innerWidth) * 2 - 1;
     pointerY = (ev.clientY / window.innerHeight) * 2 - 1;
     idleLook = 0;
+    const target = ev.target;
+    if (target instanceof Element && target.closest('[data-hero-scrub]')) {
+      heroPointerAt = performance.now();
+    }
   };
 
   const tick = (): void => {
-    if (disposed) return;
+    raf = 0;
+    if (!wantsLoop()) {
+      host.dataset.curatorRaf = '0';
+      return;
+    }
     raf = requestAnimationFrame(tick);
-    if (!host.classList.contains('is-on')) return;
     const now = performance.now();
+    if (seekHot(now)) {
+      lastT = now;
+      return;
+    }
     const dt = Math.min(0.05, (now - lastT) / 1000);
     lastT = now;
-    const { scene: sceneId, station } = currentHallState();
-    const wantLift = LIFT_SCENES.has(sceneId) ? 1 : 0;
-    lift += (wantLift - lift) * Math.min(1, dt * 4.2);
+    const pose = poseOf();
+    const yielding = pose === 'yield';
+    const wantLift = pose === 'present' ? 1 : 0;
+    // 让位收势比常规回落快一档，与 300ms 降透明同步；20 帧封顶，不许拖成第二套动作。
+    lift += (wantLift - lift) * Math.min(1, dt * (yielding ? 9 : 4.2));
+    if (yielding) {
+      yieldFrames += 1;
+      if (lift < 0.03 || yieldFrames > 20) {
+        lift = 0;
+        frozen = true;
+      }
+    }
 
-    if (sceneId === 's8' && !saluteDone && saluteT < 0) saluteT = 0;
+    if (pose === 'salute' && !saluteDone && saluteT < 0) saluteT = 0;
     if (saluteT >= 0 && saluteT < 1) {
       saluteT = Math.min(1, saluteT + dt / 1.7);
       if (saluteT >= 1) {
@@ -252,7 +285,8 @@ export function mountCurator(host: HTMLElement): CuratorHandle {
       overlayEuler(bones?.lowerR ?? null, -0.95 * t, -0.42 * t, 0.12 * t, 1);
     }
 
-    if (saluteT >= 0) {
+    // 抬手只在 s8 期间保持：滚回 s7 就回落成 gaze，不留一只举着的手。
+    if (saluteT >= 0 && (pose === 'salute' || saluteT < 1)) {
       const rise = Math.min(1, saluteT / 0.32);
       const nod =
         !saluteDone && saluteT > 0.32 && saluteT < 0.7
@@ -267,7 +301,6 @@ export function mountCurator(host: HTMLElement): CuratorHandle {
     }
 
     host.dataset.curatorLift = lift.toFixed(2);
-    host.dataset.curatorScene = sceneId;
 
     robot?.updateMatrixWorld(true);
 
@@ -275,13 +308,43 @@ export function mountCurator(host: HTMLElement): CuratorHandle {
     if (presenting) {
       orb.position.set(0, 0.98, 0.42);
       orb.visible = true;
-      orb.scale.setScalar(1 + 0.05 * station);
+      orb.scale.setScalar(1.25);
     } else {
       orb.visible = false;
     }
 
     renderer.render(scene, camera);
+    debug.curatorFrames += 1;
   };
+
+  const startLoop = (): void => {
+    if (raf !== 0 || !wantsLoop()) return;
+    lastT = performance.now();
+    host.dataset.curatorRaf = '1';
+    raf = requestAnimationFrame(tick);
+  };
+
+  const stopLoop = (): void => {
+    if (raf !== 0) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
+    host.dataset.curatorRaf = '0';
+  };
+
+  const syncLoop = (): void => {
+    if (poseOf() !== 'yield') {
+      frozen = false;
+      yieldFrames = 0;
+    }
+    if (wantsLoop()) startLoop();
+    else stopLoop();
+  };
+
+  // 姿态与在场由宿主写属性，这里只跟随。attributeFilter 排掉自写的 lift/raf/frames，
+  // 否则自己的每帧写入会把观察器变成第二个 rAF。
+  const poseWatch = new MutationObserver(syncLoop);
+  poseWatch.observe(host, { attributes: true, attributeFilter: ['data-curator-pose', 'class'] });
 
   const ro = new ResizeObserver(resize);
   ro.observe(stage);
@@ -312,8 +375,10 @@ export function mountCurator(host: HTMLElement): CuratorHandle {
     }
 
     resize();
-    lastT = performance.now();
-    tick();
+    ready = true;
+    // 让位期（s6）加载完成时不补渲染，宁可 canvas 空着：ADR-5 A.5 的「至多一条热路径」
+    // 优先于「一定有画面」。s5→s6 正常路径早已有帧可冻。
+    startLoop();
   };
 
   void boot();
@@ -322,7 +387,10 @@ export function mountCurator(host: HTMLElement): CuratorHandle {
     destroy() {
       if (disposed) return;
       disposed = true;
-      cancelAnimationFrame(raf);
+      stopLoop();
+      delete host.dataset.curatorRaf;
+      delete window.__hallDebug;
+      poseWatch.disconnect();
       ro.disconnect();
       window.removeEventListener('pointermove', onPointer);
       mixer?.stopAllAction();
