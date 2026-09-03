@@ -122,6 +122,12 @@ const heroTowers = buildings.filter((b) => b.hero);
              销 L0 观察 aria-hidden-focus（baseline §A.5-2） -->
         <div class="hud">
           <div class="hud-cell">
+            <!-- [Tier-C T-2] 速度表装饰化：霓虹弧线随速点亮（SVG 220° 弧 + --speed-ratio 变量；
+                 拦截态 .hud 为 visibility:hidden 对 VIS-01 基线零像素影响） -->
+            <svg class="hud-arc" viewBox="0 0 96 96" aria-hidden="true">
+              <circle class="hud-arc-track" cx="48" cy="48" r="42"></circle>
+              <circle class="hud-arc-bar" cx="48" cy="48" r="42"></circle>
+            </svg>
             <span class="hud-num" data-ws-speed>0</span>
             <span class="hud-unit">km/h</span>
           </div>
@@ -567,6 +573,7 @@ const heroTowers = buildings.filter((b) => b.hero);
     transition: opacity 400ms ease;
   }
   .hud-cell {
+    position: relative;
     display: flex;
     flex-direction: column;
     line-height: 1.15;
@@ -583,6 +590,37 @@ const heroTowers = buildings.filter((b) => b.hero);
     font-weight: 650;
     color: #eef2f7;
     text-shadow: 0 0 12px color-mix(in srgb, var(--neon-cyan) 55%, transparent);
+  }
+  /* [Tier-C T-2] 霓虹弧线：220° 弧随速点亮（--speed-ratio 由引擎 HUD 拍写入 0-1；
+     拦截态 .hud visibility:hidden 零像素影响；boost 时变品红由 data-boost 选择器承接） */
+  .hud-arc {
+    position: absolute;
+    inset: -3px;
+    width: calc(100% + 6px);
+    height: calc(100% + 6px);
+    pointer-events: none;
+    overflow: visible;
+  }
+  .hud-arc-track,
+  .hud-arc-bar {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    /* 220° 弧长: 2π×42×(220/360) ≈ 161.3；dasharray 后段为空白 */
+    stroke-dasharray: 161.3 264;
+    transform-origin: 50% 50%;
+    transform: rotate(160deg);
+  }
+  .hud-arc-track {
+    stroke: color-mix(in srgb, var(--neon-cyan) 15%, transparent);
+  }
+  .hud-arc-bar {
+    stroke: var(--neon-cyan);
+    filter: drop-shadow(0 0 6px var(--neon-cyan));
+    stroke-dashoffset: calc(161.3px * (1 - var(--speed-ratio, 0)));
+    transition:
+      stroke-dashoffset 150ms ease-out,
+      stroke 200ms ease;
   }
   .hud-unit {
     font-size: 0.8rem;
