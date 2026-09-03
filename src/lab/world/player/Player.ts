@@ -159,6 +159,14 @@ export class Player {
       // 零回归）、intro 下被闸门拦截（robot_idle 恒等保证 #1）。消费在 View
       // （相机归相机）；不进 TransformSystem DRIVE_ACTIONS（切视角 ≠ 驾驶意图）
       { name: 'toggleDriveView', categories: ['driving'],                                 keys: ['Keyboard.KeyV'] },
+      // [AH-QE] Q/E = 第三人称环视侧转（PUBG 载具自由视角对标）：转相机不转车，
+      // 消费在 View.updateLookaround。categories 同 V 只有 'driving'（首幕/灰盒
+      // 物理拦截）；E 与 POI 进站 poiInteract 物理键共存——圈内按 E 由进站前奏
+      // applyShot 抢占相机、环视同帧闭门归零（状态机优先级接管，零 e2e 回归）。
+      // 不进 TransformSystem DRIVE_ACTIONS / View focusActions / RELEASE_ACTIONS：
+      // 环视 ≠ 驾驶意图，不夺焦点跟踪、不中断进站运镜
+      { name: 'lookLeft',        categories: ['driving'],                                 keys: ['Keyboard.KeyQ'] },
+      { name: 'lookRight',       categories: ['driving'],                                 keys: ['Keyboard.KeyE'] },
     ]);
 
     // Respawn

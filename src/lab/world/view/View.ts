@@ -30,6 +30,21 @@ import type { TransformState } from '../player/TransformSystem';
 const RITUAL_DOLLY_MAX = 0.07;
 
 /**
+ * [AH-QE] 第三人称环视（Q/E 视角侧转）动力学单源（提案 AH-QE-lookaround §B.1，
+ * PUBG 载具自由视角对标）：转的是相机方位角，车头朝向与底盘行进方向不动。
+ * rate/maxYaw = 累积角速度与偏航上限；softStop = 抵近上限的减速带（最后 10°
+ * 按 smoothstep 收速，杜绝硬停顿挫）；returnRate = 松手一阶指数回正速率
+ * （0.35s 收敛 95%，无过冲——防晕规范禁弹簧振荡）；speedDamp = 高速角速度衰减。
+ */
+const LOOKAROUND = {
+  rate: (120 * Math.PI) / 180,
+  maxYaw: (135 * Math.PI) / 180,
+  softStop: (10 * Math.PI) / 180,
+  returnRate: 8,
+  speedDamp: { amount: 0.3, edge: { min: 12, max: 24 } },
+} as const;
+
+/**
  * [CC-CAM-VIEW] 数据驱动镜头预设位姿（camera-shots.json 解析后的世界口径；
  * 加载/白名单/单位换算归 CameraShots.ts，本类只收最终数值——不引入任何用户相机
  * 输入，G5 红线）。
@@ -143,6 +158,21 @@ export class View {
     offset: new THREE.Vector3(),
   };
   private readonly lookaheadStep = new THREE.Vector3();
+  /**
+   * [AH-QE] 环视偏航通道（Q/E 侧转；spherical.theta 同口径弧度，正 = 视线左转）。
+   * 恒等合同：门外（非 driving / fpv / shot 生效）恒被写回精确 0 ⇒ 下游 theta+0
+   * 逐位恒等——robot_idle 首幕帧与 poster 协议不受影响（lookahead 同款论证）。
+   */
+  private readonly lookaround = { yawOffset: 0 };
+
+  /**
+   * [AH-QE] 环视偏航只读出口（弧度；0 = 正对车后跟随档）。消费方 = e2e
+   * `__worldSpikeGame.view.lookYaw`（#debug 既有取证句柄，CITY-OBS-05 白名单
+   * 路径）与 #debug 面板；纯读数不入解算，不新增任何全局。
+   */
+  get lookYaw(): number {
+    return this.lookaround.yawOffset;
+  }
   /**
    * FPV 姿态低通状态（pitch/roll 衰减通道；yaw 直通不驻留）。
    * [CC-VEH-C2] fovKick = 速度 FOV kick 的低通驻留分量（度）——基础档 fovDeg 58
@@ -397,6 +427,10 @@ export class View {
     if (this.driveView.mode === mode) return;
     this.driveView.mode = mode;
 
+    // [AH-QE] 切视角即清环视偏航：进 fpv 时视线锁前向（无内饰穿帮 + 第一人称防晕
+    // 红线，spec D2/D4）；回 third 时从正后方起步，不带上次侧转残角
+    this.lookaround.yawOffset = 0;
+
     // 两向切换都清 FPV 低通驻留：进入帧从 0 起坡（无上次残留姿态/kick 甩镜）
     this.fpvState.pitch = 0;
     this.fpvState.roll = 0;
@@ -456,6 +490,69 @@ export class View {
     const maxStep = DRIVE_LOOKAHEAD.offsetRateClamp * dt;
     if (this.lookaheadStep.length() > maxStep) this.lookaheadStep.setLength(maxStep);
     la.offset.add(this.lookaheadStep);
+  }
+
+  /**
+   * [AH-QE] 第三人称环视偏航累积/回正（提案 AH-QE-lookaround §B/§C；update 里
+   * updateLookahead 之后、球坐标解算之前调用）。
+   *
+   * 门（三条全开才收输入）：gate ∈ {car_ready, driving} × mode==='third'
+   * （fpv 硬封锁）× shotBaseline===null（POI 进站前奏 / ?shot= 深链期间由 shot
+   * 独占相机——圈内 E 走既有进站前奏，同帧 applyShot 采集基线，本通道即刻闭门
+   * 并归零，键位冲突由状态机优先级自解）。
+   *
+   * gate 口径与 V 键（toggleDriveView）对齐、比 lookahead 宽一档（指挥官 r2 定谳：
+   * 「变形成车后、没按 V 的任何时刻都能环视」）——lookahead 是行进构图件，无速度
+   * 即无意义，故仍守 'driving'；环视是静止也成立的观察行为。robot_idle/transforming
+   * 仍在门外（首幕恒等合同不受影响：poster 帧 gate==='robot_idle'）。
+   * 门关即写回精确 0（IEEE 恒等，不做渐近衰减——门外零残余是恒等合同的机器保证）。
+   */
+  private updateLookaround(focusPointSpeed: number): void {
+    const la = this.lookaround;
+    const gate = this.driveView.gate;
+
+    if (
+      (gate !== 'car_ready' && gate !== 'driving') ||
+      this.driveView.mode !== 'third' ||
+      this.shotBaseline !== null
+    ) {
+      la.yawOffset = 0;
+      return;
+    }
+
+    const dt = this.game.ticker.delta;
+    const actions = this.game.inputs.actions;
+    const left = actions.get('lookLeft')?.active === true;
+    const right = actions.get('lookRight')?.active === true;
+    // 正 theta = 视线左转（视向 -(sinθ,0,cosθ) 的右向 = (cosθ,0,-sinθ)）；双键同按互抵
+    const direction = (left ? 1 : 0) - (right ? 1 : 0);
+
+    if (direction === 0) {
+      // reduced-motion：松手单帧硬切归零（持续滑动是前庭刺激源，§B.5）
+      if (this.reducedMotion) {
+        la.yawOffset = 0;
+        return;
+      }
+      // 一阶指数回正（无过冲振荡，§B.6）；末段吸附避免长尾浮点残余
+      la.yawOffset -= la.yawOffset * (1 - Math.exp(-LOOKAROUND.returnRate * dt));
+      if (Math.abs(la.yawOffset) < 1e-4) la.yawOffset = 0;
+      return;
+    }
+
+    // 高速衰减（>12 m/s 起降速至 84°/s）× 抵近上限的减速带：headroom = 该方向剩余
+    // 余量，最后 softStop 段按 smoothstep 收速 —— 到限位是「靠稳」不是「撞停」
+    const speedFactor =
+      1 -
+      LOOKAROUND.speedDamp.amount *
+        smoothstep(focusPointSpeed, LOOKAROUND.speedDamp.edge.min, LOOKAROUND.speedDamp.edge.max);
+    const headroom = LOOKAROUND.maxYaw - direction * la.yawOffset;
+    const softFactor = smoothstep(headroom, 0, LOOKAROUND.softStop);
+
+    la.yawOffset = clamp(
+      la.yawOffset + direction * LOOKAROUND.rate * speedFactor * softFactor * dt,
+      -LOOKAROUND.maxYaw,
+      LOOKAROUND.maxYaw,
+    );
   }
 
   /**
@@ -740,6 +837,9 @@ export class View {
     // 门外恒精确 0 → 下游 +0 逐位恒等）——速度/方向源与速度变焦同为平滑焦点（协调单源）
     this.updateLookahead(smoothFocusPointDelta, focusPointSpeed);
 
+    // [AH-QE] 环视偏航（Q/E 侧转；门外恒精确 0 → 下游 theta+0 逐位恒等）
+    this.updateLookaround(focusPointSpeed);
+
     // 半径与球坐标偏移（[CC-L1 A4] 城市档叠加慢 yaw 微动：theta 呼吸 ±thetaDrift；
     // [CC-L4 B5] 变形充能推镜 = 斜距乘法通道，dollyIn=0 时为 ×1 恒等零漂移）
     const radiusMax =
@@ -748,9 +848,12 @@ export class View {
     this.spherical.radius.current =
       lerp(this.spherical.radius.edges.min, radiusMax, 1 - this.zoom.smoothedRatio) *
       (1 - RITUAL_DOLLY_MAX * this.ritualCam.dollyIn);
+    // [AH-QE] 环视偏航与慢 yaw 微动同为 theta 加法通道：机位与偏轴构图必须消费
+    // 同一个 theta——否则侧转时平移向量与视线不再共面，车体在画面里横移穿帮
     const theta =
       this.spherical.theta +
-      this.framing.thetaDrift * Math.sin(this.game.ticker.elapsed * 0.13);
+      this.framing.thetaDrift * Math.sin(this.game.ticker.elapsed * 0.13) +
+      this.lookaround.yawOffset;
     this.spherical.offset.setFromSphericalCoords(
       this.spherical.radius.current,
       this.spherical.phi,
