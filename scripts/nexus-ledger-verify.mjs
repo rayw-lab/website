@@ -50,30 +50,53 @@ for (const [t, v] of Object.entries(cov)) {
 }
 
 // ③ 费用不得出现（磊哥六点第 5 条）
-const walk = (n, p = '$') => {
+// 🔴 这两个子树的 key 是**顶层 type 的名字**，不是数据字段名。
+// `typeCoverage['cost-state'] = 'ignored:费用状态——已拍板不展示'` 恰恰是在
+// 声明「不展示费用」，语义与本门要防的正好相反。字面门对这种语义反转天然失明，
+// 所以按子树豁免，而不是把 'cost' 从词表里删掉（删了会漏掉真的费用字段）。
+const COST_EXEMPT = new Set(['typeCoverage', 'typeCounts']);
+const walk = (n, p = '$', top = null) => {
   if (n && typeof n === 'object') {
     for (const [k, v] of Object.entries(n)) {
-      if (/cost|usd|price|spend/i.test(k)) fail('NO-COST', `${p}.${k} 出现费用字段`);
-      walk(v, `${p}.${k}`);
+      const inExempt = top !== null ? COST_EXEMPT.has(top) : COST_EXEMPT.has(k);
+      if (!inExempt && /cost|usd|price|spend/i.test(k)) fail('NO-COST', `${p}.${k} 出现费用字段`);
+      walk(v, `${p}.${k}`, top ?? k);
     }
   }
 };
 walk(L);
+// 豁免不是免检：豁免子树里只允许出现"表态字符串"与计数，不允许出现金额
+for (const sub of COST_EXEMPT) {
+  for (const [k, v] of Object.entries(L[sub] ?? {})) {
+    if (typeof v === 'number') continue;                    // 计数
+    if (typeof v === 'string' && /^(mapped|ignored:)/.test(v)) continue; // 表态
+    fail('NO-COST', `${sub}.${k} 的值 "${v}" 不是表态或计数，豁免不适用`);
+  }
+}
 
 // ④ 数字自洽：totals 必须能由 sessions 重算出来，不许手写
 const sessions = Array.isArray(L.sessions) ? L.sessions : null;
 if (!sessions) fail('SHAPE', 'sessions 不是数组');
 else if (L.totals) {
-  const recount = {
-    sessions: sessions.length,
-    projects: new Set(sessions.map((s) => s.project)).size,
-    seats: new Set(sessions.map((s) => s.seat)).size,
-  };
-  for (const [k, v] of Object.entries(recount)) {
-    if (L.totals[k] !== undefined && L.totals[k] !== v) {
-      fail('RECOUNT', `totals.${k}=${L.totals[k]}，由 sessions 重算得 ${v}`);
+  // sessions 是**明细**（--top 截断），totals 是**全量** —— 两者本就不相等。
+  // 但截断必须被显式声明，否则"有意截断"与"统计漏了"症状完全相同。
+  const d = L.sessionsDetail;
+  if (!d) {
+    fail('TRUNCATION', 'sessions 是明细子集却没有 sessionsDetail 声明，无法区分"有意截断"与"统计漏了"');
+  } else {
+    if (d.included !== sessions.length) fail('TRUNCATION', `sessionsDetail.included=${d.included}，实际数组 ${sessions.length}`);
+    if (L.totals?.sessions !== undefined && d.total !== L.totals.sessions) {
+      fail('RECOUNT', `sessionsDetail.total=${d.total} 与 totals.sessions=${L.totals.sessions} 不符`);
     }
+    if (sessions.length > d.total) fail('RECOUNT', `明细 ${sessions.length} 条多于全量 ${d.total} 条`);
   }
+  // 明细内部仍须自洽：明细里出现的 project / seat 必须都在各自的名册里
+  const pids = new Set((L.projects ?? []).map((x) => x.id));
+  const sids = new Set((L.seats ?? []).map((x) => x.id ?? x));
+  const badP = [...new Set(sessions.map((s) => s.project))].filter((x) => x && !pids.has(x));
+  const badS = [...new Set(sessions.map((s) => s.seat))].filter((x) => x && !sids.has(x));
+  if (badP.length) fail('ROSTER', `${badP.length} 个 project 不在 projects 名册：${badP.slice(0, 5).join(', ')}`);
+  if (badS.length) fail('ROSTER', `${badS.length} 个 seat 不在 seats 名册：${badS.slice(0, 5).join(', ')}`);
 }
 
 // ⑤ 溯源：ledger 必须能说出自己是从多少输入产生的，且与普查对得上

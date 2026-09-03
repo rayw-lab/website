@@ -291,3 +291,43 @@ SPLAT_FS 根本不采样的纹理，且它正是当前 draw FBO 的颜色附件�
   与 sim 256→512 的取舍一并在真机上定。
 - 探针教训（又一次）：`?demo` 停帧模式下 `seek(13)` 是**同步**的，100 滴的场直接把主线程堵死，
   `page.goto` 30s 超时。flow 类长场景必须走真实 rAF，不能用 seek 停帧。
+
+## R5 · W2 落地（2026-09-04 03:4x–04:1x）
+
+### R5-1 glm53flash 双路收稿（提额后 `finish_reason=stop`，围栏闭合，identity_ok=true）
+| 产物 | 落点 | 亲核结果 |
+|---|---|---|
+| 发布安全门 | `scripts/nexus-ledger-gate.mjs`（221 行） | `--selftest` **9 红 1 绿**全过，绿样本含 `park-*` 16 条回归；实跑 ledger rc=0，0 违规，分母打印完整 |
+| 归约器 | `scripts/nexus-ledger-reduce.mjs`（703 行） | 实跑 2.0GB → **1067 会话 / 31 天 / 255116 B（gzip 17141 B）** |
+- 提取踩坑两处：① 首版正则只认 ```` ```mjs ````，而产物用了**嵌套围栏**（外层 ````` ```` `````、内层 ``` ```），
+  按行切才拿对；② 注释里写了 `/Users/*/Projects/x`，其中的 `*/` **提前闭合了块注释**，
+  后面的中文变成代码 —— 顺手也修了脱敏（注释里本就不该出现 `/Users/`）。
+
+### R5-2 先写门的价值兑现：正确性门一次抓出真缺口
+`scripts/nexus-ledger-verify.mjs`（我写，与 glm 的安全门职责分离，两门都跑）首跑 rc=1：
+1. **23 种 type 全部未表态** —— reducer 没有 `typeCoverage`，`queue-operation` 那 10,918 行
+   到底被怎么处理了**从产物上完全看不出来**。已补 `TYPE_POLICY` 显式表（mapped 2 / ignored 21，
+   每条 ignored 必须写理由），并加 **fail-closed**：出现表里没有的新 type 直接 `exit 1`。
+   —— 写死的清单不会自己长大，只在新类型出现那天才爆。
+2. `totals.sessions=1067 vs sessions[600]` —— **这条是我的门判错**：`--top` 是明细上限、
+   totals 是全量，本就不等。改为要求 reducer 显式声明 `sessionsDetail{limit,included,total}`，
+   否则"有意截断"与"统计漏了"症状完全相同；另补 ROSTER 判据（明细里的 project/seat 必须在名册内）。
+
+### R5-3 字面门对语义反转失明（NO-COST 误伤自己）
+补完覆盖表后门又红了：`typeCoverage['cost-state']` 命中费用正则。
+而那一行的内容恰恰是 `'ignored:费用状态 —— 磊哥已拍板不展示'`，**语义与门要防的正好相反**。
+处置：按子树豁免 `typeCoverage`/`typeCounts`（它们的 key 是 type 名不是数据字段），
+而不是从词表里删 `cost`（删了会漏真费用字段）；且**豁免不免检** —— 豁免子树内只允许
+"表态字符串"与"计数"，出现别的照样 FAIL。
+
+### R5-4 🔴 两个自伤，都被自己的判据抓住了
+1. **假绿**：幂等测试比较两个 sha，而两个产物文件**根本不存在**，空串等于空串 → 报「✅ 幂等 PASS」。
+   典型的「零输入的判据永远为真」。修法：判据先断言 `rc==0 && 产物非空`，再比 sha。
+2. **差点改坏一个正确实现**：我看到两次 `generatedAt` 不同就动手把它改成从 t1 派生，
+   改完才发现 glm 原本写的是 `isoSeconds(maxMtimeMs)` —— **本来就是确定性的**，
+   两次不同是因为活日志被追加、源文件 mtime 在变。已回滚。
+   违反的是「未读完目标文件禁开始改」与「新旧不一致先疑新」。
+
+### R5-5 幂等验收（判据闭合）
+活日志边跑边长，不能拿它测幂等（`typeCounts.assistant` 两次差 +4 是**输入在变**，不是 reducer 不确定）。
+改用 `cp -Rp` 冻结快照（保留 mtime）：两次 rc=0、产物 3301 B 非空、**sha 逐字节相同** ✅。

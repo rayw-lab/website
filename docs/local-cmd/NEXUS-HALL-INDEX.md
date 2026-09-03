@@ -21,7 +21,7 @@
 | NX-W1a | W1 | `InkEngine` 六场十二 pass + display + `?demo` 确定性 | 执行方 | `src/components/city/halls/nexus/ink/` | W1r | spike 页一滴墨洇开；8.2KB gzip[实测]；RM 不起 rAF[实测] | **AUDITED**（xhsapi 引擎审 1×P0 4×P1 6×P2） |
 | NX-W1b | W1 | LOCKED 纸色墨谱 + 干纸拒墨行为门 + 锚点门固化 | 执行方 | 同上 + `evidence/nexus-hall/anchors/` | W1a | 锚点门 5/5 PASS[实测]；LOCKED 出图落盘 | **GATE_PASS**（`scripts-local-nexus-w1b-gate.mjs`） |
 | NX-W2r | W2 | 多格式会话日志字段映射 + 脱敏做法调研 | agy | 同上 out 目录 | — | 五种格式各给字段表 | PLANNED（首派未落盘，待重派） |
-| NX-W2 | W2 | reducer + redact 门 + LEDGER-RECEIPT | 执行方（**仅本机**） | `scripts/`、`public/demo/agent-nexus/`、`evidence/nexus-hall/` | W2r, W0c | ledger 过门；条数对账 | **RESEARCHED**（glm53flash 双路草稿已交，待亲核落地） |
+| NX-W2 | W2 | reducer + redact 门 + LEDGER-RECEIPT | 执行方（**仅本机**） | `scripts/`、`public/demo/agent-nexus/`、`evidence/nexus-hall/` | W2r, W0c | ledger 过门；条数对账 | **GATE_PASS**（reducer+双门实跑：1067 会话/31 天；安全门 rc=0、正确性门 rc=0、幂等 sha 相同） |
 | NX-W3r | W3 | suminagashi 数学 + 时间序列艺术化 + scrubber 交互调研 | agy | 同上 | — | 单滴变换公式可实现 | PLANNED |
 | NX-W3 | W3 | S0 洇 + S1 墨流 + 印抽屉 | 执行方 | `halls/nexus/{Yin,Flow,Seal,Drawer}.*` | W1, W2, W3r | 10s 脚本成立；数字全 ledger 渲染 | PLANNED |
 | NX-W4r | W4 | 手卷横向叙事 + 中文排版 + 印章设计调研 | agy | 同上 | — | 移动端退化方案明确 | PLANNED |
