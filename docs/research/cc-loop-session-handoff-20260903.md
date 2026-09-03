@@ -349,3 +349,162 @@
 | 北极星备忘 | `docs/research/cc-loop-northstar-review-memo.md` |
 | P1 轨迹归档 | `/private/tmp/cc-loop-inputs/p1-trajectory-archive/`（7 文件） |
 | 评审帧包 | `/private/tmp/cc-loop-inputs/alvis-score-pack/` + `alvis-pack-b/`（6+5 帧） |
+
+
+---
+
+## 附录 A：九轮阶段审计全记录（子代理调用链）
+
+| 轮 | 被审对象 | 审计模型 | 首轮结论 | 补证后结论 | 关键发现 |
+|---|---|---|---|---|---|
+| P0 | PR #215 SEC-R11-CORR-1 | claude-fable-5-thinking-xhigh（子代理） | PASS | —（一次过） | 12/12 内容项 + 字节级 B1-B5 + 违规 0 |
+| P1 | 诊断报告 + Lane 3 几何 | claude-fable-5-thinking-xhigh（子代理） | PASS | 附 4 项修正（首轮件灭失注记/auto-drop 时间戳/0.05→0.06m/file:line ±1） | rotY 复刻算错 + 影响 ≤0.06m 同轮发现 |
+| P3 | 定向门 2 例 | gpt-5.6-terra（子代理） | FAIL | 补证后 PASS | 3 项命令未跑（沙箱拒） |
+| P4 | 吸收 main + CI + cleanup | gpt-5.6-terra（子代理） | FAIL | 补证后 PASS | 1 条 P0 误报（看板冲突）+ 执行器全拒 |
+| R3 | 全量窗 86/86 | gpt-5.6-terra（子代理） | PASS | —（一次过） | stats/单 attempt/签名收据/monitor 缺陷全过 |
+| P6 | 证据 PR #216 | gpt-5.6-terra（子代理） | FAIL | 补证后 PASS | 文件计数 14→12 + 3 命令未跑 |
+| R-4/R-5 | 整改批次 | **gemini-3.8-flash-high**（agy CLI） | FAIL | 修复后复审 PASS | **F-P1-001 看板粘连行** + **F-P2-001 test-results 覆写**（命令级取证） |
+| Wave A | 治理+通道 | gemini-3.8-flash-high（agy CLI） | PASS | F-01 README 占位符（当场修） | branch protection 实战验证拒合 |
+| C7 | 跨模型 grok 评审 | grok-4.6（grok CLI 后台） | 签名收据全（sessionId + 自跑 UTC + 帧 hash 6/6） | — | 异模型族校准差 ~9 分如实披露 |
+
+> 首两轮 web 审计（gpt 系）的三项 REFUTED 被本轮 AGY 审计全部独立确认并闭环（confession/收据/timeout 归因）。
+
+## 附录 B：P0→P9 逐步执行详情
+
+### B.1 P0 执行过程
+
+1. `git checkout -b codex/sec-r11-corr-1-20260902`（基于 main@c585df9）
+2. Python 脚本精确插入 9 行（anchor = H1 标题 + 空行；suffix 校验通过）
+3. `gh pr create` + `gh pr checks --watch`（CI 4m58s PASS）+ 授权收据评论 + `gh pr ready` + `gh pr merge --squash`
+4. 合入后 `git show origin/main:board | shasum` 确认字节不变式在 main 上成立
+
+### B.2 P1 执行过程
+
+1. `git worktree add --detach /private/tmp/x2-obs-r2-diag-20260902 5987641`
+2. `pnpm install --frozen-lockfile && pnpm build`（19 页全过）
+3. Python socket bind :4593 → BIND_OK；`nohup pnpm preview --port 4593` → HTTP 200
+4. 两轮诊断窗（首轮 533 tool-call 中的 ~100 个 bash 调用）
+5. 逐拍轨迹 JSON ×5 产出（`test-results/x2-diag-*.json`）
+6. Lane 3 子代理（glm-5.3-flash）并行双盲几何枚举 178 行报告
+
+### B.3 P2-P4 执行过程
+
+1. `git worktree add /private/tmp/x2-104-p2 -b cursor/cc-vis-x2-facade-r2-1d6f origin/cursor/cc-vis-x2-facade-r2-1d6f`（= R2 head `5987641`）
+2. leg2a `(33,-16)` r2.5 插入 + docs 两份 + commit `ad93ed1`
+3. `pnpm install && astro check && pnpm build && --list`（86/19 不变）
+4. `git merge origin/main`（合并 80888ee）→ commit `6f691fc` → push → CI 33589801653 SUCCESS
+5. cleanup：R2-era 14 项 tmp 文件删除 + diag worktree 移除 + 5 端口 FREE + vacuum=0
+
+### B.4 R3 执行过程
+
+1. Controller 授权收据评论（PR #104）
+2. fresh `--list` = 86/19（点火前实测）
+3. `E2E_PORT=4597 pnpm exec playwright test --workers=1 --retries=0`（后台 job 全量跑 81.8min）
+4. host monitor 独立后台 job（1044 样本 5s 间隔）
+5. JSON stats 逐字段验程（python3 逐条打印）
+6. test-results 快照归档（防覆写——吸取 R-1 首轮灭失教训）
+
+### B.5 P6-P9 执行过程
+
+1. LHCI artifact 下载（9831423112）→ 22 份 LHR 解压 → Python 7 URL 中位数复算
+2. evidence 目录组装（12 文件 + erratum）→ SHA256SUMS → docs-only PR → CI → receipt → merge
+3. #104 吸收 → CI → Controller 放行 → Ready → squash → SEC-R12-LEDGER 看板收账 → PR #217 → CI → merge
+4. AL-VIS 双评（帧重取 + 双子代理 + 父代复算）→ SEC-R13-LEDGER → PR #219 → merge
+5. `score-loop --min 85` → 94.0 / weight=1 / missing=[] / exit 0 → quality-score-r3.json 上链
+
+### B.6 R-1/R-2 执行过程（第三轮审计后的整改）
+
+1. 三轮双审计原文解压 + 逐条裁决表（接受 9 / 部分 4 / 驳回 0）
+2. 两项独立复验：timeout 谱系 `git log -S` + rotY 源码 Python 重放（18 件全量 rotY 输出）
+3. R-4 看板 SEC-R16 + paradigm 坑 17（#228）
+4. R-5 六项（#229）：timeout 完整链 / 数字勘误 / spec 注释 / R2-B 82 / score-loop 加固 / 审计归档
+5. AGY 审计 FAIL（F-P1-001 看板粘连行 + F-P2-001 test-results）→ 修复 #231 → AGY 复审 PASS
+
+### B.7 R-3 执行过程（F1 取证 + 治理 + Tier C + 跨模型）
+
+1. F1 取证：Q0/Q2 同机位对照双帧（Sky.ts 内建品质分档即对照协议）→ 大气系统在渲染确认
+2. Wave A：branch protection（gh api PUT）+ LHCI 切片（artifact 9877014646 下载→22 份 LHR→7 URL 切片）→ #233
+3. Wave B：Tier C 三件落码（T-1 确认已有/T-2 HUD 弧线/T-4 色温微移）→ Tier C 后 81 登记 → #235
+4. Wave C：实模立项书 + SEC-R18 → #236
+5. AGY 多车道：审计 ×2 + 研究 ×1 + 复核 ×1 = 4 次 gemini-3.8-flash-high 调用
+
+### B.8 C7 独立性闭环执行过程（grok-4.6 跨模型）
+
+1. `grok --model grok-4.6 --always-approve --session-id $(uuid4) --output-format json --max-turns 30 -p "<AL-VIS prompt>"`
+2. 签名收据回填：sessionId 9bb99f8e + 自跑 UTC 2026-09-03T03:15:11Z + 帧 hash 6/6 回显
+3. 总分 67（V4 60 最低）——跨模型校准差 ~9 分如实披露，登记 76 维持不降级
+
+---
+
+## 附录 C：文件清单终态（全部 23 个 docs/research 新增/修改文件）
+
+| 文件 | 行数 | 类型 |
+|---|---|---|
+| `cyber-city-score-loop-orchestration.md` | 461→515 | 看板（SEC-R11-CORR-1 → SEC-R18 五层叠压 + MW21-27） |
+| `cc-vis-x2-obs-r2-diagnosis.md` | 85 | P1 诊断报告 |
+| `cc-vis-x2-collider-aabb-20260902.md` | 178+勘误 | Lane 3 几何复核 |
+| `cc-vis-x2-full-r3-evidence/` | 12 文件 | R3 证据档（含 e2e-summary 正 schema + LHCI 不回退表 + SHA256SUMS） |
+| `cc-vis-x2-full-r2-evidence/SUMMARY-ERRATUM.md` | 18 | R2 totalTests 勘误（追加不改原字节） |
+| `cc-alvis-r3-eval/` | 9 文件 | 双评签名收据 ×4 + 帧 hash + grok 原文 + R-2 原文 ×2 |
+| `cc-alvis-r3-eval/sky-forensic/` | 3 文件 | F1 Q0/Q2 对照取证 |
+| `cc-lhci-artifacts/run-33711117325/` | 9 文件 | LHCI 切片（7 URL + index + README） |
+| `cc-loop-audit-archive/` | 20 文件 | A/B/C/D 四份审计原文归档 |
+| `cc-loop-remediation-roadmap-2026-09-02.md` | 85 | 长程整改任务书 v1 |
+| `cc-loop-remediation-roadmap-v3.md` | 85 | 长程整改任务书 v3 |
+| `cc-loop-audit-prompt-v2.md` | 40 | 审计任务书 v2 |
+| `cc-loop-audit-archive README` | — | 归档说明 |
+| `cc-loop-governance-proposal.md` | 45 | 治理提案（D-1/D-2） |
+| `cc-loop-human-gate-handoff.md` | 30 | 真机 handoff 包 |
+| `cc-loop-northstar-review-memo.md` | 30 | 北极星复核备忘 |
+| `cc-vis-physical-asset-pipeline-proposal.md` | 60 | 实模专项立项书 |
+| `quality-score-r3.json` | 55 | score-loop 收据（composite=95） |
+| `cyber-city-visual-rubric-score.json` | 78→88 | 视觉登记（76→81 + dualEval + r2ReEval + crossModelEval） |
+| `tools/streetprops-roty-replay.mjs` | 50 | rotY 重放脚本（自包含） |
+| **工程变更** | — | — |
+| `e2e/cyber-city-observability.spec.ts` | +12 | leg2a 途径点 + 注释两层分立 |
+| `e2e/cyber-city-perf.spec.ts` | +12 | 同上（同源同步） |
+| `src/pages/index.astro` | +25 | T-2 HUD 弧线 SVG+CSS |
+| `src/lab/world/index.ts` | +7 | T-2 --speed-ratio 接线 |
+| `src/lab/world/world/World.ts` | +40 | T-4 色温微移（hook + applyCruiseWarmShift） |
+
+---
+
+## 附录 D：外部审计原文与内部审计对照表
+
+| 审计轮 | 审计者 | 交付物 | 模型 | 发现摘要 | 后续处置 |
+|---|---|---|---|---|---|
+| 首轮 A | web ChatGPT | 5 件套 | gpt 系 | C9 #220 原位编辑 / C10 timeout | 双 NO_GO → R-1 归位 → 闭环 |
+| 首轮 B | web ChatGPT | 5 件套 | gpt 系 | C2 rotY 算错 / C10 timeout | 双 NO_GO → 影响半径 0 → 闭环 |
+| 第三轮 C | web ChatGPT | 5 件套 + rotY 18 件重放 | gpt 系 | 5 REFUTED（#222-224 收据/confession/C1-HIST/C10-PEDIGREE）| NO_GO → R-4/R-5 → 全闭环 |
+| 第三轮 D | web ChatGPT | 5 件套 | gpt 系 | 13 REFUTED（字面 C1/C9'/C7/数字勘误） | NO_GO → 同上 |
+| AGY R-4/R-5 | 本机 agy CLI | 命令级取证报告 | gemini-3.8-flash-high | F-P1-001 看板粘连行 + F-P2-001 test-results 覆写 | FAIL → 修复 #231 → 复审 PASS |
+| AGY Wave A | 本机 agy CLI | 命令级取证报告 | gemini-3.8-flash-high | F-01 README 占位符（P2） | PASS（当场修） |
+
+---
+
+## 附录 E：模型使用总表（31h 全程）
+
+| 模型 | 角色 | 调用次数 |
+|---|---|---|
+| DeepSeek 主会话（本档撰写者） | 编排 + 落码 + 文档 + 合流 | 756 tool-call / ~370 步 |
+| claude-fable-5-thinking-xhigh | P0 审计子代理 | 1 |
+| gpt-5.6-terra | P3/P4/P6/R3 阶段审计 ×4 + 双评 ×2 + 独立评审 ×1 | 7 |
+| glm-5-3-flash | Lane 3 几何枚举子代理 | 1 |
+| grok-4.6 | AL-VIS 跨模型评审（R-4-3 C7 闭环） | 1 |
+| gemini-3.8-flash-high | AGY 审计 ×2 + 研究 ×1 + 复核 ×1（agy CLI 路由） | 4 |
+| **合计** | — | **子代理 17 + agy 4 + grok 1 = 22 次外部调用** |
+
+---
+
+## 附录 F：30 秒读法（速查卡）
+
+| 问题 | 回答 |
+|---|---|
+| Loop 完成了什么 | OK-1（#104 落地）+ OK-2（95/81/87/— 登记）+ 治理落地（protection/LHCI 通道/审计归档） |
+| 核心技术发现 | 直瞄路线穿道具带楔死；respawn 恒回原点；品档自动降档使道具时有时无；score-loop 缺维归一化假过 |
+| 核心修复 | leg2a 东弧途径点 `(33,-16)` r2.5 绕开 H12/S2 道具带（对照 0 escape vs 350s/6e） |
+| 最大的弯路 | rubric §6 清单是 Phase 0 时代快照——施工前必须清查 git log 而非盲信文档清单 |
+| 最大的审计发现 | rotY 复刻算错 10.8° 但影响半径 0；#224 confession 二次失真（本轮唯一 P1 工艺违规） |
+| 85 视觉的路径 | 实模资产管线专项（Blender 3-5 天人工；立项书已交；D-4 待指挥官） |
+| 剩余指挥官决策 | D-3 北极星 / D-4 实模排期 / D-5 真机排期 / D-6 glb 配额 / CAM / 生产发布 |
+| 下一棒第一件事 | 读本档 §7 终态 → §8 决策页 → 按指挥官指示继续 |
