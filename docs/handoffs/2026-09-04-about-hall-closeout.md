@@ -13,12 +13,12 @@
 
 ## Goal For Next Session
 
-本期无需继续施工。只有磊哥提出新目标时，才从索引“剩余事项”另开阶段；最小后续是补真机 iPhone Safari 证据。
+本期无需继续施工。只有磊哥提出新目标时，才从索引“剩余事项”另开阶段；最小后续是补 macOS 原生 Safari 与真机 iPhone Safari 证据。
 
 ## Done / Partial / Not Done
 
 - Done：首页 About 招牌、赛车与 Q/E、泊位进站、展厅六站、“回家”、纸面 About、回城；W8；PR/CI/Pages/线上自动化。
-- Partial：真机 iPhone Safari。macOS 锁屏阻止本机 Safari 取证；Chromium 375px 结果不冒充真机。
+- Partial：真实 Safari 消费端。macOS 锁屏阻止桌面 Safari 取证，真机 iPhone 也未接入；Chromium 的视频和 375px 结果不冒充 Safari。
 - Not Done / 本期排除：真实履历与可选个人素材、第二栋楼、全城重做、全站提分、真机性能登记。
 
 ## Key Evidence

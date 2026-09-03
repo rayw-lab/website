@@ -4,7 +4,7 @@
 > 目标：`/world/about-pavilion/` 炫技自我介绍页 + `/about/` 纸面双胞胎 + 城→厅连贯转场。状态语义：`MERGED` = 已提交进 topic 分支并推远端；合入 main 以 PR #234 为唯一事件。
 > PR #234 已于 2026-09-04 05:08（北京时间）合入 main：topic `942c7b2`，merge `c29d386`。attempt10 永久保留为失败：97 通过 / 2 失败 / 10 未运行 / 0 flaky / EXIT=1。冻结后的 final-r2 实读分母 109，结果 109 通过 / 0 失败 / 0 跳过 / 0 flaky / EXIT=0；8 URL × 3 次 Lighthouse 断言全过，综合分 95.1。topic CI、main CI、Pages 与线上自动化均绑定并通过，当前状态 `LIVE_OBSERVED`。
 > **视频叶关闭**：ZDR 13:05 解除；S0 i2v #1/#2 REJECT（头转）→ #3 PASS（LOCKED v4 零头动）；S6 #1 PASS 兜底 / #2 PASS（瘦身首帧）定案。磊哥人拣：R 终止、T 转正 + 偏瘦。ADR-4（第一栋楼=About 北槽 + 转场）、ADR-5（馆长 S1 迎客/S6 让位、9:16 不投）已落。
-> 线上地址：`https://rayw-lab.github.io/website/`。真机 iPhone Safari 未取得；本机 Safari 因锁屏不可操作，仅该设备项为 `PARTIAL`。
+> 线上地址：`https://rayw-lab.github.io/website/`。macOS 原生 Safari 与真机 iPhone Safari 均未取得；本机锁屏阻止 Safari 操作，仅“真实 Safari 消费端”这一项为 `PARTIAL`。
 
 ## 状态机
 `PLANNED → GIANTS_DONE → DISPATCHED → RECEIVED → HOST_READBACK_PASS|FAIL → MERGED → LIVE_OBSERVED`；只有 `LIVE_OBSERVED` 作验收。
@@ -65,7 +65,7 @@
 
 | 项 | 状态 | 谁能补 | 如何验 |
 |---|---|---|---|
-| 真机 iPhone Safari | PARTIAL | 磊哥解锁并提供真机窗口 | Safari 打开展厅，确认静帧、文字、地轨、按钮、无横向溢出且网络面无 MP4；模拟器不能替代 |
+| 真实 Safari（macOS 桌面 + iPhone） | PARTIAL | 磊哥解锁 Mac，并在可用时提供 iPhone | 桌面核两段视频加载/拖动；iPhone 核静帧、文字、地轨、按钮、无横向溢出和零 MP4 请求；Chromium/模拟器不能替代 |
 | 六站真实履历、年份、业绩与可选照片/声音/签名 | 后续输入 | 磊哥提供一手事实或素材 | 逐条回源后另票，不从现有叙事反推 |
 | 下一栋楼 | 后续阶段 | 新阶段拍板 | 复用 `hallPath`/招牌/进站契约，单独验收 |
 | 全城重做、全站提分与真机性能登记 | 后续阶段 | 城市提分阶段 | 以新阶段看板和真实设备门为准 |

@@ -10,7 +10,7 @@
 | L11 | 2026-09-03 14:20–17:50 | attempt8 后续 | T1/QE/W1h/VIS/F1/W3e/DOC | About 立面识别 | 最终全量与 W8 |
 | L12 | 2026-09-03 17:50–2026-09-04 00:10 | Node 22 定向复跑 · Grok 两路工程协助 | attempt10 失败归档 · ADR-6 · W8 代码 | 机器门失败 | 完成构建/局部验收 → poster → 最终全量 |
 | L13 | 2026-09-04 00:10–04:54 | final-r2 已收口 | W8、最终画面、Grok 视觉核销、109/109、LHCI 24/24 | 发布链 | commit → push → final SHA CI → merge → Pages |
-| L14 | 2026-09-04 04:54–05:28 | 已收口 | PR #234、topic/main CI、Pages、线上动线 | 真机 Safari 单项 PARTIAL | 写最终交接，关闭监控 |
+| L14 | 2026-09-04 04:54–05:28 | 已收口 | PR #234、topic/main CI、Pages、线上动线 | 真实 Safari 消费端单项 PARTIAL | 写最终交接，关闭监控 |
 
 ## 逐 loop
 
@@ -110,5 +110,5 @@
 - topic `942c7b2` 推送后，PR CI run `33805711826` 全绿；PR #234 以 merge commit `c29d386` 合入 main。main CI `33806312097` 与 Pages `33806312217` 均绑定该 merge SHA 并成功。
 - 线上 Chromium 完整消费：About 主匾/双面招牌对象存在；首页变形后 Q/E 偏航分别达到 +0.489/-0.489rad 并回零；`?poi=about-pavilion` 圈内 E 真跳展厅；到达条、六站、S6“回家”、回城和纸面三问题卡全部读回。
 - 在线媒体：两段视频可加载并 seek 到 2s/4s；375px 0 个 MP4 请求、0 横向溢出、poster 解码完成；无 JS 展厅和纸面页均 200 且正文/海报可读。
-- 本机真实 Safari 被 macOS 锁屏挡住；`safaridriver --diagnose` 同样等待，已终止。按计划只把真机 Safari 记 `PARTIAL`，不拿 Chromium 或模拟器冒充。
+- 本机 macOS Safari 被锁屏挡住；`safaridriver --diagnose` 同样等待，已终止。桌面 Safari 与真机 iPhone 合并为一个“真实 Safari 消费端”项记 `PARTIAL`，不拿 Chromium 或模拟器冒充。
 - 本期状态 `DONE`；剩余项只在 `ABOUT-HALL-INDEX.md` 单表保留。

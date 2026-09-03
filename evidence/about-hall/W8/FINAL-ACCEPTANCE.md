@@ -2,7 +2,7 @@
 
 ## 结论
 
-本期已经完成合入与线上核验：产品增量、正式全量测试、Lighthouse、视觉复议、最终提交 CI、main CI、Pages 和线上消费路径均通过。真机 iPhone Safari 是唯一未取得的设备证据，按计划单项记 `PARTIAL`。
+本期已经完成合入与线上核验：产品增量、正式全量测试、Lighthouse、视觉复议、最终提交 CI、main CI、Pages 和线上消费路径均通过。macOS 原生 Safari 与真机 iPhone Safari 归入同一“真实 Safari 消费端”项，是唯一未取得的消费端证据，按计划单项记 `PARTIAL`。
 
 ## 机器验收
 
@@ -50,4 +50,4 @@
 - 本地 Lighthouse：已证。
 - 独立静态视觉复议：已证。
 - GitHub CI、Pages 部署、线上 Chromium 消费端：已证。
-- 真机 iPhone Safari：本期允许的单项 `PARTIAL`；浏览器模拟不冒充真机。
+- 真实 Safari（macOS 桌面 + iPhone）：本期允许的单项 `PARTIAL`；Chromium 与浏览器模拟不冒充 Safari。
