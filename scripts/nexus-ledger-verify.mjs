@@ -105,8 +105,10 @@ else if (L.totals) {
 if (sessions) {
   const badT = sessions.filter((s) => typeof s.t0 === 'number' && s.t0 % 3600 !== 0).length;
   if (badT) fail('PRIVACY', `${badT} 条 session 的 t0 未粗化到小时（秒级时间戳可与公开 commit 对齐）`);
-  const badD = sessions.filter((s) => typeof s.dur === 'number' && s.dur % 60 !== 0).length;
-  if (badD) fail('PRIVACY', `${badD} 条 session 的 dur 未粗化到分钟`);
+  const badD = sessions.filter((s) => 'dur' in s).length;
+  if (badD) fail('PRIVACY', `${badD} 条 session 仍带精确 dur（应为量级桶 db）`);
+  const badDB = sessions.filter((s) => !Number.isInteger(s.db) || s.db < 0 || s.db > 5).length;
+  if (badDB) fail('PRIVACY', `${badDB} 条 session 的 db 桶索引非法`);
   const exact = sessions.filter((s) => 'tokens' in s).length;
   if (exact) fail('PRIVACY', `${exact} 条 session 仍带精确 tokens 字段（应为量级桶 tk）`);
   const badB = sessions.filter((s) => !Number.isInteger(s.tk) || s.tk < 0 || s.tk > 6).length;

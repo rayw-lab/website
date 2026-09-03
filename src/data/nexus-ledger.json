@@ -35,25 +35,25 @@
     "world_state": "ignored:世界状态快照，含工作区路径与文件树"
   },
   "typeCounts": {
-    "event_msg": 973583,
-    "response_item": 735103,
-    "assistant": 86084,
-    "attachment": 67771,
-    "user": 44646,
-    "world_state": 16927,
-    "turn_context": 12013,
-    "inter_agent_communication_metadata": 10982,
-    "last-prompt": 8362,
-    "mode": 7901,
-    "session_meta": 7819,
-    "permission-mode": 7300,
-    "queue-operation": 7286,
-    "ai-title": 6030,
-    "token_usage_record": 5039,
-    "compacted": 4750,
-    "atis-latch": 3404,
-    "system": 3336,
-    "bridge-session": 2500,
+    "event_msg": 976704,
+    "response_item": 737903,
+    "assistant": 86189,
+    "attachment": 67905,
+    "user": 44692,
+    "world_state": 16959,
+    "turn_context": 12040,
+    "inter_agent_communication_metadata": 11020,
+    "last-prompt": 8378,
+    "mode": 7917,
+    "session_meta": 7831,
+    "permission-mode": 7316,
+    "queue-operation": 7294,
+    "ai-title": 6046,
+    "token_usage_record": 5852,
+    "compacted": 4760,
+    "atis-latch": 3420,
+    "system": 3350,
+    "bridge-session": 2516,
     "agent-name": 2133,
     "custom-title": 1812,
     "file-history-snapshot": 1141,
@@ -71,9 +71,9 @@
   "sessionsDetail": {
     "limit": 600,
     "included": 600,
-    "total": 3007
+    "total": 3023
   },
-  "generatedAt": "2026-09-03T21:15:54Z",
+  "generatedAt": "2026-09-03T22:08:26Z",
   "range": {
     "from": "2026-07-23",
     "to": "2026-09-03"
@@ -138,10 +138,10 @@
     }
   ],
   "totals": {
-    "sessions": 3007,
+    "sessions": 3023,
     "seats": 5,
     "days": 40,
-    "tokens": 113805645,
+    "tokens": 113951511,
     "aborted": 381,
     "compacted": 225,
     "dispatches": 2,
@@ -612,15 +612,15 @@
     },
     {
       "d": "2026-09-03",
-      "n": 217,
+      "n": 233,
       "bySeat": {
-        "codex": 37,
+        "codex": 46,
         "claude-code": 1,
         "cursor": 30,
-        "agy": 113,
-        "api-direct": 36
+        "agy": 119,
+        "api-direct": 37
       },
-      "tokens": 2395741,
+      "tokens": 2541607,
       "aborted": 52,
       "compacted": 1
     }
@@ -630,7 +630,7 @@
       "id": "s0001",
       "seat": "codex",
       "t0": 1784782800,
-      "dur": 516720,
+      "db": 5,
       "turns": 19,
       "tools": 1017,
       "patches": 134,
@@ -643,7 +643,7 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.625,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
@@ -652,7 +652,7 @@
       "id": "s0002",
       "seat": "claude-code",
       "t0": 1785135600,
-      "dur": 12060,
+      "db": 4,
       "turns": 48,
       "tools": 160,
       "patches": 68,
@@ -671,7 +671,7 @@
       "id": "s0003",
       "seat": "claude-code",
       "t0": 1785146400,
-      "dur": 20760,
+      "db": 4,
       "turns": 78,
       "tools": 200,
       "patches": 33,
@@ -692,7 +692,7 @@
       "id": "s0004",
       "seat": "claude-code",
       "t0": 1785146400,
-      "dur": 7080,
+      "db": 3,
       "turns": 29,
       "tools": 74,
       "patches": 25,
@@ -713,7 +713,7 @@
       "id": "s0005",
       "seat": "claude-code",
       "t0": 1785146400,
-      "dur": 960,
+      "db": 2,
       "turns": 10,
       "tools": 45,
       "patches": 0,
@@ -735,7 +735,7 @@
       "id": "s0006",
       "seat": "claude-code",
       "t0": 1785146400,
-      "dur": 1020,
+      "db": 2,
       "turns": 8,
       "tools": 79,
       "patches": 0,
@@ -757,7 +757,7 @@
       "id": "s0007",
       "seat": "claude-code",
       "t0": 1785146400,
-      "dur": 45780,
+      "db": 5,
       "turns": 389,
       "tools": 599,
       "patches": 117,
@@ -779,7 +779,7 @@
       "id": "s0008",
       "seat": "claude-code",
       "t0": 1785146400,
-      "dur": 17580,
+      "db": 4,
       "turns": 168,
       "tools": 289,
       "patches": 96,
@@ -800,7 +800,7 @@
       "id": "s0009",
       "seat": "claude-code",
       "t0": 1785146400,
-      "dur": 1260,
+      "db": 2,
       "turns": 8,
       "tools": 30,
       "patches": 0,
@@ -822,7 +822,7 @@
       "id": "s0010",
       "seat": "claude-code",
       "t0": 1785146400,
-      "dur": 1740,
+      "db": 2,
       "turns": 16,
       "tools": 67,
       "patches": 0,
@@ -844,7 +844,7 @@
       "id": "s0011",
       "seat": "claude-code",
       "t0": 1785146400,
-      "dur": 6600,
+      "db": 3,
       "turns": 22,
       "tools": 130,
       "patches": 17,
@@ -865,7 +865,7 @@
       "id": "s0012",
       "seat": "claude-code",
       "t0": 1785146400,
-      "dur": 2160,
+      "db": 2,
       "turns": 7,
       "tools": 69,
       "patches": 0,
@@ -887,7 +887,7 @@
       "id": "s0013",
       "seat": "claude-code",
       "t0": 1785146400,
-      "dur": 1920,
+      "db": 2,
       "turns": 16,
       "tools": 47,
       "patches": 2,
@@ -908,7 +908,7 @@
       "id": "s0014",
       "seat": "claude-code",
       "t0": 1785150000,
-      "dur": 1020,
+      "db": 2,
       "turns": 1,
       "tools": 68,
       "patches": 0,
@@ -930,7 +930,7 @@
       "id": "s0015",
       "seat": "claude-code",
       "t0": 1785150000,
-      "dur": 5880,
+      "db": 3,
       "turns": 23,
       "tools": 107,
       "patches": 33,
@@ -952,7 +952,7 @@
       "id": "s0016",
       "seat": "claude-code",
       "t0": 1785150000,
-      "dur": 960,
+      "db": 2,
       "turns": 2,
       "tools": 50,
       "patches": 0,
@@ -974,7 +974,7 @@
       "id": "s0017",
       "seat": "claude-code",
       "t0": 1785150000,
-      "dur": 4920,
+      "db": 3,
       "turns": 10,
       "tools": 111,
       "patches": 5,
@@ -996,7 +996,7 @@
       "id": "s0018",
       "seat": "claude-code",
       "t0": 1785150000,
-      "dur": 8280,
+      "db": 4,
       "turns": 9,
       "tools": 140,
       "patches": 14,
@@ -1018,7 +1018,7 @@
       "id": "s0019",
       "seat": "claude-code",
       "t0": 1785150000,
-      "dur": 3900,
+      "db": 3,
       "turns": 20,
       "tools": 71,
       "patches": 21,
@@ -1039,7 +1039,7 @@
       "id": "s0020",
       "seat": "claude-code",
       "t0": 1785150000,
-      "dur": 1140,
+      "db": 2,
       "turns": 13,
       "tools": 75,
       "patches": 0,
@@ -1061,7 +1061,7 @@
       "id": "s0021",
       "seat": "claude-code",
       "t0": 1785150000,
-      "dur": 1260,
+      "db": 2,
       "turns": 3,
       "tools": 28,
       "patches": 0,
@@ -1083,7 +1083,7 @@
       "id": "s0022",
       "seat": "claude-code",
       "t0": 1785150000,
-      "dur": 5820,
+      "db": 3,
       "turns": 35,
       "tools": 81,
       "patches": 12,
@@ -1105,7 +1105,7 @@
       "id": "s0023",
       "seat": "claude-code",
       "t0": 1785150000,
-      "dur": 2520,
+      "db": 2,
       "turns": 10,
       "tools": 69,
       "patches": 2,
@@ -1127,7 +1127,7 @@
       "id": "s0024",
       "seat": "claude-code",
       "t0": 1785153600,
-      "dur": 1380,
+      "db": 2,
       "turns": 5,
       "tools": 57,
       "patches": 0,
@@ -1149,7 +1149,7 @@
       "id": "s0025",
       "seat": "claude-code",
       "t0": 1785153600,
-      "dur": 1380,
+      "db": 2,
       "turns": 5,
       "tools": 57,
       "patches": 0,
@@ -1171,7 +1171,7 @@
       "id": "s0026",
       "seat": "claude-code",
       "t0": 1785153600,
-      "dur": 3240,
+      "db": 3,
       "turns": 4,
       "tools": 71,
       "patches": 14,
@@ -1193,7 +1193,7 @@
       "id": "s0027",
       "seat": "claude-code",
       "t0": 1785153600,
-      "dur": 7620,
+      "db": 4,
       "turns": 58,
       "tools": 154,
       "patches": 55,
@@ -1215,7 +1215,7 @@
       "id": "s0028",
       "seat": "claude-code",
       "t0": 1785157200,
-      "dur": 2280,
+      "db": 2,
       "turns": 12,
       "tools": 65,
       "patches": 15,
@@ -1236,7 +1236,7 @@
       "id": "s0029",
       "seat": "claude-code",
       "t0": 1785157200,
-      "dur": 5940,
+      "db": 3,
       "turns": 22,
       "tools": 103,
       "patches": 21,
@@ -1257,7 +1257,7 @@
       "id": "s0030",
       "seat": "claude-code",
       "t0": 1785160800,
-      "dur": 1200,
+      "db": 2,
       "turns": 8,
       "tools": 61,
       "patches": 31,
@@ -1278,7 +1278,7 @@
       "id": "s0031",
       "seat": "claude-code",
       "t0": 1785160800,
-      "dur": 2160,
+      "db": 2,
       "turns": 5,
       "tools": 86,
       "patches": 69,
@@ -1299,7 +1299,7 @@
       "id": "s0032",
       "seat": "claude-code",
       "t0": 1785160800,
-      "dur": 1140,
+      "db": 2,
       "turns": 5,
       "tools": 54,
       "patches": 0,
@@ -1321,7 +1321,7 @@
       "id": "s0033",
       "seat": "claude-code",
       "t0": 1785164400,
-      "dur": 2940,
+      "db": 3,
       "turns": 15,
       "tools": 122,
       "patches": 0,
@@ -1344,7 +1344,7 @@
       "id": "s0034",
       "seat": "claude-code",
       "t0": 1785164400,
-      "dur": 2940,
+      "db": 3,
       "turns": 15,
       "tools": 122,
       "patches": 0,
@@ -1367,7 +1367,7 @@
       "id": "s0035",
       "seat": "claude-code",
       "t0": 1785164400,
-      "dur": 2100,
+      "db": 2,
       "turns": 29,
       "tools": 90,
       "patches": 0,
@@ -1389,7 +1389,7 @@
       "id": "s0036",
       "seat": "claude-code",
       "t0": 1785175200,
-      "dur": 1920,
+      "db": 2,
       "turns": 8,
       "tools": 121,
       "patches": 39,
@@ -1410,7 +1410,7 @@
       "id": "s0037",
       "seat": "claude-code",
       "t0": 1785175200,
-      "dur": 2700,
+      "db": 2,
       "turns": 9,
       "tools": 117,
       "patches": 6,
@@ -1431,7 +1431,7 @@
       "id": "s0038",
       "seat": "claude-code",
       "t0": 1785175200,
-      "dur": 2100,
+      "db": 2,
       "turns": 36,
       "tools": 80,
       "patches": 14,
@@ -1452,7 +1452,7 @@
       "id": "s0039",
       "seat": "claude-code",
       "t0": 1785175200,
-      "dur": 1980,
+      "db": 2,
       "turns": 16,
       "tools": 82,
       "patches": 28,
@@ -1473,7 +1473,7 @@
       "id": "s0040",
       "seat": "claude-code",
       "t0": 1785175200,
-      "dur": 1920,
+      "db": 2,
       "turns": 17,
       "tools": 130,
       "patches": 45,
@@ -1494,7 +1494,7 @@
       "id": "s0041",
       "seat": "claude-code",
       "t0": 1785178800,
-      "dur": 1860,
+      "db": 2,
       "turns": 5,
       "tools": 73,
       "patches": 1,
@@ -1515,7 +1515,7 @@
       "id": "s0042",
       "seat": "claude-code",
       "t0": 1785178800,
-      "dur": 2340,
+      "db": 2,
       "turns": 13,
       "tools": 67,
       "patches": 7,
@@ -1536,7 +1536,7 @@
       "id": "s0043",
       "seat": "claude-code",
       "t0": 1785200400,
-      "dur": 87900,
+      "db": 5,
       "turns": 84,
       "tools": 257,
       "patches": 23,
@@ -1558,7 +1558,7 @@
       "id": "s0044",
       "seat": "claude-code",
       "t0": 1785200400,
-      "dur": 14940,
+      "db": 4,
       "turns": 36,
       "tools": 141,
       "patches": 55,
@@ -1577,7 +1577,7 @@
       "id": "s0045",
       "seat": "claude-code",
       "t0": 1785200400,
-      "dur": 1020,
+      "db": 2,
       "turns": 8,
       "tools": 27,
       "patches": 0,
@@ -1599,7 +1599,7 @@
       "id": "s0046",
       "seat": "claude-code",
       "t0": 1785204000,
-      "dur": 1080,
+      "db": 2,
       "turns": 1,
       "tools": 16,
       "patches": 0,
@@ -1621,7 +1621,7 @@
       "id": "s0047",
       "seat": "codex",
       "t0": 1785204000,
-      "dur": 289200,
+      "db": 5,
       "turns": 8,
       "tools": 1130,
       "patches": 99,
@@ -1634,7 +1634,7 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.585,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
@@ -1643,7 +1643,7 @@
       "id": "s0048",
       "seat": "claude-code",
       "t0": 1785214800,
-      "dur": 72600,
+      "db": 5,
       "turns": 59,
       "tools": 137,
       "patches": 6,
@@ -1662,7 +1662,7 @@
       "id": "s0049",
       "seat": "claude-code",
       "t0": 1785214800,
-      "dur": 1320,
+      "db": 2,
       "turns": 5,
       "tools": 18,
       "patches": 0,
@@ -1684,7 +1684,7 @@
       "id": "s0050",
       "seat": "claude-code",
       "t0": 1785218400,
-      "dur": 1380,
+      "db": 2,
       "turns": 4,
       "tools": 68,
       "patches": 22,
@@ -1706,7 +1706,7 @@
       "id": "s0051",
       "seat": "claude-code",
       "t0": 1785218400,
-      "dur": 1380,
+      "db": 2,
       "turns": 8,
       "tools": 40,
       "patches": 2,
@@ -1728,7 +1728,7 @@
       "id": "s0052",
       "seat": "claude-code",
       "t0": 1785218400,
-      "dur": 1320,
+      "db": 2,
       "turns": 7,
       "tools": 43,
       "patches": 0,
@@ -1751,7 +1751,7 @@
       "id": "s0053",
       "seat": "claude-code",
       "t0": 1785218400,
-      "dur": 1320,
+      "db": 2,
       "turns": 3,
       "tools": 20,
       "patches": 1,
@@ -1773,7 +1773,7 @@
       "id": "s0054",
       "seat": "claude-code",
       "t0": 1785218400,
-      "dur": 1260,
+      "db": 2,
       "turns": 2,
       "tools": 67,
       "patches": 1,
@@ -1795,7 +1795,7 @@
       "id": "s0055",
       "seat": "claude-code",
       "t0": 1785229200,
-      "dur": 1620,
+      "db": 2,
       "turns": 28,
       "tools": 90,
       "patches": 0,
@@ -1817,7 +1817,7 @@
       "id": "s0056",
       "seat": "claude-code",
       "t0": 1785229200,
-      "dur": 2520,
+      "db": 2,
       "turns": 28,
       "tools": 104,
       "patches": 0,
@@ -1839,7 +1839,7 @@
       "id": "s0057",
       "seat": "codex",
       "t0": 1785229200,
-      "dur": 1800,
+      "db": 2,
       "turns": 1,
       "tools": 50,
       "patches": 0,
@@ -1861,7 +1861,7 @@
       "id": "s0058",
       "seat": "claude-code",
       "t0": 1785232800,
-      "dur": 2040,
+      "db": 2,
       "turns": 7,
       "tools": 17,
       "patches": 1,
@@ -1882,7 +1882,7 @@
       "id": "s0059",
       "seat": "codex",
       "t0": 1785232800,
-      "dur": 1800,
+      "db": 2,
       "turns": 1,
       "tools": 62,
       "patches": 2,
@@ -1903,7 +1903,7 @@
       "id": "s0060",
       "seat": "claude-code",
       "t0": 1785232800,
-      "dur": 3000,
+      "db": 3,
       "turns": 14,
       "tools": 60,
       "patches": 1,
@@ -1924,7 +1924,7 @@
       "id": "s0061",
       "seat": "claude-code",
       "t0": 1785232800,
-      "dur": 0,
+      "db": 0,
       "turns": 2,
       "tools": 1,
       "patches": 0,
@@ -1945,7 +1945,7 @@
       "id": "s0062",
       "seat": "claude-code",
       "t0": 1785232800,
-      "dur": 0,
+      "db": 0,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -1966,7 +1966,7 @@
       "id": "s0063",
       "seat": "claude-code",
       "t0": 1785232800,
-      "dur": 60,
+      "db": 0,
       "turns": 2,
       "tools": 4,
       "patches": 0,
@@ -1987,7 +1987,7 @@
       "id": "s0064",
       "seat": "claude-code",
       "t0": 1785232800,
-      "dur": 0,
+      "db": 0,
       "turns": 2,
       "tools": 1,
       "patches": 0,
@@ -2008,7 +2008,7 @@
       "id": "s0065",
       "seat": "claude-code",
       "t0": 1785290400,
-      "dur": 134040,
+      "db": 5,
       "turns": 737,
       "tools": 1437,
       "patches": 246,
@@ -2030,7 +2030,7 @@
       "id": "s0066",
       "seat": "claude-code",
       "t0": 1785290400,
-      "dur": 13680,
+      "db": 4,
       "turns": 122,
       "tools": 419,
       "patches": 15,
@@ -2051,7 +2051,7 @@
       "id": "s0067",
       "seat": "claude-code",
       "t0": 1785290400,
-      "dur": 1620,
+      "db": 2,
       "turns": 5,
       "tools": 12,
       "patches": 1,
@@ -2072,7 +2072,7 @@
       "id": "s0068",
       "seat": "claude-code",
       "t0": 1785290400,
-      "dur": 1620,
+      "db": 2,
       "turns": 5,
       "tools": 14,
       "patches": 0,
@@ -2094,7 +2094,7 @@
       "id": "s0069",
       "seat": "claude-code",
       "t0": 1785290400,
-      "dur": 2040,
+      "db": 2,
       "turns": 2,
       "tools": 38,
       "patches": 3,
@@ -2115,7 +2115,7 @@
       "id": "s0070",
       "seat": "claude-code",
       "t0": 1785290400,
-      "dur": 3180,
+      "db": 3,
       "turns": 4,
       "tools": 12,
       "patches": 0,
@@ -2137,7 +2137,7 @@
       "id": "s0071",
       "seat": "claude-code",
       "t0": 1785294000,
-      "dur": 2460,
+      "db": 2,
       "turns": 32,
       "tools": 41,
       "patches": 8,
@@ -2156,7 +2156,7 @@
       "id": "s0072",
       "seat": "claude-code",
       "t0": 1785294000,
-      "dur": 2040,
+      "db": 2,
       "turns": 7,
       "tools": 16,
       "patches": 0,
@@ -2178,7 +2178,7 @@
       "id": "s0073",
       "seat": "claude-code",
       "t0": 1785297600,
-      "dur": 240,
+      "db": 0,
       "turns": 8,
       "tools": 11,
       "patches": 1,
@@ -2197,7 +2197,7 @@
       "id": "s0074",
       "seat": "claude-code",
       "t0": 1785297600,
-      "dur": 5040,
+      "db": 3,
       "turns": 9,
       "tools": 46,
       "patches": 7,
@@ -2219,7 +2219,7 @@
       "id": "s0075",
       "seat": "claude-code",
       "t0": 1785297600,
-      "dur": 1860,
+      "db": 2,
       "turns": 8,
       "tools": 13,
       "patches": 0,
@@ -2241,7 +2241,7 @@
       "id": "s0076",
       "seat": "claude-code",
       "t0": 1785297600,
-      "dur": 3240,
+      "db": 3,
       "turns": 8,
       "tools": 24,
       "patches": 2,
@@ -2262,7 +2262,7 @@
       "id": "s0077",
       "seat": "claude-code",
       "t0": 1785297600,
-      "dur": 4560,
+      "db": 3,
       "turns": 7,
       "tools": 29,
       "patches": 2,
@@ -2283,7 +2283,7 @@
       "id": "s0078",
       "seat": "claude-code",
       "t0": 1785297600,
-      "dur": 3600,
+      "db": 3,
       "turns": 14,
       "tools": 31,
       "patches": 2,
@@ -2304,7 +2304,7 @@
       "id": "s0079",
       "seat": "claude-code",
       "t0": 1785297600,
-      "dur": 2280,
+      "db": 2,
       "turns": 14,
       "tools": 28,
       "patches": 0,
@@ -2326,7 +2326,7 @@
       "id": "s0080",
       "seat": "claude-code",
       "t0": 1785297600,
-      "dur": 2280,
+      "db": 2,
       "turns": 10,
       "tools": 30,
       "patches": 0,
@@ -2348,7 +2348,7 @@
       "id": "s0081",
       "seat": "codex",
       "t0": 1785297600,
-      "dur": 1800,
+      "db": 2,
       "turns": 1,
       "tools": 144,
       "patches": 6,
@@ -2370,7 +2370,7 @@
       "id": "s0082",
       "seat": "claude-code",
       "t0": 1785297600,
-      "dur": 1920,
+      "db": 2,
       "turns": 6,
       "tools": 13,
       "patches": 1,
@@ -2391,7 +2391,7 @@
       "id": "s0083",
       "seat": "codex",
       "t0": 1785297600,
-      "dur": 1680,
+      "db": 2,
       "turns": 2,
       "tools": 64,
       "patches": 0,
@@ -2405,7 +2405,7 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.232,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
@@ -2414,7 +2414,7 @@
       "id": "s0084",
       "seat": "codex",
       "t0": 1785297600,
-      "dur": 1680,
+      "db": 2,
       "turns": 2,
       "tools": 40,
       "patches": 0,
@@ -2428,7 +2428,7 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.232,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
@@ -2437,7 +2437,7 @@
       "id": "s0085",
       "seat": "codex",
       "t0": 1785297600,
-      "dur": 1680,
+      "db": 2,
       "turns": 2,
       "tools": 47,
       "patches": 1,
@@ -2450,7 +2450,7 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.232,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
@@ -2459,7 +2459,7 @@
       "id": "s0086",
       "seat": "codex",
       "t0": 1785297600,
-      "dur": 1800,
+      "db": 2,
       "turns": 1,
       "tools": 76,
       "patches": 14,
@@ -2480,7 +2480,7 @@
       "id": "s0087",
       "seat": "codex",
       "t0": 1785301200,
-      "dur": 2280,
+      "db": 2,
       "turns": 1,
       "tools": 146,
       "patches": 14,
@@ -2492,7 +2492,7 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.253,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
@@ -2501,7 +2501,7 @@
       "id": "s0088",
       "seat": "claude-code",
       "t0": 1785301200,
-      "dur": 1860,
+      "db": 2,
       "turns": 17,
       "tools": 52,
       "patches": 3,
@@ -2522,7 +2522,7 @@
       "id": "s0089",
       "seat": "claude-code",
       "t0": 1785301200,
-      "dur": 1560,
+      "db": 2,
       "turns": 8,
       "tools": 32,
       "patches": 4,
@@ -2543,7 +2543,7 @@
       "id": "s0090",
       "seat": "claude-code",
       "t0": 1785304800,
-      "dur": 25800,
+      "db": 5,
       "turns": 103,
       "tools": 287,
       "patches": 3,
@@ -2565,7 +2565,7 @@
       "id": "s0091",
       "seat": "claude-code",
       "t0": 1785312000,
-      "dur": 10440,
+      "db": 4,
       "turns": 10,
       "tools": 24,
       "patches": 6,
@@ -2586,7 +2586,7 @@
       "id": "s0092",
       "seat": "claude-code",
       "t0": 1785315600,
-      "dur": 1620,
+      "db": 2,
       "turns": 7,
       "tools": 12,
       "patches": 0,
@@ -2608,7 +2608,7 @@
       "id": "s0093",
       "seat": "claude-code",
       "t0": 1785315600,
-      "dur": 2220,
+      "db": 2,
       "turns": 6,
       "tools": 21,
       "patches": 1,
@@ -2629,26 +2629,7 @@
       "id": "s0094",
       "seat": "codex",
       "t0": 1785315600,
-      "dur": 1560,
-      "turns": 1,
-      "tools": 55,
-      "patches": 2,
-      "tk": 0,
-      "model": "gpt-5.6-sol",
-      "effort": "xhigh",
-      "project": "p09",
-      "flags": [],
-      "ink": {
-        "r": 0.227,
-        "tone": "焦",
-        "hollow": false
-      }
-    },
-    {
-      "id": "s0095",
-      "seat": "codex",
-      "t0": 1785315600,
-      "dur": 1980,
+      "db": 2,
       "turns": 1,
       "tools": 48,
       "patches": 3,
@@ -2660,16 +2641,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.243,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0096",
+      "id": "s0095",
       "seat": "claude-code",
       "t0": 1785315600,
-      "dur": 2280,
+      "db": 2,
       "turns": 21,
       "tools": 29,
       "patches": 0,
@@ -2688,10 +2669,10 @@
       }
     },
     {
-      "id": "s0097",
+      "id": "s0096",
       "seat": "codex",
       "t0": 1785315600,
-      "dur": 2160,
+      "db": 2,
       "turns": 1,
       "tools": 103,
       "patches": 3,
@@ -2703,16 +2684,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.249,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0098",
+      "id": "s0097",
       "seat": "claude-code",
       "t0": 1785319200,
-      "dur": 3120,
+      "db": 3,
       "turns": 10,
       "tools": 20,
       "patches": 0,
@@ -2732,10 +2713,10 @@
       }
     },
     {
-      "id": "s0099",
+      "id": "s0098",
       "seat": "claude-code",
       "t0": 1785319200,
-      "dur": 2340,
+      "db": 2,
       "turns": 7,
       "tools": 19,
       "patches": 3,
@@ -2751,10 +2732,10 @@
       }
     },
     {
-      "id": "s0100",
+      "id": "s0099",
       "seat": "claude-code",
       "t0": 1785322800,
-      "dur": 1980,
+      "db": 2,
       "turns": 34,
       "tools": 51,
       "patches": 4,
@@ -2770,10 +2751,10 @@
       }
     },
     {
-      "id": "s0101",
+      "id": "s0100",
       "seat": "claude-code",
       "t0": 1785333600,
-      "dur": 6780,
+      "db": 3,
       "turns": 37,
       "tools": 172,
       "patches": 1,
@@ -2791,10 +2772,10 @@
       }
     },
     {
-      "id": "s0102",
+      "id": "s0101",
       "seat": "claude-code",
       "t0": 1785337200,
-      "dur": 2100,
+      "db": 2,
       "turns": 8,
       "tools": 15,
       "patches": 0,
@@ -2813,10 +2794,10 @@
       }
     },
     {
-      "id": "s0103",
+      "id": "s0102",
       "seat": "claude-code",
       "t0": 1785340800,
-      "dur": 900,
+      "db": 2,
       "turns": 15,
       "tools": 65,
       "patches": 4,
@@ -2834,10 +2815,10 @@
       }
     },
     {
-      "id": "s0104",
+      "id": "s0103",
       "seat": "claude-code",
       "t0": 1785340800,
-      "dur": 3300,
+      "db": 3,
       "turns": 2,
       "tools": 7,
       "patches": 1,
@@ -2855,10 +2836,10 @@
       }
     },
     {
-      "id": "s0105",
+      "id": "s0104",
       "seat": "claude-code",
       "t0": 1785340800,
-      "dur": 900,
+      "db": 2,
       "turns": 5,
       "tools": 47,
       "patches": 3,
@@ -2876,10 +2857,10 @@
       }
     },
     {
-      "id": "s0106",
+      "id": "s0105",
       "seat": "codex",
       "t0": 1785362400,
-      "dur": 1500,
+      "db": 2,
       "turns": 1,
       "tools": 67,
       "patches": 13,
@@ -2891,16 +2872,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.225,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0107",
+      "id": "s0106",
       "seat": "claude-code",
       "t0": 1785394800,
-      "dur": 960,
+      "db": 2,
       "turns": 7,
       "tools": 59,
       "patches": 3,
@@ -2918,10 +2899,10 @@
       }
     },
     {
-      "id": "s0108",
+      "id": "s0107",
       "seat": "claude-code",
       "t0": 1785409200,
-      "dur": 7200,
+      "db": 3,
       "turns": 12,
       "tools": 54,
       "patches": 2,
@@ -2940,10 +2921,10 @@
       }
     },
     {
-      "id": "s0109",
+      "id": "s0108",
       "seat": "claude-code",
       "t0": 1785423600,
-      "dur": 60420,
+      "db": 5,
       "turns": 835,
       "tools": 1459,
       "patches": 174,
@@ -2962,10 +2943,10 @@
       }
     },
     {
-      "id": "s0110",
+      "id": "s0109",
       "seat": "claude-code",
       "t0": 1785427200,
-      "dur": 55620,
+      "db": 5,
       "turns": 6,
       "tools": 62,
       "patches": 3,
@@ -2983,12 +2964,35 @@
       }
     },
     {
+      "id": "s0110",
+      "seat": "claude-code",
+      "t0": 1785427200,
+      "db": 5,
+      "turns": 0,
+      "tools": 11,
+      "patches": 0,
+      "tk": 1,
+      "model": "claude-sonnet-5",
+      "effort": null,
+      "project": "p02",
+      "flags": [
+        "aborted",
+        "sidechain",
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.539,
+        "tone": "浓",
+        "hollow": true
+      }
+    },
+    {
       "id": "s0111",
       "seat": "claude-code",
       "t0": 1785427200,
-      "dur": 55500,
-      "turns": 0,
-      "tools": 11,
+      "db": 5,
+      "turns": 1,
+      "tools": 9,
       "patches": 0,
       "tk": 1,
       "model": "claude-sonnet-5",
@@ -3009,30 +3013,7 @@
       "id": "s0112",
       "seat": "claude-code",
       "t0": 1785427200,
-      "dur": 55500,
-      "turns": 1,
-      "tools": 9,
-      "patches": 0,
-      "tk": 1,
-      "model": "claude-sonnet-5",
-      "effort": null,
-      "project": "p02",
-      "flags": [
-        "aborted",
-        "sidechain",
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.539,
-        "tone": "浓",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0113",
-      "seat": "claude-code",
-      "t0": 1785427200,
-      "dur": 55440,
+      "db": 5,
       "turns": 0,
       "tools": 4,
       "patches": 0,
@@ -3052,10 +3033,10 @@
       }
     },
     {
-      "id": "s0114",
+      "id": "s0113",
       "seat": "claude-code",
       "t0": 1785430800,
-      "dur": 1680,
+      "db": 2,
       "turns": 5,
       "tools": 29,
       "patches": 2,
@@ -3073,10 +3054,10 @@
       }
     },
     {
-      "id": "s0115",
+      "id": "s0114",
       "seat": "claude-code",
       "t0": 1785434400,
-      "dur": 0,
+      "db": 0,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -3094,10 +3075,10 @@
       }
     },
     {
-      "id": "s0116",
+      "id": "s0115",
       "seat": "claude-code",
       "t0": 1785438000,
-      "dur": 1440,
+      "db": 2,
       "turns": 8,
       "tools": 26,
       "patches": 0,
@@ -3116,10 +3097,10 @@
       }
     },
     {
-      "id": "s0117",
+      "id": "s0116",
       "seat": "claude-code",
       "t0": 1785438000,
-      "dur": 1980,
+      "db": 2,
       "turns": 2,
       "tools": 7,
       "patches": 2,
@@ -3137,10 +3118,10 @@
       }
     },
     {
-      "id": "s0118",
+      "id": "s0117",
       "seat": "claude-code",
       "t0": 1785452400,
-      "dur": 1980,
+      "db": 2,
       "turns": 3,
       "tools": 15,
       "patches": 3,
@@ -3158,10 +3139,10 @@
       }
     },
     {
-      "id": "s0119",
+      "id": "s0118",
       "seat": "claude-code",
       "t0": 1785459600,
-      "dur": 4140,
+      "db": 3,
       "turns": 3,
       "tools": 7,
       "patches": 1,
@@ -3179,10 +3160,10 @@
       }
     },
     {
-      "id": "s0120",
+      "id": "s0119",
       "seat": "claude-code",
       "t0": 1785463200,
-      "dur": 1560,
+      "db": 2,
       "turns": 12,
       "tools": 28,
       "patches": 3,
@@ -3200,10 +3181,10 @@
       }
     },
     {
-      "id": "s0121",
+      "id": "s0120",
       "seat": "claude-code",
       "t0": 1785466800,
-      "dur": 2040,
+      "db": 2,
       "turns": 10,
       "tools": 18,
       "patches": 0,
@@ -3222,12 +3203,33 @@
       }
     },
     {
-      "id": "s0122",
+      "id": "s0121",
       "seat": "claude-code",
       "t0": 1785466800,
-      "dur": 2700,
+      "db": 3,
       "turns": 3,
       "tools": 14,
+      "patches": 2,
+      "tk": 2,
+      "model": "claude-sonnet-5",
+      "effort": null,
+      "project": "p02",
+      "flags": [
+        "sidechain"
+      ],
+      "ink": {
+        "r": 0.65,
+        "tone": "浓",
+        "hollow": false
+      }
+    },
+    {
+      "id": "s0122",
+      "seat": "claude-code",
+      "t0": 1785474000,
+      "db": 3,
+      "turns": 10,
+      "tools": 16,
       "patches": 2,
       "tk": 2,
       "model": "claude-sonnet-5",
@@ -3246,28 +3248,7 @@
       "id": "s0123",
       "seat": "claude-code",
       "t0": 1785474000,
-      "dur": 4140,
-      "turns": 10,
-      "tools": 16,
-      "patches": 2,
-      "tk": 2,
-      "model": "claude-sonnet-5",
-      "effort": null,
-      "project": "p02",
-      "flags": [
-        "sidechain"
-      ],
-      "ink": {
-        "r": 0.65,
-        "tone": "浓",
-        "hollow": false
-      }
-    },
-    {
-      "id": "s0124",
-      "seat": "claude-code",
-      "t0": 1785474000,
-      "dur": 1800,
+      "db": 2,
       "turns": 9,
       "tools": 101,
       "patches": 0,
@@ -3286,10 +3267,10 @@
       }
     },
     {
-      "id": "s0125",
+      "id": "s0124",
       "seat": "claude-code",
       "t0": 1785474000,
-      "dur": 1860,
+      "db": 2,
       "turns": 12,
       "tools": 20,
       "patches": 0,
@@ -3308,10 +3289,10 @@
       }
     },
     {
-      "id": "s0126",
+      "id": "s0125",
       "seat": "codex",
       "t0": 1785474000,
-      "dur": 1800,
+      "db": 2,
       "turns": 1,
       "tools": 91,
       "patches": 21,
@@ -3327,10 +3308,10 @@
       }
     },
     {
-      "id": "s0127",
+      "id": "s0126",
       "seat": "codex",
       "t0": 1785474000,
-      "dur": 1680,
+      "db": 2,
       "turns": 5,
       "tools": 68,
       "patches": 0,
@@ -3342,16 +3323,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.232,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0128",
+      "id": "s0127",
       "seat": "claude-code",
       "t0": 1785477600,
-      "dur": 6600,
+      "db": 3,
       "turns": 7,
       "tools": 41,
       "patches": 4,
@@ -3367,10 +3348,10 @@
       }
     },
     {
-      "id": "s0129",
+      "id": "s0128",
       "seat": "claude-code",
       "t0": 1785477600,
-      "dur": 1140,
+      "db": 2,
       "turns": 3,
       "tools": 46,
       "patches": 2,
@@ -3388,10 +3369,10 @@
       }
     },
     {
-      "id": "s0130",
+      "id": "s0129",
       "seat": "codex",
       "t0": 1785567600,
-      "dur": 5520,
+      "db": 3,
       "turns": 1,
       "tools": 270,
       "patches": 41,
@@ -3403,16 +3384,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.312,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0131",
+      "id": "s0130",
       "seat": "codex",
       "t0": 1785643200,
-      "dur": 123720,
+      "db": 5,
       "turns": 21,
       "tools": 902,
       "patches": 88,
@@ -3425,16 +3406,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.526,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0132",
+      "id": "s0131",
       "seat": "codex",
       "t0": 1785661200,
-      "dur": 2438160,
+      "db": 5,
       "turns": 6,
       "tools": 129,
       "patches": 21,
@@ -3446,16 +3427,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.731,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0133",
+      "id": "s0132",
       "seat": "codex",
       "t0": 1785679200,
-      "dur": 1560,
+      "db": 2,
       "turns": 1,
       "tools": 78,
       "patches": 10,
@@ -3467,16 +3448,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.227,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0134",
+      "id": "s0133",
       "seat": "claude-code",
       "t0": 1785744000,
-      "dur": 10260,
+      "db": 4,
       "turns": 171,
       "tools": 257,
       "patches": 35,
@@ -3495,10 +3476,10 @@
       }
     },
     {
-      "id": "s0135",
+      "id": "s0134",
       "seat": "codex",
       "t0": 1785765600,
-      "dur": 246840,
+      "db": 5,
       "turns": 25,
       "tools": 3010,
       "patches": 446,
@@ -3511,16 +3492,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.574,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0136",
+      "id": "s0135",
       "seat": "codex",
       "t0": 1785826800,
-      "dur": 2400,
+      "db": 2,
       "turns": 2,
       "tools": 127,
       "patches": 19,
@@ -3532,16 +3513,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.256,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0137",
+      "id": "s0136",
       "seat": "claude-code",
       "t0": 1785891600,
-      "dur": 95220,
+      "db": 5,
       "turns": 383,
       "tools": 864,
       "patches": 135,
@@ -3560,10 +3541,10 @@
       }
     },
     {
-      "id": "s0138",
+      "id": "s0137",
       "seat": "codex",
       "t0": 1785898800,
-      "dur": 14460,
+      "db": 4,
       "turns": 2,
       "tools": 702,
       "patches": 62,
@@ -3581,10 +3562,10 @@
       }
     },
     {
-      "id": "s0139",
+      "id": "s0138",
       "seat": "codex",
       "t0": 1785906000,
-      "dur": 1680,
+      "db": 2,
       "turns": 1,
       "tools": 72,
       "patches": 0,
@@ -3597,16 +3578,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.232,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0140",
+      "id": "s0139",
       "seat": "codex",
       "t0": 1785913200,
-      "dur": 11580,
+      "db": 4,
       "turns": 9,
       "tools": 315,
       "patches": 43,
@@ -3618,16 +3599,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.363,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0141",
+      "id": "s0140",
       "seat": "codex",
       "t0": 1785913200,
-      "dur": 14580,
+      "db": 4,
       "turns": 7,
       "tools": 69,
       "patches": 16,
@@ -3639,16 +3620,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.379,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0142",
+      "id": "s0141",
       "seat": "codex",
       "t0": 1785913200,
-      "dur": 13380,
+      "db": 4,
       "turns": 8,
       "tools": 106,
       "patches": 12,
@@ -3660,16 +3641,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.373,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0143",
+      "id": "s0142",
       "seat": "codex",
       "t0": 1785913200,
-      "dur": 15360,
+      "db": 4,
       "turns": 4,
       "tools": 176,
       "patches": 28,
@@ -3681,16 +3662,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.382,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0144",
+      "id": "s0143",
       "seat": "codex",
       "t0": 1785913200,
-      "dur": 14040,
+      "db": 4,
       "turns": 10,
       "tools": 524,
       "patches": 47,
@@ -3703,16 +3684,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.376,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0145",
+      "id": "s0144",
       "seat": "codex",
       "t0": 1785913200,
-      "dur": 13680,
+      "db": 4,
       "turns": 10,
       "tools": 453,
       "patches": 6,
@@ -3724,16 +3705,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.375,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0146",
+      "id": "s0145",
       "seat": "codex",
       "t0": 1785927600,
-      "dur": 2040,
+      "db": 2,
       "turns": 14,
       "tools": 69,
       "patches": 205,
@@ -3746,16 +3727,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.245,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0147",
+      "id": "s0146",
       "seat": "codex",
       "t0": 1785927600,
-      "dur": 3420,
+      "db": 3,
       "turns": 4,
       "tools": 86,
       "patches": 20,
@@ -3767,16 +3748,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.28,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0148",
+      "id": "s0147",
       "seat": "codex",
       "t0": 1785927600,
-      "dur": 2040,
+      "db": 2,
       "turns": 12,
       "tools": 53,
       "patches": 193,
@@ -3789,16 +3770,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.245,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0149",
+      "id": "s0148",
       "seat": "claude-code",
       "t0": 1785938400,
-      "dur": 1740,
+      "db": 2,
       "turns": 8,
       "tools": 17,
       "patches": 1,
@@ -3816,10 +3797,31 @@
       }
     },
     {
+      "id": "s0149",
+      "seat": "api-direct",
+      "t0": 1785978000,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "LongCat-2.0",
+      "effort": null,
+      "project": "p00",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
       "id": "s0150",
       "seat": "api-direct",
       "t0": 1785978000,
-      "dur": 1440,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -3839,29 +3841,8 @@
     {
       "id": "s0151",
       "seat": "api-direct",
-      "t0": 1785978000,
-      "dur": 1320,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "LongCat-2.0",
-      "effort": null,
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0152",
-      "seat": "api-direct",
       "t0": 1785981600,
-      "dur": 780,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -3879,10 +3860,10 @@
       }
     },
     {
-      "id": "s0153",
+      "id": "s0152",
       "seat": "codex",
       "t0": 1785985200,
-      "dur": 6780,
+      "db": 3,
       "turns": 5,
       "tools": 75,
       "patches": 7,
@@ -3894,16 +3875,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.326,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0154",
+      "id": "s0153",
       "seat": "api-direct",
       "t0": 1785985200,
-      "dur": 1140,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -3921,10 +3902,10 @@
       }
     },
     {
-      "id": "s0155",
+      "id": "s0154",
       "seat": "codex",
       "t0": 1785999600,
-      "dur": 542640,
+      "db": 5,
       "turns": 21,
       "tools": 1360,
       "patches": 109,
@@ -3937,16 +3918,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.628,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0156",
+      "id": "s0155",
       "seat": "codex",
       "t0": 1786100400,
-      "dur": 3540,
+      "db": 3,
       "turns": 2,
       "tools": 27,
       "patches": 0,
@@ -3958,16 +3939,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.282,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0157",
+      "id": "s0156",
       "seat": "codex",
       "t0": 1786104000,
-      "dur": 142140,
+      "db": 5,
       "turns": 13,
       "tools": 1034,
       "patches": 94,
@@ -3980,16 +3961,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.536,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0158",
+      "id": "s0157",
       "seat": "codex",
       "t0": 1786190400,
-      "dur": 1860,
+      "db": 2,
       "turns": 1,
       "tools": 121,
       "patches": 0,
@@ -4002,16 +3983,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.239,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0159",
+      "id": "s0158",
       "seat": "codex",
       "t0": 1786201200,
-      "dur": 40080,
+      "db": 5,
       "turns": 3,
       "tools": 111,
       "patches": 5,
@@ -4024,16 +4005,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.448,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0160",
+      "id": "s0159",
       "seat": "codex",
       "t0": 1786240800,
-      "dur": 3060,
+      "db": 3,
       "turns": 5,
       "tools": 27,
       "patches": 0,
@@ -4045,16 +4026,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.272,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0161",
+      "id": "s0160",
       "seat": "codex",
       "t0": 1786244400,
-      "dur": 122340,
+      "db": 5,
       "turns": 4,
       "tools": 129,
       "patches": 7,
@@ -4067,16 +4048,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.525,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0162",
+      "id": "s0161",
       "seat": "claude-code",
       "t0": 1786323600,
-      "dur": 2280,
+      "db": 2,
       "turns": 2,
       "tools": 0,
       "patches": 0,
@@ -4095,10 +4076,10 @@
       }
     },
     {
-      "id": "s0163",
+      "id": "s0162",
       "seat": "claude-code",
       "t0": 1786327200,
-      "dur": 12960,
+      "db": 4,
       "turns": 61,
       "tools": 190,
       "patches": 46,
@@ -4116,10 +4097,10 @@
       }
     },
     {
-      "id": "s0164",
+      "id": "s0163",
       "seat": "api-direct",
       "t0": 1786348800,
-      "dur": 480,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -4137,10 +4118,10 @@
       }
     },
     {
-      "id": "s0165",
+      "id": "s0164",
       "seat": "api-direct",
       "t0": 1786348800,
-      "dur": 660,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -4158,10 +4139,10 @@
       }
     },
     {
-      "id": "s0166",
+      "id": "s0165",
       "seat": "api-direct",
       "t0": 1786348800,
-      "dur": 360,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -4179,10 +4160,10 @@
       }
     },
     {
-      "id": "s0167",
+      "id": "s0166",
       "seat": "api-direct",
       "t0": 1786370400,
-      "dur": 840,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -4200,10 +4181,10 @@
       }
     },
     {
-      "id": "s0168",
+      "id": "s0167",
       "seat": "claude-code",
       "t0": 1786370400,
-      "dur": 9240,
+      "db": 4,
       "turns": 83,
       "tools": 133,
       "patches": 17,
@@ -4221,10 +4202,10 @@
       }
     },
     {
-      "id": "s0169",
+      "id": "s0168",
       "seat": "claude-code",
       "t0": 1786374000,
-      "dur": 1740,
+      "db": 2,
       "turns": 7,
       "tools": 14,
       "patches": 1,
@@ -4242,10 +4223,10 @@
       }
     },
     {
-      "id": "s0170",
+      "id": "s0169",
       "seat": "claude-code",
       "t0": 1786377600,
-      "dur": 33120,
+      "db": 5,
       "turns": 194,
       "tools": 323,
       "patches": 44,
@@ -4264,10 +4245,10 @@
       }
     },
     {
-      "id": "s0171",
+      "id": "s0170",
       "seat": "claude-code",
       "t0": 1786384800,
-      "dur": 1740,
+      "db": 2,
       "turns": 9,
       "tools": 21,
       "patches": 1,
@@ -4285,10 +4266,10 @@
       }
     },
     {
-      "id": "s0172",
+      "id": "s0171",
       "seat": "codex",
       "t0": 1786410000,
-      "dur": 1860,
+      "db": 2,
       "turns": 1,
       "tools": 64,
       "patches": 3,
@@ -4300,16 +4281,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.239,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0173",
+      "id": "s0172",
       "seat": "codex",
       "t0": 1786410000,
-      "dur": 1680,
+      "db": 2,
       "turns": 1,
       "tools": 101,
       "patches": 0,
@@ -4322,16 +4303,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.232,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0174",
+      "id": "s0173",
       "seat": "claude-code",
       "t0": 1786413600,
-      "dur": 26760,
+      "db": 5,
       "turns": 24,
       "tools": 164,
       "patches": 19,
@@ -4350,10 +4331,10 @@
       }
     },
     {
-      "id": "s0175",
+      "id": "s0174",
       "seat": "claude-code",
       "t0": 1786413600,
-      "dur": 15420,
+      "db": 4,
       "turns": 213,
       "tools": 313,
       "patches": 71,
@@ -4371,10 +4352,10 @@
       }
     },
     {
-      "id": "s0176",
+      "id": "s0175",
       "seat": "api-direct",
       "t0": 1786413600,
-      "dur": 960,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -4392,10 +4373,10 @@
       }
     },
     {
-      "id": "s0177",
+      "id": "s0176",
       "seat": "codex",
       "t0": 1786413600,
-      "dur": 1620,
+      "db": 2,
       "turns": 16,
       "tools": 50,
       "patches": 59,
@@ -4408,16 +4389,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.23,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0178",
+      "id": "s0177",
       "seat": "codex",
       "t0": 1786413600,
-      "dur": 1260,
+      "db": 2,
       "turns": 16,
       "tools": 43,
       "patches": 59,
@@ -4430,16 +4411,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.213,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0179",
+      "id": "s0178",
       "seat": "codex",
       "t0": 1786413600,
-      "dur": 3420,
+      "db": 3,
       "turns": 19,
       "tools": 37,
       "patches": 59,
@@ -4452,16 +4433,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.28,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0180",
+      "id": "s0179",
       "seat": "codex",
       "t0": 1786417200,
-      "dur": 87900,
+      "db": 5,
       "turns": 5,
       "tools": 327,
       "patches": 29,
@@ -4473,16 +4454,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.502,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0181",
+      "id": "s0180",
       "seat": "codex",
       "t0": 1786417200,
-      "dur": 88020,
+      "db": 5,
       "turns": 4,
       "tools": 177,
       "patches": 5,
@@ -4494,16 +4475,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.503,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0182",
+      "id": "s0181",
       "seat": "codex",
       "t0": 1786417200,
-      "dur": 3540,
+      "db": 3,
       "turns": 1,
       "tools": 327,
       "patches": 16,
@@ -4515,16 +4496,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.282,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0183",
+      "id": "s0182",
       "seat": "claude-code",
       "t0": 1786417200,
-      "dur": 4200,
+      "db": 3,
       "turns": 16,
       "tools": 67,
       "patches": 19,
@@ -4543,10 +4524,10 @@
       }
     },
     {
-      "id": "s0184",
+      "id": "s0183",
       "seat": "codex",
       "t0": 1786417200,
-      "dur": 2160,
+      "db": 2,
       "turns": 4,
       "tools": 100,
       "patches": 20,
@@ -4558,16 +4539,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.249,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0185",
+      "id": "s0184",
       "seat": "codex",
       "t0": 1786420800,
-      "dur": 1860,
+      "db": 2,
       "turns": 1,
       "tools": 132,
       "patches": 22,
@@ -4579,16 +4560,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.239,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0186",
+      "id": "s0185",
       "seat": "api-direct",
       "t0": 1786424400,
-      "dur": 1860,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -4606,10 +4587,10 @@
       }
     },
     {
-      "id": "s0187",
+      "id": "s0186",
       "seat": "api-direct",
       "t0": 1786424400,
-      "dur": 960,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -4627,10 +4608,10 @@
       }
     },
     {
-      "id": "s0188",
+      "id": "s0187",
       "seat": "codex",
       "t0": 1786428000,
-      "dur": 30300,
+      "db": 5,
       "turns": 3,
       "tools": 131,
       "patches": 13,
@@ -4642,16 +4623,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.429,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0189",
+      "id": "s0188",
       "seat": "claude-code",
       "t0": 1786428000,
-      "dur": 70260,
+      "db": 5,
       "turns": 118,
       "tools": 248,
       "patches": 74,
@@ -4670,10 +4651,10 @@
       }
     },
     {
-      "id": "s0190",
+      "id": "s0189",
       "seat": "claude-code",
       "t0": 1786428000,
-      "dur": 2160,
+      "db": 2,
       "turns": 15,
       "tools": 45,
       "patches": 0,
@@ -4692,10 +4673,10 @@
       }
     },
     {
-      "id": "s0191",
+      "id": "s0190",
       "seat": "claude-code",
       "t0": 1786438800,
-      "dur": 2820,
+      "db": 3,
       "turns": 6,
       "tools": 45,
       "patches": 7,
@@ -4711,10 +4692,10 @@
       }
     },
     {
-      "id": "s0192",
+      "id": "s0191",
       "seat": "claude-code",
       "t0": 1786500000,
-      "dur": 44220,
+      "db": 5,
       "turns": 91,
       "tools": 216,
       "patches": 58,
@@ -4732,10 +4713,10 @@
       }
     },
     {
-      "id": "s0193",
+      "id": "s0192",
       "seat": "claude-code",
       "t0": 1786500000,
-      "dur": 22680,
+      "db": 5,
       "turns": 107,
       "tools": 295,
       "patches": 27,
@@ -4754,10 +4735,10 @@
       }
     },
     {
-      "id": "s0194",
+      "id": "s0193",
       "seat": "claude-code",
       "t0": 1786500000,
-      "dur": 34080,
+      "db": 5,
       "turns": 88,
       "tools": 543,
       "patches": 95,
@@ -4776,10 +4757,10 @@
       }
     },
     {
-      "id": "s0195",
+      "id": "s0194",
       "seat": "claude-code",
       "t0": 1786500000,
-      "dur": 33960,
+      "db": 5,
       "turns": 128,
       "tools": 324,
       "patches": 91,
@@ -4797,10 +4778,10 @@
       }
     },
     {
-      "id": "s0196",
+      "id": "s0195",
       "seat": "claude-code",
       "t0": 1786500000,
-      "dur": 1560,
+      "db": 2,
       "turns": 14,
       "tools": 20,
       "patches": 0,
@@ -4818,10 +4799,10 @@
       }
     },
     {
-      "id": "s0197",
+      "id": "s0196",
       "seat": "codex",
       "t0": 1786503600,
-      "dur": 82740,
+      "db": 5,
       "turns": 4,
       "tools": 35,
       "patches": 3,
@@ -4831,16 +4812,16 @@
       "project": "p09",
       "flags": [],
       "ink": {
-        "r": 0.498,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0198",
+      "id": "s0197",
       "seat": "claude-code",
       "t0": 1786510800,
-      "dur": 14460,
+      "db": 4,
       "turns": 72,
       "tools": 303,
       "patches": 60,
@@ -4858,10 +4839,10 @@
       }
     },
     {
-      "id": "s0199",
+      "id": "s0198",
       "seat": "claude-code",
       "t0": 1786521600,
-      "dur": 1920,
+      "db": 2,
       "turns": 5,
       "tools": 32,
       "patches": 0,
@@ -4880,10 +4861,10 @@
       }
     },
     {
-      "id": "s0200",
+      "id": "s0199",
       "seat": "claude-code",
       "t0": 1786521600,
-      "dur": 0,
+      "db": 0,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -4901,10 +4882,10 @@
       }
     },
     {
-      "id": "s0201",
+      "id": "s0200",
       "seat": "codex",
       "t0": 1786521600,
-      "dur": 31500,
+      "db": 5,
       "turns": 4,
       "tools": 865,
       "patches": 102,
@@ -4916,16 +4897,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.432,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0202",
+      "id": "s0201",
       "seat": "codex",
       "t0": 1786521600,
-      "dur": 22080,
+      "db": 5,
       "turns": 3,
       "tools": 70,
       "patches": 6,
@@ -4937,16 +4918,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.407,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0203",
+      "id": "s0202",
       "seat": "claude-code",
       "t0": 1786521600,
-      "dur": 0,
+      "db": 0,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -4964,10 +4945,10 @@
       }
     },
     {
-      "id": "s0204",
+      "id": "s0203",
       "seat": "claude-code",
       "t0": 1786521600,
-      "dur": 2820,
+      "db": 3,
       "turns": 5,
       "tools": 6,
       "patches": 0,
@@ -4986,10 +4967,10 @@
       }
     },
     {
-      "id": "s0205",
+      "id": "s0204",
       "seat": "claude-code",
       "t0": 1786521600,
-      "dur": 2760,
+      "db": 3,
       "turns": 5,
       "tools": 11,
       "patches": 1,
@@ -5007,10 +4988,10 @@
       }
     },
     {
-      "id": "s0206",
+      "id": "s0205",
       "seat": "codex",
       "t0": 1786521600,
-      "dur": 2520,
+      "db": 2,
       "turns": 1,
       "tools": 100,
       "patches": 8,
@@ -5022,16 +5003,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.259,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0207",
+      "id": "s0206",
       "seat": "codex",
       "t0": 1786521600,
-      "dur": 16020,
+      "db": 4,
       "turns": 3,
       "tools": 433,
       "patches": 51,
@@ -5043,16 +5024,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.385,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0208",
+      "id": "s0207",
       "seat": "codex",
       "t0": 1786521600,
-      "dur": 14580,
+      "db": 4,
       "turns": 4,
       "tools": 302,
       "patches": 15,
@@ -5064,16 +5045,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.379,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0209",
+      "id": "s0208",
       "seat": "codex",
       "t0": 1786521600,
-      "dur": 14040,
+      "db": 4,
       "turns": 4,
       "tools": 353,
       "patches": 14,
@@ -5085,16 +5066,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.376,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0210",
+      "id": "s0209",
       "seat": "codex",
       "t0": 1786521600,
-      "dur": 14100,
+      "db": 4,
       "turns": 4,
       "tools": 166,
       "patches": 13,
@@ -5106,16 +5087,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.377,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0211",
+      "id": "s0210",
       "seat": "codex",
       "t0": 1786521600,
-      "dur": 14940,
+      "db": 4,
       "turns": 4,
       "tools": 357,
       "patches": 12,
@@ -5127,16 +5108,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.381,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0212",
+      "id": "s0211",
       "seat": "codex",
       "t0": 1786521600,
-      "dur": 13980,
+      "db": 4,
       "turns": 3,
       "tools": 375,
       "patches": 15,
@@ -5149,16 +5130,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.376,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0213",
+      "id": "s0212",
       "seat": "codex",
       "t0": 1786521600,
-      "dur": 15780,
+      "db": 4,
       "turns": 3,
       "tools": 341,
       "patches": 14,
@@ -5170,16 +5151,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.384,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0214",
+      "id": "s0213",
       "seat": "codex",
       "t0": 1786521600,
-      "dur": 13860,
+      "db": 4,
       "turns": 4,
       "tools": 309,
       "patches": 12,
@@ -5192,16 +5173,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.375,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0215",
+      "id": "s0214",
       "seat": "claude-code",
       "t0": 1786521600,
-      "dur": 60,
+      "db": 0,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -5219,10 +5200,10 @@
       }
     },
     {
-      "id": "s0216",
+      "id": "s0215",
       "seat": "claude-code",
       "t0": 1786521600,
-      "dur": 1860,
+      "db": 2,
       "turns": 2,
       "tools": 3,
       "patches": 0,
@@ -5241,10 +5222,10 @@
       }
     },
     {
-      "id": "s0217",
+      "id": "s0216",
       "seat": "claude-code",
       "t0": 1786525200,
-      "dur": 14580,
+      "db": 4,
       "turns": 18,
       "tools": 110,
       "patches": 32,
@@ -5263,32 +5244,10 @@
       }
     },
     {
-      "id": "s0218",
+      "id": "s0217",
       "seat": "codex",
       "t0": 1786536000,
-      "dur": 1380,
-      "turns": 1,
-      "tools": 93,
-      "patches": 0,
-      "tk": 0,
-      "model": "gpt-5.6-luna",
-      "effort": "max",
-      "project": "p09",
-      "flags": [
-        "compacted",
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.219,
-        "tone": "焦",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0219",
-      "seat": "codex",
-      "t0": 1786536000,
-      "dur": 2700,
+      "db": 2,
       "turns": 2,
       "tools": 13,
       "patches": 0,
@@ -5301,16 +5260,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.264,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0220",
+      "id": "s0218",
       "seat": "codex",
       "t0": 1786536000,
-      "dur": 1320,
+      "db": 2,
       "turns": 3,
       "tools": 121,
       "patches": 29,
@@ -5322,16 +5281,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.216,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0221",
+      "id": "s0219",
       "seat": "codex",
       "t0": 1786536000,
-      "dur": 3660,
+      "db": 3,
       "turns": 4,
       "tools": 129,
       "patches": 67,
@@ -5343,16 +5302,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.284,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0222",
+      "id": "s0220",
       "seat": "codex",
       "t0": 1786536000,
-      "dur": 4440,
+      "db": 3,
       "turns": 4,
       "tools": 172,
       "patches": 51,
@@ -5364,16 +5323,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.298,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0223",
+      "id": "s0221",
       "seat": "codex",
       "t0": 1786543200,
-      "dur": 5940,
+      "db": 3,
       "turns": 2,
       "tools": 261,
       "patches": 38,
@@ -5385,16 +5344,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.317,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0224",
+      "id": "s0222",
       "seat": "codex",
       "t0": 1786543200,
-      "dur": 1500,
+      "db": 2,
       "turns": 1,
       "tools": 85,
       "patches": 0,
@@ -5407,16 +5366,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.225,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0225",
+      "id": "s0223",
       "seat": "codex",
       "t0": 1786543200,
-      "dur": 2400,
+      "db": 2,
       "turns": 1,
       "tools": 83,
       "patches": 0,
@@ -5429,16 +5388,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.256,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0226",
+      "id": "s0224",
       "seat": "codex",
       "t0": 1786543200,
-      "dur": 1740,
+      "db": 2,
       "turns": 1,
       "tools": 54,
       "patches": 0,
@@ -5451,16 +5410,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.234,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0227",
+      "id": "s0225",
       "seat": "codex",
       "t0": 1786543200,
-      "dur": 79260,
+      "db": 5,
       "turns": 29,
       "tools": 1007,
       "patches": 65,
@@ -5472,16 +5431,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.495,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0228",
+      "id": "s0226",
       "seat": "codex",
       "t0": 1786543200,
-      "dur": 41760,
+      "db": 5,
       "turns": 4,
       "tools": 269,
       "patches": 12,
@@ -5493,16 +5452,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.451,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0229",
+      "id": "s0227",
       "seat": "codex",
       "t0": 1786546800,
-      "dur": 74820,
+      "db": 5,
       "turns": 32,
       "tools": 1509,
       "patches": 214,
@@ -5514,16 +5473,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.491,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0230",
+      "id": "s0228",
       "seat": "codex",
       "t0": 1786546800,
-      "dur": 2760,
+      "db": 3,
       "turns": 7,
       "tools": 85,
       "patches": 7,
@@ -5536,16 +5495,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.265,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0231",
+      "id": "s0229",
       "seat": "codex",
       "t0": 1786546800,
-      "dur": 1920,
+      "db": 2,
       "turns": 2,
       "tools": 57,
       "patches": 0,
@@ -5557,16 +5516,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.241,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0232",
+      "id": "s0230",
       "seat": "codex",
       "t0": 1786546800,
-      "dur": 1920,
+      "db": 2,
       "turns": 2,
       "tools": 99,
       "patches": 0,
@@ -5580,16 +5539,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.241,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0233",
+      "id": "s0231",
       "seat": "codex",
       "t0": 1786586400,
-      "dur": 31680,
+      "db": 5,
       "turns": 9,
       "tools": 36,
       "patches": 52,
@@ -5601,16 +5560,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.432,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0234",
+      "id": "s0232",
       "seat": "codex",
       "t0": 1786586400,
-      "dur": 29520,
+      "db": 5,
       "turns": 12,
       "tools": 36,
       "patches": 60,
@@ -5623,16 +5582,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.427,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0235",
+      "id": "s0233",
       "seat": "codex",
       "t0": 1786590000,
-      "dur": 4260,
+      "db": 3,
       "turns": 13,
       "tools": 48,
       "patches": 17,
@@ -5644,16 +5603,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.295,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0236",
+      "id": "s0234",
       "seat": "codex",
       "t0": 1786590000,
-      "dur": 3840,
+      "db": 3,
       "turns": 18,
       "tools": 39,
       "patches": 17,
@@ -5665,16 +5624,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.288,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0237",
+      "id": "s0235",
       "seat": "codex",
       "t0": 1786590000,
-      "dur": 27420,
+      "db": 5,
       "turns": 13,
       "tools": 31,
       "patches": 72,
@@ -5686,16 +5645,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.422,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0238",
+      "id": "s0236",
       "seat": "codex",
       "t0": 1786590000,
-      "dur": 27300,
+      "db": 5,
       "turns": 13,
       "tools": 66,
       "patches": 72,
@@ -5707,16 +5666,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.422,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0239",
+      "id": "s0237",
       "seat": "codex",
       "t0": 1786590000,
-      "dur": 27300,
+      "db": 5,
       "turns": 14,
       "tools": 41,
       "patches": 72,
@@ -5728,16 +5687,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.422,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0240",
+      "id": "s0238",
       "seat": "codex",
       "t0": 1786590000,
-      "dur": 71640,
+      "db": 5,
       "turns": 14,
       "tools": 620,
       "patches": 52,
@@ -5750,16 +5709,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.488,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0241",
+      "id": "s0239",
       "seat": "claude-code",
       "t0": 1786593600,
-      "dur": 43140,
+      "db": 5,
       "turns": 78,
       "tools": 194,
       "patches": 6,
@@ -5777,10 +5736,10 @@
       }
     },
     {
-      "id": "s0242",
+      "id": "s0240",
       "seat": "codex",
       "t0": 1786593600,
-      "dur": 104460,
+      "db": 5,
       "turns": 6,
       "tools": 310,
       "patches": 0,
@@ -5792,16 +5751,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.514,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0243",
+      "id": "s0241",
       "seat": "codex",
       "t0": 1786600800,
-      "dur": 22440,
+      "db": 5,
       "turns": 5,
       "tools": 1490,
       "patches": 104,
@@ -5814,16 +5773,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.409,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0244",
+      "id": "s0242",
       "seat": "codex",
       "t0": 1786600800,
-      "dur": 9480,
+      "db": 4,
       "turns": 3,
       "tools": 41,
       "patches": 2,
@@ -5833,16 +5792,16 @@
       "project": "p09",
       "flags": [],
       "ink": {
-        "r": 0.349,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0245",
+      "id": "s0243",
       "seat": "codex",
       "t0": 1786600800,
-      "dur": 9600,
+      "db": 4,
       "turns": 3,
       "tools": 63,
       "patches": 3,
@@ -5852,16 +5811,16 @@
       "project": "p09",
       "flags": [],
       "ink": {
-        "r": 0.35,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0246",
+      "id": "s0244",
       "seat": "codex",
       "t0": 1786600800,
-      "dur": 9660,
+      "db": 4,
       "turns": 7,
       "tools": 210,
       "patches": 35,
@@ -5873,16 +5832,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.351,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0247",
+      "id": "s0245",
       "seat": "codex",
       "t0": 1786600800,
-      "dur": 10080,
+      "db": 4,
       "turns": 6,
       "tools": 278,
       "patches": 42,
@@ -5894,16 +5853,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.354,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0248",
+      "id": "s0246",
       "seat": "codex",
       "t0": 1786600800,
-      "dur": 11280,
+      "db": 4,
       "turns": 7,
       "tools": 113,
       "patches": 27,
@@ -5915,16 +5874,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.361,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0249",
+      "id": "s0247",
       "seat": "codex",
       "t0": 1786600800,
-      "dur": 8820,
+      "db": 4,
       "turns": 4,
       "tools": 39,
       "patches": 12,
@@ -5936,16 +5895,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.344,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0250",
+      "id": "s0248",
       "seat": "codex",
       "t0": 1786600800,
-      "dur": 8760,
+      "db": 4,
       "turns": 4,
       "tools": 160,
       "patches": 27,
@@ -5957,16 +5916,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.344,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0251",
+      "id": "s0249",
       "seat": "codex",
       "t0": 1786600800,
-      "dur": 7980,
+      "db": 4,
       "turns": 2,
       "tools": 81,
       "patches": 22,
@@ -5976,16 +5935,16 @@
       "project": "p09",
       "flags": [],
       "ink": {
-        "r": 0.338,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0252",
+      "id": "s0250",
       "seat": "codex",
       "t0": 1786600800,
-      "dur": 8280,
+      "db": 4,
       "turns": 6,
       "tools": 241,
       "patches": 37,
@@ -5997,16 +5956,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.34,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0253",
+      "id": "s0251",
       "seat": "codex",
       "t0": 1786604400,
-      "dur": 1920,
+      "db": 2,
       "turns": 7,
       "tools": 28,
       "patches": 10,
@@ -6018,16 +5977,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.241,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0254",
+      "id": "s0252",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 7260,
+      "db": 4,
       "turns": 4,
       "tools": 386,
       "patches": 20,
@@ -6039,16 +5998,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.331,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0255",
+      "id": "s0253",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 7200,
+      "db": 4,
       "turns": 32,
       "tools": 52,
       "patches": 155,
@@ -6060,16 +6019,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.331,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0256",
+      "id": "s0254",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 7500,
+      "db": 4,
       "turns": 32,
       "tools": 103,
       "patches": 155,
@@ -6081,16 +6040,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.333,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0257",
+      "id": "s0255",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 6960,
+      "db": 3,
       "turns": 33,
       "tools": 44,
       "patches": 155,
@@ -6102,16 +6061,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.328,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0258",
+      "id": "s0256",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 6840,
+      "db": 3,
       "turns": 32,
       "tools": 25,
       "patches": 155,
@@ -6123,16 +6082,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.327,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0259",
+      "id": "s0257",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 7080,
+      "db": 3,
       "turns": 32,
       "tools": 51,
       "patches": 155,
@@ -6144,16 +6103,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.329,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0260",
+      "id": "s0258",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 3060,
+      "db": 3,
       "turns": 2,
       "tools": 166,
       "patches": 60,
@@ -6165,16 +6124,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.272,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0261",
+      "id": "s0259",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 5820,
+      "db": 3,
       "turns": 3,
       "tools": 121,
       "patches": 36,
@@ -6186,16 +6145,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.316,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0262",
+      "id": "s0260",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 9060,
+      "db": 4,
       "turns": 4,
       "tools": 359,
       "patches": 146,
@@ -6207,16 +6166,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.346,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0263",
+      "id": "s0261",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 11580,
+      "db": 4,
       "turns": 4,
       "tools": 512,
       "patches": 91,
@@ -6229,16 +6188,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.363,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0264",
+      "id": "s0262",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 5040,
+      "db": 3,
       "turns": 2,
       "tools": 71,
       "patches": 6,
@@ -6248,16 +6207,16 @@
       "project": "p09",
       "flags": [],
       "ink": {
-        "r": 0.306,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0265",
+      "id": "s0263",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 4380,
+      "db": 3,
       "turns": 2,
       "tools": 323,
       "patches": 73,
@@ -6269,16 +6228,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.297,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0266",
+      "id": "s0264",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 3900,
+      "db": 3,
       "turns": 1,
       "tools": 91,
       "patches": 10,
@@ -6290,16 +6249,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.289,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0267",
+      "id": "s0265",
       "seat": "codex",
       "t0": 1786611600,
-      "dur": 7800,
+      "db": 4,
       "turns": 4,
       "tools": 244,
       "patches": 58,
@@ -6311,16 +6270,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.336,
+        "r": 0.378,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0268",
+      "id": "s0266",
       "seat": "claude-code",
       "t0": 1786611600,
-      "dur": 480,
+      "db": 1,
       "turns": 5,
       "tools": 22,
       "patches": 1,
@@ -6336,10 +6295,10 @@
       }
     },
     {
-      "id": "s0269",
+      "id": "s0267",
       "seat": "codex",
       "t0": 1786615200,
-      "dur": 2220,
+      "db": 2,
       "turns": 3,
       "tools": 51,
       "patches": 2,
@@ -6351,16 +6310,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.251,
+        "r": 0.237,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0270",
+      "id": "s0268",
       "seat": "codex",
       "t0": 1786626000,
-      "dur": 53700,
+      "db": 5,
       "turns": 8,
       "tools": 311,
       "patches": 44,
@@ -6373,16 +6332,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.469,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0271",
+      "id": "s0269",
       "seat": "codex",
       "t0": 1786636800,
-      "dur": 48060,
+      "db": 5,
       "turns": 7,
       "tools": 447,
       "patches": 89,
@@ -6394,16 +6353,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.461,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0272",
+      "id": "s0270",
       "seat": "codex",
       "t0": 1786636800,
-      "dur": 25200,
+      "db": 5,
       "turns": 10,
       "tools": 183,
       "patches": 9,
@@ -6416,16 +6375,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.416,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0273",
+      "id": "s0271",
       "seat": "codex",
       "t0": 1786662000,
-      "dur": 1752660,
+      "db": 5,
       "turns": 31,
       "tools": 2349,
       "patches": 517,
@@ -6438,16 +6397,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.709,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0274",
+      "id": "s0272",
       "seat": "claude-code",
       "t0": 1786698000,
-      "dur": 189480,
+      "db": 5,
       "turns": 138,
       "tools": 251,
       "patches": 61,
@@ -6466,10 +6425,10 @@
       }
     },
     {
-      "id": "s0275",
+      "id": "s0273",
       "seat": "claude-code",
       "t0": 1786766400,
-      "dur": 3480,
+      "db": 3,
       "turns": 3,
       "tools": 3,
       "patches": 0,
@@ -6488,10 +6447,10 @@
       }
     },
     {
-      "id": "s0276",
+      "id": "s0274",
       "seat": "cursor",
       "t0": 1786867200,
-      "dur": 23220,
+      "db": 5,
       "turns": 28,
       "tools": 360,
       "patches": 12,
@@ -6501,16 +6460,16 @@
       "project": "p02",
       "flags": [],
       "ink": {
-        "r": 0.411,
+        "r": 0.434,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0277",
+      "id": "s0275",
       "seat": "claude-code",
       "t0": 1786881600,
-      "dur": 1140,
+      "db": 2,
       "turns": 14,
       "tools": 38,
       "patches": 1,
@@ -6526,10 +6485,10 @@
       }
     },
     {
-      "id": "s0278",
+      "id": "s0276",
       "seat": "codex",
       "t0": 1786924800,
-      "dur": 611700,
+      "db": 5,
       "turns": 14,
       "tools": 942,
       "patches": 157,
@@ -6541,16 +6500,16 @@
         "compacted"
       ],
       "ink": {
-        "r": 0.636,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0279",
+      "id": "s0277",
       "seat": "claude-code",
       "t0": 1786942800,
-      "dur": 30180,
+      "db": 5,
       "turns": 235,
       "tools": 322,
       "patches": 0,
@@ -6570,10 +6529,10 @@
       }
     },
     {
-      "id": "s0280",
+      "id": "s0278",
       "seat": "claude-code",
       "t0": 1786957200,
-      "dur": 2160,
+      "db": 2,
       "turns": 19,
       "tools": 34,
       "patches": 0,
@@ -6592,10 +6551,10 @@
       }
     },
     {
-      "id": "s0281",
+      "id": "s0279",
       "seat": "claude-code",
       "t0": 1786957200,
-      "dur": 2280,
+      "db": 2,
       "turns": 8,
       "tools": 32,
       "patches": 0,
@@ -6614,10 +6573,10 @@
       }
     },
     {
-      "id": "s0282",
+      "id": "s0280",
       "seat": "claude-code",
       "t0": 1786957200,
-      "dur": 2100,
+      "db": 2,
       "turns": 23,
       "tools": 43,
       "patches": 0,
@@ -6636,10 +6595,10 @@
       }
     },
     {
-      "id": "s0283",
+      "id": "s0281",
       "seat": "claude-code",
       "t0": 1787018400,
-      "dur": 23460,
+      "db": 5,
       "turns": 224,
       "tools": 294,
       "patches": 0,
@@ -6659,10 +6618,10 @@
       }
     },
     {
-      "id": "s0284",
+      "id": "s0282",
       "seat": "claude-code",
       "t0": 1787018400,
-      "dur": 137220,
+      "db": 5,
       "turns": 416,
       "tools": 509,
       "patches": 5,
@@ -6681,10 +6640,10 @@
       }
     },
     {
-      "id": "s0285",
+      "id": "s0283",
       "seat": "claude-code",
       "t0": 1787018400,
-      "dur": 1620,
+      "db": 2,
       "turns": 12,
       "tools": 31,
       "patches": 1,
@@ -6702,10 +6661,10 @@
       }
     },
     {
-      "id": "s0286",
+      "id": "s0284",
       "seat": "api-direct",
       "t0": 1787018400,
-      "dur": 180,
+      "db": 0,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -6723,10 +6682,10 @@
       }
     },
     {
-      "id": "s0287",
+      "id": "s0285",
       "seat": "claude-code",
       "t0": 1787018400,
-      "dur": 1380,
+      "db": 2,
       "turns": 3,
       "tools": 34,
       "patches": 1,
@@ -6744,10 +6703,10 @@
       }
     },
     {
-      "id": "s0288",
+      "id": "s0286",
       "seat": "claude-code",
       "t0": 1787018400,
-      "dur": 2100,
+      "db": 2,
       "turns": 2,
       "tools": 58,
       "patches": 1,
@@ -6765,10 +6724,10 @@
       }
     },
     {
-      "id": "s0289",
+      "id": "s0287",
       "seat": "claude-code",
       "t0": 1787022000,
-      "dur": 2160,
+      "db": 2,
       "turns": 11,
       "tools": 23,
       "patches": 0,
@@ -6787,10 +6746,10 @@
       }
     },
     {
-      "id": "s0290",
+      "id": "s0288",
       "seat": "claude-code",
       "t0": 1787022000,
-      "dur": 1800,
+      "db": 2,
       "turns": 16,
       "tools": 30,
       "patches": 0,
@@ -6810,10 +6769,10 @@
       }
     },
     {
-      "id": "s0291",
+      "id": "s0289",
       "seat": "claude-code",
       "t0": 1787022000,
-      "dur": 3360,
+      "db": 3,
       "turns": 27,
       "tools": 51,
       "patches": 9,
@@ -6832,10 +6791,10 @@
       }
     },
     {
-      "id": "s0292",
+      "id": "s0290",
       "seat": "claude-code",
       "t0": 1787022000,
-      "dur": 4320,
+      "db": 3,
       "turns": 43,
       "tools": 84,
       "patches": 15,
@@ -6854,10 +6813,10 @@
       }
     },
     {
-      "id": "s0293",
+      "id": "s0291",
       "seat": "claude-code",
       "t0": 1787022000,
-      "dur": 2820,
+      "db": 3,
       "turns": 21,
       "tools": 60,
       "patches": 15,
@@ -6876,10 +6835,10 @@
       }
     },
     {
-      "id": "s0294",
+      "id": "s0292",
       "seat": "claude-code",
       "t0": 1787025600,
-      "dur": 1260,
+      "db": 2,
       "turns": 0,
       "tools": 51,
       "patches": 1,
@@ -6897,10 +6856,10 @@
       }
     },
     {
-      "id": "s0295",
+      "id": "s0293",
       "seat": "claude-code",
       "t0": 1787025600,
-      "dur": 2100,
+      "db": 2,
       "turns": 3,
       "tools": 65,
       "patches": 1,
@@ -6918,10 +6877,10 @@
       }
     },
     {
-      "id": "s0296",
+      "id": "s0294",
       "seat": "claude-code",
       "t0": 1787025600,
-      "dur": 1320,
+      "db": 2,
       "turns": 13,
       "tools": 27,
       "patches": 0,
@@ -6940,10 +6899,10 @@
       }
     },
     {
-      "id": "s0297",
+      "id": "s0295",
       "seat": "claude-code",
       "t0": 1787029200,
-      "dur": 2100,
+      "db": 2,
       "turns": 14,
       "tools": 47,
       "patches": 0,
@@ -6962,10 +6921,10 @@
       }
     },
     {
-      "id": "s0298",
+      "id": "s0296",
       "seat": "claude-code",
       "t0": 1787029200,
-      "dur": 169020,
+      "db": 5,
       "turns": 378,
       "tools": 624,
       "patches": 3,
@@ -6984,10 +6943,10 @@
       }
     },
     {
-      "id": "s0299",
+      "id": "s0297",
       "seat": "claude-code",
       "t0": 1787029200,
-      "dur": 1740,
+      "db": 2,
       "turns": 3,
       "tools": 50,
       "patches": 0,
@@ -7006,10 +6965,10 @@
       }
     },
     {
-      "id": "s0300",
+      "id": "s0298",
       "seat": "claude-code",
       "t0": 1787032800,
-      "dur": 3360,
+      "db": 3,
       "turns": 3,
       "tools": 64,
       "patches": 0,
@@ -7029,10 +6988,10 @@
       }
     },
     {
-      "id": "s0301",
+      "id": "s0299",
       "seat": "claude-code",
       "t0": 1787032800,
-      "dur": 1380,
+      "db": 2,
       "turns": 5,
       "tools": 34,
       "patches": 5,
@@ -7050,10 +7009,10 @@
       }
     },
     {
-      "id": "s0302",
+      "id": "s0300",
       "seat": "claude-code",
       "t0": 1787032800,
-      "dur": 1440,
+      "db": 2,
       "turns": 3,
       "tools": 42,
       "patches": 2,
@@ -7071,10 +7030,10 @@
       }
     },
     {
-      "id": "s0303",
+      "id": "s0301",
       "seat": "claude-code",
       "t0": 1787032800,
-      "dur": 1260,
+      "db": 2,
       "turns": 5,
       "tools": 37,
       "patches": 8,
@@ -7092,10 +7051,10 @@
       }
     },
     {
-      "id": "s0304",
+      "id": "s0302",
       "seat": "codex",
       "t0": 1787040000,
-      "dur": 109260,
+      "db": 5,
       "turns": 3,
       "tools": 56,
       "patches": 6,
@@ -7105,16 +7064,16 @@
       "project": "p09",
       "flags": [],
       "ink": {
-        "r": 0.517,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0305",
+      "id": "s0303",
       "seat": "claude-code",
       "t0": 1787058000,
-      "dur": 1860,
+      "db": 2,
       "turns": 8,
       "tools": 17,
       "patches": 1,
@@ -7132,10 +7091,10 @@
       }
     },
     {
-      "id": "s0306",
+      "id": "s0304",
       "seat": "claude-code",
       "t0": 1787058000,
-      "dur": 1800,
+      "db": 2,
       "turns": 15,
       "tools": 22,
       "patches": 1,
@@ -7153,10 +7112,10 @@
       }
     },
     {
-      "id": "s0307",
+      "id": "s0305",
       "seat": "claude-code",
       "t0": 1787058000,
-      "dur": 1320,
+      "db": 2,
       "turns": 1,
       "tools": 46,
       "patches": 0,
@@ -7175,10 +7134,10 @@
       }
     },
     {
-      "id": "s0308",
+      "id": "s0306",
       "seat": "api-direct",
       "t0": 1787065200,
-      "dur": 1200,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -7196,10 +7155,10 @@
       }
     },
     {
-      "id": "s0309",
+      "id": "s0307",
       "seat": "api-direct",
       "t0": 1787068800,
-      "dur": 1800,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -7217,10 +7176,10 @@
       }
     },
     {
-      "id": "s0310",
+      "id": "s0308",
       "seat": "claude-code",
       "t0": 1787104800,
-      "dur": 2220,
+      "db": 2,
       "turns": 9,
       "tools": 53,
       "patches": 1,
@@ -7238,10 +7197,10 @@
       }
     },
     {
-      "id": "s0311",
+      "id": "s0309",
       "seat": "claude-code",
       "t0": 1787108400,
-      "dur": 9720,
+      "db": 4,
       "turns": 118,
       "tools": 190,
       "patches": 10,
@@ -7259,10 +7218,10 @@
       }
     },
     {
-      "id": "s0312",
+      "id": "s0310",
       "seat": "claude-code",
       "t0": 1787108400,
-      "dur": 4740,
+      "db": 3,
       "turns": 16,
       "tools": 31,
       "patches": 0,
@@ -7281,10 +7240,10 @@
       }
     },
     {
-      "id": "s0313",
+      "id": "s0311",
       "seat": "claude-code",
       "t0": 1787108400,
-      "dur": 1800,
+      "db": 2,
       "turns": 6,
       "tools": 25,
       "patches": 0,
@@ -7303,10 +7262,10 @@
       }
     },
     {
-      "id": "s0314",
+      "id": "s0312",
       "seat": "claude-code",
       "t0": 1787112000,
-      "dur": 2400,
+      "db": 2,
       "turns": 20,
       "tools": 40,
       "patches": 9,
@@ -7324,10 +7283,10 @@
       }
     },
     {
-      "id": "s0315",
+      "id": "s0313",
       "seat": "claude-code",
       "t0": 1787112000,
-      "dur": 1860,
+      "db": 2,
       "turns": 14,
       "tools": 17,
       "patches": 2,
@@ -7345,10 +7304,10 @@
       }
     },
     {
-      "id": "s0316",
+      "id": "s0314",
       "seat": "claude-code",
       "t0": 1787119200,
-      "dur": 19620,
+      "db": 4,
       "turns": 176,
       "tools": 212,
       "patches": 28,
@@ -7366,10 +7325,10 @@
       }
     },
     {
-      "id": "s0317",
+      "id": "s0315",
       "seat": "claude-code",
       "t0": 1787119200,
-      "dur": 2520,
+      "db": 2,
       "turns": 9,
       "tools": 22,
       "patches": 0,
@@ -7388,10 +7347,10 @@
       }
     },
     {
-      "id": "s0318",
+      "id": "s0316",
       "seat": "api-direct",
       "t0": 1787126400,
-      "dur": 1140,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -7409,10 +7368,10 @@
       }
     },
     {
-      "id": "s0319",
+      "id": "s0317",
       "seat": "claude-code",
       "t0": 1787148000,
-      "dur": 42960,
+      "db": 5,
       "turns": 148,
       "tools": 183,
       "patches": 0,
@@ -7432,10 +7391,10 @@
       }
     },
     {
-      "id": "s0320",
+      "id": "s0318",
       "seat": "claude-code",
       "t0": 1787148000,
-      "dur": 19680,
+      "db": 4,
       "turns": 13,
       "tools": 46,
       "patches": 3,
@@ -7454,10 +7413,10 @@
       }
     },
     {
-      "id": "s0321",
+      "id": "s0319",
       "seat": "claude-code",
       "t0": 1787148000,
-      "dur": 1620,
+      "db": 2,
       "turns": 14,
       "tools": 50,
       "patches": 3,
@@ -7475,10 +7434,10 @@
       }
     },
     {
-      "id": "s0322",
+      "id": "s0320",
       "seat": "codex",
       "t0": 1787148000,
-      "dur": 105120,
+      "db": 5,
       "turns": 5,
       "tools": 1370,
       "patches": 168,
@@ -7491,16 +7450,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.515,
+        "r": 0.434,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0323",
+      "id": "s0321",
       "seat": "claude-code",
       "t0": 1787151600,
-      "dur": 5460,
+      "db": 3,
       "turns": 11,
       "tools": 15,
       "patches": 0,
@@ -7519,10 +7478,10 @@
       }
     },
     {
-      "id": "s0324",
+      "id": "s0322",
       "seat": "api-direct",
       "t0": 1787151600,
-      "dur": 1800,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -7541,10 +7500,10 @@
       }
     },
     {
-      "id": "s0325",
+      "id": "s0323",
       "seat": "claude-code",
       "t0": 1787209200,
-      "dur": 19920,
+      "db": 4,
       "turns": 8,
       "tools": 55,
       "patches": 0,
@@ -7563,10 +7522,10 @@
       }
     },
     {
-      "id": "s0326",
+      "id": "s0324",
       "seat": "claude-code",
       "t0": 1787227200,
-      "dur": 6600,
+      "db": 3,
       "turns": 45,
       "tools": 72,
       "patches": 0,
@@ -7585,10 +7544,10 @@
       }
     },
     {
-      "id": "s0327",
+      "id": "s0325",
       "seat": "claude-code",
       "t0": 1787234400,
-      "dur": 1560,
+      "db": 2,
       "turns": 6,
       "tools": 54,
       "patches": 0,
@@ -7606,10 +7565,10 @@
       }
     },
     {
-      "id": "s0328",
+      "id": "s0326",
       "seat": "codex",
       "t0": 1787234400,
-      "dur": 4260,
+      "db": 3,
       "turns": 9,
       "tools": 23,
       "patches": 1,
@@ -7621,16 +7580,16 @@
         "aborted"
       ],
       "ink": {
-        "r": 0.295,
+        "r": 0.305,
         "tone": "焦",
         "hollow": false
       }
     },
     {
-      "id": "s0329",
+      "id": "s0327",
       "seat": "codex",
       "t0": 1787292000,
-      "dur": 3120,
+      "db": 3,
       "turns": 2,
       "tools": 93,
       "patches": 0,
@@ -7642,16 +7601,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.274,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0330",
+      "id": "s0328",
       "seat": "claude-code",
       "t0": 1787306400,
-      "dur": 20160,
+      "db": 4,
       "turns": 175,
       "tools": 251,
       "patches": 25,
@@ -7670,10 +7629,10 @@
       }
     },
     {
-      "id": "s0331",
+      "id": "s0329",
       "seat": "claude-code",
       "t0": 1787310000,
-      "dur": 1680,
+      "db": 2,
       "turns": 4,
       "tools": 18,
       "patches": 1,
@@ -7691,10 +7650,10 @@
       }
     },
     {
-      "id": "s0332",
+      "id": "s0330",
       "seat": "claude-code",
       "t0": 1787310000,
-      "dur": 1440,
+      "db": 2,
       "turns": 13,
       "tools": 38,
       "patches": 0,
@@ -7713,10 +7672,10 @@
       }
     },
     {
-      "id": "s0333",
+      "id": "s0331",
       "seat": "claude-code",
       "t0": 1787313600,
-      "dur": 1380,
+      "db": 2,
       "turns": 5,
       "tools": 28,
       "patches": 0,
@@ -7735,10 +7694,10 @@
       }
     },
     {
-      "id": "s0334",
+      "id": "s0332",
       "seat": "claude-code",
       "t0": 1787313600,
-      "dur": 1140,
+      "db": 2,
       "turns": 3,
       "tools": 34,
       "patches": 3,
@@ -7756,10 +7715,10 @@
       }
     },
     {
-      "id": "s0335",
+      "id": "s0333",
       "seat": "codex",
       "t0": 1787317200,
-      "dur": 2220,
+      "db": 2,
       "turns": 3,
       "tools": 110,
       "patches": 0,
@@ -7771,16 +7730,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.251,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0336",
+      "id": "s0334",
       "seat": "claude-code",
       "t0": 1787418000,
-      "dur": 111660,
+      "db": 5,
       "turns": 37,
       "tools": 46,
       "patches": 0,
@@ -7798,10 +7757,10 @@
       }
     },
     {
-      "id": "s0337",
+      "id": "s0335",
       "seat": "claude-code",
       "t0": 1787464800,
-      "dur": 1560,
+      "db": 2,
       "turns": 7,
       "tools": 10,
       "patches": 1,
@@ -7819,10 +7778,10 @@
       }
     },
     {
-      "id": "s0338",
+      "id": "s0336",
       "seat": "codex",
       "t0": 1787529600,
-      "dur": 4260,
+      "db": 3,
       "turns": 1,
       "tools": 218,
       "patches": 0,
@@ -7834,16 +7793,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.295,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0339",
+      "id": "s0337",
       "seat": "codex",
       "t0": 1787533200,
-      "dur": 2400,
+      "db": 2,
       "turns": 2,
       "tools": 95,
       "patches": 0,
@@ -7855,16 +7814,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.256,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0340",
+      "id": "s0338",
       "seat": "codex",
       "t0": 1787533200,
-      "dur": 1500,
+      "db": 2,
       "turns": 1,
       "tools": 81,
       "patches": 0,
@@ -7876,16 +7835,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.225,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0341",
+      "id": "s0339",
       "seat": "claude-code",
       "t0": 1787536800,
-      "dur": 10500,
+      "db": 4,
       "turns": 73,
       "tools": 96,
       "patches": 0,
@@ -7904,10 +7863,10 @@
       }
     },
     {
-      "id": "s0342",
+      "id": "s0340",
       "seat": "claude-code",
       "t0": 1787554800,
-      "dur": 78600,
+      "db": 5,
       "turns": 179,
       "tools": 347,
       "patches": 11,
@@ -7925,10 +7884,10 @@
       }
     },
     {
-      "id": "s0343",
+      "id": "s0341",
       "seat": "cursor",
       "t0": 1787554800,
-      "dur": 72480,
+      "db": 5,
       "turns": 58,
       "tools": 72,
       "patches": 0,
@@ -7940,16 +7899,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.489,
+        "r": 0.434,
         "tone": "重",
         "hollow": true
       }
     },
     {
-      "id": "s0344",
+      "id": "s0342",
       "seat": "codex",
       "t0": 1787562000,
-      "dur": 16020,
+      "db": 4,
       "turns": 13,
       "tools": 212,
       "patches": 0,
@@ -7961,16 +7920,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.385,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0345",
+      "id": "s0343",
       "seat": "codex",
       "t0": 1787576400,
-      "dur": 70080,
+      "db": 5,
       "turns": 2,
       "tools": 24,
       "patches": 0,
@@ -7982,16 +7941,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.487,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0346",
+      "id": "s0344",
       "seat": "codex",
       "t0": 1787576400,
-      "dur": 243000,
+      "db": 5,
       "turns": 23,
       "tools": 294,
       "patches": 0,
@@ -8004,16 +7963,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.573,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0347",
+      "id": "s0345",
       "seat": "claude-code",
       "t0": 1787626800,
-      "dur": 98520,
+      "db": 5,
       "turns": 929,
       "tools": 1429,
       "patches": 6,
@@ -8032,10 +7991,10 @@
       }
     },
     {
-      "id": "s0348",
+      "id": "s0346",
       "seat": "claude-code",
       "t0": 1787630400,
-      "dur": 1320,
+      "db": 2,
       "turns": 4,
       "tools": 55,
       "patches": 0,
@@ -8054,10 +8013,10 @@
       }
     },
     {
-      "id": "s0349",
+      "id": "s0347",
       "seat": "claude-code",
       "t0": 1787634000,
-      "dur": 1440,
+      "db": 2,
       "turns": 13,
       "tools": 46,
       "patches": 0,
@@ -8076,10 +8035,10 @@
       }
     },
     {
-      "id": "s0350",
+      "id": "s0348",
       "seat": "claude-code",
       "t0": 1787634000,
-      "dur": 2280,
+      "db": 2,
       "turns": 2,
       "tools": 3,
       "patches": 0,
@@ -8098,10 +8057,10 @@
       }
     },
     {
-      "id": "s0351",
+      "id": "s0349",
       "seat": "claude-code",
       "t0": 1787634000,
-      "dur": 2220,
+      "db": 2,
       "turns": 4,
       "tools": 8,
       "patches": 0,
@@ -8120,11 +8079,54 @@
       }
     },
     {
+      "id": "s0350",
+      "seat": "claude-code",
+      "t0": 1787634000,
+      "db": 2,
+      "turns": 7,
+      "tools": 10,
+      "patches": 0,
+      "tk": 1,
+      "model": "claude-sonnet-5",
+      "effort": null,
+      "project": "p09",
+      "flags": [
+        "sidechain",
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.539,
+        "tone": "浓",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0351",
+      "seat": "codex",
+      "t0": 1787634000,
+      "db": 2,
+      "turns": 1,
+      "tools": 63,
+      "patches": 0,
+      "tk": 0,
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "project": "p09",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.237,
+        "tone": "焦",
+        "hollow": true
+      }
+    },
+    {
       "id": "s0352",
       "seat": "claude-code",
       "t0": 1787634000,
-      "dur": 2100,
-      "turns": 7,
+      "db": 2,
+      "turns": 3,
       "tools": 10,
       "patches": 0,
       "tk": 1,
@@ -8143,52 +8145,9 @@
     },
     {
       "id": "s0353",
-      "seat": "codex",
-      "t0": 1787634000,
-      "dur": 1980,
-      "turns": 1,
-      "tools": 63,
-      "patches": 0,
-      "tk": 0,
-      "model": "gpt-5.6-sol",
-      "effort": "max",
-      "project": "p09",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.243,
-        "tone": "焦",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0354",
       "seat": "claude-code",
       "t0": 1787634000,
-      "dur": 2040,
-      "turns": 3,
-      "tools": 10,
-      "patches": 0,
-      "tk": 1,
-      "model": "claude-sonnet-5",
-      "effort": null,
-      "project": "p09",
-      "flags": [
-        "sidechain",
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.539,
-        "tone": "浓",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0355",
-      "seat": "claude-code",
-      "t0": 1787634000,
-      "dur": 8940,
+      "db": 4,
       "turns": 11,
       "tools": 123,
       "patches": 1,
@@ -8206,10 +8165,10 @@
       }
     },
     {
-      "id": "s0356",
+      "id": "s0354",
       "seat": "claude-code",
       "t0": 1787637600,
-      "dur": 31380,
+      "db": 5,
       "turns": 131,
       "tools": 155,
       "patches": 0,
@@ -8228,10 +8187,10 @@
       }
     },
     {
-      "id": "s0357",
+      "id": "s0355",
       "seat": "claude-code",
       "t0": 1787637600,
-      "dur": 1740,
+      "db": 2,
       "turns": 8,
       "tools": 20,
       "patches": 0,
@@ -8250,10 +8209,10 @@
       }
     },
     {
-      "id": "s0358",
+      "id": "s0356",
       "seat": "claude-code",
       "t0": 1787637600,
-      "dur": 2220,
+      "db": 2,
       "turns": 9,
       "tools": 60,
       "patches": 1,
@@ -8271,10 +8230,10 @@
       }
     },
     {
-      "id": "s0359",
+      "id": "s0357",
       "seat": "claude-code",
       "t0": 1787637600,
-      "dur": 2880,
+      "db": 3,
       "turns": 10,
       "tools": 30,
       "patches": 3,
@@ -8293,10 +8252,10 @@
       }
     },
     {
-      "id": "s0360",
+      "id": "s0358",
       "seat": "claude-code",
       "t0": 1787637600,
-      "dur": 1380,
+      "db": 2,
       "turns": 5,
       "tools": 31,
       "patches": 1,
@@ -8314,10 +8273,10 @@
       }
     },
     {
-      "id": "s0361",
+      "id": "s0359",
       "seat": "claude-code",
       "t0": 1787641200,
-      "dur": 2340,
+      "db": 2,
       "turns": 3,
       "tools": 54,
       "patches": 2,
@@ -8335,10 +8294,10 @@
       }
     },
     {
-      "id": "s0362",
+      "id": "s0360",
       "seat": "claude-code",
       "t0": 1787644800,
-      "dur": 3060,
+      "db": 3,
       "turns": 4,
       "tools": 13,
       "patches": 0,
@@ -8357,10 +8316,10 @@
       }
     },
     {
-      "id": "s0363",
+      "id": "s0361",
       "seat": "codex",
       "t0": 1787644800,
-      "dur": 2880,
+      "db": 3,
       "turns": 1,
       "tools": 134,
       "patches": 0,
@@ -8372,16 +8331,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.268,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0364",
+      "id": "s0362",
       "seat": "claude-code",
       "t0": 1787652000,
-      "dur": 1500,
+      "db": 2,
       "turns": 4,
       "tools": 25,
       "patches": 0,
@@ -8400,10 +8359,10 @@
       }
     },
     {
-      "id": "s0365",
+      "id": "s0363",
       "seat": "codex",
       "t0": 1787670000,
-      "dur": 301920,
+      "db": 5,
       "turns": 108,
       "tools": 1113,
       "patches": 0,
@@ -8416,16 +8375,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.587,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0366",
+      "id": "s0364",
       "seat": "api-direct",
       "t0": 1787688000,
-      "dur": 1860,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -8443,10 +8402,10 @@
       }
     },
     {
-      "id": "s0367",
+      "id": "s0365",
       "seat": "claude-code",
       "t0": 1787720400,
-      "dur": 4680,
+      "db": 3,
       "turns": 55,
       "tools": 80,
       "patches": 0,
@@ -8465,10 +8424,10 @@
       }
     },
     {
-      "id": "s0368",
+      "id": "s0366",
       "seat": "claude-code",
       "t0": 1787720400,
-      "dur": 3720,
+      "db": 3,
       "turns": 7,
       "tools": 29,
       "patches": 2,
@@ -8486,10 +8445,10 @@
       }
     },
     {
-      "id": "s0369",
+      "id": "s0367",
       "seat": "codex",
       "t0": 1787720400,
-      "dur": 8100,
+      "db": 4,
       "turns": 7,
       "tools": 59,
       "patches": 0,
@@ -8501,16 +8460,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.339,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0370",
+      "id": "s0368",
       "seat": "claude-code",
       "t0": 1787724000,
-      "dur": 1320,
+      "db": 2,
       "turns": 2,
       "tools": 31,
       "patches": 0,
@@ -8529,10 +8488,10 @@
       }
     },
     {
-      "id": "s0371",
+      "id": "s0369",
       "seat": "codex",
       "t0": 1787727600,
-      "dur": 13380,
+      "db": 4,
       "turns": 8,
       "tools": 206,
       "patches": 0,
@@ -8545,16 +8504,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.373,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0372",
+      "id": "s0370",
       "seat": "codex",
       "t0": 1787796000,
-      "dur": 86100,
+      "db": 5,
       "turns": 2,
       "tools": 22,
       "patches": 0,
@@ -8566,16 +8525,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.501,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0373",
+      "id": "s0371",
       "seat": "codex",
       "t0": 1787796000,
-      "dur": 338460,
+      "db": 5,
       "turns": 19,
       "tools": 519,
       "patches": 0,
@@ -8587,16 +8546,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.595,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0374",
+      "id": "s0372",
       "seat": "codex",
       "t0": 1787821200,
-      "dur": 154980,
+      "db": 5,
       "turns": 21,
       "tools": 145,
       "patches": 0,
@@ -8609,16 +8568,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.542,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0375",
+      "id": "s0373",
       "seat": "codex",
       "t0": 1787842800,
-      "dur": 2520,
+      "db": 2,
       "turns": 1,
       "tools": 127,
       "patches": 0,
@@ -8630,16 +8589,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.259,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0376",
+      "id": "s0374",
       "seat": "codex",
       "t0": 1787925600,
-      "dur": 84600,
+      "db": 5,
       "turns": 9,
       "tools": 252,
       "patches": 0,
@@ -8651,16 +8610,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.5,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0377",
+      "id": "s0375",
       "seat": "cursor",
       "t0": 1787976000,
-      "dur": 30120,
+      "db": 5,
       "turns": 171,
       "tools": 373,
       "patches": 2,
@@ -8670,16 +8629,16 @@
       "project": "p10",
       "flags": [],
       "ink": {
-        "r": 0.429,
+        "r": 0.434,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0378",
+      "id": "s0376",
       "seat": "codex",
       "t0": 1787990400,
-      "dur": 5640,
+      "db": 3,
       "turns": 5,
       "tools": 235,
       "patches": 0,
@@ -8692,16 +8651,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.314,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0379",
+      "id": "s0377",
       "seat": "claude-code",
       "t0": 1787994000,
-      "dur": 109140,
+      "db": 5,
       "turns": 1119,
       "tools": 1613,
       "patches": 1,
@@ -8720,10 +8679,10 @@
       }
     },
     {
-      "id": "s0380",
+      "id": "s0378",
       "seat": "claude-code",
       "t0": 1787997600,
-      "dur": 1800,
+      "db": 2,
       "turns": 6,
       "tools": 70,
       "patches": 14,
@@ -8741,10 +8700,10 @@
       }
     },
     {
-      "id": "s0381",
+      "id": "s0379",
       "seat": "claude-code",
       "t0": 1787997600,
-      "dur": 2700,
+      "db": 3,
       "turns": 4,
       "tools": 17,
       "patches": 0,
@@ -8763,10 +8722,10 @@
       }
     },
     {
-      "id": "s0382",
+      "id": "s0380",
       "seat": "claude-code",
       "t0": 1787997600,
-      "dur": 1980,
+      "db": 2,
       "turns": 8,
       "tools": 32,
       "patches": 0,
@@ -8785,10 +8744,10 @@
       }
     },
     {
-      "id": "s0383",
+      "id": "s0381",
       "seat": "claude-code",
       "t0": 1787997600,
-      "dur": 3000,
+      "db": 3,
       "turns": 5,
       "tools": 55,
       "patches": 0,
@@ -8807,10 +8766,10 @@
       }
     },
     {
-      "id": "s0384",
+      "id": "s0382",
       "seat": "claude-code",
       "t0": 1787997600,
-      "dur": 1800,
+      "db": 2,
       "turns": 12,
       "tools": 38,
       "patches": 1,
@@ -8828,10 +8787,10 @@
       }
     },
     {
-      "id": "s0385",
+      "id": "s0383",
       "seat": "claude-code",
       "t0": 1787997600,
-      "dur": 1980,
+      "db": 2,
       "turns": 4,
       "tools": 24,
       "patches": 1,
@@ -8849,10 +8808,10 @@
       }
     },
     {
-      "id": "s0386",
+      "id": "s0384",
       "seat": "claude-code",
       "t0": 1787997600,
-      "dur": 1740,
+      "db": 2,
       "turns": 19,
       "tools": 76,
       "patches": 1,
@@ -8870,10 +8829,10 @@
       }
     },
     {
-      "id": "s0387",
+      "id": "s0385",
       "seat": "claude-code",
       "t0": 1787997600,
-      "dur": 3360,
+      "db": 3,
       "turns": 20,
       "tools": 56,
       "patches": 1,
@@ -8891,10 +8850,10 @@
       }
     },
     {
-      "id": "s0388",
+      "id": "s0386",
       "seat": "claude-code",
       "t0": 1788001200,
-      "dur": 1800,
+      "db": 2,
       "turns": 7,
       "tools": 20,
       "patches": 0,
@@ -8913,10 +8872,10 @@
       }
     },
     {
-      "id": "s0389",
+      "id": "s0387",
       "seat": "claude-code",
       "t0": 1788001200,
-      "dur": 1980,
+      "db": 2,
       "turns": 14,
       "tools": 29,
       "patches": 0,
@@ -8935,10 +8894,10 @@
       }
     },
     {
-      "id": "s0390",
+      "id": "s0388",
       "seat": "claude-code",
       "t0": 1788001200,
-      "dur": 1980,
+      "db": 2,
       "turns": 37,
       "tools": 53,
       "patches": 1,
@@ -8956,10 +8915,10 @@
       }
     },
     {
-      "id": "s0391",
+      "id": "s0389",
       "seat": "claude-code",
       "t0": 1788004800,
-      "dur": 3180,
+      "db": 3,
       "turns": 47,
       "tools": 104,
       "patches": 5,
@@ -8977,10 +8936,10 @@
       }
     },
     {
-      "id": "s0392",
+      "id": "s0390",
       "seat": "api-direct",
       "t0": 1788004800,
-      "dur": 1500,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -8999,10 +8958,10 @@
       }
     },
     {
-      "id": "s0393",
+      "id": "s0391",
       "seat": "claude-code",
       "t0": 1788004800,
-      "dur": 2880,
+      "db": 3,
       "turns": 24,
       "tools": 51,
       "patches": 0,
@@ -9021,10 +8980,10 @@
       }
     },
     {
-      "id": "s0394",
+      "id": "s0392",
       "seat": "claude-code",
       "t0": 1788004800,
-      "dur": 4320,
+      "db": 3,
       "turns": 15,
       "tools": 39,
       "patches": 1,
@@ -9042,10 +9001,10 @@
       }
     },
     {
-      "id": "s0395",
+      "id": "s0393",
       "seat": "claude-code",
       "t0": 1788004800,
-      "dur": 1800,
+      "db": 2,
       "turns": 5,
       "tools": 24,
       "patches": 1,
@@ -9063,10 +9022,10 @@
       }
     },
     {
-      "id": "s0396",
+      "id": "s0394",
       "seat": "claude-code",
       "t0": 1788004800,
-      "dur": 2040,
+      "db": 2,
       "turns": 6,
       "tools": 58,
       "patches": 0,
@@ -9085,10 +9044,10 @@
       }
     },
     {
-      "id": "s0397",
+      "id": "s0395",
       "seat": "claude-code",
       "t0": 1788004800,
-      "dur": 8340,
+      "db": 4,
       "turns": 17,
       "tools": 26,
       "patches": 0,
@@ -9107,12 +9066,54 @@
       }
     },
     {
-      "id": "s0398",
+      "id": "s0396",
       "seat": "claude-code",
       "t0": 1788004800,
-      "dur": 9180,
+      "db": 4,
       "turns": 3,
       "tools": 33,
+      "patches": 2,
+      "tk": 3,
+      "model": "claude-sonnet-5",
+      "effort": null,
+      "project": "p09",
+      "flags": [
+        "sidechain"
+      ],
+      "ink": {
+        "r": 0.721,
+        "tone": "浓",
+        "hollow": false
+      }
+    },
+    {
+      "id": "s0397",
+      "seat": "claude-code",
+      "t0": 1788008400,
+      "db": 2,
+      "turns": 3,
+      "tools": 93,
+      "patches": 6,
+      "tk": 4,
+      "model": "claude-opus-5",
+      "effort": null,
+      "project": "p09",
+      "flags": [
+        "sidechain"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "浓",
+        "hollow": false
+      }
+    },
+    {
+      "id": "s0398",
+      "seat": "claude-code",
+      "t0": 1788008400,
+      "db": 3,
+      "turns": 25,
+      "tools": 50,
       "patches": 2,
       "tk": 3,
       "model": "claude-sonnet-5",
@@ -9131,49 +9132,7 @@
       "id": "s0399",
       "seat": "claude-code",
       "t0": 1788008400,
-      "dur": 2040,
-      "turns": 3,
-      "tools": 93,
-      "patches": 6,
-      "tk": 4,
-      "model": "claude-opus-5",
-      "effort": null,
-      "project": "p09",
-      "flags": [
-        "sidechain"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "浓",
-        "hollow": false
-      }
-    },
-    {
-      "id": "s0400",
-      "seat": "claude-code",
-      "t0": 1788008400,
-      "dur": 4740,
-      "turns": 25,
-      "tools": 50,
-      "patches": 2,
-      "tk": 3,
-      "model": "claude-sonnet-5",
-      "effort": null,
-      "project": "p09",
-      "flags": [
-        "sidechain"
-      ],
-      "ink": {
-        "r": 0.721,
-        "tone": "浓",
-        "hollow": false
-      }
-    },
-    {
-      "id": "s0401",
-      "seat": "claude-code",
-      "t0": 1788008400,
-      "dur": 2460,
+      "db": 2,
       "turns": 6,
       "tools": 24,
       "patches": 0,
@@ -9192,10 +9151,10 @@
       }
     },
     {
-      "id": "s0402",
+      "id": "s0400",
       "seat": "claude-code",
       "t0": 1788008400,
-      "dur": 2760,
+      "db": 3,
       "turns": 4,
       "tools": 28,
       "patches": 1,
@@ -9213,10 +9172,10 @@
       }
     },
     {
-      "id": "s0403",
+      "id": "s0401",
       "seat": "claude-code",
       "t0": 1788008400,
-      "dur": 2460,
+      "db": 2,
       "turns": 9,
       "tools": 27,
       "patches": 1,
@@ -9234,10 +9193,10 @@
       }
     },
     {
-      "id": "s0404",
+      "id": "s0402",
       "seat": "claude-code",
       "t0": 1788012000,
-      "dur": 2280,
+      "db": 2,
       "turns": 51,
       "tools": 109,
       "patches": 1,
@@ -9255,10 +9214,10 @@
       }
     },
     {
-      "id": "s0405",
+      "id": "s0403",
       "seat": "codex",
       "t0": 1788012000,
-      "dur": 237000,
+      "db": 5,
       "turns": 26,
       "tools": 1969,
       "patches": 0,
@@ -9271,16 +9230,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.571,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0406",
+      "id": "s0404",
       "seat": "claude-code",
       "t0": 1788012000,
-      "dur": 1620,
+      "db": 2,
       "turns": 10,
       "tools": 38,
       "patches": 8,
@@ -9298,10 +9257,10 @@
       }
     },
     {
-      "id": "s0407",
+      "id": "s0405",
       "seat": "claude-code",
       "t0": 1788012000,
-      "dur": 12060,
+      "db": 4,
       "turns": 20,
       "tools": 41,
       "patches": 1,
@@ -9319,10 +9278,10 @@
       }
     },
     {
-      "id": "s0408",
+      "id": "s0406",
       "seat": "claude-code",
       "t0": 1788012000,
-      "dur": 7680,
+      "db": 4,
       "turns": 42,
       "tools": 105,
       "patches": 0,
@@ -9341,10 +9300,10 @@
       }
     },
     {
-      "id": "s0409",
+      "id": "s0407",
       "seat": "codex",
       "t0": 1788012000,
-      "dur": 2160,
+      "db": 2,
       "turns": 1,
       "tools": 18,
       "patches": 0,
@@ -9356,16 +9315,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.249,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0410",
+      "id": "s0408",
       "seat": "claude-code",
       "t0": 1788015600,
-      "dur": 2220,
+      "db": 2,
       "turns": 10,
       "tools": 34,
       "patches": 5,
@@ -9383,10 +9342,10 @@
       }
     },
     {
-      "id": "s0411",
+      "id": "s0409",
       "seat": "claude-code",
       "t0": 1788015600,
-      "dur": 2220,
+      "db": 2,
       "turns": 2,
       "tools": 11,
       "patches": 1,
@@ -9404,10 +9363,10 @@
       }
     },
     {
-      "id": "s0412",
+      "id": "s0410",
       "seat": "claude-code",
       "t0": 1788019200,
-      "dur": 1740,
+      "db": 2,
       "turns": 8,
       "tools": 22,
       "patches": 4,
@@ -9425,10 +9384,10 @@
       }
     },
     {
-      "id": "s0413",
+      "id": "s0411",
       "seat": "claude-code",
       "t0": 1788026400,
-      "dur": 2160,
+      "db": 2,
       "turns": 5,
       "tools": 10,
       "patches": 0,
@@ -9447,10 +9406,10 @@
       }
     },
     {
-      "id": "s0414",
+      "id": "s0412",
       "seat": "codex",
       "t0": 1788026400,
-      "dur": 1860,
+      "db": 2,
       "turns": 1,
       "tools": 84,
       "patches": 0,
@@ -9462,16 +9421,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.239,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0415",
+      "id": "s0413",
       "seat": "claude-code",
       "t0": 1788030000,
-      "dur": 7500,
+      "db": 4,
       "turns": 19,
       "tools": 111,
       "patches": 18,
@@ -9489,10 +9448,10 @@
       }
     },
     {
-      "id": "s0416",
+      "id": "s0414",
       "seat": "claude-code",
       "t0": 1788040800,
-      "dur": 2400,
+      "db": 2,
       "turns": 7,
       "tools": 101,
       "patches": 17,
@@ -9510,10 +9469,10 @@
       }
     },
     {
-      "id": "s0417",
+      "id": "s0415",
       "seat": "codex",
       "t0": 1788040800,
-      "dur": 2280,
+      "db": 2,
       "turns": 1,
       "tools": 117,
       "patches": 0,
@@ -9525,16 +9484,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.253,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0418",
+      "id": "s0416",
       "seat": "claude-code",
       "t0": 1788044400,
-      "dur": 2280,
+      "db": 2,
       "turns": 49,
       "tools": 104,
       "patches": 9,
@@ -9552,10 +9511,10 @@
       }
     },
     {
-      "id": "s0419",
+      "id": "s0417",
       "seat": "codex",
       "t0": 1788048000,
-      "dur": 11220,
+      "db": 4,
       "turns": 2,
       "tools": 12,
       "patches": 0,
@@ -9567,16 +9526,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.361,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0420",
+      "id": "s0418",
       "seat": "codex",
       "t0": 1788048000,
-      "dur": 11220,
+      "db": 4,
       "turns": 2,
       "tools": 13,
       "patches": 0,
@@ -9588,16 +9547,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.361,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0421",
+      "id": "s0419",
       "seat": "codex",
       "t0": 1788048000,
-      "dur": 11280,
+      "db": 4,
       "turns": 2,
       "tools": 14,
       "patches": 0,
@@ -9609,16 +9568,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.361,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0422",
+      "id": "s0420",
       "seat": "codex",
       "t0": 1788048000,
-      "dur": 11220,
+      "db": 4,
       "turns": 2,
       "tools": 10,
       "patches": 0,
@@ -9630,16 +9589,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.361,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0423",
+      "id": "s0421",
       "seat": "codex",
       "t0": 1788048000,
-      "dur": 3780,
+      "db": 3,
       "turns": 1,
       "tools": 27,
       "patches": 0,
@@ -9651,16 +9610,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.287,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0424",
+      "id": "s0422",
       "seat": "claude-code",
       "t0": 1788048000,
-      "dur": 3540,
+      "db": 3,
       "turns": 62,
       "tools": 81,
       "patches": 0,
@@ -9679,10 +9638,10 @@
       }
     },
     {
-      "id": "s0425",
+      "id": "s0423",
       "seat": "codex",
       "t0": 1788055200,
-      "dur": 3420,
+      "db": 3,
       "turns": 1,
       "tools": 145,
       "patches": 0,
@@ -9694,16 +9653,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.28,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0426",
+      "id": "s0424",
       "seat": "claude-code",
       "t0": 1788058800,
-      "dur": 2820,
+      "db": 3,
       "turns": 48,
       "tools": 75,
       "patches": 0,
@@ -9722,10 +9681,10 @@
       }
     },
     {
-      "id": "s0427",
+      "id": "s0425",
       "seat": "codex",
       "t0": 1788058800,
-      "dur": 5880,
+      "db": 3,
       "turns": 2,
       "tools": 17,
       "patches": 0,
@@ -9737,16 +9696,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.317,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0428",
+      "id": "s0426",
       "seat": "claude-code",
       "t0": 1788062400,
-      "dur": 6060,
+      "db": 3,
       "turns": 24,
       "tools": 149,
       "patches": 16,
@@ -9764,10 +9723,10 @@
       }
     },
     {
-      "id": "s0429",
+      "id": "s0427",
       "seat": "claude-code",
       "t0": 1788062400,
-      "dur": 13080,
+      "db": 4,
       "turns": 138,
       "tools": 328,
       "patches": 10,
@@ -9785,10 +9744,10 @@
       }
     },
     {
-      "id": "s0430",
+      "id": "s0428",
       "seat": "api-direct",
       "t0": 1788062400,
-      "dur": 1020,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -9806,10 +9765,10 @@
       }
     },
     {
-      "id": "s0431",
+      "id": "s0429",
       "seat": "api-direct",
       "t0": 1788066000,
-      "dur": 780,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -9827,10 +9786,10 @@
       }
     },
     {
-      "id": "s0432",
+      "id": "s0430",
       "seat": "claude-code",
       "t0": 1788066000,
-      "dur": 8820,
+      "db": 4,
       "turns": 98,
       "tools": 188,
       "patches": 26,
@@ -9848,10 +9807,10 @@
       }
     },
     {
-      "id": "s0433",
+      "id": "s0431",
       "seat": "claude-code",
       "t0": 1788066000,
-      "dur": 2700,
+      "db": 2,
       "turns": 33,
       "tools": 56,
       "patches": 5,
@@ -9869,10 +9828,10 @@
       }
     },
     {
-      "id": "s0434",
+      "id": "s0432",
       "seat": "api-direct",
       "t0": 1788066000,
-      "dur": 1560,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -9891,10 +9850,10 @@
       }
     },
     {
-      "id": "s0435",
+      "id": "s0433",
       "seat": "api-direct",
       "t0": 1788066000,
-      "dur": 1380,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -9912,10 +9871,10 @@
       }
     },
     {
-      "id": "s0436",
+      "id": "s0434",
       "seat": "api-direct",
       "t0": 1788069600,
-      "dur": 1140,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -9933,10 +9892,10 @@
       }
     },
     {
-      "id": "s0437",
+      "id": "s0435",
       "seat": "claude-code",
       "t0": 1788069600,
-      "dur": 4980,
+      "db": 3,
       "turns": 19,
       "tools": 87,
       "patches": 7,
@@ -9954,10 +9913,10 @@
       }
     },
     {
-      "id": "s0438",
+      "id": "s0436",
       "seat": "claude-code",
       "t0": 1788069600,
-      "dur": 4920,
+      "db": 3,
       "turns": 59,
       "tools": 160,
       "patches": 1,
@@ -9975,10 +9934,10 @@
       }
     },
     {
-      "id": "s0439",
+      "id": "s0437",
       "seat": "claude-code",
       "t0": 1788069600,
-      "dur": 5700,
+      "db": 3,
       "turns": 11,
       "tools": 137,
       "patches": 9,
@@ -9996,10 +9955,10 @@
       }
     },
     {
-      "id": "s0440",
+      "id": "s0438",
       "seat": "claude-code",
       "t0": 1788069600,
-      "dur": 2160,
+      "db": 2,
       "turns": 6,
       "tools": 85,
       "patches": 1,
@@ -10017,10 +9976,10 @@
       }
     },
     {
-      "id": "s0441",
+      "id": "s0439",
       "seat": "api-direct",
       "t0": 1788069600,
-      "dur": 1200,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10038,10 +9997,10 @@
       }
     },
     {
-      "id": "s0442",
+      "id": "s0440",
       "seat": "claude-code",
       "t0": 1788069600,
-      "dur": 1560,
+      "db": 2,
       "turns": 6,
       "tools": 62,
       "patches": 0,
@@ -10060,10 +10019,10 @@
       }
     },
     {
-      "id": "s0443",
+      "id": "s0441",
       "seat": "api-direct",
       "t0": 1788069600,
-      "dur": 1500,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10073,6 +10032,49 @@
       "project": "p00",
       "flags": [
         "aborted",
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0442",
+      "seat": "api-direct",
+      "t0": 1788073200,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "glm-5.3",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "aborted",
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0443",
+      "seat": "api-direct",
+      "t0": 1788073200,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "glm-5.3",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
         "hollow"
       ],
       "ink": {
@@ -10083,31 +10085,30 @@
     },
     {
       "id": "s0444",
-      "seat": "api-direct",
+      "seat": "claude-code",
       "t0": 1788073200,
-      "dur": 2220,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
+      "db": 3,
+      "turns": 22,
+      "tools": 160,
+      "patches": 9,
       "tk": 4,
-      "model": "glm-5.3",
-      "effort": "max",
-      "project": "p00",
+      "model": "claude-sonnet-5",
+      "effort": null,
+      "project": "p09",
       "flags": [
-        "aborted",
-        "hollow"
+        "sidechain"
       ],
       "ink": {
         "r": 0.809,
-        "tone": "清",
-        "hollow": true
+        "tone": "浓",
+        "hollow": false
       }
     },
     {
       "id": "s0445",
       "seat": "api-direct",
       "t0": 1788073200,
-      "dur": 1440,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10126,72 +10127,30 @@
     },
     {
       "id": "s0446",
-      "seat": "claude-code",
+      "seat": "api-direct",
       "t0": 1788073200,
-      "dur": 4620,
-      "turns": 22,
-      "tools": 160,
-      "patches": 9,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
       "tk": 4,
-      "model": "claude-sonnet-5",
-      "effort": null,
-      "project": "p09",
+      "model": "glm-5.3",
+      "effort": "max",
+      "project": "p00",
       "flags": [
-        "sidechain"
+        "hollow"
       ],
       "ink": {
         "r": 0.809,
-        "tone": "浓",
-        "hollow": false
+        "tone": "清",
+        "hollow": true
       }
     },
     {
       "id": "s0447",
-      "seat": "api-direct",
-      "t0": 1788073200,
-      "dur": 1080,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "glm-5.3",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0448",
-      "seat": "api-direct",
-      "t0": 1788073200,
-      "dur": 1080,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "glm-5.3",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0449",
       "seat": "claude-code",
       "t0": 1788073200,
-      "dur": 3120,
+      "db": 3,
       "turns": 25,
       "tools": 79,
       "patches": 11,
@@ -10209,10 +10168,10 @@
       }
     },
     {
-      "id": "s0450",
+      "id": "s0448",
       "seat": "claude-code",
       "t0": 1788073200,
-      "dur": 20580,
+      "db": 4,
       "turns": 4,
       "tools": 76,
       "patches": 0,
@@ -10230,10 +10189,52 @@
       }
     },
     {
-      "id": "s0451",
+      "id": "s0449",
       "seat": "api-direct",
       "t0": 1788073200,
-      "dur": 1020,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "glm-5.3",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0450",
+      "seat": "api-direct",
+      "t0": 1788076800,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "glm-5.3",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0451",
+      "seat": "api-direct",
+      "t0": 1788076800,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10252,30 +10253,30 @@
     },
     {
       "id": "s0452",
-      "seat": "api-direct",
-      "t0": 1788076800,
-      "dur": 1620,
-      "turns": 1,
-      "tools": 0,
+      "seat": "codex",
+      "t0": 1788080400,
+      "db": 5,
+      "turns": 2,
+      "tools": 10,
       "patches": 0,
-      "tk": 4,
-      "model": "glm-5.3",
-      "effort": "max",
-      "project": "p00",
+      "tk": 0,
+      "model": "gpt-5.6-sol",
+      "effort": "low",
+      "project": "p09",
       "flags": [
         "hollow"
       ],
       "ink": {
-        "r": 0.809,
-        "tone": "清",
+        "r": 0.434,
+        "tone": "焦",
         "hollow": true
       }
     },
     {
       "id": "s0453",
       "seat": "api-direct",
-      "t0": 1788076800,
-      "dur": 2640,
+      "t0": 1788080400,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10294,51 +10295,9 @@
     },
     {
       "id": "s0454",
-      "seat": "codex",
-      "t0": 1788080400,
-      "dur": 108180,
-      "turns": 2,
-      "tools": 10,
-      "patches": 0,
-      "tk": 0,
-      "model": "gpt-5.6-sol",
-      "effort": "low",
-      "project": "p09",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.517,
-        "tone": "焦",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0455",
       "seat": "api-direct",
       "t0": 1788080400,
-      "dur": 1560,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "glm-5.3",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0456",
-      "seat": "api-direct",
-      "t0": 1788080400,
-      "dur": 1560,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10356,10 +10315,10 @@
       }
     },
     {
-      "id": "s0457",
+      "id": "s0455",
       "seat": "claude-code",
       "t0": 1788080400,
-      "dur": 2220,
+      "db": 2,
       "turns": 16,
       "tools": 65,
       "patches": 0,
@@ -10378,10 +10337,10 @@
       }
     },
     {
-      "id": "s0458",
+      "id": "s0456",
       "seat": "claude-code",
       "t0": 1788084000,
-      "dur": 3900,
+      "db": 3,
       "turns": 5,
       "tools": 92,
       "patches": 0,
@@ -10400,10 +10359,10 @@
       }
     },
     {
-      "id": "s0459",
+      "id": "s0457",
       "seat": "api-direct",
       "t0": 1788084000,
-      "dur": 1680,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10421,10 +10380,10 @@
       }
     },
     {
-      "id": "s0460",
+      "id": "s0458",
       "seat": "claude-code",
       "t0": 1788084000,
-      "dur": 3240,
+      "db": 3,
       "turns": 41,
       "tools": 83,
       "patches": 0,
@@ -10443,10 +10402,10 @@
       }
     },
     {
-      "id": "s0461",
+      "id": "s0459",
       "seat": "api-direct",
       "t0": 1788084000,
-      "dur": 60,
+      "db": 0,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10464,10 +10423,10 @@
       }
     },
     {
-      "id": "s0462",
+      "id": "s0460",
       "seat": "api-direct",
       "t0": 1788084000,
-      "dur": 720,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10485,10 +10444,10 @@
       }
     },
     {
-      "id": "s0463",
+      "id": "s0461",
       "seat": "api-direct",
       "t0": 1788084000,
-      "dur": 540,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10506,10 +10465,10 @@
       }
     },
     {
-      "id": "s0464",
+      "id": "s0462",
       "seat": "api-direct",
       "t0": 1788084000,
-      "dur": 300,
+      "db": 0,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10527,10 +10486,10 @@
       }
     },
     {
-      "id": "s0465",
+      "id": "s0463",
       "seat": "api-direct",
       "t0": 1788084000,
-      "dur": 900,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10548,10 +10507,10 @@
       }
     },
     {
-      "id": "s0466",
+      "id": "s0464",
       "seat": "api-direct",
       "t0": 1788084000,
-      "dur": 60,
+      "db": 0,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10569,10 +10528,52 @@
       }
     },
     {
+      "id": "s0465",
+      "seat": "api-direct",
+      "t0": 1788084000,
+      "db": 1,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "glm-5.3",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0466",
+      "seat": "api-direct",
+      "t0": 1788084000,
+      "db": 1,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 5,
+      "model": "glm-5.3",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.917,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
       "id": "s0467",
       "seat": "api-direct",
       "t0": 1788084000,
-      "dur": 720,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10593,49 +10594,7 @@
       "id": "s0468",
       "seat": "api-direct",
       "t0": 1788084000,
-      "dur": 660,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 5,
-      "model": "glm-5.3",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.917,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0469",
-      "seat": "api-direct",
-      "t0": 1788084000,
-      "dur": 600,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "glm-5.3",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0470",
-      "seat": "api-direct",
-      "t0": 1788084000,
-      "dur": 120,
+      "db": 0,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10653,10 +10612,10 @@
       }
     },
     {
-      "id": "s0471",
+      "id": "s0469",
       "seat": "claude-code",
       "t0": 1788087600,
-      "dur": 3120,
+      "db": 3,
       "turns": 28,
       "tools": 99,
       "patches": 8,
@@ -10674,10 +10633,10 @@
       }
     },
     {
-      "id": "s0472",
+      "id": "s0470",
       "seat": "api-direct",
       "t0": 1788091200,
-      "dur": 1320,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -10695,10 +10654,10 @@
       }
     },
     {
-      "id": "s0473",
+      "id": "s0471",
       "seat": "claude-code",
       "t0": 1788091200,
-      "dur": 1260,
+      "db": 2,
       "turns": 15,
       "tools": 46,
       "patches": 7,
@@ -10716,10 +10675,10 @@
       }
     },
     {
-      "id": "s0474",
+      "id": "s0472",
       "seat": "codex",
       "t0": 1788094800,
-      "dur": 153780,
+      "db": 5,
       "turns": 13,
       "tools": 1879,
       "patches": 0,
@@ -10732,16 +10691,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.541,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0475",
+      "id": "s0473",
       "seat": "claude-code",
       "t0": 1788094800,
-      "dur": 3900,
+      "db": 3,
       "turns": 5,
       "tools": 115,
       "patches": 5,
@@ -10760,10 +10719,10 @@
       }
     },
     {
-      "id": "s0476",
+      "id": "s0474",
       "seat": "codex",
       "t0": 1788094800,
-      "dur": 167760,
+      "db": 5,
       "turns": 32,
       "tools": 4445,
       "patches": 0,
@@ -10776,16 +10735,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.547,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0477",
+      "id": "s0475",
       "seat": "codex",
       "t0": 1788098400,
-      "dur": 2700,
+      "db": 3,
       "turns": 3,
       "tools": 67,
       "patches": 0,
@@ -10797,16 +10756,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.264,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0478",
+      "id": "s0476",
       "seat": "codex",
       "t0": 1788098400,
-      "dur": 2640,
+      "db": 2,
       "turns": 3,
       "tools": 35,
       "patches": 0,
@@ -10818,16 +10777,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.262,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0479",
+      "id": "s0477",
       "seat": "codex",
       "t0": 1788098400,
-      "dur": 2460,
+      "db": 2,
       "turns": 2,
       "tools": 27,
       "patches": 0,
@@ -10839,16 +10798,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.258,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0480",
+      "id": "s0478",
       "seat": "codex",
       "t0": 1788102000,
-      "dur": 7140,
+      "db": 3,
       "turns": 2,
       "tools": 71,
       "patches": 0,
@@ -10860,16 +10819,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.33,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0481",
+      "id": "s0479",
       "seat": "claude-code",
       "t0": 1788102000,
-      "dur": 62220,
+      "db": 5,
       "turns": 120,
       "tools": 211,
       "patches": 0,
@@ -10887,10 +10846,10 @@
       }
     },
     {
-      "id": "s0482",
+      "id": "s0480",
       "seat": "codex",
       "t0": 1788102000,
-      "dur": 133620,
+      "db": 5,
       "turns": 59,
       "tools": 1295,
       "patches": 0,
@@ -10902,16 +10861,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.531,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0483",
+      "id": "s0481",
       "seat": "codex",
       "t0": 1788102000,
-      "dur": 115140,
+      "db": 5,
       "turns": 76,
       "tools": 623,
       "patches": 0,
@@ -10923,16 +10882,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.521,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0484",
+      "id": "s0482",
       "seat": "codex",
       "t0": 1788102000,
-      "dur": 133620,
+      "db": 5,
       "turns": 76,
       "tools": 857,
       "patches": 0,
@@ -10944,16 +10903,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.531,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0485",
+      "id": "s0483",
       "seat": "codex",
       "t0": 1788102000,
-      "dur": 208800,
+      "db": 5,
       "turns": 188,
       "tools": 1537,
       "patches": 0,
@@ -10965,16 +10924,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.562,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0486",
+      "id": "s0484",
       "seat": "codex",
       "t0": 1788102000,
-      "dur": 43260,
+      "db": 5,
       "turns": 40,
       "tools": 613,
       "patches": 0,
@@ -10986,16 +10945,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.454,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0487",
+      "id": "s0485",
       "seat": "codex",
       "t0": 1788102000,
-      "dur": 11940,
+      "db": 4,
       "turns": 7,
       "tools": 38,
       "patches": 0,
@@ -11007,16 +10966,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.365,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0488",
+      "id": "s0486",
       "seat": "codex",
       "t0": 1788105600,
-      "dur": 13800,
+      "db": 4,
       "turns": 13,
       "tools": 317,
       "patches": 0,
@@ -11029,16 +10988,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.375,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0489",
+      "id": "s0487",
       "seat": "codex",
       "t0": 1788105600,
-      "dur": 6180,
+      "db": 3,
       "turns": 4,
       "tools": 113,
       "patches": 0,
@@ -11050,16 +11009,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.32,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0490",
+      "id": "s0488",
       "seat": "codex",
       "t0": 1788109200,
-      "dur": 6660,
+      "db": 3,
       "turns": 5,
       "tools": 235,
       "patches": 0,
@@ -11071,16 +11030,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.325,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0491",
+      "id": "s0489",
       "seat": "codex",
       "t0": 1788109200,
-      "dur": 6000,
+      "db": 3,
       "turns": 2,
       "tools": 30,
       "patches": 0,
@@ -11093,16 +11052,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.318,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0492",
+      "id": "s0490",
       "seat": "codex",
       "t0": 1788109200,
-      "dur": 5220,
+      "db": 3,
       "turns": 2,
       "tools": 65,
       "patches": 0,
@@ -11115,16 +11074,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.309,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0493",
+      "id": "s0491",
       "seat": "codex",
       "t0": 1788109200,
-      "dur": 7740,
+      "db": 4,
       "turns": 3,
       "tools": 56,
       "patches": 0,
@@ -11137,16 +11096,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.335,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0494",
+      "id": "s0492",
       "seat": "codex",
       "t0": 1788109200,
-      "dur": 5760,
+      "db": 3,
       "turns": 3,
       "tools": 57,
       "patches": 0,
@@ -11159,16 +11118,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.315,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0495",
+      "id": "s0493",
       "seat": "codex",
       "t0": 1788112800,
-      "dur": 6420,
+      "db": 3,
       "turns": 4,
       "tools": 89,
       "patches": 0,
@@ -11180,16 +11139,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.323,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0496",
+      "id": "s0494",
       "seat": "codex",
       "t0": 1788112800,
-      "dur": 4680,
+      "db": 3,
       "turns": 4,
       "tools": 48,
       "patches": 0,
@@ -11202,16 +11161,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.301,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0497",
+      "id": "s0495",
       "seat": "codex",
       "t0": 1788112800,
-      "dur": 8580,
+      "db": 4,
       "turns": 3,
       "tools": 30,
       "patches": 0,
@@ -11223,16 +11182,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.343,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0498",
+      "id": "s0496",
       "seat": "codex",
       "t0": 1788130800,
-      "dur": 107160,
+      "db": 5,
       "turns": 40,
       "tools": 735,
       "patches": 0,
@@ -11245,16 +11204,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.516,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0499",
+      "id": "s0497",
       "seat": "codex",
       "t0": 1788130800,
-      "dur": 107100,
+      "db": 5,
       "turns": 38,
       "tools": 717,
       "patches": 0,
@@ -11267,16 +11226,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.516,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0500",
+      "id": "s0498",
       "seat": "codex",
       "t0": 1788130800,
-      "dur": 1740,
+      "db": 2,
       "turns": 2,
       "tools": 140,
       "patches": 0,
@@ -11288,16 +11247,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.234,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0501",
+      "id": "s0499",
       "seat": "codex",
       "t0": 1788130800,
-      "dur": 2220,
+      "db": 2,
       "turns": 2,
       "tools": 161,
       "patches": 0,
@@ -11309,16 +11268,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.251,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0502",
+      "id": "s0500",
       "seat": "codex",
       "t0": 1788130800,
-      "dur": 9960,
+      "db": 4,
       "turns": 4,
       "tools": 25,
       "patches": 0,
@@ -11330,16 +11289,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.353,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0503",
+      "id": "s0501",
       "seat": "codex",
       "t0": 1788130800,
-      "dur": 4500,
+      "db": 3,
       "turns": 5,
       "tools": 25,
       "patches": 0,
@@ -11351,16 +11310,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.298,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0504",
+      "id": "s0502",
       "seat": "codex",
       "t0": 1788134400,
-      "dur": 23580,
+      "db": 5,
       "turns": 15,
       "tools": 119,
       "patches": 0,
@@ -11372,16 +11331,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.412,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0505",
+      "id": "s0503",
       "seat": "codex",
       "t0": 1788134400,
-      "dur": 3480,
+      "db": 3,
       "turns": 2,
       "tools": 50,
       "patches": 0,
@@ -11393,16 +11352,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.281,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0506",
+      "id": "s0504",
       "seat": "codex",
       "t0": 1788134400,
-      "dur": 4260,
+      "db": 3,
       "turns": 4,
       "tools": 94,
       "patches": 0,
@@ -11414,16 +11373,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.295,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0507",
+      "id": "s0505",
       "seat": "codex",
       "t0": 1788134400,
-      "dur": 2160,
+      "db": 2,
       "turns": 3,
       "tools": 52,
       "patches": 0,
@@ -11436,16 +11395,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.249,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0508",
+      "id": "s0506",
       "seat": "codex",
       "t0": 1788134400,
-      "dur": 4200,
+      "db": 3,
       "turns": 3,
       "tools": 44,
       "patches": 0,
@@ -11458,16 +11417,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.294,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0509",
+      "id": "s0507",
       "seat": "codex",
       "t0": 1788134400,
-      "dur": 5340,
+      "db": 3,
       "turns": 4,
       "tools": 115,
       "patches": 0,
@@ -11480,16 +11439,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.31,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0510",
+      "id": "s0508",
       "seat": "codex",
       "t0": 1788138000,
-      "dur": 7140,
+      "db": 3,
       "turns": 3,
       "tools": 183,
       "patches": 0,
@@ -11501,16 +11460,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.33,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0511",
+      "id": "s0509",
       "seat": "claude-code",
       "t0": 1788145200,
-      "dur": 29880,
+      "db": 5,
       "turns": 95,
       "tools": 724,
       "patches": 71,
@@ -11528,10 +11487,10 @@
       }
     },
     {
-      "id": "s0512",
+      "id": "s0510",
       "seat": "claude-code",
       "t0": 1788145200,
-      "dur": 33000,
+      "db": 5,
       "turns": 360,
       "tools": 540,
       "patches": 0,
@@ -11551,10 +11510,10 @@
       }
     },
     {
-      "id": "s0513",
+      "id": "s0511",
       "seat": "claude-code",
       "t0": 1788145200,
-      "dur": 29760,
+      "db": 5,
       "turns": 146,
       "tools": 774,
       "patches": 105,
@@ -11572,10 +11531,10 @@
       }
     },
     {
-      "id": "s0514",
+      "id": "s0512",
       "seat": "claude-code",
       "t0": 1788145200,
-      "dur": 32100,
+      "db": 5,
       "turns": 110,
       "tools": 875,
       "patches": 84,
@@ -11593,10 +11552,10 @@
       }
     },
     {
-      "id": "s0515",
+      "id": "s0513",
       "seat": "claude-code",
       "t0": 1788145200,
-      "dur": 29880,
+      "db": 5,
       "turns": 153,
       "tools": 475,
       "patches": 81,
@@ -11614,10 +11573,10 @@
       }
     },
     {
-      "id": "s0516",
+      "id": "s0514",
       "seat": "codex",
       "t0": 1788166800,
-      "dur": 1440,
+      "db": 2,
       "turns": 1,
       "tools": 103,
       "patches": 0,
@@ -11629,16 +11588,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.222,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0517",
+      "id": "s0515",
       "seat": "api-direct",
       "t0": 1788184800,
-      "dur": 1740,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -11656,54 +11615,54 @@
       }
     },
     {
+      "id": "s0516",
+      "seat": "api-direct",
+      "t0": 1788184800,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 0,
+      "model": null,
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "aborted",
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.237,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0517",
+      "seat": "api-direct",
+      "t0": 1788184800,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 0,
+      "model": null,
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "aborted",
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.237,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
       "id": "s0518",
       "seat": "api-direct",
       "t0": 1788184800,
-      "dur": 1800,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 0,
-      "model": null,
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "aborted",
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.237,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0519",
-      "seat": "api-direct",
-      "t0": 1788184800,
-      "dur": 1800,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 0,
-      "model": null,
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "aborted",
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.237,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0520",
-      "seat": "api-direct",
-      "t0": 1788184800,
-      "dur": 1200,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -11721,10 +11680,10 @@
       }
     },
     {
-      "id": "s0521",
+      "id": "s0519",
       "seat": "codex",
       "t0": 1788184800,
-      "dur": 43920,
+      "db": 5,
       "turns": 3,
       "tools": 77,
       "patches": 0,
@@ -11736,16 +11695,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.455,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0522",
+      "id": "s0520",
       "seat": "api-direct",
       "t0": 1788202800,
-      "dur": 420,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -11763,10 +11722,10 @@
       }
     },
     {
-      "id": "s0523",
+      "id": "s0521",
       "seat": "api-direct",
       "t0": 1788224400,
-      "dur": 900,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -11784,10 +11743,10 @@
       }
     },
     {
-      "id": "s0524",
+      "id": "s0522",
       "seat": "claude-code",
       "t0": 1788228000,
-      "dur": 202740,
+      "db": 5,
       "turns": 111,
       "tools": 153,
       "patches": 0,
@@ -11807,52 +11766,52 @@
       }
     },
     {
+      "id": "s0523",
+      "seat": "api-direct",
+      "t0": 1788235200,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "glm-5-3-flash",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0524",
+      "seat": "api-direct",
+      "t0": 1788235200,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "glm-5-3-flash",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
       "id": "s0525",
-      "seat": "api-direct",
-      "t0": 1788235200,
-      "dur": 1020,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "glm-5-3-flash",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0526",
-      "seat": "api-direct",
-      "t0": 1788235200,
-      "dur": 1020,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "glm-5-3-flash",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0527",
       "seat": "claude-code",
       "t0": 1788238800,
-      "dur": 62340,
+      "db": 5,
       "turns": 639,
       "tools": 940,
       "patches": 6,
@@ -11871,10 +11830,10 @@
       }
     },
     {
-      "id": "s0528",
+      "id": "s0526",
       "seat": "claude-code",
       "t0": 1788242400,
-      "dur": 1500,
+      "db": 2,
       "turns": 4,
       "tools": 49,
       "patches": 0,
@@ -11893,10 +11852,10 @@
       }
     },
     {
-      "id": "s0529",
+      "id": "s0527",
       "seat": "api-direct",
       "t0": 1788242400,
-      "dur": 900,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -11914,10 +11873,10 @@
       }
     },
     {
-      "id": "s0530",
+      "id": "s0528",
       "seat": "api-direct",
       "t0": 1788242400,
-      "dur": 900,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -11935,10 +11894,10 @@
       }
     },
     {
-      "id": "s0531",
+      "id": "s0529",
       "seat": "agy",
       "t0": 1788246000,
-      "dur": 1680,
+      "db": 2,
       "turns": 122,
       "tools": 0,
       "patches": 0,
@@ -11950,16 +11909,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.232,
+        "r": 0.237,
         "tone": "清",
         "hollow": true
       }
     },
     {
-      "id": "s0532",
+      "id": "s0530",
       "seat": "api-direct",
       "t0": 1788246000,
-      "dur": 1440,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -11978,12 +11937,12 @@
       }
     },
     {
-      "id": "s0533",
+      "id": "s0531",
       "seat": "codex",
       "t0": 1788249600,
-      "dur": 218820,
+      "db": 5,
       "turns": 35,
-      "tools": 2167,
+      "tools": 2203,
       "patches": 0,
       "tk": 0,
       "model": "gpt-5.6-sol",
@@ -11994,16 +11953,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.565,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0534",
+      "id": "s0532",
       "seat": "agy",
       "t0": 1788249600,
-      "dur": 6600,
+      "db": 3,
       "turns": 83,
       "tools": 0,
       "patches": 0,
@@ -12016,16 +11975,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.325,
+        "r": 0.305,
         "tone": "清",
         "hollow": true
       }
     },
     {
-      "id": "s0535",
+      "id": "s0533",
       "seat": "agy",
       "t0": 1788260400,
-      "dur": 6720,
+      "db": 3,
       "turns": 127,
       "tools": 0,
       "patches": 0,
@@ -12037,7 +11996,49 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.326,
+        "r": 0.305,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0534",
+      "seat": "api-direct",
+      "t0": 1788260400,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "glm-5-3-flash",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0535",
+      "seat": "api-direct",
+      "t0": 1788260400,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "glm-5-3-flash",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
         "tone": "清",
         "hollow": true
       }
@@ -12045,50 +12046,8 @@
     {
       "id": "s0536",
       "seat": "api-direct",
-      "t0": 1788260400,
-      "dur": 1080,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "glm-5-3-flash",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0537",
-      "seat": "api-direct",
-      "t0": 1788260400,
-      "dur": 960,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "glm-5-3-flash",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0538",
-      "seat": "api-direct",
       "t0": 1788264000,
-      "dur": 1860,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -12101,16 +12060,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.239,
+        "r": 0.237,
         "tone": "清",
         "hollow": true
       }
     },
     {
-      "id": "s0539",
+      "id": "s0537",
       "seat": "agy",
       "t0": 1788264000,
-      "dur": 6060,
+      "db": 3,
       "turns": 33,
       "tools": 0,
       "patches": 0,
@@ -12123,16 +12082,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.319,
+        "r": 0.305,
         "tone": "清",
         "hollow": true
       }
     },
     {
-      "id": "s0540",
+      "id": "s0538",
       "seat": "agy",
       "t0": 1788267600,
-      "dur": 6240,
+      "db": 3,
       "turns": 788,
       "tools": 0,
       "patches": 0,
@@ -12144,16 +12103,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.321,
+        "r": 0.305,
         "tone": "清",
         "hollow": true
       }
     },
     {
-      "id": "s0541",
+      "id": "s0539",
       "seat": "api-direct",
       "t0": 1788274800,
-      "dur": 1080,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -12171,10 +12130,10 @@
       }
     },
     {
-      "id": "s0542",
+      "id": "s0540",
       "seat": "codex",
       "t0": 1788274800,
-      "dur": 37920,
+      "db": 5,
       "turns": 3,
       "tools": 1059,
       "patches": 0,
@@ -12187,16 +12146,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.445,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0543",
+      "id": "s0541",
       "seat": "codex",
       "t0": 1788278400,
-      "dur": 2400,
+      "db": 2,
       "turns": 3,
       "tools": 30,
       "patches": 0,
@@ -12209,16 +12168,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.256,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0544",
+      "id": "s0542",
       "seat": "codex",
       "t0": 1788278400,
-      "dur": 2460,
+      "db": 2,
       "turns": 3,
       "tools": 28,
       "patches": 0,
@@ -12231,16 +12190,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.258,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0545",
+      "id": "s0543",
       "seat": "api-direct",
       "t0": 1788278400,
-      "dur": 780,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -12258,10 +12217,10 @@
       }
     },
     {
-      "id": "s0546",
+      "id": "s0544",
       "seat": "codex",
       "t0": 1788278400,
-      "dur": 4560,
+      "db": 3,
       "turns": 3,
       "tools": 65,
       "patches": 0,
@@ -12273,16 +12232,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.299,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0547",
+      "id": "s0545",
       "seat": "codex",
       "t0": 1788278400,
-      "dur": 6780,
+      "db": 3,
       "turns": 5,
       "tools": 95,
       "patches": 0,
@@ -12294,16 +12253,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.326,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0548",
+      "id": "s0546",
       "seat": "codex",
       "t0": 1788282000,
-      "dur": 1620,
+      "db": 2,
       "turns": 2,
       "tools": 122,
       "patches": 0,
@@ -12315,16 +12274,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.23,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0549",
+      "id": "s0547",
       "seat": "api-direct",
       "t0": 1788285600,
-      "dur": 660,
+      "db": 1,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -12342,10 +12301,10 @@
       }
     },
     {
-      "id": "s0550",
+      "id": "s0548",
       "seat": "codex",
       "t0": 1788285600,
-      "dur": 2280,
+      "db": 2,
       "turns": 2,
       "tools": 138,
       "patches": 0,
@@ -12357,21 +12316,63 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.253,
+        "r": 0.237,
         "tone": "焦",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0549",
+      "seat": "api-direct",
+      "t0": 1788292800,
+      "db": 1,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "glm-5-3-flash",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0550",
+      "seat": "claude-code",
+      "t0": 1788303600,
+      "db": 4,
+      "turns": 0,
+      "tools": 0,
+      "patches": 0,
+      "tk": 0,
+      "model": null,
+      "effort": null,
+      "project": "p09",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.378,
+        "tone": "浓",
         "hollow": true
       }
     },
     {
       "id": "s0551",
       "seat": "api-direct",
-      "t0": 1788292800,
-      "dur": 720,
+      "t0": 1788339600,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
       "tk": 4,
-      "model": "glm-5-3-flash",
+      "model": "glm-5.3",
       "effort": "max",
       "project": "p00",
       "flags": [
@@ -12385,72 +12386,30 @@
     },
     {
       "id": "s0552",
-      "seat": "claude-code",
-      "t0": 1788303600,
-      "dur": 9900,
-      "turns": 0,
+      "seat": "api-direct",
+      "t0": 1788400800,
+      "db": 2,
+      "turns": 1,
       "tools": 0,
       "patches": 0,
-      "tk": 0,
-      "model": null,
-      "effort": null,
-      "project": "p09",
+      "tk": 4,
+      "model": "glm-5.3",
+      "effort": "max",
+      "project": "p00",
       "flags": [
         "hollow"
       ],
       "ink": {
-        "r": 0.352,
-        "tone": "浓",
+        "r": 0.809,
+        "tone": "清",
         "hollow": true
       }
     },
     {
       "id": "s0553",
-      "seat": "api-direct",
-      "t0": 1788339600,
-      "dur": 1200,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "glm-5.3",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0554",
-      "seat": "api-direct",
-      "t0": 1788400800,
-      "dur": 960,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "glm-5.3",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0555",
       "seat": "cursor",
       "t0": 1788408000,
-      "dur": 18180,
+      "db": 4,
       "turns": 323,
       "tools": 632,
       "patches": 62,
@@ -12460,16 +12419,16 @@
       "project": "p10",
       "flags": [],
       "ink": {
-        "r": 0.394,
+        "r": 0.378,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0556",
+      "id": "s0554",
       "seat": "cursor",
       "t0": 1788408000,
-      "dur": 3360,
+      "db": 3,
       "turns": 18,
       "tools": 239,
       "patches": 9,
@@ -12479,16 +12438,16 @@
       "project": "p10",
       "flags": [],
       "ink": {
-        "r": 0.279,
+        "r": 0.305,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0557",
+      "id": "s0555",
       "seat": "cursor",
       "t0": 1788411600,
-      "dur": 3060,
+      "db": 3,
       "turns": 13,
       "tools": 232,
       "patches": 6,
@@ -12498,16 +12457,16 @@
       "project": "p10",
       "flags": [],
       "ink": {
-        "r": 0.272,
+        "r": 0.305,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0558",
+      "id": "s0556",
       "seat": "cursor",
       "t0": 1788415200,
-      "dur": 6960,
+      "db": 3,
       "turns": 16,
       "tools": 237,
       "patches": 3,
@@ -12517,16 +12476,16 @@
       "project": "p10",
       "flags": [],
       "ink": {
-        "r": 0.328,
+        "r": 0.305,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0559",
+      "id": "s0557",
       "seat": "cursor",
       "t0": 1788415200,
-      "dur": 2520,
+      "db": 2,
       "turns": 7,
       "tools": 165,
       "patches": 4,
@@ -12536,16 +12495,16 @@
       "project": "p10",
       "flags": [],
       "ink": {
-        "r": 0.259,
+        "r": 0.237,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0560",
+      "id": "s0558",
       "seat": "cursor",
       "t0": 1788415200,
-      "dur": 5280,
+      "db": 3,
       "turns": 8,
       "tools": 147,
       "patches": 3,
@@ -12555,16 +12514,16 @@
       "project": "p10",
       "flags": [],
       "ink": {
-        "r": 0.309,
+        "r": 0.305,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0561",
+      "id": "s0559",
       "seat": "cursor",
       "t0": 1788415200,
-      "dur": 4320,
+      "db": 3,
       "turns": 50,
       "tools": 84,
       "patches": 3,
@@ -12574,16 +12533,16 @@
       "project": "p10",
       "flags": [],
       "ink": {
-        "r": 0.296,
+        "r": 0.305,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0562",
+      "id": "s0560",
       "seat": "codex",
       "t0": 1788418800,
-      "dur": 12480,
+      "db": 4,
       "turns": 3,
       "tools": 31,
       "patches": 0,
@@ -12595,16 +12554,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.368,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0563",
+      "id": "s0561",
       "seat": "cursor",
       "t0": 1788418800,
-      "dur": 1680,
+      "db": 2,
       "turns": 13,
       "tools": 151,
       "patches": 10,
@@ -12614,16 +12573,16 @@
       "project": "p10",
       "flags": [],
       "ink": {
-        "r": 0.232,
+        "r": 0.237,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0564",
+      "id": "s0562",
       "seat": "codex",
       "t0": 1788418800,
-      "dur": 23640,
+      "db": 5,
       "turns": 9,
       "tools": 320,
       "patches": 0,
@@ -12636,16 +12595,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.412,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0565",
+      "id": "s0563",
       "seat": "codex",
       "t0": 1788418800,
-      "dur": 1680,
+      "db": 2,
       "turns": 1,
       "tools": 100,
       "patches": 0,
@@ -12657,16 +12616,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.232,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0566",
+      "id": "s0564",
       "seat": "cursor",
       "t0": 1788422400,
-      "dur": 3420,
+      "db": 3,
       "turns": 97,
       "tools": 161,
       "patches": 4,
@@ -12676,16 +12635,16 @@
       "project": "p10",
       "flags": [],
       "ink": {
-        "r": 0.28,
+        "r": 0.305,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0567",
+      "id": "s0565",
       "seat": "codex",
       "t0": 1788422400,
-      "dur": 8700,
+      "db": 4,
       "turns": 3,
       "tools": 226,
       "patches": 0,
@@ -12697,16 +12656,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.343,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0568",
+      "id": "s0566",
       "seat": "cursor",
       "t0": 1788422400,
-      "dur": 1620,
+      "db": 2,
       "turns": 14,
       "tools": 181,
       "patches": 3,
@@ -12716,16 +12675,16 @@
       "project": "p10",
       "flags": [],
       "ink": {
-        "r": 0.23,
+        "r": 0.237,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0569",
+      "id": "s0567",
       "seat": "cursor",
       "t0": 1788422400,
-      "dur": 1500,
+      "db": 2,
       "turns": 8,
       "tools": 139,
       "patches": 3,
@@ -12735,16 +12694,58 @@
       "project": "p10",
       "flags": [],
       "ink": {
-        "r": 0.225,
+        "r": 0.237,
         "tone": "重",
         "hollow": false
       }
     },
     {
-      "id": "s0570",
+      "id": "s0568",
       "seat": "api-direct",
       "t0": 1788422400,
-      "dur": 1920,
+      "db": 2,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "glm-5-3-flash",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0569",
+      "seat": "api-direct",
+      "t0": 1788422400,
+      "db": 3,
+      "turns": 1,
+      "tools": 0,
+      "patches": 0,
+      "tk": 4,
+      "model": "glm-5-3-flash",
+      "effort": "max",
+      "project": "p00",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.809,
+        "tone": "清",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0570",
+      "seat": "api-direct",
+      "t0": 1788426000,
+      "db": 3,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -12763,51 +12764,9 @@
     },
     {
       "id": "s0571",
-      "seat": "api-direct",
-      "t0": 1788422400,
-      "dur": 3060,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "glm-5-3-flash",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0572",
-      "seat": "api-direct",
-      "t0": 1788426000,
-      "dur": 3360,
-      "turns": 1,
-      "tools": 0,
-      "patches": 0,
-      "tk": 4,
-      "model": "glm-5-3-flash",
-      "effort": "max",
-      "project": "p00",
-      "flags": [
-        "hollow"
-      ],
-      "ink": {
-        "r": 0.809,
-        "tone": "清",
-        "hollow": true
-      }
-    },
-    {
-      "id": "s0573",
       "seat": "codex",
       "t0": 1788429600,
-      "dur": 12840,
+      "db": 4,
       "turns": 12,
       "tools": 84,
       "patches": 0,
@@ -12819,16 +12778,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.37,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0574",
+      "id": "s0572",
       "seat": "codex",
       "t0": 1788429600,
-      "dur": 1860,
+      "db": 2,
       "turns": 2,
       "tools": 24,
       "patches": 0,
@@ -12840,16 +12799,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.239,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0575",
+      "id": "s0573",
       "seat": "codex",
       "t0": 1788429600,
-      "dur": 2040,
+      "db": 2,
       "turns": 4,
       "tools": 89,
       "patches": 0,
@@ -12861,16 +12820,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.245,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0576",
+      "id": "s0574",
       "seat": "codex",
       "t0": 1788429600,
-      "dur": 29940,
+      "db": 5,
       "turns": 1,
       "tools": 6,
       "patches": 0,
@@ -12882,16 +12841,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.428,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0577",
+      "id": "s0575",
       "seat": "api-direct",
       "t0": 1788429600,
-      "dur": 960,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -12909,10 +12868,10 @@
       }
     },
     {
-      "id": "s0578",
+      "id": "s0576",
       "seat": "api-direct",
       "t0": 1788429600,
-      "dur": 1380,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -12930,10 +12889,10 @@
       }
     },
     {
-      "id": "s0579",
+      "id": "s0577",
       "seat": "codex",
       "t0": 1788433200,
-      "dur": 15240,
+      "db": 4,
       "turns": 10,
       "tools": 163,
       "patches": 0,
@@ -12946,16 +12905,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.382,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0580",
+      "id": "s0578",
       "seat": "api-direct",
       "t0": 1788433200,
-      "dur": 1860,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -12973,10 +12932,10 @@
       }
     },
     {
-      "id": "s0581",
+      "id": "s0579",
       "seat": "codex",
       "t0": 1788436800,
-      "dur": 12780,
+      "db": 4,
       "turns": 8,
       "tools": 105,
       "patches": 0,
@@ -12988,16 +12947,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.37,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0582",
+      "id": "s0580",
       "seat": "codex",
       "t0": 1788436800,
-      "dur": 7440,
+      "db": 4,
       "turns": 5,
       "tools": 54,
       "patches": 0,
@@ -13009,16 +12968,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.333,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0583",
+      "id": "s0581",
       "seat": "agy",
       "t0": 1788440400,
-      "dur": 1800,
+      "db": 2,
       "turns": 61,
       "tools": 0,
       "patches": 0,
@@ -13037,10 +12996,10 @@
       }
     },
     {
-      "id": "s0584",
+      "id": "s0582",
       "seat": "codex",
       "t0": 1788444000,
-      "dur": 21900,
+      "db": 5,
       "turns": 13,
       "tools": 684,
       "patches": 0,
@@ -13053,16 +13012,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.407,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0585",
+      "id": "s0583",
       "seat": "codex",
       "t0": 1788444000,
-      "dur": 16200,
+      "db": 4,
       "turns": 10,
       "tools": 211,
       "patches": 0,
@@ -13075,18 +13034,18 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.386,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0586",
+      "id": "s0584",
       "seat": "codex",
       "t0": 1788444000,
-      "dur": 24540,
+      "db": 5,
       "turns": 9,
-      "tools": 765,
+      "tools": 905,
       "patches": 0,
       "tk": 0,
       "model": "gpt-5.6-sol",
@@ -13097,16 +13056,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.415,
+        "r": 0.434,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0587",
+      "id": "s0585",
       "seat": "codex",
       "t0": 1788444000,
-      "dur": 11280,
+      "db": 4,
       "turns": 6,
       "tools": 200,
       "patches": 0,
@@ -13118,18 +13077,18 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.361,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0588",
+      "id": "s0586",
       "seat": "claude-code",
       "t0": 1788447600,
-      "dur": 21660,
-      "turns": 196,
-      "tools": 268,
+      "db": 5,
+      "turns": 227,
+      "tools": 310,
       "patches": 0,
       "tk": 6,
       "model": "claude-opus-5",
@@ -13147,10 +13106,10 @@
       }
     },
     {
-      "id": "s0589",
+      "id": "s0587",
       "seat": "codex",
       "t0": 1788447600,
-      "dur": 3360,
+      "db": 3,
       "turns": 3,
       "tools": 56,
       "patches": 0,
@@ -13162,16 +13121,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.279,
+        "r": 0.305,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0590",
+      "id": "s0588",
       "seat": "agy",
       "t0": 1788451200,
-      "dur": 6000,
+      "db": 3,
       "turns": 60,
       "tools": 0,
       "patches": 0,
@@ -13184,16 +13143,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.318,
+        "r": 0.305,
         "tone": "清",
         "hollow": true
       }
     },
     {
-      "id": "s0591",
+      "id": "s0589",
       "seat": "codex",
       "t0": 1788454800,
-      "dur": 1620,
+      "db": 2,
       "turns": 2,
       "tools": 14,
       "patches": 0,
@@ -13205,16 +13164,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.23,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0592",
+      "id": "s0590",
       "seat": "api-direct",
       "t0": 1788458400,
-      "dur": 1140,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -13232,10 +13191,10 @@
       }
     },
     {
-      "id": "s0593",
+      "id": "s0591",
       "seat": "api-direct",
       "t0": 1788458400,
-      "dur": 1260,
+      "db": 2,
       "turns": 1,
       "tools": 0,
       "patches": 0,
@@ -13253,12 +13212,12 @@
       }
     },
     {
-      "id": "s0594",
+      "id": "s0592",
       "seat": "codex",
       "t0": 1788458400,
-      "dur": 7860,
-      "turns": 4,
-      "tools": 179,
+      "db": 4,
+      "turns": 5,
+      "tools": 215,
       "patches": 0,
       "tk": 0,
       "model": "gpt-5.6-luna",
@@ -13268,16 +13227,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.337,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0595",
+      "id": "s0593",
       "seat": "agy",
       "t0": 1788462000,
-      "dur": 1620,
+      "db": 2,
       "turns": 61,
       "tools": 0,
       "patches": 0,
@@ -13290,18 +13249,18 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.23,
+        "r": 0.237,
         "tone": "清",
         "hollow": true
       }
     },
     {
-      "id": "s0596",
+      "id": "s0594",
       "seat": "codex",
       "t0": 1788462000,
-      "dur": 7620,
+      "db": 4,
       "turns": 2,
-      "tools": 141,
+      "tools": 152,
       "patches": 0,
       "tk": 0,
       "model": "gpt-5.6-luna",
@@ -13311,16 +13270,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.334,
+        "r": 0.378,
         "tone": "焦",
         "hollow": true
       }
     },
     {
-      "id": "s0597",
+      "id": "s0595",
       "seat": "agy",
       "t0": 1788462000,
-      "dur": 3660,
+      "db": 3,
       "turns": 40,
       "tools": 0,
       "patches": 0,
@@ -13332,16 +13291,16 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.284,
+        "r": 0.305,
         "tone": "清",
         "hollow": true
       }
     },
     {
-      "id": "s0598",
+      "id": "s0596",
       "seat": "agy",
       "t0": 1788462000,
-      "dur": 1920,
+      "db": 2,
       "turns": 50,
       "tools": 0,
       "patches": 0,
@@ -13353,18 +13312,18 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.241,
+        "r": 0.237,
         "tone": "清",
         "hollow": true
       }
     },
     {
-      "id": "s0599",
+      "id": "s0597",
       "seat": "codex",
       "t0": 1788465600,
-      "dur": 2880,
-      "turns": 2,
-      "tools": 105,
+      "db": 3,
+      "turns": 3,
+      "tools": 140,
       "patches": 0,
       "tk": 0,
       "model": "gpt-5.6-luna",
@@ -13374,7 +13333,49 @@
         "hollow"
       ],
       "ink": {
-        "r": 0.268,
+        "r": 0.305,
+        "tone": "焦",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0598",
+      "seat": "codex",
+      "t0": 1788465600,
+      "db": 3,
+      "turns": 5,
+      "tools": 242,
+      "patches": 0,
+      "tk": 0,
+      "model": "gpt-5.6-luna",
+      "effort": "max",
+      "project": "p09",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.305,
+        "tone": "焦",
+        "hollow": true
+      }
+    },
+    {
+      "id": "s0599",
+      "seat": "codex",
+      "t0": 1788469200,
+      "db": 2,
+      "turns": 1,
+      "tools": 50,
+      "patches": 0,
+      "tk": 0,
+      "model": "gpt-5.6-sol",
+      "effort": "ultra",
+      "project": "p09",
+      "flags": [
+        "hollow"
+      ],
+      "ink": {
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
@@ -13382,20 +13383,20 @@
     {
       "id": "s0600",
       "seat": "codex",
-      "t0": 1788465600,
-      "dur": 3360,
-      "turns": 2,
-      "tools": 182,
+      "t0": 1788469200,
+      "db": 2,
+      "turns": 1,
+      "tools": 72,
       "patches": 0,
       "tk": 0,
-      "model": "gpt-5.6-luna",
-      "effort": "max",
+      "model": "gpt-5.6-sol",
+      "effort": "ultra",
       "project": "p09",
       "flags": [
         "hollow"
       ],
       "ink": {
-        "r": 0.279,
+        "r": 0.237,
         "tone": "焦",
         "hollow": true
       }
@@ -13406,7 +13407,7 @@
       "id": "agy",
       "displayName": "agy",
       "startedAt": "2026-08-05T07:12:05Z",
-      "durationMs": 2553537951,
+      "durationMs": 2558920971,
       "spans": [
         {
           "kind": "agent",
@@ -13429,7 +13430,7 @@
         {
           "kind": "gate",
           "name": "dispatch-close",
-          "t0": 2553537951,
+          "t0": 2558920971,
           "durationMs": 0
         }
       ],
@@ -15840,12 +15841,12 @@
       "id": "api-direct",
       "displayName": "api-direct",
       "startedAt": "2026-08-05T07:20:20Z",
-      "durationMs": 2550182444,
+      "durationMs": 2557734915,
       "spans": [
         {
           "kind": "gate",
           "name": "dispatch-close",
-          "t0": 2550182444,
+          "t0": 2557734915,
           "durationMs": 0
         }
       ],

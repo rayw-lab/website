@@ -720,6 +720,22 @@ async function main() {
     .slice(0, cfg.top)
     .sort(byT0Hash);
 
+  /**
+   * 时长量级分箱。异源反核（xhsapi）指出：小时粒度 t0 + 项目标签 + **分钟级 dur**
+   * 组合起来仍能把候选 commit 缩到很小 —— 分钟精度没有展示价值却有重识别代价。
+   * 它建议粗化到「小时桶」，但那样绝大多数会话会挤进同一个桶、形态全丢；
+   * 改用对数量级桶：既降精度又保留「短问答 / 一顿饭 / 一下午」的区分度。
+   */
+  const DUR_EDGES = [300, 900, 2700, 7200, 21600, Infinity]; // 5m/15m/45m/2h/6h
+  const durBucket = (s) => {
+    const i = DUR_EDGES.findIndex((e) => s < e);
+    return i < 0 ? DUR_EDGES.length - 1 : i;
+  };
+  const durMid = (b) => {
+    const lo = b === 0 ? 0 : DUR_EDGES[b - 1];
+    const hi = DUR_EDGES[b] === Infinity ? 43200 : DUR_EDGES[b];
+    return (lo + hi) / 2;
+  };
   /** token 量级分箱：返回桶索引（0..6）。展厅只展示量级，不展示精确值。 */
   const TOKEN_EDGES = [1, 5e3, 2e4, 5e4, 2e5, 1e6, Infinity];
   const tokenBucket = (n) => {
@@ -734,7 +750,7 @@ async function main() {
   };
   const inkR = (s) => {
     // 墨量半径：tokens 与时长取对数；2,000,000 tokens 级 ≈ 最浓 1.0。渲染提示，前端不算。
-    const size = Math.max(1, bucketMid(tokenBucket(s.tokens)), Math.round(s.dur / 60));
+    const size = Math.max(1, bucketMid(tokenBucket(s.tokens)), Math.round(durMid(durBucket(s.dur)) / 60));
     const r = Math.log10(1 + size) / Math.log10(1 + 2000000);
     return Math.round(Math.min(1, Math.max(0.1, r)) * 1000) / 1000;
   };
@@ -825,8 +841,8 @@ async function main() {
       // 该「匿名」会话关联的真实仓库与改动即被逆向揭穿。展厅只需要顺序与节奏，
       // 不需要秒 —— 粗化到小时不损失任何视觉信息。
       t0: Math.floor(s.t0 / 1000 / 3600) * 3600,
-      // 时长同理粗化到分钟：精确秒数与 token 数一样可用于外部事件对齐。
-      dur: 60 * Math.round(s.dur / 60),
+      // 时长改量级桶（不再输出秒/分）：分钟精度对展示无价值，对重识别有代价。
+      db: durBucket(s.dur),
       turns: s.turns,
       tools: s.tools,
       patches: s.patches,
