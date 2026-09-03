@@ -60,3 +60,10 @@
 - 定向复跑（新端口 4621，workers=1，retries=0）：`poi-arrival` + `observability` 两 spec 连同依赖 project **48 passed / 0 failed（13.7m）**，`CITY-PA-01` 在带 query 的新进站 URL 下通过。
 - 结论口径：attempt4 = `RESULT_FAIL_HOST_LOAD`，不算产品红；正式 0F 需 attempt5 干净全量（10:31 起，端口 4622）。
 - 交接文档 `ABOUT-HALL-HANDOFF-2026-09-03.md` 已写（含 raw 同文副本）。ZDR canary 08:44 仍 BLOCKED。tick=7。
+
+### L8 · 2026-09-03 10:31–11:55（W6 收口）
+- **attempt5 全量 e2e：93 passed / 0 failed / 0 did-not-run / 0 flaky，EXIT=0（1.3h，端口 4622，workers=1，retries=0）**。`e2e-summary.json`（totalTests=93 / totalFiles=20，schema 正确）+ `SHA256SUMS` 落 `evidence/about-hall/W6/`，提交 `4f94d94`。
+- 合入 `origin/main@3c68b2b`（含 #104 X2 facade 的 `src/lab/world/city/*` 与 docs），零冲突，最小验证全绿（check/build/gate/check-links/about-hall e2e 7/7），merge `bd05153`。因 main 动了世界 city 文件，**post-merge attempt6 全量已起**（端口 4624），结论补 PR 评论。
+- push `codex/about-hall-20260902` → 远端 `bd05153` == 本地 HEAD。
+- **草稿 PR #234** 已开：https://github.com/rayw-lab/website/pull/234 （合入 = NEEDS_LEIGE）。
+- ZDR canary 10:33 仍 BLOCKED。tick=8。
