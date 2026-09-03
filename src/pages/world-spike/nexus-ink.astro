@@ -1,0 +1,173 @@
+---
+/**
+ * W1 引擎 spike · 独立最小壳（不挂 BaseLayout，避免站点资源干扰帧率测量）
+ * /world-spike/ 既定纪律：noindex,follow + canonical → `/` + 剔出 sitemap。
+ *
+ * 验收三件：① 一滴墨洇开并分离出紫晕 ② 鼠标可试画 ③ 干纸区域拒墨
+ * URL 参数：?demo=yin&t=8 → 确定性跑到第 8 秒停帧（构建期截海报用）
+ */
+const site = Astro.site?.href ?? '/';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,follow" />
+    <link rel="canonical" href={site} />
+    <title>墨迹引擎 spike · W1</title>
+  </head>
+  <body>
+    <main class="spike">
+      <canvas id="ink" aria-label="水墨引擎验证画布"></canvas>
+      <div class="hud" id="hud">初始化…</div>
+      <p class="note">
+        左半自动落墨演示「洇」；右下角是<strong>干纸</strong>——鼠标在那里画不上去，
+        因为速度场与颜料迁移率都被湿度门压成 0。这就是「文件域 / 权限」的物理本体。
+      </p>
+    </main>
+
+<style>
+  :global(body) { margin: 0; }
+  .spike {
+    min-height: 100vh;
+    background: #efe9dc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+  #ink {
+    width: min(100%, 1100px);
+    aspect-ratio: 16 / 10;
+    display: block;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    touch-action: none;
+    cursor: crosshair;
+  }
+  .hud {
+    font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #4a4238;
+    letter-spacing: 0.02em;
+  }
+  .note {
+    max-width: 60ch;
+    font: 14px/1.7 'Songti SC', 'Noto Serif CJK SC', serif;
+    color: #3b342b;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #ink { display: none; }
+  }
+</style>
+
+<script>
+  import { InkSurface } from '../../components/city/halls/nexus/ink/InkSurface';
+  import type { InkEngine } from '../../components/city/halls/nexus/ink/InkEngine';
+
+  const canvas = document.getElementById('ink') as HTMLCanvasElement | null;
+  const hud = document.getElementById('hud');
+  if (canvas && hud) {
+    const params = new URLSearchParams(location.search);
+    const demo = params.get('demo');
+    const seekTo = Number(params.get('t') ?? '0');
+
+    // 右下角干纸：指挥官区域，墨到此为止
+    const DRY = { x: 0.78, y: 0.26, radius: 0.14 };
+
+    let dropped = false;
+    let frames = 0;
+    let fpsAt = performance.now();
+
+    const onFrame = (ink: InkEngine, elapsed: number) => {
+      // ① 一滴墨：先把中央打湿给个微冲量，再落三染料分量
+      if (!dropped && elapsed > 0.25) {
+        dropped = true;
+        // RGB = 三个染料分量的光学密度；G 分量 bleed 最快 → 外缘泛紫
+        ink.drop(0.34, 0.55, 0.030, [0.55, 0.72, 0.42], 7);
+      }
+      // 第二滴晚一点，演示后滴把前环推薄（S1 墨流的核心）
+      if (elapsed > 3.2 && elapsed < 3.28) {
+        ink.drop(0.47, 0.45, 0.024, [0.5, 0.66, 0.4], 23);
+      }
+      frames++;
+      const now = performance.now();
+      if (now - fpsAt > 500 && !demo) {
+        const r = ink.resolution;
+        hud.textContent =
+          `fps ${Math.round((frames * 1000) / (now - fpsAt))} · ` +
+          `sim ${r.sim[0]}×${r.sim[1]} · dye ${r.dye[0]}×${r.dye[1]} · t=${elapsed.toFixed(1)}s`;
+        frames = 0;
+        fpsAt = now;
+      }
+    };
+
+    // W1b 调参：URL 可覆盖任一 LOCKED 候选值，用于参数矩阵并排对比
+    const num = (k: string) => {
+      const v = params.get(k);
+      return v === null ? undefined : Number(v);
+    };
+    const override = Object.fromEntries(
+      Object.entries({
+        fibre: num('fibre'),
+        dryTau: num('dry'),
+        bleed: num('bleed'),
+        curlAmount: num('curl'),
+        edge: num('edge'),
+        strength: num('strength'),
+        spread: num('spread'),
+      }).filter(([, v]) => v !== undefined),
+    );
+
+    const surface = InkSurface.mount(canvas, {
+      mobile: window.matchMedia('(max-width: 768px)').matches,
+      params: override,
+      fixedStep: demo ? 1 / 60 : undefined,
+      onFrame,
+      onFallback: (reason) => {
+        hud.textContent = `降级：${reason}（正式页此处显示构建期海报）`;
+        canvas.style.display = 'none';
+        document.documentElement.dataset.inkFallback = reason;
+      },
+    });
+
+    if (surface) {
+      surface.ink.setDryMask([DRY]);
+      document.documentElement.dataset.inkReady = '1';
+
+      if (demo && seekTo > 0) {
+        // 确定性模式：直接跑到目标时刻停帧，不起 rAF
+        surface.seek(seekTo);
+        hud.textContent = `demo=${demo} t=${seekTo}s 停帧`;
+        document.documentElement.dataset.inkDemo = String(seekTo);
+      } else {
+        // ③ 试画：湿一点、落一点，笔尖附近洇得更凶
+        let drawing = false;
+        const draw = (e: PointerEvent) => {
+          const r = canvas.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width;
+          const y = 1 - (e.clientY - r.top) / r.height;
+          surface.ink.setBrush(x, y, 0.05);
+          surface.ink.splatWater(x, y, 0.055, 0.5, [e.movementX * 4, -e.movementY * 4]);
+          surface.ink.splatInk(x, y, 0.02, [0.28, 0.36, 0.2]);
+          surface.poke();
+        };
+        canvas.addEventListener('pointerdown', (e) => {
+          drawing = true;
+          canvas.setPointerCapture(e.pointerId);
+          draw(e);
+        });
+        canvas.addEventListener('pointermove', (e) => drawing && draw(e));
+        const stop = () => {
+          drawing = false;
+          surface.ink.setBrush(0, 0, -1);
+        };
+        canvas.addEventListener('pointerup', stop);
+        canvas.addEventListener('pointercancel', stop);
+      }
+    }
+  }
+</script>
+  </body>
+</html>

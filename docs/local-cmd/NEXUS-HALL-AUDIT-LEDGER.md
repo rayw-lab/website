@@ -42,3 +42,45 @@
 |---|---|---|
 | `receipts[].sha256` 全值是否入 ledger | 审计 2.6-8 | 印文只显前 7 位，但全值在公开 JSON 里。建议只存前 12 位（够做唯一键，不构成可校验指纹）——**默认按建议做，磊哥反对再改** |
 | `artifacts[].path` 粒度 | 审计 2.6-4 | 保留目录层级会暴露内部结构。建议只留文件名 + 扩展名——**默认按建议做** |
+
+---
+
+## R2 · W1a 引擎实装与出图迭代（执行方，2026-09-04）
+
+### 调研收稿
+
+| 单 | 席 | identity | 产物 |
+|---|---|---|---|
+| W1r 引擎 teardown + 视觉参考 | agy Gemini 3.8 Flash High | `exit_code=0` / `identity_ok=true` / `served_label==requested_label` / `permission_profile=full-capability` / `agy 1.1.25`（receipt `agy-rescue-20260904-002648-f521380d`） | `W1-ink-engine-teardown.md` 57,023 B；clone 三仓到 `refs/nexus-hall/` |
+
+### 🔴 双 worker 冲突裁决：海报一致性门用哈希还是容差
+
+- **xhsapi（W0b P1-1）**：建议「CI 中加入 ops 机产出的海报 SHA256 与当前构建产出的海报比对，不依赖 SSIM，只比哈希」。
+- **agy（W1r E-5）**：指出 CI 的 SwiftShader **软渲染** 与 macOS 的 Metal/ANGLE **硬件渲染**，在 `exp(-density)` 的半精度浮点上存在舍入差，像素级哈希必然不等。
+- **裁决：采纳 agy。** 依据是物理事实而非工程偏好——两条渲染路径的浮点结果本就不保证逐位相同。海报门维持草案原设计：**ops 机生成 + CI 只查存在与体积 + 内容比对用容差**（SSIM ≥0.97，ops 机跑）。xhsapi P1-1 的**子预算独立闸门**部分仍然采纳（见 R1）。
+- 教训入账：两席冲突时比的是**证据深度**（一个给物理机制，一个给工程直觉），不是结论严重度。
+
+### agy 数值与源码的两处偏差（以源码为准）
+
+| 项 | agy 报 | inkwash 源码实读 | 采用 |
+|---|---|---|---|
+| `PRESSURE_ITER` | 16 | **22**（`refs/nexus-hall/inkwash/repo/index.html:222`） | 22 |
+| `DYE_BASE` | `min(w*dpr, 1536)` | **`min(2048, min(canvas.w, canvas.h))`**（同文件 :221） | 自定 1280，理由见 params.ts |
+
+### 出图迭代（每轮都有一手截图，非自评）
+
+| 轮 | 改动 | 锚点门 A2（洇边分形度） | 证据 |
+|---|---|---|---|
+| **r1** | 首版：纤维噪声只在 display 视觉层 | ❌ **完全高斯圆**，零毛边 | `anchors/W1/spike-yin-t8.png` |
+| **r2** | 🔴 **根因**：洇散数学是各向同性，视觉层的纤维救不了形态。把纤维各向异性放进**迁移率**（`ADVECT_INK_FS` 的 `mob`），并把「落一滴墨」从单点改为 `drop()`＝不规则湿斑 + 微涡偶极子 | ✅ 出现真实 lobes 与毛刺 | `anchors/W1/spike-r2-yin-t8.png` |
+| r3 | r2 副作用：`fibre=0.85` 过强，吃掉了 r1 那圈淡紫外晕 → 跑 6 组参数矩阵定 LOCKED 值 | 进行中 | `anchors/W1/grid-{a..f}.png` |
+
+### 已坐实（可从 [待验] 升级）
+
+| 项 | 实测值 | 证据 |
+|---|---|---|
+| **引擎 gzip 体积** | **7.5 KB**（r1）/ **8.2 KB**（r2 加纤维后） | `gzip -c dist/_astro/nexus-ink.*.js \| wc -c`；预算 ≤30KB，**余量充足** |
+| **紫墨色谱分离方向** | 成立：核心深紫近黑、外缘淡紫 | r1/r2 截图；验证了「G 通道 bleed 最快 → 外晕泛紫」的反直觉推导 |
+| **reduced-motion 降级** | `fallback=reduced-motion`、`inkReady=null`、canvas `display:none`、不起 rAF | Playwright `reducedMotion:'reduce'` 实跑 |
+| **确定性 replay** | `?demo=yin&t=N` 两个时刻均正确停帧 | 同上 |
+| **astro check** | 0 errors（195 files） | 本地实跑 |
