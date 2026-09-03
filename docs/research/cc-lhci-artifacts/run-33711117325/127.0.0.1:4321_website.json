@@ -1,0 +1,50 @@
+{
+  "url": "http://127.0.0.1:4321/website/",
+  "runs": [
+    {
+      "file": "lhr-1788405792517.json",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "audits": {
+        "largest-contentful-paint": "1.4 s",
+        "first-contentful-paint": "1.0 s",
+        "cumulative-layout-shift": "0.007",
+        "total-blocking-time": "0 ms"
+      }
+    },
+    {
+      "file": "lhr-1788405803511.json",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "audits": {
+        "largest-contentful-paint": "1.2 s",
+        "first-contentful-paint": "1.0 s",
+        "cumulative-layout-shift": "0.007",
+        "total-blocking-time": "0 ms"
+      }
+    },
+    {
+      "file": "lhr-1788405814096.json",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "audits": {
+        "largest-contentful-paint": "1.4 s",
+        "first-contentful-paint": "1.0 s",
+        "cumulative-layout-shift": "0.007",
+        "total-blocking-time": "0 ms"
+      }
+    }
+  ]
+}
