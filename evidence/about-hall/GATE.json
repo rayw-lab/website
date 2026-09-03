@@ -1,7 +1,7 @@
 {
   "schema": "about-hall-gate/v1",
   "ok": true,
-  "generatedAt": "2026-09-03T03:43:04.898Z",
+  "generatedAt": "2026-09-03T06:09:18.083Z",
   "dist": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/dist",
   "notes": [
     "G-Hall-10 由 e2e/about-hall.spec.ts 承担，本脚本不判。",
@@ -29,10 +29,11 @@
     {
       "id": "G-Hall-2",
       "status": "PASS",
-      "detail": "扫描 1 个文件（HTML + 静态 JS），零 lab/world / initAllLabFacades / mountWorld（未用 _astro/world. 文件名）",
+      "detail": "扫描 2 个文件（HTML + 静态 JS），零 lab/world / initAllLabFacades / mountWorld（未用 _astro/world. 文件名）",
       "evidence": {
         "files": [
-          "world/about-pavilion/index.html"
+          "world/about-pavilion/index.html",
+          "_astro/Curator.astro_astro_type_script_index_0_lang.DIP8kSzK.js"
         ],
         "hits": []
       }
@@ -64,12 +65,19 @@
     {
       "id": "G-Hall-6",
       "status": "PASS",
-      "detail": "Hall-0 额外 JS = 0（无 <script src> / modulepreload；只用 BaseLayout 已有内联）",
+      "detail": "额外 JS gzip 930B ≤ 20KB 目标（Hall-S）",
       "evidence": {
-        "gzipBytes": 0,
+        "gzipBytes": 930,
         "targetBytes": 20480,
         "capBytes": 51200,
-        "rows": [],
+        "rows": [
+          {
+            "url": "/website/_astro/Curator.astro_astro_type_script_index_0_lang.DIP8kSzK.js",
+            "kind": "script",
+            "rel": "_astro/Curator.astro_astro_type_script_index_0_lang.DIP8kSzK.js",
+            "gzipBytes": 930
+          }
+        ],
         "missing": []
       }
     },
@@ -90,7 +98,7 @@
     {
       "id": "G-Hall-8",
       "status": "PASS",
-      "detail": "7 条媒体对账通过（sha256/字节/fps/无音轨/时长）；总载荷 286284B ≤ 2.5MB",
+      "detail": "7 条媒体对账通过（sha256/字节/fps/无音轨/时长）；总载荷 286284B ≤ 6.0MB",
       "evidence": {
         "items": [
           {
@@ -151,7 +159,7 @@
           }
         ],
         "totalBytes": 286284,
-        "capBytes": 2621440
+        "capBytes": 6291456
       }
     },
     {

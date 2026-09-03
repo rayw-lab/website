@@ -1,5 +1,5 @@
 // About 纸面页与 /world/about-pavilion/ 展厅共用的文案单源。
-// 事迹缺口用 [[占位]] 标出，不编年份、不编分数、不编项目名。
+// 事迹缺口不渲染（ADR-4 决策 C：删行不编造）；磊哥补履历后再回填 gap 字段。
 import { PERSON } from './site';
 
 export const HALL_H1 = '在技术与落地之间架桥';
@@ -69,7 +69,7 @@ export type HallStation = {
   bind: string;
   kicker: string;
   title: string;
-  stages: { n: string; name: string; note: string; gap: string }[];
+  stages: { n: string; name: string; note: string; gap?: string }[];
   body: string;
   proofPath?: string;
   proofLabel?: string;
@@ -88,13 +88,11 @@ export const hallStations: HallStation[] = [
         n: '01',
         name: '物联网',
         note: '设备连接与数据链路的工程地基。',
-        gap: '[[占位：磊哥物联网阶段代表性工程类型/里程碑]]',
       },
       {
         n: '02',
         name: '整车前瞻',
         note: '从单点技术转向整车级系统视角。',
-        gap: '[[占位：磊哥整车前瞻阶段系统架构代表性成果]]',
       },
     ],
     body: '每一站都在把「更复杂的技术」推向「更接近决策与交付的位置」。打牢设备通信与整车数据链路的地基，建立起理解一辆车、一套复杂硬件系统的全局视野。',
@@ -110,7 +108,6 @@ export const hallStations: HallStation[] = [
         n: '03',
         name: 'AR-HUD',
         note: '人机界面：显示链路、安全边界与工程落地。',
-        gap: '[[占位：磊哥 AR-HUD 显示链路/畸变校正代表性攻坚项目]]',
       },
     ],
     body: 'AR-HUD 不是单纯的视觉炫技，而是显示链路时延、光学畸变校正与严苛安全边界的综合博弈。把虚拟光影稳定锚定在瞬息万变的真实道路上。',
@@ -126,7 +123,6 @@ export const hallStations: HallStation[] = [
         n: '04',
         name: '多语种座舱',
         note: '16 语种从需求定义到量产交付的全链路。',
-        gap: '[[占位：磊哥 16 语种全球化出海量产项目代号/交付体量]]',
       },
     ],
     body: problems[0].how,
@@ -145,7 +141,6 @@ export const hallStations: HallStation[] = [
         n: '05',
         name: '端云大模型',
         note: '车端/云端能力分层架构与场景化选型。',
-        gap: '[[占位：磊哥端云大模型芯片选型/分层决策代表性案例]]',
       },
     ],
     body: problems[1].how,
@@ -164,7 +159,6 @@ export const hallStations: HallStation[] = [
         n: '06',
         name: 'AI 工作流',
         note: '用 AI 重构需求到复盘的交付流程本身。',
-        gap: '[[占位：磊哥 AI 工作流提效量化指标/落地组织规模]]',
       },
     ],
     body: problems[2].how,

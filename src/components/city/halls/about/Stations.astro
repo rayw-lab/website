@@ -43,7 +43,7 @@ type StationView = {
   bind: string;
   kicker: string;
   title: string;
-  stages: { n: string; name: string; note: string; gap: string }[];
+  stages: { n: string; name: string; note: string; gap?: string }[];
   body: string;
   proofPath?: string;
   proofLabel?: string;
@@ -58,7 +58,6 @@ const desk: StationView = {
   title: '方案从工位开始，不从口号开始',
   stages: [],
   body: '三块屏上是波形、线框和门禁灯，不是演示稿。下面按演进展开：地基、光锥、十六环、天平，最后回家。',
-  gapSolo: '[[占位：磊哥工位上正在推进的代表性任务类型]]',
 };
 
 const scenes: StationView[] = [desk, ...hallStations];
@@ -93,7 +92,7 @@ const scenes: StationView[] = [desk, ...hallStations];
                       <div>
                         <p class="hall-stage-name">{st.name}</p>
                         <p class="hall-stage-note">{st.note}</p>
-                        <p class="hall-gap">{st.gap}</p>
+                        {st.gap && <p class="hall-gap">{st.gap}</p>}
                       </div>
                     </li>
                   ))}
