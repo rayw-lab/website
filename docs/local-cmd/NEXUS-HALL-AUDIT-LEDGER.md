@@ -687,3 +687,32 @@ receipts 按 mtime 排序，`slice(0, 24)` 的结果是**前 24 枚全来自同�
 （gemini38f / dots3note / api-direc / glm53flas），且**灰印 5 枚全部被取到**。
 判据：**展示子集时，先问「哪一类会因为排序而整类消失」** —— 尤其当那一类恰是
 最有信息量的那类（失败态、无收据态）。
+
+## R16 · e2e 落地 8/8（2026-09-04 06:4x–07:1x）
+
+### R16-1 `e2e/nexus-hall.spec.ts` —— 判据全部对着 ledger 真值，不写死数字
+展厅的立论是「数字由 ledger 渲染、不手写」；**测试若自己手写数字，就把立论废掉了**。
+所以 spec 里 `readFileSync` 读 ledger，再断言页面与它一致：
+| 用例 | 判据 |
+|---|---|
+| S0 canvas 就位 | backing store > 320×200（曾因样式失效退回默认 300×150） |
+| S0 纸色来自组件 | `background === rgb(239,233,220)`，不是浏览器默认白 |
+| S0 题款不折行 | 两行高度比 < 1.6（折行会让高度翻倍） |
+| S1 注入条数 | `=== ledger.sessions.length` |
+| S1 无障碍 | canvas 的 `aria-label` **含真实会话数**（等价文本也须由数据派生） |
+| 印 三态计数 | 与 ledger 的 identityOk 分布逐项相等 |
+| 🔴 印 三态映射 | 逐枚校验 `identity_ok=null → 灰印`，**禁止被渲染成 GO** |
+| 抽屉 | 初始关闭 → 点击开一屉（5 行字段）→ 再点关闭 |
+| 印阵取样 | 印文去重后 > 1 种（防排序让稀有态整类消失） |
+| 降级 | reduced-motion 报 `reduced-motion` 且题款仍可读（opacity > 0.9） |
+Node 22 ESM import 断言坑按 AGENTS.md §4.3 规避：JSON 用 `readFileSync` 读。
+`desktop-chromium` 的 `testIgnore` 不含本文件 ⇒ **自动进 CI**。
+
+### R16-2 两个环境坑
+1. **`astro preview` 是守护进程**：命令本身立即返回，playwright 的 `webServer` 判为
+   「Process exited early」。`reuseExistingServer` 只在 url 已可达时才复用 ——
+   我先前"停掉 preview 让 playwright 自己起"的处置**方向错了**，正解是**保持 preview 运行**。
+2. **`test.use({ reducedMotion: 'reduce' })` 在本仓 project 下未生效**：引擎照常挂载、
+   fallback 属性为 `null`。**判据指纹**：断言收到的是 `null` 而不是"另一个 fallback 值"——
+   前者说明根本没走降级分支，后者才是走了但走错分支。改用 `page.emulateMedia()`，
+   并加一条**正控**先断言 `matchMedia(...).matches === true`，否则整个用例是在测一个没发生的条件。
