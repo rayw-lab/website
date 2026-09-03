@@ -716,3 +716,33 @@ Node 22 ESM import 断言坑按 AGENTS.md §4.3 规避：JSON 用 `readFileSync`
    fallback 属性为 `null`。**判据指纹**：断言收到的是 `null` 而不是"另一个 fallback 值"——
    前者说明根本没走降级分支，后者才是走了但走错分支。改用 `page.emulateMedia()`，
    并加一条**正控**先断言 `matchMedia(...).matches === true`，否则整个用例是在测一个没发生的条件。
+
+### R16-3 agy 席凭据失效 → 视觉终审换 seed-turbo
+`AGY_AUTH_REQUIRED: current AGY credential was rejected. OAuth fallback was suppressed.`
+按「判对方挂了之前先自证走通过」：**这条路本轮成功过 3 次**（W1b 视觉审 / W2r 调研 / W3r 首屏设计），
+所以是真的凭据失效，不是我的接线问题。
+处置：视觉终审改派 `doubao-seed-2.1-turbo@ark-coding`（路由表的视觉主席，vision 已实证），
+三幕各派一路 `--attach-image`。
+🔴 **NEEDS_LEIGE**：agy 需要重新认证（`OAuth fallback was suppressed` = 它不会自己弹浏览器），
+恢复前所有「调研 / 脑暴」类派单要走别的席。
+
+## R17 · 降级海报（2026-09-04 06:5x–07:0x）
+
+### R17-1 `scripts/nexus-poster.mjs`
+降级路径（reduced-motion / save-data / 无 WebGL2 / init-failed）下 canvas 被隐藏，
+草案要求此时展厅**不能是一张空白纸**。构建期截真实停帧作海报：
+- **内容门**：原始帧 < 40KB 判空白直接失败 —— **空白海报比没有海报更糟**，它让降级路径看起来正常。
+- **预算门**：PNG 直出 1.04MB / 673KB，而草案给 poster 的预算是 ≤60KB。
+  转 webp（q78，宽 1280）后 **17106 B / 19754 B**，用掉预算的 28% / 32%。
+  水墨是大面积平滑渐变，webp 有损几乎无损失；jpeg 会在墨与纸的交界带出块效应，不用。
+- **闭合账**：声称生成的必须真的在盘上，否则 exit 1。
+
+### R17-2 探针又一次跑错了地方
+我用 `node -e "require('sharp')"` 判断 sharp 可用 —— 但那条命令跑在**主仓**，
+而脚本跑在 **worktree**（pnpm strict node_modules，两处 node_modules 不同）。
+结果脚本 `ERR_MODULE_NOT_FOUND`。改用系统级 `cwebp`（1.6.0，在册工具）。
+判据：**探针必须跑在被测对象所在的那个目录/进程里**，尤其是 pnpm/monorepo 布局。
+
+### R17-3 降级验收到像素层
+e2e 新增一条：降级时海报不仅 `visible`，还要 `complete && naturalWidth > 0`。
+**海报 404 时 `hidden=false` 照样通过** —— 只断言"我们把它显示了"，不等于"浏览器真取到了图"。

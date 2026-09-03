@@ -19,6 +19,7 @@ interface Props {
   label?: string;
 }
 
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const { count, spanSeconds = 14, label } = Astro.props;
 
 // 墨分五色 → 光学密度。席位的 tone 由 reducer 写在 ink.tone 上。
@@ -44,6 +45,7 @@ const alt =
 
 <figure class="nexus-flow" data-nexus-flow>
   <canvas data-flow-canvas aria-label={alt} role="img"></canvas>
+  <img class="nexus-flow__poster" src={`${base}/posters/nexus-flow.webp`} alt={alt} hidden />
   <script
     type="application/json"
     data-flow-data
@@ -54,7 +56,8 @@ const alt =
 
 <style>
   .nexus-flow { margin: 0; position: relative; width: 100%; aspect-ratio: 16 / 9; }
-  .nexus-flow canvas { display: block; width: 100%; height: 100%; }
+  .nexus-flow canvas, .nexus-flow__poster { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .nexus-flow__poster[hidden] { display: none; }
   .nexus-flow__fallback { padding: 1rem; color: #d8d4cc; }
   @media (max-width: 768px) { .nexus-flow { aspect-ratio: 9 / 14; } }
 </style>
@@ -106,6 +109,8 @@ const alt =
       },
       onFallback: (reason) => {
         canvas.style.display = 'none';
+        const poster = root.querySelector<HTMLImageElement>('.nexus-flow__poster');
+        if (poster) poster.hidden = false;
         root.dataset.flowFallback = reason;
       },
     });

@@ -116,4 +116,15 @@ test.describe('降级', () => {
     const op = await page.locator('.yin__l').first().evaluate((e) => getComputedStyle(e).opacity);
     expect(Number(op)).toBeGreaterThan(0.9);
   });
+
+  test('降级海报真的加载出来（不只是属性设了）', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(u(YIN));
+    const poster = page.locator('.yin__poster');
+    await expect(poster).toBeVisible();
+    // 🔴 正控到「像素层」：hidden=false 只说明我们把它显示了，
+    // naturalWidth>0 才说明浏览器**真的取到了图**。海报 404 时前者照样通过。
+    const loaded = await poster.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0);
+    expect(loaded).toBe(true);
+  });
 });
