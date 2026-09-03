@@ -169,8 +169,17 @@ export class InkEngine {
     radius: number,
     density: readonly [number, number, number],
     seed = 1,
+    /**
+     * 宏观几何调制。异源审计（advisor 与 agy 独立收敛）指出：墨被 `mob<0.002`
+     * 锁在湿迹剪影内，而湿迹几何由固定 seed 决定 —— 只映射"落点"不足以让不同
+     * 会话看起来不同，微观参数（fibre/bleed）改不动宏观剪影。
+     * 数据映射层必须从这里注入差异。
+     */
+    shape: { vigor?: number; eccentricity?: number } = {},
   ): void {
     if (this.disposed) return;
+    const vigor = shape.vigor ?? 1;           // 冲量倍率 ∝ 会话强度
+    const ecc = Math.min(Math.max(shape.eccentricity ?? 0, 0), 0.9); // 偏心 ∝ 不均衡度
     // 🔴 扰动必须随笔触尺寸缩放。W1b 出图实测：冲量写死 34 时，
     // 小笔（r≈0.026）边缘分形漂亮，大笔（r≈0.058）却收敛成纯高斯圆 —— 因为
     // 相对扰动强度 ∝ impulse/radius，笔越大越"平静"。锚点门 A2 会在大笔触上悄悄失效。
@@ -180,14 +189,15 @@ export class InkEngine {
     // 正是大笔收敛成圆的直接原因；线性缩放才让各尺寸笔触"同样地乱"。
     // （首次试线性时画面全白，是因为同时把 lobes 提到了 10 —— 冲量总量约 4 倍；
     //   现在 lobes 收敛且 ADVECT_VEL/GRADIENT_SUB 都补了 clamp。）
-    const kick = 34 * (radius / 0.03);
+    const kick = 34 * (radius / 0.03) * vigor;
     const lobes = 5 + Math.round(radius * 40); // 大笔要更多湿斑，否则边界仍然太圆
     this.splatWater(x, y, radius * 2.1, 0.85);
     for (let i = 0; i < lobes; i++) {
       const a = pseudo(seed, i) * Math.PI * 2;
       const r = radius * (1.1 + pseudo(seed, i + 90) * 1.3);
-      const wx = x + Math.cos(a) * r * 0.55;
-      const wy = y + Math.sin(a) * r * 0.55;
+      // 偏心：沿 x 拉长、y 压扁，让湿迹整体呈流向而非同心圆
+      const wx = x + Math.cos(a) * r * 0.55 * (1 + ecc);
+      const wy = y + Math.sin(a) * r * 0.55 * (1 - ecc * 0.55);
       this.splatWater(wx, wy, radius * (0.7 + pseudo(seed, i + 40) * 0.8), 0.5);
       // 微涡偶极子：制造旋度，涡量强化 pass 才有东西可放大
       const s = i % 2 === 0 ? 1 : -1;
