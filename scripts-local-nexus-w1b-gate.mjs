@@ -4,9 +4,10 @@ import { mkdirSync } from 'node:fs';
 const OUT = 'evidence/nexus-hall/anchors/w1b-verify'; mkdirSync(OUT, { recursive: true });
 const U = 'http://localhost:4321/website/world-spike/nexus-ink/?demo=yin&t=4';
 const sha = (b) => createHash('sha256').update(b).digest('hex').slice(0, 12);
-// 🔴 首次加载系统性不可靠：实测同一 URL 连续加载三次，第 1 次截图只有 1.08% 非纸色
-// （白屏），第 2、3 次均为 90.4%。最可能是 SwiftShader 首次编译 12 个 shader program
-// 超出等待窗口。任何构建期截图（海报、锚点门）都必须**先预热一次**再正式截。
+// 构建期截图前先预热一次再正式截。
+// 理由（2026-09-04 修正）：白屏只出现在 `pnpm build` 刚结束后的那次加载；
+// 单独跑 10 次全新 context（无 build）零白屏。所以规避的是 **build 写 dist 与
+// preview 读文件的竞态**，不是"首次加载"本身 —— 后一说法已被十次采样否定。
 const br = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
 const pg = await br.newPage({ viewport: { width: 1000, height: 640 }, deviceScaleFactor: 1 });
 
