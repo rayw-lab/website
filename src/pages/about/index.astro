@@ -216,11 +216,14 @@ const hallHref = `${base}/world/about-pavilion/`;
     min-inline-size: 0;
   }
 
+  /* [AH-VIS-1 债6] 原本单行 nowrap + 顶满卡宽（878px）：短摘要的卡 01/02 没事，
+     长摘要的卡 03 被切在词中（scrollWidth 1057 → 断在「个人…」），且贴到卡右内缘，
+     与上方自然换行的标题不同轴。改「measure 收窄 + 两行夹取」：断点落在自然换行处，
+     文字块与标题同轴，卡高不塌（正面本来比背面矮）。 */
   .about-qcard-teaser {
     margin: 0;
     min-inline-size: 0;
-    max-inline-size: 100%;
-    width: 100%;
+    max-inline-size: 54ch;
     color: var(--ink-2);
     font-size: var(--text-small);
     font-style: normal;
@@ -228,8 +231,15 @@ const hallHref = `${base}/world/about-pavilion/`;
     line-height: 1.6;
     letter-spacing: 0;
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  /* 提示行仍锚在卡底（页脚语义），但给一层最小呼吸——卡 03 原本只剩 12px 就贴上来 */
+  .about-qcard-hint {
+    padding-block-start: var(--space-2);
   }
 
   @media (prefers-reduced-motion: reduce), (hover: none), (max-width: 639.98px) {

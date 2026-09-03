@@ -1,0 +1,99 @@
+[WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+
+Running 13 tests using 1 worker
+
+(node:77240) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › e2e/about-hall.spec.ts:10:3 › About Hall 到达条 › 无 query：200，H1 含「架桥」，到达条 hidden (494ms)
+  ✓   2 [desktop-chromium] › e2e/about-hall.spec.ts:20:3 › About Hall 到达条 › ?from=city&poi=about-pavilion：到达条可见且含「个人档案馆」与「返回科技城」 (250ms)
+  ✓   3 [desktop-chromium] › e2e/about-hall.spec.ts:31:3 › About Hall 到达条 › 有卡：world-arrival-v1 的 poi 匹配 → 到达条含「探索」与楼名 (252ms)
+  ✓   4 [desktop-chromium] › e2e/about-hall.spec.ts:59:3 › About Hall 到达条 › ?from=city&poi=not-a-building：到达条 hidden (254ms)
+  ✘   5 [desktop-chromium] › e2e/about-hall.spec.ts:68:3 › About Hall scrub（AH-W1h） › 桌面 Hero：readyState≥1 后指针移到右 3/4，currentTime > 1s (8.7s)
+(node:77979) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   6 [desktop-chromium] › e2e/about-hall.spec.ts:89:3 › About Hall scrub（AH-W1h） › 滚动到 S6 中段：transition video.currentTime 在 (3, 8) (9.3s)
+(node:78652) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [desktop-chromium] › e2e/about-hall.spec.ts:122:3 › About Hall reduced-motion › prefers-reduced-motion：Hero/S6 video 不存在或 paused，且无运行中 animation (296ms)
+  ✓   8 [desktop-chromium] › e2e/about-hall.spec.ts:148:3 › About Hall reduced-motion › prefers-reduced-motion：无正在运行的 CSS animation (244ms)
+  ✓   9 [desktop-chromium] › e2e/about-hall.spec.ts:177:3 › About Hall 无 JS › 禁用 JS：首屏 H1 与 poster <img> 可见 (288ms)
+  ✓  10 [desktop-chromium] › e2e/about-hall.spec.ts:190:3 › About Hall 未知 slug › 未知 slug 404 (65ms)
+  ✓  11 [desktop-chromium] › e2e/about-hall.spec.ts:197:3 › About Hall 驾驶卡短句（AH-T1b / ADR-4 决策 B） › 完整快照写最高巡航；空快照保底探索 n/N (615ms)
+(node:78766) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  12 [world-chromium] › e2e/cyber-city-lookaround.spec.ts:157:3 › 科技城驾驶态 Q/E 视角侧转（AH-QE · world-chromium 串行 project） › CITY-QE-01 环视全链：Q 累积 → 抵近上限 → 松手回正 → E 反向 → FPV 封锁 → 圈内 E 互斥 (5.6m)
+  ✓  13 [world-chromium] › e2e/cyber-city-lookaround.spec.ts:315:3 › 科技城驾驶态 Q/E 视角侧转（AH-QE · world-chromium 串行 project） › CITY-QE-02 深链泊位：?poi= 出生按 E → 进站前奏照常 + 环视恒 0（零回归） (1.1m)
+
+
+  1) [desktop-chromium] › e2e/about-hall.spec.ts:68:3 › About Hall scrub（AH-W1h） › 桌面 Hero：readyState≥1 后指针移到右 3/4，currentTime > 1s 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 1
+    Received:   0
+
+    Call Log:
+    - Timeout 8000ms exceeded while waiting on the predicate
+
+      84 |         timeout: 8_000,
+      85 |       })
+    > 86 |       .toBeGreaterThan(1);
+         |        ^
+      87 |   });
+      88 |
+      89 |   test('滚动到 S6 中段：transition video.currentTime 在 (3, 8)', async ({ page }) => {
+        at /Users/wanglei/studio-data-root/worktrees/website-about-hall/e2e/about-hall.spec.ts:86:8
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/about-hall-About-Hall-scru-c54a2-1-后指针移到右-3-4，currentTime-1s-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/about-hall-About-Hall-scru-c54a2-1-后指针移到右-3-4，currentTime-1s-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/about-hall-About-Hall-scru-c54a2-1-后指针移到右-3-4，currentTime-1s-desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/about-hall-About-Hall-scru-c54a2-1-后指针移到右-3-4，currentTime-1s-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop-chromium] › e2e/about-hall.spec.ts:89:3 › About Hall scrub（AH-W1h） › 滚动到 S6 中段：transition video.currentTime 在 (3, 8) 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 3
+    Received:   0
+
+    Call Log:
+    - Timeout 8000ms exceeded while waiting on the predicate
+
+      113 |         timeout: 8_000,
+      114 |       })
+    > 115 |       .toBeGreaterThan(3);
+          |        ^
+      116 |     const t = await video.evaluate((el) => (el as HTMLVideoElement).currentTime);
+      117 |     expect(t).toBeLessThan(8);
+      118 |   });
+        at /Users/wanglei/studio-data-root/worktrees/website-about-hall/e2e/about-hall.spec.ts:115:8
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/about-hall-About-Hall-scru-5c86d-on-video-currentTime-在-3-8--desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/about-hall-About-Hall-scru-5c86d-on-video-currentTime-在-3-8--desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/about-hall-About-Hall-scru-5c86d-on-video-currentTime-在-3-8--desktop-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/about-hall-About-Hall-scru-5c86d-on-video-currentTime-在-3-8--desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  Slow test file: [world-chromium] › e2e/cyber-city-lookaround.spec.ts (6.7m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  2 failed
+    [desktop-chromium] › e2e/about-hall.spec.ts:68:3 › About Hall scrub（AH-W1h） › 桌面 Hero：readyState≥1 后指针移到右 3/4，currentTime > 1s 
+    [desktop-chromium] › e2e/about-hall.spec.ts:89:3 › About Hall scrub（AH-W1h） › 滚动到 S6 中段：transition video.currentTime 在 (3, 8) 
+  11 passed (7.1m)

@@ -275,11 +275,17 @@ export class PoiArrival {
     const style = document.createElement('style');
     style.id = HOLD_OVERLAY_STYLE_ID;
     // 全屏 inset 霓虹边，暗底 #05070d 不动；400ms 一次呼吸，无 infinite / 无扫描线 / 无 named VT
+    // [AH-VIS-1 债4] 可见度整形（时序/触发/类名/色源零改动，只改这段 CSS 字面）：
+    //   · 单层 5rem/1.1rem@70% 在亮城景里糊成看不见 → 改双层：0.2rem 硬边细管压住
+    //     画面四缘轮廓 + 8rem/2.4rem@88% 宽羽化承担「一次呼吸」的体量；
+    //   · 峰值前移到 30% 并在 58% 留一段衰减平台，读作「吸—吐」而不是单帧闪屏；
+    //   · 0.4s 总长是 ADR-4 决策 B 锁定值，不动。
     style.textContent =
       `html.${HOLD_OVERLAY_CLASS}::after{content:"";position:fixed;inset:0;z-index:40;pointer-events:none;` +
-      `box-shadow:inset 0 0 5rem 1.1rem color-mix(in srgb,var(${HOLD_OVERLAY_VAR}) 70%,transparent);` +
-      `animation:world-poi-hold-pulse .4s ease-out forwards}` +
-      `@keyframes world-poi-hold-pulse{0%{opacity:.18}38%{opacity:1}100%{opacity:0}}` +
+      `box-shadow:inset 0 0 0 .2rem color-mix(in srgb,var(${HOLD_OVERLAY_VAR}) 58%,transparent),` +
+      `inset 0 0 8rem 2.4rem color-mix(in srgb,var(${HOLD_OVERLAY_VAR}) 88%,transparent);` +
+      `animation:world-poi-hold-pulse .4s cubic-bezier(.22,.61,.36,1) forwards}` +
+      `@keyframes world-poi-hold-pulse{0%{opacity:.22}30%{opacity:1}58%{opacity:.9}100%{opacity:0}}` +
       `@media (prefers-reduced-motion:reduce){html.${HOLD_OVERLAY_CLASS}::after{content:none;animation:none}}`;
     document.head.appendChild(style);
   }

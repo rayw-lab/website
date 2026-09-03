@@ -122,9 +122,19 @@ const modelUrl = `${base}/models/hero-robot/HeroRobot.glb`;
     opacity: 0;
   }
 
+  /* [AH-VIS-1 债5a] 淡入节奏：300ms 纯 opacity 让 220×300 的机器人「啪」地出现。
+     改 420ms ease-out + 8px 上浮，读作「走进来」。位移与过渡都关在
+     no-preference 里，reduced-motion 下仍是零动画直出（getAnimations 恒 0）。 */
   @media (prefers-reduced-motion: no-preference) {
     .hall-curator {
-      transition: opacity 300ms ease;
+      transform: translateY(8px);
+      transition:
+        opacity 420ms var(--ease-out),
+        transform 420ms var(--ease-out);
+    }
+
+    .hall-curator.is-on {
+      transform: translateY(0);
     }
   }
 
@@ -151,6 +161,9 @@ const modelUrl = `${base}/models/hero-robot/HeroRobot.glb`;
     justify-self: center;
     text-align: center;
     width: 100%;
+    /* 两个汉字不加字距（中文 UI 地板）；标签退一档让机器人当主体 */
+    font-size: 0.75rem;
+    letter-spacing: 0;
   }
 
   .hall-curator-stage {
@@ -168,16 +181,24 @@ const modelUrl = `${base}/models/hero-robot/HeroRobot.glb`;
     }
   }
 
+  /* [AH-VIS-1 债5a] 接地锚。原件是 8%–92% 宽 × 28% 高的黑色大散射，在本页幕布
+     rgb(4,16,32)（相对亮度 ~0.006）上把像素只压低 2–3 级 = 肉眼无影，机器人是飘着的；
+     加浓黑色也救不回来（黑压黑）。所以改成「暗核 + 落地反光」双层，收到双脚跨度：
+       · 暗核 26%–74% 宽、extent 38%：只在幕布转亮（站点插图/浅色段）时承担接触压暗；
+       · 反光 extent 72%、冷白 0.13：机器人自身胸灯的地面反弹，是暗底上唯一读得出
+         的接地信号。用中性冷白而非楼色——签名色只留给 hold 脉冲与到达条圆点那一处。 */
   .hall-curator-stage::after {
     content: '';
     position: absolute;
-    left: 8%;
-    right: 8%;
-    bottom: 6%;
-    height: 28%;
+    left: 26%;
+    right: 26%;
+    bottom: 9%;
+    height: 15%;
     z-index: 0;
     pointer-events: none;
-    background: radial-gradient(ellipse at 50% 70%, rgb(0 0 0 / 0.5), transparent 74%);
+    background:
+      radial-gradient(ellipse at 50% 58%, rgb(0 0 0 / 0.55), transparent 38%),
+      radial-gradient(ellipse at 50% 56%, rgb(214 226 240 / 0.13), transparent 72%);
   }
 
   .hall-curator-stage :global(canvas) {

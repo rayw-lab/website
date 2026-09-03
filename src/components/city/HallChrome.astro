@@ -106,11 +106,14 @@ const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
 </script>
 
 <style>
+  /* [AH-VIS-1 债5c] 三段原本只靠 gap 分隔、探索与驾驶卡同字号同色，读成一串没有
+     层级的流水字。改「· 分隔 + 三级字重/色阶」：楼名主 → 探索次 → 驾驶卡末（会话
+     临时读数）。分隔点走 ::before，驾驶卡 hidden 时分隔点随之消失，不留孤点。 */
   .hall-chrome {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-3) var(--space-4);
+    gap: var(--space-2) var(--space-3);
     padding: var(--space-3) 0;
     border-block-end: 1px solid var(--line);
     color: var(--ink-2);
@@ -140,14 +143,27 @@ const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
     animation: hall-chrome-in 400ms ease-out;
   }
 
-  .hall-chrome-explore {
+  .hall-chrome-explore,
+  .hall-chrome-drive {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-3);
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.02em;
+  }
+
+  /* 结构性分隔点：不是内容，压到最暗一级 */
+  .hall-chrome-explore::before,
+  .hall-chrome-drive::before {
+    content: '·';
+    color: color-mix(in srgb, var(--ink-3) 70%, transparent);
+  }
+
+  .hall-chrome-explore {
+    color: var(--ink-2);
   }
 
   .hall-chrome-drive {
-    font-variant-numeric: tabular-nums;
-    color: var(--ink-2);
+    color: var(--ink-3);
   }
 
   .hall-chrome-drive[hidden] {
