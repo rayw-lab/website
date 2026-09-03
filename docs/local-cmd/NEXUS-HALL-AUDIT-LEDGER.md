@@ -244,3 +244,34 @@ SPLAT_FS 根本不采样的纹理，且它正是当前 draw FBO 的颜色附件�
 - 🔴 **对 W3 的硬约束（采纳其建设性建议）**：数据映射层必须把会话权重注入
   **`drop()` 的初速度 / 墨量 / 偏心率**，从宏观几何源头制造差异；
   只映射"落点"不足以让不同会话看起来不同 —— 这决定了 W3 的数据契约要多带哪几个字段。
+
+### R4-4 🔴 抽取式探针在写进契约前被自己的正控拦下（本轮唯一一次「提前」抓住）
+- 为省时间，用正则 `"type"\s*:\s*"([^"]+)"` 抓每行第一个 type 统计全集，得到
+  **68 种 type**，`message`(123520) 高居第一。若直接当数据契约派给 reducer，
+  整个 W2 会建在假分母上。
+- **对照验证**（随机 40 文件 × 30 行 = 891 行，真 `json.loads` 取顶层 type）：
+  正则与真顶层**仅 36.6% 一致**，错配 565 行。最常见错配：
+  `message → assistant`(×469)、`hook_success/skill_listing/deferred_tools_delta → attachment`。
+  真相是这些全是**嵌套字段**（`content[].type`、attachment 内层），根本不是顶层 type。
+- 真·顶层 type（样本）：`assistant` `user` `attachment` `last-prompt` `queue-operation`
+  `mode` `permission-mode` `ai-title` `file-history-snapshot` `system` `atis-latch` —— 约 11 种。
+- 处置：作废 `type-census.json`，改用真 `json.loads` 全量普查，并加**闭合账断言**
+  （`covered + no_top_level_type + parse_error == lines`），防"静默少数了一批"。
+- 🔴 与本轮前 5 次探针事故的区别：**这一次是在结论进入下游之前主动做的对照**。
+  判据句已沉淀进 `docs/skills/webgl-ink-frontend.md` §三：
+  「抽取式探针必须配命中率反查——用**确知在里面的样本**反算命中率，随料一起交付。」
+
+### R4-5 reducer 覆盖门的真分母（一手全量普查，非抽样）
+`evidence/nexus-hall/w2/type-census.json` · 1474 文件 / **358,722 行** / 解析失败 0 / 无顶层 type 0（闭合账成立）
+**真·顶层 type 全集 = 23 种**。三个数字互不相同，正好说明三种探针的可信度：
+| 来源 | 结果 | 真伪 |
+|---|---|---|
+| 正则抓每行第一个 `"type"` | 68 种 | 🔴 假（63.4% 错配，抓到嵌套字段） |
+| 随机抽样 891 行真解析 | 11 种 | ⚠️ 偏小（罕见 type 抽不到） |
+| **全量真解析 358,722 行** | **23 种** | ✅ 契约以此为准 |
+- `assistant`/`attachment`/`user` 三类占绝大多数；其余 20 种是长尾但**不可忽略**。
+- 🔴 `queue-operation` 10,918 行：本机规则库有「整类丢弃致 62.5% 用户指令蒸发、
+  四路下游无一察觉」的先例，reducer 必须对它显式表态（映射 or allowlist 忽略），
+  不许落进默认分支。
+- **reducer 验收门**：处理的 type 集合必须与本文件的 23 种做**契约闭合**——
+  每种要么显式映射、要么显式 allowlist 忽略，二者必居其一，缺一即 FAIL。

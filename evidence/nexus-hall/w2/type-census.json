@@ -1,0 +1,32 @@
+{
+  "files": 1474,
+  "lines": 358722,
+  "parse_error": 0,
+  "no_top_level_type": 0,
+  "covered": 358722,
+  "types": {
+    "assistant": 124832,
+    "attachment": 96045,
+    "user": 64953,
+    "last-prompt": 11857,
+    "mode": 11074,
+    "queue-operation": 10918,
+    "permission-mode": 9949,
+    "ai-title": 8810,
+    "system": 5307,
+    "atis-latch": 4332,
+    "bridge-session": 2462,
+    "agent-name": 2147,
+    "custom-title": 1812,
+    "file-history-snapshot": 1717,
+    "file-history-delta": 1029,
+    "pr-link": 952,
+    "frame-link": 437,
+    "cost-state": 25,
+    "started": 20,
+    "artifact-autoreact-ledger": 18,
+    "result": 13,
+    "fork-context-ref": 8,
+    "artifact-comment-monitor": 5
+  }
+}
