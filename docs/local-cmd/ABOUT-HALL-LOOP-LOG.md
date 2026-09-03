@@ -67,3 +67,7 @@
 - push `codex/about-hall-20260902` → 远端 `bd05153` == 本地 HEAD。
 - **草稿 PR #234** 已开：https://github.com/rayw-lab/website/pull/234 （合入 = NEEDS_LEIGE）。
 - ZDR canary 10:33 仍 BLOCKED。tick=8。
+
+### L9 · 2026-09-03 12:35
+- attempt6（post-merge，端口 4624）跑到 52 passed 时 preview 进程消失（`ERR_CONNECTION_REFUSED 127.0.0.1:4624`），随后 18 例连锁红 → 判 `INVALID_INFRA_WEBSERVER_DIED`，不作产品证据；日志留 `full-e2e.attempt6-INVALID-webserver-died-4624.log`。杀手未知（本会话未执行 pkill；疑为他会话清理 preview）。
+- attempt7（端口 4625）已起。ZDR canary 12:05 仍 BLOCKED。tick=9。
