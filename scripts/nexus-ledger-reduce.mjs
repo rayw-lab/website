@@ -76,6 +76,10 @@ const VALID_SEATS = new Set(SEATS.map((s) => s.id));
 const TONE_BY_SEAT = new Map(SEATS.map((s) => [s.id, s.tone]));
 
 // 白名单（NEEDS_LEIGE）：顺序即匹配序，先长后短。
+// p00 = 跨项目派单席（agy / api-direct 的 job 不归属单一仓库）。
+// 草案 §「墨分五色」把 grok/agy/api-direct 明列为**席位**（已定设计选择），
+// 所以它们必须产出墨滴，不能只作 dispatch 记录 —— 否则五色永远只出三色。
+const DISPATCH_PROJECT = { id: 'p00', label: '派单', topic: 'dispatch' };
 const PROJECT_RULES = [
   { id: 'p01', label: 'co-agent-cline-unification', topic: 'skill', re: /[\/-]Projects[\/-]co-agent-cline-unification(?:[\/-]|$)/ },
   { id: 'p02', label: 'co-agent', topic: 'skill', re: /[\/-]Projects[\/-]co-agent(?:[\/-]|$)/ },
@@ -418,6 +422,53 @@ async function aggregateFile(abs, seat, projKey) {
 
 const DISPATCH_ACC = { dispatches: [], receiptsRaw: [] };
 
+/** 从 job_id 里的 `-YYYYMMDD-HHMMSS-` 解析本机本地时刻（这些 job 由本机生成） */
+function jobIdTime(id) {
+  const m = /-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-/.exec(id);
+  if (!m) return null;
+  const [, y, mo, d, h, mi, s] = m.map(Number);
+  const t = new Date(y, mo - 1, d, h, mi, s).getTime();
+  return Number.isFinite(t) ? t : null;
+}
+
+/**
+ * 把派单席的每个 job 建模成一次会话（= 一滴墨）。
+ * 每个 `jobs/<id>/receipt.json` 一滴：时长取 elapsed_s，轮数取 response_ids_seen（无则 1），
+ * token 取 usage.total_tokens（无则 0），身份未通过或非零退出计 aborted。
+ */
+async function aggregateJobs(dir, seat) {
+  let jobsRoot = path.join(dir, 'jobs');
+  try { await fs.access(jobsRoot); } catch { jobsRoot = dir; }
+  let ents;
+  try { ents = await fs.readdir(jobsRoot, { withFileTypes: true }); } catch { return 0; }
+  let kept = 0;
+  for (const e of ents) {
+    if (!e.isDirectory()) continue;
+    const rf = path.join(jobsRoot, e.name, 'receipt.json');
+    let r, st;
+    try {
+      st = await fs.stat(rf);
+      r = JSON.parse(await fs.readFile(rf, 'utf8'));
+    } catch { continue; }
+    noteTime(st.mtimeMs);
+    const t0 = jobIdTime(r.job_id ?? e.name) ?? st.mtimeMs;
+    const durMs = Math.max(0, Math.round((Number(r.elapsed_s) || 0) * 1000));
+    const tok = Number(r?.usage?.total_tokens) || 0;
+    const bad = r.identity_ok === false || (r.exit_code != null && r.exit_code !== 0) || Boolean(r.error);
+    RAW_SESSIONS.push({
+      seat, project: DISPATCH_PROJECT.id, t0, t1: t0 + durMs,
+      turns: Math.max(1, Number(r.response_ids_seen) || 1),
+      tools: 0, patches: 0, tokens: tok,
+      model: r.served_model ?? r.served_label ?? r.requested_model ?? null,
+      effort: r.reasoning_effort_sent ?? null,
+      compacted: 0, aborted: bad ? 1 : 0, sidechain: false, cwd: null,
+      hash: createHash('sha256').update(seat + '\u0000' + rf).digest('hex').slice(0, 16),
+    });
+    kept += 1;
+  }
+  return kept;
+}
+
 async function buildDispatch(entry) {
   const files = await listAllFiles(entry.dir);
   if (!files || files.length === 0) {
@@ -647,7 +698,12 @@ async function main() {
   }
 
   /* -- 派单目录 -- */
-  for (const d of cfg.dispatch) await buildDispatch(d);
+  for (const d of cfg.dispatch) {
+    await buildDispatch(d);
+    // 派单席同时产出墨滴（席位 → 墨分五色），不只是派单记录
+    const n = await aggregateJobs(d.dir, d.id);
+    STATS.src.push({ seat: d.id, root: tildify(d.dir), files: n, kept: n, note: '派单 job → 会话' });
+  }
 
   if (RAW_SESSIONS.length === 0) {
     fail('没有白名单内的会话数据——检查 --claude/--codex/--cursor 路径与 PROJECT_RULES 白名单。');
@@ -754,7 +810,11 @@ async function main() {
     generatedAt: isoSeconds(maxMtimeMs),
     range: { from: days[0].d, to: days[days.length - 1].d },
     seats: SEATS.map((s) => ({ id: s.id, label: s.label, tone: s.tone })),
-    projects: PROJECT_RULES.filter((r) => usedProjects.has(r.id)).map((r) => ({ id: r.id, label: r.label, topic: r.topic })),
+    projects: [
+      ...PROJECT_RULES.filter((r) => usedProjects.has(r.id)).map((r) => ({ id: r.id, label: r.label, topic: r.topic })),
+      // p00 不在 PROJECT_RULES（它不是仓库规则而是跨项目派单席），用到才登记 —— 否则名册门会红
+      ...(usedProjects.has(DISPATCH_PROJECT.id) ? [DISPATCH_PROJECT] : []),
+    ],
     totals,
     days,
     sessions: selected.map((s, i) => ({

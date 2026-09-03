@@ -477,3 +477,40 @@ cursor 由 `claudeLine` 改走 `cursorLine` 后，`turn_ended` 立刻从 `typeCo
 用同一份 ledger 做 A/B（spike 页 vs 组件页）才定谳：**空的是 spike 页**（它的 vigor 仍是 2.2），
 组件页实际 99.71% 非纸色、正常出图。
 判据：**连续两次测量数值完全相同，先怀疑读的是同一份旧产物**，不要急着解释"为什么没变"。
+
+## R10 · 派单席建模成墨滴：五席四色（2026-09-04 05:1x–05:3x）
+
+### R10-1 回溯草案纠正实现偏差
+草案 §「墨分五色」（line 85）明列六席位映射并注明**「此映射为已定设计选择，批评者不重评」**：
+焦=Codex / 浓=Claude Code / 重=Cursor / 淡=Grok / 清=agy+api_direct。
+而 glm 的 reducer 把 agy/api-direct 归为 `--dispatch`（派单记录），**不产生 session** ⇒ 五色永远只出三色。
+这不是口径分歧（草案已锁），是实现偏差，直接改。
+
+### R10-2 `aggregateJobs()`：每个 job = 一滴墨
+`~/.grok/state/<席>/jobs/<id>/receipt.json` 逐个建模：
+t0 从 job_id 的 `-YYYYMMDD-HHMMSS-` 解析（本机生成，取本地时刻），dur=`elapsed_s`，
+turns=`response_ids_seen`（无则 1），tokens=`usage.total_tokens`（无则 0），
+model=`served_model`/`served_label`，`identity_ok===false` 或非零 exit 或有 error ⇒ 计 aborted。
+新增 `p00 派单` 项目（跨项目派单不归属单一仓库），并在 projects 名册里**用到才登记**，否则 ROSTER 门会红。
+
+### R10-3 结果：会话 1919 → 3007，席位 3 → 5，颜色 3 → 4
+| 席位 | 明细条数 | 墨色 |
+|---|---:|---|
+| claude-code | 283 | 浓 |
+| codex | 219 | 焦 |
+| api-direct | 74 | 清 |
+| cursor | 14 | 重 |
+| agy | 10 | 清 |
+两门仍绿（安全门 rc=0 / 正确性门 rc=0）。
+画面墨色分层实测：焦浓核 10.3% · 重 7.4% · 淡 9.6% · 清晕 61.2% · 纸 11.6%。
+
+### R10-4 仍缺「淡」= Grok 席
+`~/.grok/state/` 下有 agy-rescue / api-direct / dsp-rescue / gpt-rescue 等，
+但 **grok CLI 自身不写 job receipt**，没有可归约的落点。
+草案说 Grok 席取 `grok -p` 的 json 输出（`modelUsage`/`num_turns`），那是**调用时的返回**，
+不落盘就无从归约。→ 需要磊哥定：是接受四色，还是给 grok 调用加落盘。**记 NEEDS_LEIGE。**
+
+### R10-5 验证受限说明（不外推）
+软件渲染 30 秒只落约 35 滴，而落墨按**时间**排序，前 35 滴恰好都是 claude/codex 的浓墨 ——
+所以当前出图里看不到「清」色的 84 条。**这是采样窗口的限制，不是颜色没生效**
+（数据侧 tone 分布已实测四色齐全）。完整 600 滴的视觉验证归真机，与 fps 一并 DEFERRED。

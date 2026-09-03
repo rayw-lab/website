@@ -1,9 +1,9 @@
 # LEDGER-RECEIPT · nexus-ledger-reduce
 
-- reducer: scripts/nexus-ledger-reduce.mjs @ sha256:c957b670b40a
-- 确定性: generatedAt = 源最大 mtime（2026-09-03T21:02:18Z），无墙钟、无随机，同输入重跑逐字节一致
-- ledger: src/data/nexus-ledger.json · 387387 bytes · gzip 23218 bytes · sha256 728799c0842c7019038259dd68977b456019c7b370d9b87611aa1da9d16e6c3e
-- 会话: 入账 1919 · 明细 600（top 600）· 席位 3 · 天 40
+- reducer: scripts/nexus-ledger-reduce.mjs @ sha256:f61c91cd1258
+- 确定性: generatedAt = 源最大 mtime（2026-09-03T21:15:54Z），无墙钟、无随机，同输入重跑逐字节一致
+- ledger: src/data/nexus-ledger.json · 387745 bytes · gzip 23419 bytes · sha256 2650034d5771786ccf41f864ef6f72d5a424f561e9a8c8324b38b2603d4ac9b0
+- 会话: 入账 3007 · 明细 600（top 600）· 席位 5 · 天 40
 
 ## 源清单
 
@@ -35,6 +35,8 @@
 | codex | ~/.codex/sessions | 2164 | 769 | cwd 白名单逐会话判定 |
 | cursor | ~/.cursor/projects/Users-wanglei-mywebsite/agent-transcripts | 78 | 71 | mywebsite |
 | cursor | ~/.cursor/projects/Users-wanglei-Projects-co-agent/agent-transcripts | 15 | 12 | co-agent |
+| agy | ~/.grok/state/agy-rescue | 332 | 332 | 派单 job → 会话 |
+| api-direct | ~/.grok/state/api-direct | 756 | 756 | 派单 job → 会话 |
 
 ## 丢弃与原因
 
