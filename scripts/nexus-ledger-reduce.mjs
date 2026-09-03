@@ -618,9 +618,21 @@ async function main() {
     .slice(0, cfg.top)
     .sort(byT0Hash);
 
+  /** token 量级分箱：返回桶索引（0..6）。展厅只展示量级，不展示精确值。 */
+  const TOKEN_EDGES = [1, 5e3, 2e4, 5e4, 2e5, 1e6, Infinity];
+  const tokenBucket = (n) => {
+    const i = TOKEN_EDGES.findIndex((e) => n < e);
+    return i < 0 ? TOKEN_EDGES.length - 1 : i;
+  };
+  /** 桶中值：半径由它派生，于是半径也随之阶梯化（视觉上反而更贴「墨分五色」） */
+  const bucketMid = (b) => {
+    const lo = b === 0 ? 0 : TOKEN_EDGES[b - 1];
+    const hi = TOKEN_EDGES[b] === Infinity ? 2e6 : TOKEN_EDGES[b];
+    return (lo + hi) / 2;
+  };
   const inkR = (s) => {
     // 墨量半径：tokens 与时长取对数；2,000,000 tokens 级 ≈ 最浓 1.0。渲染提示，前端不算。
-    const size = Math.max(1, s.tokens, Math.round(s.dur / 60));
+    const size = Math.max(1, bucketMid(tokenBucket(s.tokens)), Math.round(s.dur / 60));
     const r = Math.log10(1 + size) / Math.log10(1 + 2000000);
     return Math.round(Math.min(1, Math.max(0.1, r)) * 1000) / 1000;
   };
@@ -702,12 +714,20 @@ async function main() {
     sessions: selected.map((s, i) => ({
       id: 's' + String(i + 1).padStart(idWidth, '0'),
       seat: s.seat,
-      t0: Math.floor(s.t0 / 1000),
-      dur: s.dur,
+      // 🔴 时间戳粗化到小时（异源调研 agy 报出、本席对照 ledger 亲核属实）：
+      // 秒级 t0 可与磊哥公开的 GitHub commit 时间逐条对齐，一旦对上，
+      // 该「匿名」会话关联的真实仓库与改动即被逆向揭穿。展厅只需要顺序与节奏，
+      // 不需要秒 —— 粗化到小时不损失任何视觉信息。
+      t0: Math.floor(s.t0 / 1000 / 3600) * 3600,
+      // 时长同理粗化到分钟：精确秒数与 token 数一样可用于外部事件对齐。
+      dur: 60 * Math.round(s.dur / 60),
       turns: s.turns,
       tools: s.tools,
       patches: s.patches,
-      tokens: s.tokens,
+      // 🔴 token 分箱（同上，亲核属实）：精确 token 数对已知文档是确定性指纹 ——
+      // 用同款 tokenizer 对公开文件本地分词即可碰撞，证明「某日读过这份具体文档」。
+      // 展厅表达的是体量量级，个位数精度没有任何展示价值。
+      tk: tokenBucket(s.tokens),
       model: s.model,
       effort: s.effort,
       project: s.project,

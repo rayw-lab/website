@@ -1,8 +1,8 @@
 # LEDGER-RECEIPT · nexus-ledger-reduce
 
-- reducer: scripts/nexus-ledger-reduce.mjs @ sha256:708406f93e09
-- 确定性: generatedAt = 源最大 mtime（2026-09-03T20:36:35Z），无墙钟、无随机，同输入重跑逐字节一致
-- ledger: src/data/nexus-ledger.json · 391707 bytes · gzip 27004 bytes · sha256 de4114b1e28c03f223ff3cd5dddb21d234ea6603fb1cb210025dfe7dba762b50
+- reducer: scripts/nexus-ledger-reduce.mjs @ sha256:096cc6bac1b8
+- 确定性: generatedAt = 源最大 mtime（2026-09-03T20:47:35Z），无墙钟、无随机，同输入重跑逐字节一致
+- ledger: src/data/nexus-ledger.json · 387829 bytes · gzip 23036 bytes · sha256 a0a8ff7408da4518a3879c98bc1458f7359e7b695187841f134038c8f2da93d1
 - 会话: 入账 1836 · 明细 600（top 600）· 席位 2 · 天 40
 
 ## 源清单

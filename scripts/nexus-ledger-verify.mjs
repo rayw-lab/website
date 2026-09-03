@@ -99,7 +99,21 @@ else if (L.totals) {
   if (badS.length) fail('ROSTER', `${badS.length} 个 seat 不在 seats 名册：${badS.slice(0, 5).join(', ')}`);
 }
 
-// ⑤ 溯源：ledger 必须能说出自己是从多少输入产生的，且与普查对得上
+// ⑤ 隐私粒度门（异源调研 agy 报出、对照 ledger 亲核属实的两条 + 同理推得的第三条）
+// 秒级时间戳可与公开 GitHub commit 逐条对齐；精确 token 数对已知文档是确定性指纹。
+// 识别到的风险必须进门，否则下次改 reducer 会静默回归。
+if (sessions) {
+  const badT = sessions.filter((s) => typeof s.t0 === 'number' && s.t0 % 3600 !== 0).length;
+  if (badT) fail('PRIVACY', `${badT} 条 session 的 t0 未粗化到小时（秒级时间戳可与公开 commit 对齐）`);
+  const badD = sessions.filter((s) => typeof s.dur === 'number' && s.dur % 60 !== 0).length;
+  if (badD) fail('PRIVACY', `${badD} 条 session 的 dur 未粗化到分钟`);
+  const exact = sessions.filter((s) => 'tokens' in s).length;
+  if (exact) fail('PRIVACY', `${exact} 条 session 仍带精确 tokens 字段（应为量级桶 tk）`);
+  const badB = sessions.filter((s) => !Number.isInteger(s.tk) || s.tk < 0 || s.tk > 6).length;
+  if (badB) fail('PRIVACY', `${badB} 条 session 的 tk 桶索引非法`);
+}
+
+// ⑥ 溯源：ledger 必须能说出自己是从多少输入产生的，且与普查对得上
 const g = L.generatedFrom ?? {};
 if (g.lines !== undefined && g.lines !== census.lines) {
   fail('PROVENANCE', `generatedFrom.lines=${g.lines} 与普查 ${census.lines} 不符`);
