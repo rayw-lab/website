@@ -1,0 +1,32 @@
+---
+/**
+ * W3 组件 spike —— 验证 `Flow.astro` 作为**组件**能被独立装载并跑起来。
+ * 「代码写好 ≠ 装上 ≠ 用过」：本页存在的唯一理由是证明第三态。
+ * /world-spike/ 既定纪律：noindex,follow + canonical → `/` + 剔出 sitemap。
+ */
+import Flow from '../../components/city/halls/nexus/Flow.astro';
+const site = Astro.site?.href ?? '/';
+const count = Number(Astro.url.searchParams.get('n') ?? '0') || undefined;
+---
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,follow" />
+    <link rel="canonical" href={site} />
+    <title>W3 spike · 墨流组件</title>
+    <style>
+      html { background: #14161c; color: #d8d4cc; font: 14px/1.6 system-ui, sans-serif; }
+      body { margin: 0; padding: 1.2rem; }
+      main { max-width: 1200px; margin: 0 auto; }
+      h1 { font-size: 1rem; font-weight: 600; opacity: .8; margin: 0 0 .8rem; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>W3 spike · Flow 组件（真实 ledger 驱动）</h1>
+      <Flow count={count} spanSeconds={14} />
+    </main>
+  </body>
+</html>

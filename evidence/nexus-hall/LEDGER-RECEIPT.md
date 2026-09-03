@@ -1,9 +1,9 @@
 # LEDGER-RECEIPT · nexus-ledger-reduce
 
-- reducer: scripts/nexus-ledger-reduce.mjs @ sha256:9e92f50d48c7
-- 确定性: generatedAt = 源最大 mtime（2026-09-03T19:53:40Z），无墙钟、无随机，同输入重跑逐字节一致
-- ledger: src/data/nexus-ledger.json · 255116 bytes · gzip 17141 bytes · sha256 9934d5627c31f2bc86f8784c2c976e7c167ca678c5cd64aaf7d51a3692889bf3
-- 会话: 入账 1067 · 明细 600（top 600）· 席位 1 · 天 31
+- reducer: scripts/nexus-ledger-reduce.mjs @ sha256:708406f93e09
+- 确定性: generatedAt = 源最大 mtime（2026-09-03T20:36:35Z），无墙钟、无随机，同输入重跑逐字节一致
+- ledger: src/data/nexus-ledger.json · 391707 bytes · gzip 27004 bytes · sha256 de4114b1e28c03f223ff3cd5dddb21d234ea6603fb1cb210025dfe7dba762b50
+- 会话: 入账 1836 · 明细 600（top 600）· 席位 2 · 天 40
 
 ## 源清单
 
@@ -32,17 +32,21 @@
 | claude-code | ~/.claude/projects/-private-tmp-co-agent-ccapi-stdin-vK5BtQ | 1 | 0 | 白名单外，整目录丢弃 |
 | claude-code | ~/.claude/projects/-private-tmp-directrun-probe | 3 | 0 | 白名单外，整目录丢弃 |
 | claude-code | ~/.claude/projects/-private-tmp-lineage-probe | 0 | 0 | 白名单外，整目录丢弃 |
+| codex | ~/.codex/sessions | 2164 | 769 | cwd 白名单逐会话判定 |
+| cursor | ~/.cursor/projects/Users-wanglei-mywebsite/agent-transcripts | 78 | 0 | mywebsite |
+| cursor | ~/.cursor/projects/Users-wanglei-Projects-co-agent/agent-transcripts | 15 | 0 | co-agent |
 
 ## 丢弃与原因
 
 - 白名单外整目录: 15（涉及文件 403）
-- 白名单外单会话（codex cwd 判定）: 0
-- 空会话/不可读文件: 7
+- 白名单外单会话（codex cwd 判定）: 1395
+- 空会话/不可读文件: 100
 - 行级 JSON 解析失败（跳过该行）: 0
 
 ## 派单与备注
 
-- 无
+- dispatch agy: artifacts 超出 400 上限，截断 816 个
+- dispatch api-direct: artifacts 超出 400 上限，截断 357 个
 
 ## 口径要点
 

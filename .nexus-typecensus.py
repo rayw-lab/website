@@ -2,7 +2,17 @@ import json, collections, pathlib
 # 🔴 必须真 json.loads 取顶层 type。上一版用正则抓每行第一个 "type"，
 # 与真顶层对照仅 36.6% 一致 —— 嵌套的 content[].type / attachment 内层 type 会被误抓。
 cnt = collections.Counter(); files = lines = bad = notype = 0
-for f in (pathlib.Path.home() / '.claude/projects').rglob('*.jsonl'):
+# 🔴 分母必须覆盖 reducer 实际读取的**全部源**。
+# 只扫 claude 源时得 23 种，而 reducer 读 claude+codex+cursor 后见到 turn_ended，
+# 于是门报「不在普查全集里」—— 不是普查过期，是候选集比被测集合窄。
+ROOTS = [
+    pathlib.Path.home() / '.claude/projects',
+    pathlib.Path.home() / '.codex/sessions',
+    pathlib.Path.home() / '.cursor/projects/Users-wanglei-mywebsite/agent-transcripts',
+    pathlib.Path.home() / '.cursor/projects/Users-wanglei-Projects-co-agent/agent-transcripts',
+]
+ALL = [f for r in ROOTS if r.exists() for f in r.rglob('*.jsonl')]
+for f in ALL:
     files += 1
     try:
         with f.open('r', encoding='utf-8', errors='replace') as fh:

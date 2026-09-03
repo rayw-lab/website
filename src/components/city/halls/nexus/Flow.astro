@@ -1,0 +1,109 @@
+---
+/**
+ * S1 墨流 —— 一百天的会话落在同一张纸上。
+ *
+ * 每一滴 = 一次真实会话；半径、浓淡、冲量、偏心全部由 `nexus-ledger.json` 派生，
+ * **本组件不手写任何数字**（数字由 reducer 从会话日志算出，见 W2 双门）。
+ *
+ * 空间隐喻（W3 实测定案）：单屏不做时间轴 —— 30 天压进一屏时忙日会堆成一条黑柱。
+ * 位置有机散布，**时间只决定落下顺序**，后落的会话推开先落的，叠压本身就是时间的痕迹。
+ */
+import ledger from '../../../../data/nexus-ledger.json';
+
+interface Props {
+  /** 落多少滴。默认取 ledger 明细全量 */
+  count?: number;
+  /** 把这一百天压进多少秒 */
+  spanSeconds?: number;
+  /** 无障碍描述（canvas 的等价文本） */
+  label?: string;
+}
+
+const { count, spanSeconds = 14, label } = Astro.props;
+
+// 墨分五色 → 光学密度。席位的 tone 由 reducer 写在 ink.tone 上。
+const TONE_D: Record<string, number> = { 焦: 1.55, 浓: 1.12, 重: 0.82, 淡: 0.5, 清: 0.3 };
+
+const sessions = (ledger.sessions as Array<Record<string, any>>)
+  .slice(0, count ?? undefined)
+  .map((s) => ({
+    t: s.t0,
+    r: s.ink?.r ?? 0.4,
+    d: TONE_D[s.ink?.tone as string] ?? 0.6,
+    v: Math.min(2.2, 0.5 + Math.log1p(s.turns ?? 0) / 3),
+    e: (s.turns ?? 0) > 0 ? Math.min(0.7, (s.tools ?? 0) / ((s.turns ?? 1) * 6)) : 0,
+  }));
+
+const range = ledger.range as { from?: string; to?: string } | undefined;
+// 无障碍文本同样从数据派生，不手写
+const alt =
+  label ??
+  `水墨动画：${sessions.length} 次 AI 协作会话落在同一张宣纸上，` +
+    `时间跨度 ${range?.from ?? ''} 至 ${range?.to ?? ''}。每一滴的大小与浓淡对应一次会话的体量。`;
+---
+
+<figure class="nexus-flow" data-nexus-flow>
+  <canvas data-flow-canvas aria-label={alt} role="img"></canvas>
+  <script
+    type="application/json"
+    data-flow-data
+    set:html={JSON.stringify({ span: spanSeconds, items: sessions })}
+  />
+  <noscript><p class="nexus-flow__fallback">{alt}</p></noscript>
+</figure>
+
+<style>
+  .nexus-flow { margin: 0; position: relative; width: 100%; aspect-ratio: 16 / 9; }
+  .nexus-flow canvas { display: block; width: 100%; height: 100%; }
+  .nexus-flow__fallback { padding: 1rem; color: #d8d4cc; }
+  @media (max-width: 768px) { .nexus-flow { aspect-ratio: 9 / 14; } }
+</style>
+
+<script>
+  import { InkSurface } from './ink/InkSurface';
+  import type { InkEngine } from './ink/InkEngine';
+
+  interface Item { t: number; r: number; d: number; v: number; e: number }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-nexus-flow]')) {
+    const canvas = root.querySelector<HTMLCanvasElement>('[data-flow-canvas]');
+    const raw = root.querySelector<HTMLScriptElement>('[data-flow-data]')?.textContent;
+    if (!canvas || !raw) continue;
+    const { span, items } = JSON.parse(raw) as { span: number; items: Item[] };
+    if (items.length === 0) continue;
+    items.sort((a, b) => a.t - b.t);
+    const t0 = items[0].t;
+    const t1 = items[items.length - 1].t;
+
+    // 确定性伪随机：同一份 ledger 每次渲染出同一张纸（构建期海报才可复现）
+    const rnd = (i: number, k: number) => {
+      const s = Math.sin(i * 127.1 + k * 311.7) * 43758.5453;
+      return s - Math.floor(s);
+    };
+
+    let placed = 0;
+    InkSurface.mount(canvas, {
+      mobile: window.matchMedia('(max-width: 768px)').matches,
+      onFrame: (ink: InkEngine, elapsed: number) => {
+        const want = Math.min(items.length, Math.floor((elapsed / span) * items.length));
+        while (placed < want) {
+          const i = placed++;
+          const s = items[i];
+          const u = (s.t - t0) / Math.max(1, t1 - t0);
+          ink.drop(
+            0.07 + rnd(i, 11) * 0.72 + u * 0.14, // 轻微右漂：越晚的会话越偏右
+            0.10 + rnd(i, 12) * 0.78,
+            0.011 + s.r * 0.038,
+            [s.d, s.d, s.d],
+            300 + i,
+            { vigor: s.v, eccentricity: s.e },
+          );
+        }
+      },
+      onFallback: (reason) => {
+        canvas.style.display = 'none';
+        root.dataset.flowFallback = reason;
+      },
+    });
+  }
+</script>

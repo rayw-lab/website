@@ -373,3 +373,40 @@ Beer–Lambert 数学上永不到 0，但 8bit 量化把它压成了纯黑 —�
 门里用 `canvas.drawImage` 读像素，报「近黑像素 588790」= **整幅图**。
 真因：WebGL canvas 未开 `preserveDrawingBuffer` 时 `drawImage` 读到的是空白全 0。
 若不核，会得出"透射底光夹持完全无效"的相反结论。改用合成后的截图 + 外部像素分析。
+
+## R7 · W3 组件化 + 全席位归约（2026-09-04 04:2x–05:2x）
+
+### R7-1 `Flow.astro` 组件落地并实跑自证
+展厅壳（`WorldHallLayout`/`HallChrome`/`world/[slug].astro`）从 about-hall 切出时已在本分支，
+ADR-8 的「临时自带最小壳」不需要。但 `[slug].astro` 硬编码了 about 的组件，改它会造成合流冲突 ——
+按 ADR-8「不重写 about-hall 产物」，W3 的交付物定为**组件**而非页面（页面接线归 W5）。
+`src/components/city/halls/nexus/Flow.astro`：ledger 派生半径/浓淡/冲量/偏心，**零手写数字**，
+含 `role="img"` 的等价文本（同样从数据派生）与 noscript 兜底。
+部署态自证（`world-spike/nexus-flow`）：注入 600 条 ✅ / canvas 1200px ✅ / 零 page error ✅ / 无降级 ✅。
+
+### R7-2 「墨分五色只出一色」是我的派单缺陷，不是 reducer 缺陷
+tone 由**席位**决定（codex=焦 / claude-code=浓 / cursor=重 / grok=淡 / agy+api-direct=清），
+而我首轮只传 `--claude`，600 条全是 claude-code ⇒ tone 全「浓」。
+补齐三源后：claude-code 347（浓）+ codex 253（焦）= **两色**，1836 会话 / 40 天 / 2026-07-23→09-03。
+
+### R7-3 🔴 fail-closed 门在真实场景下当场拦截（加数据源那一天就爆）
+加 cursor 源后 reducer **直接 `exit 1`**：`turn_ended` 未在 TYPE_POLICY 表态。
+该类型在同日 03:5x 的普查里**根本不存在** —— 是这一小时内新产生的。
+正是「写死的清单不会自己长大，只在新类型出现那天才爆」，而那天就是今天。
+
+### R7-4 门的分母比被测集合窄 —— 「什么东西不会被这个门看见」
+表态后门又红：「turn_ended 不在普查全集里（普查过期？）」。
+真因不是普查过期，而是**普查只扫 `~/.claude/projects`（23 种），reducer 却读 claude+codex+cursor**。
+候选集比被测集合窄 ⇒ 整类逃检。
+处置：普查扩到 reducer 实际读的全部源 ⇒ **3731 文件 / 2,126,411 行 / 32 种 type**，
+门随即报出 8 种未表态（全是 codex 侧：`session_meta`/`turn_context`/`event_msg`/`response_item`
++ `world_state`/`inter_agent_communication_metadata`/`compacted`/`token_usage_record`）。
+同时发现 `SEEN_TYPES` 只在 `claudeLine` 里记录，codex 的类型**根本进不了 typeCoverage** —— 一并补。
+终态：**32 种全表态（mapped 6 / ignored 26）**，安全门 rc=0、正确性门 rc=0。
+两条 ignored 的理由值得留档：`compacted` 与 `token_usage_record` 若也 mapped 会与
+`event_msg` 的 `context_compacted`/`token_count` **重复计数**。
+
+### R7-5 待办：cursor 源识别到白名单却入账 0
+`~/.cursor/.../agent-transcripts` 命中 mywebsite(78 文件)/co-agent(15 文件)，但 **kept=0**。
+样本行形如 `{message, role}`，**无顶层 type、疑无标准时间戳** ⇒ `tsOf()` 取不到 t0 即整条丢弃。
+第三色（cursor=重）因此缺席。下一轮定位其时间戳字段。

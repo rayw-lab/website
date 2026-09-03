@@ -242,6 +242,18 @@ const TYPE_POLICY = {
   'fork-context-ref': 'ignored:上下文分叉引用',
   'artifact-autoreact-ledger': 'ignored:artifact 自动回复台账',
   'artifact-comment-monitor': 'ignored:artifact 评论监听',
+  // 🔴 2026-09-04 04:5x 由 fail-closed 门当场拦下：它在同日 03:5x 的普查里还不存在，
+  // 是这一小时内新产生的类型。正是「写死的清单不会自己长大，只在新类型出现那天才爆」。
+  turn_ended: 'ignored:轮次结束事件；turns 已由 assistant 消息计数，重复计会翻倍',
+  // —— Codex 侧（codexLine 的 switch 实际消费前四种）——
+  session_meta: 'mapped',
+  turn_context: 'mapped',
+  event_msg: 'mapped',
+  response_item: 'mapped',
+  world_state: 'ignored:世界状态快照，含工作区路径与文件树',
+  inter_agent_communication_metadata: 'ignored:agent 间通信元数据，与协作形状无关',
+  compacted: 'ignored:压缩标记；compacted 计数已由 event_msg 的 context_compacted 承担',
+  token_usage_record: 'ignored:用量明细；tokens 已由 event_msg 的 token_count 累计，重复计会翻倍',
 };
 /** 扫描过程中真实遇到的顶层 type（用于产出 typeCoverage 并做 fail-closed 校验） */
 const SEEN_TYPES = new Map();
@@ -277,6 +289,7 @@ function claudeLine(s, obj) {
 }
 
 function codexLine(s, obj) {
+  if (typeof obj.type === 'string') SEEN_TYPES.set(obj.type, (SEEN_TYPES.get(obj.type) ?? 0) + 1);
   const ts = tsOf(obj);
   if (ts !== null) {
     if (s.t0 === null || ts < s.t0) s.t0 = ts;
