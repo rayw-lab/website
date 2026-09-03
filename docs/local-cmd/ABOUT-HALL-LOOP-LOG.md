@@ -54,3 +54,9 @@
 - **全量 e2e**：attempt1/2 因指挥官自起的 4612 preview 与 astro 7 单实例锁冲突（webServer 起不来）→ 清干净后 attempt3：**80 passed / 2 failed / 11 did not run（1.2h）**。两失败 = `CITY-NAV-01`、`CITY-PA-01`，根因：`NAV_ROUTE` glob 按裸 `deepLink` 拦截 navigate，而 ADR-2 让进站统一带 `?from=city&poi=`，query 使 glob 不匹配 → 页面真跳转。**测试侧修**（正则容纳可选 query，路径仍以 deepLink 为准），提交 `f6d9ed8`；attempt4 已起（08:40）。
 - ZDR canary 06:49 / 07:30 仍 BLOCKED。
 - tick=6。
+
+### L7 · 2026-09-03 08:40–10:30
+- attempt4 全量：**80 passed / 2 failed / 11 did not run（1.4h）**。`CITY-NAV-01` 已过（NAV_ROUTE 修复有效）；两失败 `CITY-OBS-05`、`CITY-PA-01` 均为 **world 挂载 210s 超时（`data-state` 卡 loading）**，未到达断言体——主机负载污染（Cursor 渲染进程 284% CPU：IDE 以文本方式打开 3463 行的 PNG；Safari WebContent 88%；load avg 8），非产品回归。
+- 定向复跑（新端口 4621，workers=1，retries=0）：`poi-arrival` + `observability` 两 spec 连同依赖 project **48 passed / 0 failed（13.7m）**，`CITY-PA-01` 在带 query 的新进站 URL 下通过。
+- 结论口径：attempt4 = `RESULT_FAIL_HOST_LOAD`，不算产品红；正式 0F 需 attempt5 干净全量（10:31 起，端口 4622）。
+- 交接文档 `ABOUT-HALL-HANDOFF-2026-09-03.md` 已写（含 raw 同文副本）。ZDR canary 08:44 仍 BLOCKED。tick=7。
