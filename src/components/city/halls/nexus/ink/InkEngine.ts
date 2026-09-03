@@ -191,7 +191,10 @@ export class InkEngine {
     //   现在 lobes 收敛且 ADVECT_VEL/GRADIENT_SUB 都补了 clamp。）
     const kick = 34 * (radius / 0.03) * vigor;
     const lobes = 5 + Math.round(radius * 40); // 大笔要更多湿斑，否则边界仍然太圆
-    this.splatWater(x, y, radius * 2.1, 0.85);
+    // 🔴 主湿区半径必须随笔变化。写死 2.1 倍时，每一滴外面都套着一个大小完全相同的
+    // 灰色圆盘 —— 单看一滴没问题，几十滴并排就是典型的集合级 AI 味（同批多件同模）。
+    // 真人落墨时纸的吸水、落笔力度、墨的含水量都不一样，晕本就该大小不一。
+    this.splatWater(x, y, radius * (1.45 + pseudo(seed, 77) * 0.95), 0.62 + pseudo(seed, 78) * 0.4);
     for (let i = 0; i < lobes; i++) {
       const a = pseudo(seed, i) * Math.PI * 2;
       const r = radius * (1.1 + pseudo(seed, i + 90) * 1.3);

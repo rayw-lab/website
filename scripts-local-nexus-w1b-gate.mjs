@@ -46,4 +46,11 @@ console.log('③ 笔心在边界外  干区核心', b0.core, '→', b1.core);
 // （真实宣纸胶矾边界不是刀切，零渗漏反而假）。数值判据见随后的 python 段。
 console.log('   核心区差异改用数值判据（理论上界 ~5.4 色阶，门槛 12）');
 console.log('   正控：这一笔在纸上其它地方确实画出来了 →', b1.full !== b0.full ? '✅' : '🔴 这笔根本没落下');
+// ④ A4 锚点门：浓处趋黑但**永不死黑**。
+// 🔴 不能用 canvas.drawImage 读像素：WebGL canvas 未开 preserveDrawingBuffer 时读到的是
+// 空白全 0，会得出「整幅图都是死黑」的荒谬结论（本轮实测踩过）。改用合成后的截图。
+await pg.goto(U, { waitUntil: 'load' });
+await pg.waitForFunction(() => document.documentElement.dataset.inkDemo != null, null, { timeout: 60000 });
+await pg.locator('canvas').screenshot({ path: `${OUT}/a4-darkest.png` });
+console.log('④ A4 截图已落盘，判据见随后的像素分析段');
 await br.close();

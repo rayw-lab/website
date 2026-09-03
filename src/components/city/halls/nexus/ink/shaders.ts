@@ -323,15 +323,24 @@ void main() {
   vec3 absorbed = density * uStrength * uAbsorb;
   absorbed *= 1.0 + (grain - 0.5) * uGrain * clamp(c * 2.0, 0.0, 1.0);
   absorbed *= 1.0 + edge * uEdge;
-  vec3 col = paper * exp(-absorbed);
+  // 🔴 透射底光夹持：Beer–Lambert 在数学上永不到 0，但 8bit 量化会把它压成纯黑
+  // （实测 W1b 定稿图有 956 个 RGB=(0,0,0) 的死黑像素，锚点门 A4 实际失守，
+  //  是异源视觉审计发现的，我自己的量化门当时没查这一项）。
+  // 真实宣纸上最浓的焦墨仍有纸骨反光，绝对黑洞既不物理也不贵气 —— 焦墨要有光泽感。
+  vec3 col = max(paper * exp(-absorbed), uPaper * 0.055);
 
   // 白墨：漂白后的区域回到纸面之上
   float cover = clamp((1.0 - exp(-pw.a * 2.2)) * (1.0 - (grain - 0.5) * 0.35), 0.0, 1.0);
   col = mix(col, uPaper + 0.03, cover);
 
   // 湿处变暗且微冷 —— 这是「墨还没干」的唯一视觉线索，干燥后自然消失
-  float ws = smoothstep(0.02, 0.6, texture(uWet, vUv).x);
-  col *= vec3(1.0) - ws * vec3(0.16, 0.15, 0.11);
+  // 湿润光泽：「墨还没干」的唯一视觉线索。
+  // 🔴 强度必须很轻。0.16 在单滴场景下没问题，但 S1 把一百天压进十几秒时
+  // 所有滴同时湿着 —— 每滴外面套一个大小相近的灰盘子，几十滴并排就是集合级 AI 味。
+  // 之前三次都在改 wet 场本身（半径/蒸发/随机化）而收效甚微，因为病灶在**呈现层**。
+  // 同时把响应窗口抬高：只有真正很湿的地方才发暗，边缘的余湿不参与。
+  float ws = smoothstep(0.18, 0.85, texture(uWet, vUv).x);
+  col *= vec3(1.0) - ws * vec3(0.065, 0.06, 0.045);
 
   vec2 q = vUv - 0.5;
   col *= 1.0 - dot(q, q) * uVignette;
