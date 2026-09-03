@@ -14,7 +14,10 @@ interface Props {
   /** 副题（小字） */
   sub?: string;
 }
+import ledger from '../../../../data/nexus-ledger.json';
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+// 起手印的印文也由 ledger 派生：会话数 / 天数，不手写
+const tot = ledger.totals as Record<string, number>;
 const {
   lines = ['会话即笔迹，收据即印。', '一个人与多智能体共事的一百天。'],
   sub = '墨迹 · Ink Ledger',
@@ -33,6 +36,12 @@ const {
       <span class="yin__l" style="--d:1.6s">{lines[0]}</span>
       <span class="yin__l" style="--d:2.9s">{lines[1]}</span>
     </h1>
+    <!-- 起手印。草案 §1「第一枚印落下时标题浮现」—— 缺了它，标题写着「收据即印」
+         而画面无印，概念在首屏就断了（k3 视觉审 5/10 的主要扣分项）。
+         印文同样由 ledger 派生，不手写数字。 -->
+    <span class="yin__seal" aria-hidden="true">
+      <b>{tot.sessions}</b><i>{tot.days}日</i>
+    </span>
   </div>
 
   <div class="yin__more" aria-hidden="true"><span></span></div>
@@ -90,6 +99,27 @@ const {
     animation: yin-ink 1.6s cubic-bezier(.22,.61,.36,1) var(--d) forwards;
   }
   @keyframes yin-in { to { opacity: 1; } }
+
+  /* 印：整幅唯一的颜色。方形、等宽字、不引篆书（草案已定）。
+     微旋转是钤印的偶然性 —— 正对齐的方块是贴纸不是印。 */
+  .yin__seal {
+    display: inline-grid; place-items: center; gap: .1em;
+    margin-top: 1.2rem; padding: .3rem;
+    /* 🔴 边长不能用 em：em 相对的是印文自己的 .34em 字号，两层缩放叠起来只剩 26px。
+       印该与主标题字号相当（约 40-48px），否则「整幅唯一的颜色」小到看不见。 */
+    box-sizing: border-box;   /* 否则 padding+border 叠在 inline-size 之外，实测 51px 变 64px */
+    inline-size: clamp(2.1rem, 2.7vw, 2.6rem); aspect-ratio: 1;
+    color: #a855f7; border: 2px solid #a855f7; border-radius: 1px;
+    background: #a855f70d;
+    font: 500 clamp(.52rem, .74vw, .64rem)/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .04em;
+    transform: rotate(-1.4deg);
+    opacity: 0;
+    animation: yin-in 1.1s cubic-bezier(.22,.61,.36,1) 4.2s forwards;
+  }
+  .yin__seal b { font-weight: 600; font-size: 1.18em; }
+  .yin__seal i { font-style: normal; opacity: .82; }
+
   @keyframes yin-ink { to { opacity: 1; letter-spacing: .06em; } }
 
   .yin__more {
@@ -111,7 +141,7 @@ const {
 
   @media (prefers-reduced-motion: reduce) {
     /* 不许动时：字直接在位，墨由构建期海报承担（canvas 由脚本隐藏） */
-    .yin__sub, .yin__l, .yin__more { animation: none; opacity: 1; }
+    .yin__sub, .yin__l, .yin__more, .yin__seal { animation: none; opacity: 1; }
     .yin__more span { animation: none; }
   }
 </style>
