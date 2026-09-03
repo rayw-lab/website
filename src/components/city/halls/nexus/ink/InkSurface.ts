@@ -28,6 +28,13 @@ export interface InkSurfaceOptions extends InkEngineOptions {
   fixedStep?: number;
   /** 设备像素比上限，控显存 */
   maxDpr?: number;
+  /**
+   * 是否自动起 rAF 循环。默认 true。
+   * 🔴 `?demo` 停帧模式必须传 false：否则 seek() 之后 IntersectionObserver
+   * 仍会启动循环，截图期间模拟继续推进，**截图内容取决于等待了多少毫秒**，
+   * 「确定性海报」就是假的（W1b 由 advisor 指出，已用双截图 diff 自证修复）。
+   */
+  autoLoop?: boolean;
 }
 
 const MAX_DT = 1 / 30;
@@ -62,7 +69,7 @@ export class InkSurface {
 
     // 第五态守卫：进视口 2s 还没跑过一帧，说明环境有问题，主动降级
     window.setTimeout(() => {
-      if (!this.disposed && !this.stepped && this.inView) {
+      if (!this.disposed && !this.stepped && this.inView && this.opts.autoLoop !== false) {
         this.opts.onFallback?.('never-stepped');
       }
     }, 2000);
@@ -109,6 +116,7 @@ export class InkSurface {
 
   private sync(): void {
     if (this.disposed) return;
+    if (this.opts.autoLoop === false) return;
     const shouldRun = this.inView && !document.hidden;
     if (shouldRun && !this.raf) {
       this.lastTime = performance.now();

@@ -84,3 +84,57 @@
 | **reduced-motion 降级** | `fallback=reduced-motion`、`inkReady=null`、canvas `display:none`、不起 rAF | Playwright `reducedMotion:'reduce'` 实跑 |
 | **确定性 replay** | `?demo=yin&t=N` 两个时刻均正确停帧 | 同上 |
 | **astro check** | 0 errors（195 files） | 本地实跑 |
+
+---
+
+## R3 · W1b 参数锁值与干纸行为门（2026-09-04 01:0x–02:xx）
+
+### R3-1 台账 R2 的一条声称被推翻：`?demo` 停帧当时**不是**确定性的
+- 原声称（R2 节）：「`?demo=yin&t=N` 停帧 ⇒ 截图确定性，可作 W5 海报门基准」。
+- 事实：`seek()` 之后 `IntersectionObserver` 仍会启动 rAF，截图等待期间模拟以 `fixedStep` 继续推进，
+  **截图内容取决于等待了多少毫秒**。由 advisor 指出，本席复核属实。
+- 处置：`InkSurfaceOptions` 新增 `autoLoop`，`?demo` 传 `false`；`sync()` 与 never-stepped 计时器同时守。
+- 坐实方式：同 URL 连截两次比 PNG sha256 —— `base`/`base2` 同为 `7c69b6aa0652`，PASS。
+- 级联：W5 海报门的设计前提恢复成立；本条按 unverified-premise 纪律回改 R2 原文旁注。
+
+### R3-2 「六组参数出图全同」的真因：扫错了量，不是参数不敏感
+- 墨被 `ADVECT_INK_FS` 的 `mob < 0.002` 严格锁在湿区剪影内，湿区几何由固定 seed 的 `drop()` 决定；
+  我扫的 fibre/dry/bleed 里前两者是湿区内的**二阶量**。
+- 叠加：wet 场 splat 是加法且**无上限**，核心冲到 1.5+，令 `smoothstep(0.02,0.45)` 长期饱和在 1。
+- 处置：`ADVECT_WET_FS` 出口 `clamp(w,0,1)`；迁移率窗口提成 uniform `uMobLo/uMobHi` 进参数网格。
+- 坐实：负控组 `bleed=0.02` / `spread=0.4` / `fibre=0` 三者各自改变出图 sha ⇒ 传参链路通。
+  9 宫格 (fibre × bleed) **9/9 唯一** ⇒ 两个旋钮均有响应。
+
+### R3-3 `uMobHi` 曾静默断线 —— `str.replace` 不匹配时不报错
+- 现象：`__inkParams` 读回 `mobHi=0.3` 正确，出图与 base **逐字节相同**；`mobHi=5.0`（应让墨完全冻结）仍相同。
+- 根因：改 shader 的替换脚本里，`smoothstep(0.02, 0.45, wet)` 目标串未匹配，**replace 静默失败**；
+  于是 uniform 声明改了、使用处没改 → GLSL 优化掉未使用 uniform → `getUniformLocation` 返回 null
+  → `uniform1f` 静默无效。**读回值正确 ≠ 管线接通。**
+- 处置：改脚本一律带命中断言（未命中即 `sys.exit`），本轮后续 12 处替换全部逐条打勾。
+
+### R3-4 xhsapi 反核 P0 属实并已闭合：干纸只拦扩散、不拦落笔
+- 亲核：`ADVECT_INK_FS` 的 uniform 表里确实无 `uDryMask`，`splat()` 亦无 —— dryMask 只压湿度场，
+  管的是「已在纸上的墨会不会扩散过去」，对 `splatInk` 直接写入的新笔零拦截。
+  行为门实测：干区核心落一滴，最大色阶差 **230**（几乎全黑）＝ 墨完全进去了。
+- 曾试 GPU 侧 gate（SPLAT_FS 采 dryMask）**失败**：`setDryMask` 复用同一个 splat program 去画
+  dryMask 自己，构成「采样正在写的纹理」的未定义行为，实测 gate 完全不生效。
+- 定案：CPU 侧 `dryAt(x,y)` 按 `setDryMask` 的圆形入参判定，`splatInk`/`splatWater`/`splatWhite`
+  **以及 `drop()` 的微涡冲量**四条路径统一走门（漏掉冲量时症状是「墨没进去、画面却还是变了」）。
+- 坐实：mask × 落笔 2×2 正交对照 —— 默认 mask 下落笔改变出图（正控 PASS）；
+  全屏干纸下落笔与不落笔**逐字节相同**（负控 PASS）。
+
+### R3-5 双源收敛：`splat()` 的 `uTex` 死绑定
+advisor 与 xhsapi **独立**报出同一条：`p.texture('uTex', target.read.texture, 0)` 绑了一张
+SPLAT_FS 根本不采样的纹理，且它正是当前 draw FBO 的颜色附件；保留已有内容靠的是
+`blendFunc(ONE,ONE)` 而非采样。已删。
+
+### R3-6 🔴 本轮真正的教训：连续 5 次「被测对象有问题」全是探针自己错
+| # | 症状 | 真因 |
+|---|---|---|
+| 1 | `until curl 4321` 空等 10 分钟 | `astro preview` 检测到已有实例（4611）便 SKIP，只打 info 级日志 |
+| 2 | 「preview 在服务 stale dist，根因找到了」 | Astro 把 `<script>` 打包成外部 `_astro/*.js`，grep 单个 HTML 必然 0 命中——**这个"根因"是错误探针制造出来的**，已作废 |
+| 3 | 两次 5–10 分钟超时，怀疑 SwiftShader 太慢 | 探针等 `document.body.dataset.inkReady`，代码写在 `documentElement` 上。修正后单 case **0.3 秒** |
+| 4 | 「参数无响应」 | `str.replace` 静默失败（见 R3-3） |
+| 5 | 干纸门连判三轮 FAIL | 对照组不满足唯一变量：①clip 框取到 mask 只剩 0.27 的边缘 ②三个 case 的 `seek` 时长没对齐 ③全屏干纸本身就会冻结已有的墨 |
+判据句：**下「被测对象有问题」的结论前，先用一个已知正例证明探针本身是对的**；
+对照组必须逐对只变一个东西。

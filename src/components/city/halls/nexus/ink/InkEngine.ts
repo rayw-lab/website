@@ -44,6 +44,7 @@ export class InkEngine {
   private divergence!: FBO;
   private curl!: FBO;
   private dryMask!: FBO;
+  private dryRegions: ReadonlyArray<{ x: number; y: number; radius: number }> = [];
 
   private aspect = 1;
   private disposed = false;
@@ -57,6 +58,12 @@ export class InkEngine {
   ) {
     this.gl = caps.gl;
     this.params = { ...pickParams(opts.mobile ?? false), ...opts.params };
+    // 正控出口：外部探针据此确认「传进来的参数真的生效了」。
+    // 没有它，「N 组参数出图相同」分不清是参数不敏感还是传参链路断了。
+    (globalThis as Record<string, unknown>).__inkParams = this.params;
+    // 正控出口：外部探针据此确认「传进来的参数真的生效了」，
+    // 否则「六组参数出图一样」分不清是参数不敏感还是传参链断了。
+    (globalThis as Record<string, unknown>).__inkParams = this.params;
     this.tri = new ScreenTriangle(this.gl);
     this.programs = {
       splat: new Program(this.gl, S.VERT, S.SPLAT_FS),
@@ -117,11 +124,18 @@ export class InkEngine {
   // ---------- 落墨 ----------
 
   /** 通用加法 splat */
-  private splat(target: DoubleFBO, x: number, y: number, radius: number, value: Vec4): void {
+  private splat(
+    target: DoubleFBO,
+    x: number,
+    y: number,
+    radius: number,
+    value: Vec4,
+  ): void {
     const gl = this.gl;
     const p = this.programs.splat;
     p.use();
-    p.texture('uTex', target.read.texture, 0); // 保持已有内容
+    // 已有内容靠 blendFunc(ONE, ONE) 累加保留，不需要也不能绑输入纹理：
+    // SPLAT_FS 没有 uTex sampler，绑当前 draw FBO 的纹理还会形成反馈环隐患。
     p.uniform2f('uPoint', x, y);
     p.uniform4f('uValue', value[0], value[1], value[2], value[3]);
     p.uniform1f('uRadius', radius * radius);
@@ -135,6 +149,9 @@ export class InkEngine {
 
   /** 落一滴墨：density 是三个染料分量的光学密度，扩散速度由 CHROMA 决定 */
   splatInk(x: number, y: number, radius: number, density: readonly [number, number, number]): void {
+    const g = 1 - this.dryAt(x, y);
+    if (g < 0.02) return; // 干纸：这一笔根本落不下去
+    density = [density[0] * g, density[1] * g, density[2] * g];
     this.splat(this.ink, x, y, radius, [density[0], density[1], density[2], 0]);
   }
 
@@ -174,15 +191,18 @@ export class InkEngine {
     amount: number,
     impulse: readonly [number, number] = [0, 0],
   ): void {
-    this.splat(this.wet, x, y, radius, [amount, 0, 0, 0]);
+    const g = 1 - this.dryAt(x, y);
+    this.splat(this.wet, x, y, radius, [amount * g, 0, 0, 0]);
     if (impulse[0] !== 0 || impulse[1] !== 0) {
-      this.splat(this.velocity, x, y, radius, [impulse[0], impulse[1], 0, 0]);
+      // 冲量同样受干纸拦截：干纸上没有水，也就不该有水流扰动去推动邻近的墨。
+      // 漏掉这一路时，行为门表现为「墨没落进去、画面却还是变了」。
+      this.splat(this.velocity, x, y, radius, [impulse[0] * g, impulse[1] * g, 0, 0]);
     }
   }
 
   /** 白墨：破坏性覆盖，用来表达 NO_GO / revert（真擦除，不是盖白） */
   splatWhite(x: number, y: number, radius: number, amount: number): void {
-    this.splat(this.ink, x, y, radius, [0, 0, 0, amount]);
+    this.splat(this.ink, x, y, radius, [0, 0, 0, amount * (1 - this.dryAt(x, y))]);
   }
 
   /** 设置笔位（影响洇的强度）；radius ≤ 0 表示抬笔 */
@@ -211,8 +231,32 @@ export class InkEngine {
     target.swap();
   }
 
+  /**
+   * 干纸的「落笔侧」拦截。
+   *
+   * 🔴 GPU 侧的 dryMask 只压湿度场，管的是【已经在纸上的墨会不会扩散过去】；
+   * 对 `splatInk` 直接写进来的**新笔**毫无拦截 —— 访客在指挥官区域落笔会留下
+   * 一个永不移动、永远可见的黑点，「画不上去」的隐喻当场破产（xhsapi 反核 P0，
+   * 行为门实测最大色阶差 230 = 墨完全进去了）。
+   *
+   * 曾试过在 SPLAT_FS 里采 dryMask 做 gate，但 `setDryMask` 复用同一个 splat
+   * program 去画 dryMask 自己，构成「采样正在写的纹理」的未定义行为，实测 gate
+   * 完全不生效。落点判定本就只需要圆形区域（setDryMask 的入参形状），放在 CPU
+   * 侧既确定又零 GPU 风险。
+   */
+  private dryAt(x: number, y: number): number {
+    let m = 0;
+    for (const r of this.dryRegions) {
+      const dx = (x - r.x) * this.aspect;
+      const dy = y - r.y;
+      m = Math.max(m, Math.exp(-(dx * dx + dy * dy) / (r.radius * r.radius)));
+    }
+    return Math.min(1, m);
+  }
+
   /** 干纸遮罩：值为 1 的像素湿度恒为 0，墨永远进不去（试墨区的指挥官区域） */
   setDryMask(regions: ReadonlyArray<{ x: number; y: number; radius: number }>): void {
+    this.dryRegions = regions;
     const gl = this.gl;
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.dryMask.fbo);
     gl.viewport(0, 0, this.dryMask.width, this.dryMask.height);
@@ -329,6 +373,8 @@ export class InkEngine {
     p.uniform1f('uBleed', P.bleed);
     p.uniform1f('uAspect', this.aspect);
     p.uniform1f('uFibre', P.fibre);
+    p.uniform1f('uMobLo', P.mobLo);
+    p.uniform1f('uMobHi', P.mobHi);
     p.uniform2f('uResolution', this.canvas.width, this.canvas.height);
     p.uniform3f('uChroma', P.chroma[0], P.chroma[1], P.chroma[2]);
     p.uniform3f('uBrush', this.brush[0], this.brush[1], this.brush[2]);

@@ -111,6 +111,7 @@ const site = Astro.site?.href ?? '/';
     const override = Object.fromEntries(
       Object.entries({
         fibre: num('fibre'),
+        mobHi: num('mobhi'),
         dryTau: num('dry'),
         bleed: num('bleed'),
         curlAmount: num('curl'),
@@ -123,6 +124,7 @@ const site = Astro.site?.href ?? '/';
     const surface = InkSurface.mount(canvas, {
       mobile: window.matchMedia('(max-width: 768px)').matches,
       params: override,
+      autoLoop: !demo, // demo 停帧模式绝不自动推进，否则截图不确定
       fixedStep: demo ? 1 / 60 : undefined,
       onFrame,
       onFallback: (reason) => {
@@ -135,6 +137,10 @@ const site = Astro.site?.href ?? '/';
     if (surface) {
       surface.ink.setDryMask([DRY]);
       document.documentElement.dataset.inkReady = '1';
+      // 行为门出口：探针据此直接驱动引擎 API，按它真实被消费的方式验干纸拒墨，
+      // 而不是只看参数读回值（读回正确 ≠ 管线接通，uMobHi 已实证过一次）。
+      (globalThis as any).__inkSurface = surface;
+      (globalThis as any).__inkDry = DRY;
 
       if (demo && seekTo > 0) {
         // 确定性模式：直接跑到目标时刻停帧，不起 rAF

@@ -22,6 +22,10 @@ export interface InkParams {
   dissipation: number;
   /** 纸纤维对迁移率的调制强度 0–1；0 = 各向同性（出圆），锚点门 A2 靠它 */
   fibre: number;
+  /** 迁移率响应窗口下界：湿度低于它墨完全不动 */
+  mobLo: number;
+  /** 上界：湿度高于它迁移率饱和。窗口太窄 → 参数长期无效（W1b 实证） */
+  mobHi: number;
   curlAmount: number;
   pressureIterations: number;
   /** 速度/压力场短边格数 */
@@ -60,7 +64,9 @@ export const DESKTOP: InkParams = {
   spread: 0.1, // [待验] inkwash 0.12 [源码]
   dryTau: 6.0, // [待验] 展厅阅读节奏，非 inkwash 原值
   dissipation: 0.985,
-  fibre: 0.85, // [实测] W1 首轮 fibre=0 出图为纯高斯圆，A2 判 FAIL 后引入
+  fibre: 0.62, // [实测] 0.85 过强会吃掉外围淡紫晕；W1b 网格定
+  mobLo: 0.02,
+  mobHi: 0.85, // [实测] 0.45 太低：clamp 后湿度核心仍长期 >0.45 → 饱和无响应
   curlAmount: 26.0, // [实测] 12 太弱，涡量放大不出毛刺；A2 与它一同决定
   pressureIterations: 22, // [源码 index.html:222] —— agy 报 16 有误，以源码为准
   simResolution: 256, // [源码 index.html:219]
@@ -74,7 +80,7 @@ export const MOBILE: InkParams = {
   simResolution: 160,
   dyeResolution: 768,
   curlAmount: 22.0,
-  fibre: 0.8,
+  fibre: 0.6,
 };
 
 export function pickParams(isMobile: boolean): InkParams {

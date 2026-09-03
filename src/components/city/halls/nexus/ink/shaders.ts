@@ -145,7 +145,10 @@ void main() {
   float n = (texture(uWet, coord + vec2(b.x, 0.0)).x + texture(uWet, coord - vec2(b.x, 0.0)).x
            + texture(uWet, coord + vec2(0.0, b.y)).x + texture(uWet, coord - vec2(0.0, b.y)).x) * 0.25;
   w = mix(w, n, uSpread) * uDecay;
-  o = vec4(w * (1.0 - texture(uDryMask, vUv).x), 0.0, 0.0, 1.0);
+  // 🔴 clamp：splat 是加法写入且无上限，核心湿度会冲到 1.5+，
+  // 使下游 smoothstep(uMobLo, uMobHi) 长期饱和在 1 —— 于是干燥/洇散类参数
+  // 在很长时间里对形态毫无影响（W1b 六组参数出图全同的直接成因）。
+  o = vec4(clamp(w, 0.0, 1.0) * (1.0 - texture(uDryMask, vUv).x), 0.0, 0.0, 1.0);
 }`;
 
 /**
@@ -163,7 +166,7 @@ void main() {
 export const ADVECT_INK_FS = `${HEAD}
 uniform sampler2D uVelocity, uInk, uWet;
 uniform vec2 uTexel, uSrcTexel;
-uniform float uDt, uBleed, uAspect, uFibre;
+uniform float uDt, uBleed, uAspect, uFibre, uMobLo, uMobHi;
 uniform vec2 uResolution;
 uniform vec3 uChroma;
 uniform vec3 uBrush;   // xy = 位置, z = 半径（≤0 表示无笔）
@@ -186,7 +189,7 @@ float fibre(vec2 p){
 
 void main() {
   float wet = texture(uWet, vUv).x;
-  float mob = smoothstep(0.02, 0.45, wet);
+  float mob = smoothstep(uMobLo, uMobHi, wet);
   // 纤维调制迁移率：墨沿好走的纤维冲得远，遇到密处滞留 → 边界长出毛刺
   mob *= mix(1.0, 0.35 + 1.5 * fibre(vUv * uResolution * 0.012), uFibre);
   vec4 cur = texture(uInk, vUv);

@@ -145,7 +145,7 @@ git worktree add -b codex/nexus-hall-20260903 \
 2. **禁不实**：不编年份、不编数字、不编 URL；每一句断言可追到文件；未溯源句删除。数字只从 ledger 渲染，**禁手写**。
 3. **禁 `wheel + preventDefault`**、禁 `touchmove` 劫持。
 4. **禁 import `src/lab/world/**`**、禁进 Lab manifest、禁 WebGPU、禁引 three/OGL、禁自定义 View Transition。
-5. **禁直接拷 inkwash 代码**（许可未核）；技术原理（Stam 1999 / GPU Gems ch.38 / Beer–Lambert）与 MIT 的 PavelDoGreat 结构可参考改写。
+5. **参考口径（磊哥 2026-09-04 裁定，覆盖草案「许可未核」）**：inkwash 实查**无 LICENSE 文件**（agy W1r 一手核）。版权保护的是表达不是算法与物理——**可 clone、可逐文件读、可照其架构与参数初值自行实现**（Stam 1999 / GPU Gems ch.38 / Beer–Lambert 本就是公开数学）；只避免整段源码字面复制，用自己的组织形式写。PavelDoGreat 为 MIT，可直接借结构。
 6. **禁客户/雇主信息入 ledger**：白名单准入（非匿名化），非白名单整条丢弃。
 7. **禁假实时 / 输入框 / BYO key / 3D 吉祥物 / logo 墙 / 全绿门面 / 未脱敏会话**（N1 反面清单 12 条全收）。
 8. 不加 `/world/agent-nexus/` 进 LHCI collect（第一刀）。
