@@ -85,11 +85,16 @@ const site = Astro.site?.href ?? '/';
       if (!dropped && elapsed > 0.25) {
         dropped = true;
         // RGB = 三个染料分量的光学密度；G 分量 bleed 最快 → 外缘泛紫
-        ink.drop(0.34, 0.55, 0.030, [0.55, 0.72, 0.42], 7);
+        // 密度三通道中性：偏色只由 CHROMA 的扩散速率差在外缘生成（见 params.ts 推导）。
+        // 构图取疏密对比：一笔浓、一滴中、一点淡，不做等距排列。
+        // seed 决定湿斑分布，进而决定整滴的轮廓。seed=7 恰好接近均匀分布 → 出圆；
+        // 换 seed 即恢复不规则（W1b 实证：这不是系统性缺陷，是单样本运气）。
+        ink.drop(0.36, 0.56, 0.058, [1.15, 1.15, 1.15], Number(params.get('seed') ?? 19));
       }
       // 第二滴晚一点，演示后滴把前环推薄（S1 墨流的核心）
       if (elapsed > 3.2 && elapsed < 3.28) {
-        ink.drop(0.47, 0.45, 0.024, [0.5, 0.66, 0.4], 23);
+        ink.drop(0.52, 0.47, 0.038, [0.66, 0.66, 0.66], 23);
+        ink.drop(0.62, 0.62, 0.026, [0.34, 0.34, 0.34], 41);
       }
       frames++;
       const now = performance.now();
@@ -112,6 +117,7 @@ const site = Astro.site?.href ?? '/';
       Object.entries({
         fibre: num('fibre'),
         mobHi: num('mobhi'),
+        simResolution: num('sim'),
         dryTau: num('dry'),
         bleed: num('bleed'),
         curlAmount: num('curl'),
@@ -156,7 +162,7 @@ const site = Astro.site?.href ?? '/';
           const y = 1 - (e.clientY - r.top) / r.height;
           surface.ink.setBrush(x, y, 0.05);
           surface.ink.splatWater(x, y, 0.055, 0.5, [e.movementX * 4, -e.movementY * 4]);
-          surface.ink.splatInk(x, y, 0.02, [0.28, 0.36, 0.2]);
+          surface.ink.splatInk(x, y, 0.02, [0.4, 0.4, 0.4]);
           surface.poke();
         };
         canvas.addEventListener('pointerdown', (e) => {

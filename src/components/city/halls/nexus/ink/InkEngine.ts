@@ -67,6 +67,7 @@ export class InkEngine {
     this.tri = new ScreenTriangle(this.gl);
     this.programs = {
       splat: new Program(this.gl, S.VERT, S.SPLAT_FS),
+      splatDry: new Program(this.gl, S.VERT, S.SPLAT_DRY_FS),
       advectVel: new Program(this.gl, S.VERT, S.ADVECT_VEL_FS),
       curl: new Program(this.gl, S.VERT, S.CURL_FS),
       vorticity: new Program(this.gl, S.VERT, S.VORTICITY_FS),
@@ -130,10 +131,12 @@ export class InkEngine {
     y: number,
     radius: number,
     value: Vec4,
+    dry = false,
   ): void {
     const gl = this.gl;
-    const p = this.programs.splat;
+    const p = dry ? this.programs.splatDry : this.programs.splat;
     p.use();
+    if (dry) p.texture('uDryMask', this.dryMask.texture, 0);
     // 已有内容靠 blendFunc(ONE, ONE) 累加保留，不需要也不能绑输入纹理：
     // SPLAT_FS 没有 uTex sampler，绑当前 draw FBO 的纹理还会形成反馈环隐患。
     p.uniform2f('uPoint', x, y);
@@ -149,10 +152,8 @@ export class InkEngine {
 
   /** 落一滴墨：density 是三个染料分量的光学密度，扩散速度由 CHROMA 决定 */
   splatInk(x: number, y: number, radius: number, density: readonly [number, number, number]): void {
-    const g = 1 - this.dryAt(x, y);
-    if (g < 0.02) return; // 干纸：这一笔根本落不下去
-    density = [density[0] * g, density[1] * g, density[2] * g];
-    this.splat(this.ink, x, y, radius, [density[0], density[1], density[2], 0]);
+    if (this.dryAt(x, y) > 0.98) return; // early-out：笔心正落在干纸上，整笔免谈
+    this.splat(this.ink, x, y, radius, [density[0], density[1], density[2], 0], true);
   }
 
   /**
@@ -168,9 +169,19 @@ export class InkEngine {
     density: readonly [number, number, number],
     seed = 1,
   ): void {
-    // 不规则湿斑：主湿区 + 5 个偏移小湿点，边界因此天然凹凸
+    // 🔴 扰动必须随笔触尺寸缩放。W1b 出图实测：冲量写死 34 时，
+    // 小笔（r≈0.026）边缘分形漂亮，大笔（r≈0.058）却收敛成纯高斯圆 —— 因为
+    // 相对扰动强度 ∝ impulse/radius，笔越大越"平静"。锚点门 A2 会在大笔触上悄悄失效。
+    // 线性缩放会过冲：radius 0.058 时 kick=66、湿斑 10 个，冲量总量约 4 倍，
+    // 实测把颜料整个吹散、画面全白（引擎不报错、ready 正常，最难查的那种）。
+    // 相对扰动强度 = kick / radius。sqrt 缩放让大笔的相对扰动弱于小笔，
+    // 正是大笔收敛成圆的直接原因；线性缩放才让各尺寸笔触"同样地乱"。
+    // （首次试线性时画面全白，是因为同时把 lobes 提到了 10 —— 冲量总量约 4 倍；
+    //   现在 lobes 收敛且 ADVECT_VEL/GRADIENT_SUB 都补了 clamp。）
+    const kick = 34 * (radius / 0.03);
+    const lobes = 5 + Math.round(radius * 40); // 大笔要更多湿斑，否则边界仍然太圆
     this.splatWater(x, y, radius * 2.1, 0.85);
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < lobes; i++) {
       const a = pseudo(seed, i) * Math.PI * 2;
       const r = radius * (1.1 + pseudo(seed, i + 90) * 1.3);
       const wx = x + Math.cos(a) * r * 0.55;
@@ -178,7 +189,23 @@ export class InkEngine {
       this.splatWater(wx, wy, radius * (0.7 + pseudo(seed, i + 40) * 0.8), 0.5);
       // 微涡偶极子：制造旋度，涡量强化 pass 才有东西可放大
       const s = i % 2 === 0 ? 1 : -1;
-      this.splatWater(wx, wy, radius * 0.6, 0, [-Math.sin(a) * 34 * s, Math.cos(a) * 34 * s]);
+      this.splatWater(wx, wy, radius * 0.6, 0, [-Math.sin(a) * kick * s, Math.cos(a) * kick * s]);
+    }
+    // 🔴 第二尺度：更小、更多、更靠外的湿斑。
+    // 只有单一尺度的 lobe 时，大笔的湿区只是小笔的等比放大 —— 起伏比例不变，
+    // 在更大面积上看就是平滑的圆（W1b 实测：r=0.026 出分形、r=0.058 出圆，
+    // 提高纸纤维频率只带来微小改善，因为主因在湿区几何不在迁移率调制）。
+    // 分形的本质是自相似的多尺度起伏，所以次级湿斑的半径必须显著小于主 lobe。
+    const fine = lobes * 2;
+    for (let i = 0; i < fine; i++) {
+      const a = pseudo(seed, i + 200) * Math.PI * 2;
+      const r = radius * (1.25 + pseudo(seed, i + 260) * 0.95);
+      this.splatWater(
+        x + Math.cos(a) * r * 0.62,
+        y + Math.sin(a) * r * 0.62,
+        radius * (0.16 + pseudo(seed, i + 300) * 0.2),
+        0.44,
+      );
     }
     this.splatInk(x, y, radius, density);
   }
@@ -192,7 +219,7 @@ export class InkEngine {
     impulse: readonly [number, number] = [0, 0],
   ): void {
     const g = 1 - this.dryAt(x, y);
-    this.splat(this.wet, x, y, radius, [amount * g, 0, 0, 0]);
+    this.splat(this.wet, x, y, radius, [amount, 0, 0, 0], true);
     if (impulse[0] !== 0 || impulse[1] !== 0) {
       // 冲量同样受干纸拦截：干纸上没有水，也就不该有水流扰动去推动邻近的墨。
       // 漏掉这一路时，行为门表现为「墨没落进去、画面却还是变了」。
@@ -202,7 +229,7 @@ export class InkEngine {
 
   /** 白墨：破坏性覆盖，用来表达 NO_GO / revert（真擦除，不是盖白） */
   splatWhite(x: number, y: number, radius: number, amount: number): void {
-    this.splat(this.ink, x, y, radius, [0, 0, 0, amount * (1 - this.dryAt(x, y))]);
+    this.splat(this.ink, x, y, radius, [0, 0, 0, amount], true);
   }
 
   /** 设置笔位（影响洇的强度）；radius ≤ 0 表示抬笔 */

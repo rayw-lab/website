@@ -40,6 +40,32 @@ void main() {
 }`;
 
 /**
+ * splat 的干纸变体：**逐片元**乘 (1 - dryMask)。
+ *
+ * 为什么必须独立编译一份，而不是给 SPLAT_FS 加个开关：
+ * `setDryMask` 自己就是用 splat program 去画 dryMask 的，若同一个 program 里带上
+ * `texture(uDryMask, …)`，画 mask 时就成了「采样正在写的那张纹理」——未定义行为，
+ * 实测 gate 完全不生效。两个实例就没有这条反馈边。
+ *
+ * 为什么 CPU 侧判笔心还不够：splat 的足迹是高斯，笔心落在干区边界**外侧**时
+ * CPU 门放行，而尾部照样写进 ink；wet 场每帧有 (1-mask) 清扫，**ink 场没有**，
+ * 于是那点尾墨在干区里冻结可见——正是 P0 的原症状。访客沿边界涂抹必然触发。
+ * 也不能改用「每帧 ink *= (1-mask)」：高斯 mask 的无限尾会变成常驻蒸发场，
+ * 距圆心两倍半径处每秒也要吃掉大量合法墨。
+ */
+export const SPLAT_DRY_FS = `${HEAD}
+uniform sampler2D uDryMask;
+uniform vec2 uPoint;
+uniform vec4 uValue;
+uniform float uRadius;
+uniform float uAspect;
+void main() {
+  vec2 d = vUv - uPoint;
+  d.x *= uAspect;
+  o = uValue * exp(-dot(d, d) / uRadius) * (1.0 - texture(uDryMask, vUv).x);
+}`;
+
+/**
  * pass 1 · 速度自对流 + 阻尼 + **湿度门**。
  * 湿度门是本厅的「权限系统」隐喻的物理本体：干纸上速度被 mask 归零，
  * 墨在那里绝对不动（试墨区的指挥官干纸靠它）。
@@ -52,7 +78,7 @@ void main() {
   vec2 coord = vUv - uDt * texture(uVelocity, vUv).xy * uTexel;
   vec2 vel = texture(uVelocity, coord).xy * uDissipation;
   float wet = texture(uWet, vUv).x;
-  o = vec4(vel * smoothstep(0.005, 0.2, wet), 0.0, 1.0);
+  o = vec4(clamp(vel * smoothstep(0.005, 0.2, wet), -1000.0, 1000.0), 0.0, 1.0);
 }`;
 
 /** pass 2 · 旋度 */
@@ -126,7 +152,7 @@ void main() {
   float b = texture(uPressure, vUv - vec2(0.0, uTexel.y)).x;
   float t = texture(uPressure, vUv + vec2(0.0, uTexel.y)).x;
   vec2 vel = texture(uVelocity, vUv).xy - 0.5 * vec2(r - l, t - b);
-  o = vec4(vel, 0.0, 1.0);
+  o = vec4(clamp(vel, -1000.0, 1000.0), 0.0, 1.0);   // xhsapi P2：此前仅 VORTICITY 有 clamp
 }`;
 
 /**
@@ -191,7 +217,10 @@ void main() {
   float wet = texture(uWet, vUv).x;
   float mob = smoothstep(uMobLo, uMobHi, wet);
   // 纤维调制迁移率：墨沿好走的纤维冲得远，遇到密处滞留 → 边界长出毛刺
-  mob *= mix(1.0, 0.35 + 1.5 * fibre(vUv * uResolution * 0.012), uFibre);
+  // 🔴 纤维的空间尺度必须远小于笔触，否则大笔会把噪声平均掉、边界收敛成圆
+  // （W1b 实测：0.012 ≈ 12 周期/屏 ≈ 83px 特征尺度，小笔 26px 出分形、大笔 58px 出圆）。
+  // 0.035 ≈ 12–67px 三层特征尺度，覆盖到最大笔触之下。
+  mob *= mix(1.0, 0.35 + 1.5 * fibre(vUv * uResolution * 0.035), uFibre);
   vec4 cur = texture(uInk, vUv);
   // 干纸：墨原地不动。这一句就是「访客在指挥官区域画不上去」的全部实现。
   if (mob < 0.002) { o = cur; return; }

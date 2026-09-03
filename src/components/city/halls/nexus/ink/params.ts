@@ -44,13 +44,16 @@ const PAPER = [0.937, 0.914, 0.863] as const;
  * 近中性、G 略高：保证浓处三通道齐吸 → 趋黑（锚点门 A4 仍要求 ≥0.06 不死黑）。
  * 对照：inkwash 近黑墨为 [1.00, 0.97, 0.88] [源码 index.html:225]。
  */
-const ABSORB = [0.88, 1.12, 0.82] as const;
+const ABSORB = [1.06, 1.0, 0.85] as const; // [推导] 吸红>吸绿>吸蓝 → 残留偏冷，墨核成冷黑而非死灰
 
 /**
  * 色谱分离速率 [推导]。G 最大 = 绿通道 bleed 最快 = 外晕吸绿光 = 透射泛紫。
  * 反直觉但推导见 shaders.ts；W1 spike 出图后按锚点门 A5（色相差 ≥15°）回调。
  */
-const CHROMA = [0.72, 1.4, 0.52] as const;
+const CHROMA = [0.9, 1.35, 0.72] as const;
+// [推导] 色谱分离**只发生在外缘**：G 洇得最快 → 外缘 G 密度相对高 → 吸绿 → 透出淡紫。
+// 🔴 W1b 首轮教训：当时把偏色写进了落笔的初始 density（G 比 R 高 31%），
+// 于是连墨核都在吸绿，整滴呈碘酒紫。密度必须中性，偏色交给速率差与 ABSORB。
 
 export const DESKTOP: InkParams = {
   paper: PAPER,
