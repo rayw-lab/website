@@ -24,3 +24,8 @@ a calm East Asian man in his mid-thirties with short, thick, neatly-styled black
 
 ## image_edit（R 路线）附加指令
 `keep the face, hairstyle, glasses and skin tone exactly as in the reference photo; do not beautify, do not change age, do not add facial hair; remove any logo or emblem from clothing`
+
+## v2 增补（磊哥 2026-09-03 13:47 人拣）
+- **真人路线 R 终止**：`S0-R/*` 存档不进仓，不再生成；`formal.jpg` 只留特征参考。
+- **化身 = T 卡通 3D（首屏/六站/过渡）+ H 手绘（`/about/` 题图）**。
+- **体型修订：偏瘦。** 所有已定选 T/H 帧走 `image_edit` 瘦身：脸颊收窄、下颌线清晰、肩与躯干收窄约 15%，衣服随体型贴合；**其余一切不变**（构图、机位、光、背景、眼镜、发型、表情、衣着款式）。不重生成、不改场景。

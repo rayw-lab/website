@@ -23,7 +23,7 @@ const KB = 1024;
 const MB = 1024 * KB;
 const PLAYER_TARGET_BYTES = 20 * KB;
 const PLAYER_CAP_BYTES = 50 * KB;
-const MEDIA_CAP_BYTES = 2.5 * MB;
+const MEDIA_CAP_BYTES = 6 * MB; // ADR-3 决策 C：2.5MB→6.0MB，非首屏必须懒加载
 const HALL_SLUG = 'about-pavilion';
 const MEDIA_JSON = join(ROOT, 'src/data/about-hall-media.json');
 const HALLS_JSON = join(ROOT, 'src/data/world-halls.json');
@@ -567,14 +567,14 @@ function readJson(path) {
         }
         const totalBytes = [...uniqueFiles.values()].reduce((a, b) => a + b, 0);
         if (totalBytes > MEDIA_CAP_BYTES) {
-          problems.push(`总载荷 ${totalBytes}B > ${MEDIA_CAP_BYTES}B（2.5MB）`);
+          problems.push(`总载荷 ${totalBytes}B > ${MEDIA_CAP_BYTES}B（6.0MB，ADR-3）`);
         }
         record(
           'G-Hall-8',
           problems.length ? 'FAIL' : 'PASS',
           problems.length
             ? problems.join('；')
-            : `${media.length} 条媒体对账通过（sha256/字节/fps/无音轨/时长）；总载荷 ${totalBytes}B ≤ 2.5MB`,
+            : `${media.length} 条媒体对账通过（sha256/字节/fps/无音轨/时长）；总载荷 ${totalBytes}B ≤ 6.0MB`,
           { evidence: { items, totalBytes, capBytes: MEDIA_CAP_BYTES } },
         );
       }

@@ -3,6 +3,7 @@
 // S1–S5 静帧按媒体清单 id 取 poster；S6 回家片源未到，占位不放静帧。
 import { hallStations, SCORE_LINE } from '../../../../data/about-copy';
 import mediaDoc from '../../../../data/about-hall-media.json';
+import StationRail from './StationRail.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
@@ -63,6 +64,7 @@ const desk: StationView = {
 const scenes: StationView[] = [desk, ...hallStations];
 ---
 
+<StationRail />
 {
   scenes.map((station) => {
     const mediaId = MEDIA_BY_SCENE[station.scene];

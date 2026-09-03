@@ -1,0 +1,205 @@
+---
+// 展厅馆长：空位始终在 DOM。S0 不挂 three（ADR-3）；S1 进视口才出现并 300ms 淡入。
+// three 仅宽屏 + no-preference 时动态 import。
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const modelUrl = `${base}/models/hero-robot/HeroRobot.glb`;
+---
+
+<aside class="hall-curator" data-curator data-model={modelUrl} aria-label="展厅馆长">
+  <p class="hall-kicker hall-curator-label">馆长</p>
+  <div class="hall-curator-stage" data-curator-stage></div>
+</aside>
+
+<script>
+  const host = document.querySelector<HTMLElement>('[data-curator]');
+  if (host) {
+    const wideMq = matchMedia('(min-width: 900px)');
+    const playMq = matchMedia('(min-width: 900px) and (prefers-reduced-motion: no-preference)');
+    const laneMq = matchMedia('(min-width: 1200px) and (prefers-reduced-motion: no-preference)');
+    const s1 = document.querySelector<HTMLElement>('[data-scene="s1"]');
+    const footer = document.querySelector<HTMLElement>('.site-footer');
+    let destroy: (() => void) | undefined;
+    let footerOn = false;
+    let watching = false;
+
+    const hasWebGL = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+      } catch {
+        return false;
+      }
+    };
+
+    const bestScene = (): string => {
+      const nodes = document.querySelectorAll<HTMLElement>('[data-scene]');
+      let best: HTMLElement | null = null;
+      let bestScore = -1;
+      for (const el of nodes) {
+        const r = el.getBoundingClientRect();
+        const visible = Math.min(r.bottom, innerHeight) - Math.max(r.top, 0);
+        if (visible > bestScore) {
+          bestScore = visible;
+          best = el;
+        }
+      }
+      return best?.dataset.scene ?? 's0';
+    };
+
+    const syncLane = () => {
+      const on = laneMq.matches && hasWebGL();
+      if (on) document.documentElement.setAttribute('data-hall-curator', 'on');
+      else document.documentElement.removeAttribute('data-hall-curator');
+    };
+
+    const syncPresence = () => {
+      const scene = bestScene();
+      const leftHero = scene !== 's0';
+      const show = wideMq.matches && leftHero && !footerOn;
+      host.classList.toggle('is-on', show);
+      host.dataset.curatorOn = show ? '1' : '0';
+      syncLane();
+      if (show) start();
+    };
+
+    const stop = () => {
+      destroy?.();
+      destroy = undefined;
+    };
+
+    const start = () => {
+      if (destroy || watching || !playMq.matches || !hasWebGL()) return;
+      if (!host.classList.contains('is-on')) return;
+      watching = true;
+      void import('./curator').then((m) => {
+        watching = false;
+        if (!playMq.matches || destroy) return;
+        destroy = m.mountCurator(host).destroy;
+      });
+    };
+
+    if (s1) {
+      new IntersectionObserver(() => syncPresence(), {
+        threshold: 0.08,
+        rootMargin: '40px 0px',
+      }).observe(s1);
+    }
+
+    if (footer) {
+      new IntersectionObserver(
+        (entries) => {
+          footerOn = entries.some((e) => e.isIntersecting);
+          syncPresence();
+        },
+        { threshold: 0.02, rootMargin: '0px 0px -18% 0px' },
+      ).observe(footer);
+    }
+
+    const sceneIo = new IntersectionObserver(() => syncPresence(), {
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+    });
+    for (const el of document.querySelectorAll('[data-scene]')) sceneIo.observe(el);
+
+    playMq.addEventListener('change', () => {
+      if (playMq.matches) start();
+      else stop();
+    });
+    wideMq.addEventListener('change', syncPresence);
+    laneMq.addEventListener('change', syncLane);
+    syncPresence();
+  }
+</script>
+
+<style>
+  .hall-curator {
+    display: none;
+    position: fixed;
+    right: clamp(16px, 3vw, 48px);
+    bottom: clamp(5.5rem, 8vh, 7rem);
+    z-index: 5;
+    width: 160px;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hall-curator {
+      transition: opacity 300ms ease;
+    }
+  }
+
+  .hall-curator.is-on {
+    opacity: 1;
+  }
+
+  @media (min-width: 900px) {
+    .hall-curator {
+      display: grid;
+      gap: 0.2rem;
+      justify-items: center;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .hall-curator {
+      width: 220px;
+    }
+  }
+
+  .hall-curator-label {
+    margin: 0;
+    justify-self: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .hall-curator-stage {
+    position: relative;
+    width: 160px;
+    height: 220px;
+    border: 0;
+    background: transparent;
+  }
+
+  @media (min-width: 1200px) {
+    .hall-curator-stage {
+      width: 220px;
+      height: 300px;
+    }
+  }
+
+  .hall-curator-stage::after {
+    content: '';
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    bottom: 6%;
+    height: 28%;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 70%, rgb(0 0 0 / 0.5), transparent 74%);
+  }
+
+  .hall-curator-stage :global(canvas) {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+<style is:global>
+  html[data-hall-curator='on'] {
+    --hall-curator-lane: 260px;
+  }
+
+  html[data-hall-curator='on'] .hall-station-visual,
+  html[data-hall-curator='on'] .hall-crystal-board {
+    margin-right: var(--hall-curator-lane, 260px);
+  }
+
+  html[data-hall-curator='on'] .hall-station-visual {
+    max-width: calc(100% - var(--hall-curator-lane, 260px));
+  }
+</style>

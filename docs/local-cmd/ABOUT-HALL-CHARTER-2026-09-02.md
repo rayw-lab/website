@@ -153,6 +153,7 @@ cd /Users/wanglei/studio-data-root/worktrees/website-about-hall && pnpm install 
 - **来自座舱 MA 系列**：diffusion 不服从像素级硬边界（IMG-01 三连 REJECT 整族 KILL）→ 精确几何用程序层或留裁切余量；i2v 主体漂移是第一失败模式 → 固定机位 + 小动作 + 双帧审计；零字铁律；negative 四轴（人/字/商标/写实特征）；生成路与审计路分 lane，生成路自评无效；每张图 sha + 分辨率回读，"页面生成中 / URL / HTTP 200"不顶账；`SEND_ACCEPTED` 后禁重发；人分与机分两套账。
 - **来自本站提分 Loop**：进楼 `location.assign` 丢会话；`SessionTimeline` 无轨迹；"39 语种"是口号实为 16；`audit-budget` G-D 排除 `world/` 前缀是陷阱 → 必加 G-Hall；SRD 写过"`/world/` 不再建立"需补口径；SwiftShader 下自定义 View Transition 是 flake 源 → 沿用 auto fade；`e2e-summary.json` 曾把文件数写成测试数。
 - **来自今日三轮派单**：Shell 工具里 `nohup &` 会被连带杀 → `start_new_session=True` 脱离；glm-5.3（非 flash）附件 100KB 憋 20 min 零字节 → 用 flash；Grok 联网调研可能 55 min 无产出 → 设墙钟上限并改席；Gemini 3.7 Flash 会编年份/编人设 → 任务书写死"未知就不写"并抽查 3 条溯源；fxtwitter conversation 只是 `VISIBLE_CONVERSATION_SAMPLE`。
+- **来自 W6 收口（L7–L9）**：ADR-2 进站 query（`?from=city&poi=`）击穿 e2e 裸 deepLink 拦截 → `NAV_ROUTE` 正则须容纳可选 query（`f6d9ed8`）；Astro preview 全局单例遇残留端口退出 → 按 PID 精准杀本 attempt 进程组，禁盲目 `pkill` preview 误伤在飞会话；宿主负载（Cursor 打开大 PNG 284% CPU）致 world 挂载 210s 超时 → 判 `RESULT_FAIL_HOST_LOAD` 隔离复跑确权，非产品回归；正式 0F 基线必须独立端口干净单跑（attempt5 93P/0F/1.3h）；`e2e-summary.json` 严守 schema，禁文件数混充测试数；跑测中 preview 猝死 → ECONNREFUSED 连锁红判 `INVALID_INFRA_WEBSERVER_DIED` 留证重跑，不算产品红线；合入 main 零冲突但动了 `src/lab/world/city/*` 公共代码 → 必须 post-merge 全量回归。
 - **来自 loop-commander lessons**（整段见 `raw/loop-commander/lessons/*.md`）：fresh 批评者无记忆 → 设计选择清单随任务书下发；共享脏树禁 stash/pop；vendor 空壳假绿；worker 自报不算；凭据只在 overlay；热点文件单 writer；exit 124 只算 recovered candidate。
 
 # 12. 硬禁区

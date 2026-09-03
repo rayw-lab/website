@@ -1,0 +1,45 @@
+{
+  "atHero": {
+    "on": false,
+    "canvas": false
+  },
+  "atStations": {
+    "on": true,
+    "htmlOn": "on",
+    "lift": "1.00",
+    "scene": "s4",
+    "stageW": 220,
+    "stageH": 300,
+    "canvasW": 220,
+    "canvasH": 300,
+    "curatorX": 1177,
+    "frameRight": 1036,
+    "gap": 141
+  },
+  "atS8": {
+    "on": true,
+    "scene": "s8",
+    "railAway": true,
+    "footerTop": 1216,
+    "innerHeight": 900
+  },
+  "atFooter": {
+    "on": false,
+    "railAway": true,
+    "curatorOpacity": "0",
+    "railOpacity": "0"
+  },
+  "at1280": {
+    "htmlOn": "on",
+    "curatorX": 1022,
+    "frameRight": 956,
+    "gap": 66,
+    "stageW": 220
+  },
+  "animReport": {
+    "total": 0,
+    "running": 0,
+    "names": []
+  },
+  "consoleErrors": []
+}

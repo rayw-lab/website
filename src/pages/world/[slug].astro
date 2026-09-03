@@ -5,6 +5,7 @@
 import WorldHallLayout from '../../layouts/WorldHallLayout.astro';
 import HallChrome from '../../components/city/HallChrome.astro';
 import Hero from '../../components/city/halls/about/Hero.astro';
+import Curator from '../../components/city/halls/about/Curator.astro';
 import Stations from '../../components/city/halls/about/Stations.astro';
 import Crystal from '../../components/city/halls/about/Crystal.astro';
 import Epilogue from '../../components/city/halls/about/Epilogue.astro';
@@ -61,6 +62,7 @@ const jsonLd = breadcrumbJsonLd([
   {hall.slug === 'about-pavilion' && (
     <>
       <Hero />
+      <Curator />
       <Stations />
       <Crystal />
       <Epilogue />

@@ -31,6 +31,7 @@ const problems = problemCopy.map((p, i) => ({
   n: String(i + 1).padStart(2, '0'),
   q: p.q,
   how: p.how,
+  teaser: (p.how.match(/^[^。]+。/) ?? [p.how])[0],
   proofHref: `${base}${p.proofPath}`,
   proofLabel: p.proofLabel,
 }));
@@ -93,6 +94,7 @@ const hallHref = `${base}/world/about-pavilion/`;
                   <div class="about-qcard-face about-qcard-front">
                     <p class="about-qcard-kicker data">{p.n}</p>
                     <h3>{p.q}</h3>
+                    <p class="about-qcard-teaser">{p.teaser}</p>
                     <p class="about-qcard-hint data">悬停或聚焦看做法</p>
                   </div>
                   <div class="about-qcard-face about-qcard-back">
@@ -207,6 +209,35 @@ const hallHref = `${base}/world/about-pavilion/`;
     });
   });
 </script>
+
+<style>
+  /* 折叠态露一句摘要；展开背面仍是完整 how。降级三态已展开背面，隐藏以免重复。 */
+  .about-qcard-front {
+    min-inline-size: 0;
+  }
+
+  .about-qcard-teaser {
+    margin: 0;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    width: 100%;
+    color: var(--ink-2);
+    font-size: var(--text-small);
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  @media (prefers-reduced-motion: reduce), (hover: none), (max-width: 639.98px) {
+    .about-qcard-teaser {
+      display: none;
+    }
+  }
+</style>
 
 <!-- 六站当前聚焦：IntersectionObserver（≤2KB），无滚动劫持 -->
 <script is:inline>

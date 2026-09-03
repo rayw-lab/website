@@ -71,3 +71,11 @@
 ### L9 · 2026-09-03 12:35
 - attempt6（post-merge，端口 4624）跑到 52 passed 时 preview 进程消失（`ERR_CONNECTION_REFUSED 127.0.0.1:4624`），随后 18 例连锁红 → 判 `INVALID_INFRA_WEBSERVER_DIED`，不作产品证据；日志留 `full-e2e.attempt6-INVALID-webserver-died-4624.log`。杀手未知（本会话未执行 pkill；疑为他会话清理 preview）。
 - attempt7（端口 4625）已起。ZDR canary 12:05 仍 BLOCKED。tick=9。
+
+### L10 · 2026-09-03 12:55–14:20（磊哥自动驾驶令：六波补齐 + 合流主线）
+- **attempt7 post-merge 全量 e2e 93/93/0f，88 min，零重起**（Composer 收账，`c463c36`，PR#234 评论）。e2e 改写的 10 张 `docs/spec/assets` 历史截图已 `git checkout` 还原。
+- 六波漏项盘点 → 派 Grok 4.6 ×4 + agy ×1：ADR-3（路线 C / W3 不豁免 / 体积门追认 2.0/3.5/6.0；gate 常量 2.5→6MB 同步）；W3d 馆长三动作 + 地轨（三轮：体量→尾声淡出→右侧车道，gemini PASS 10/10/10，门 9/9，spec 7/7，Hall-R 懒加载实际 ≈150KB）；W7a 问题卡摘要 + 因果句（gemini PASS；LHCI 100/100/100/100）；沉淀 L7–L9（7 条 + charter §11 回填）。
+- **ZDR 解除**：阻断层 = 会话 `/privacy` opt-out。S0 i2v#1 `clip-v2-1` 审计 REJECT（头转 70–80°，LOCKED 15°）；S6 i2v#1 `clip-v3-1` PASS 留兜底。
+- **磊哥人拣**：R 真人路线终止（3 first + 1 last 存档，肖像政策未触发，面部 5/5）；**T 转正 + 体型偏瘦** → W1f image_edit 瘦身批（9 帧）在跑；LOCKED S0-T v3（motion 收紧 + 四帧双镜片抽检）/ S6-T v4 出纸。
+- 新主线（磊哥令）：合流 main + 「第一栋楼 = About」+ 城→厅转场。事实：about-pavilion 在出生点**正后方** 156m。Gemini 3.8 提案 `proposals/AH-T1-*.md`；指挥官加方案 (d) about↔now-signal 换位；董事会 ADR-4 在裁。
+- agy 别名：`gemini-3.7-flash` 实际路由 3.8 Flash；13:47–13:54 出口非美区时 Gemini 400 `User location is not supported`，切换后恢复。
