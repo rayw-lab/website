@@ -4,10 +4,10 @@ import { mkdirSync } from 'node:fs';
 const OUT = 'evidence/nexus-hall/anchors/w1b-verify'; mkdirSync(OUT, { recursive: true });
 const U = 'http://localhost:4321/website/world-spike/nexus-ink/?demo=yin&t=4';
 const sha = (b) => createHash('sha256').update(b).digest('hex').slice(0, 12);
-// 构建期截图前先预热一次再正式截。
-// 理由（2026-09-04 修正）：白屏只出现在 `pnpm build` 刚结束后的那次加载；
-// 单独跑 10 次全新 context（无 build）零白屏。所以规避的是 **build 写 dist 与
-// preview 读文件的竞态**，不是"首次加载"本身 —— 后一说法已被十次采样否定。
+// 构建期截图前先预热一次再正式截 —— 纯保险，不附机理。
+// 曾多次观测到白屏，但在受控条件下（不build/build后立即/build后等8s/大小viewport/
+// 长短等待，共 22 次采样）**一次都没能复现**。由它衍生的六个机制性结论已全部作废。
+// 预热成本 8 秒、无副作用，且对任何一种可能的真因都有效，故保留。
 const br = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
 const pg = await br.newPage({ viewport: { width: 1000, height: 640 }, deviceScaleFactor: 1 });
 

@@ -511,7 +511,15 @@ async function buildDispatch(entry) {
     spans,
     artifacts,
   });
-  const receiptFiles = files.filter((f) => f.rel === 'receipt.json' || /^receipts\/[^/]+\.json$/.test(f.rel));
+  // 🔴 实际布局是 `jobs/<id>/receipt.json`，原过滤器只认根目录与 `receipts/*.json`，
+  // 于是**整类漏掉**、ledger 的 receipts 恒为 0（印抽屉的数据源是空的）。
+  // 限量取最近 40 个/席：印抽屉是「点印看一张收据」，不需要把上千份全塞进前端包。
+  const receiptFiles = files
+    .filter((f) => f.rel === 'receipt.json'
+      || /^receipts\/[^/]+\.json$/.test(f.rel)
+      || /^jobs\/[^/]+\/receipt\.json$/.test(f.rel))
+    .sort((a, b) => b.st.mtimeMs - a.st.mtimeMs)
+    .slice(0, 40);
   for (const rf of receiptFiles) {
     let buf;
     try { buf = await fs.readFile(rf.abs); } catch { continue; }
@@ -522,7 +530,10 @@ async function buildDispatch(entry) {
     }
     const list = Array.isArray(raw) ? raw : [raw];
     for (const r of list) {
-      const seatGuess = r && typeof r === 'object' && typeof r.seat === 'string' && VALID_SEATS.has(r.seat) ? r.seat : 'api-direct';
+      // 席位取派单目录的 id（本来就是按席位分目录传的），不再默认猜 api-direct
+      const seatGuess = r && typeof r === 'object' && typeof r.seat === 'string' && VALID_SEATS.has(r.seat)
+        ? r.seat
+        : (VALID_SEATS.has(entry.id) ? entry.id : 'api-direct');
       DISPATCH_ACC.receiptsRaw.push({ seatGuess, raw: r, shaHex: createHash('sha256').update(buf).digest('hex') });
     }
   }
@@ -539,7 +550,7 @@ function mapReceipt(id, entry) {
   // 三态铁律：缺失 → null，禁止推断为 true（N1/N2 红线）。
   const identityOk = okRaw === true ? true : okRaw === false ? false : null;
   const ecRaw = pick('exit_code', 'exitCode');
-  const smRaw = pick('served_model', 'servedModel', 'model');
+  const smRaw = pick('served_model', 'servedModel', 'served_label', 'requested_model', 'model');
   const fbRaw = pick('fallback', 'fallback_model', 'fallbackModel');
   const imRaw = pick('identity_match', 'identityMatch');
   return {

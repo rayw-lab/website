@@ -1,9 +1,9 @@
 # LEDGER-RECEIPT · nexus-ledger-reduce
 
-- reducer: scripts/nexus-ledger-reduce.mjs @ sha256:fa4b33abedb8
-- 确定性: generatedAt = 源最大 mtime（2026-09-03T22:08:26Z），无墙钟、无随机，同输入重跑逐字节一致
-- ledger: src/data/nexus-ledger.json · 385237 bytes · gzip 21665 bytes · sha256 0bdbd7c37ac9cc19ec3f4cce35d6d3bae51c8c2d815d1bdec731f66d0f831c1c
-- 会话: 入账 3023 · 明细 600（top 600）· 席位 5 · 天 40
+- reducer: scripts/nexus-ledger-reduce.mjs @ sha256:23fc372f0821
+- 确定性: generatedAt = 源最大 mtime（2026-09-03T22:17:37Z），无墙钟、无随机，同输入重跑逐字节一致
+- ledger: src/data/nexus-ledger.json · 416448 bytes · gzip 25508 bytes · sha256 275346834f7a4fca0e64a7072e2bc80616af9d9a8de9b91802703ae24e1b3037
+- 会话: 入账 3025 · 明细 600（top 600）· 席位 5 · 天 40
 
 ## 源清单
 
@@ -32,7 +32,7 @@
 | claude-code | ~/.claude/projects/-private-tmp-co-agent-ccapi-stdin-vK5BtQ | 1 | 0 | 白名单外，整目录丢弃 |
 | claude-code | ~/.claude/projects/-private-tmp-directrun-probe | 3 | 0 | 白名单外，整目录丢弃 |
 | claude-code | ~/.claude/projects/-private-tmp-lineage-probe | 0 | 0 | 白名单外，整目录丢弃 |
-| codex | ~/.codex/sessions | 2173 | 778 | cwd 白名单逐会话判定 |
+| codex | ~/.codex/sessions | 2175 | 780 | cwd 白名单逐会话判定 |
 | cursor | ~/.cursor/projects/Users-wanglei-mywebsite/agent-transcripts | 78 | 71 | mywebsite |
 | cursor | ~/.cursor/projects/Users-wanglei-Projects-co-agent/agent-transcripts | 15 | 12 | co-agent |
 | agy | ~/.grok/state/agy-rescue | 338 | 338 | 派单 job → 会话 |
