@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>W2b · ScrubVideo demo</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #070b14;
+        --copy: #e6dfd0;
+        --muted: #8b93a7;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--copy);
+        font-family:
+          "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Noto Sans SC",
+          sans-serif;
+        line-height: 1.65;
+      }
+      video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        pointer-events: none;
+      }
+      .hero {
+        position: relative;
+        height: 100svh;
+        overflow: hidden;
+        touch-action: pan-y;
+      }
+      .hero video {
+        position: absolute;
+        inset: 0;
+      }
+      .copy {
+        position: relative;
+        z-index: 1;
+        width: min(34ch, 46vw);
+        margin: 0;
+        padding: 22vh 6vw 0;
+        font-size: clamp(1.15rem, 2.1vw, 1.65rem);
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        text-shadow: 0 1px 18px rgba(7, 11, 20, 0.7);
+      }
+      .kicker {
+        display: block;
+        margin-bottom: 0.7em;
+        font-size: 0.72rem;
+        font-weight: 400;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .scroll-scene {
+        height: 300vh;
+        position: relative;
+      }
+      .sticky-stage {
+        position: sticky;
+        top: 0;
+        height: 100svh;
+        overflow: hidden;
+      }
+      .sticky-stage video {
+        position: absolute;
+        inset: 0;
+      }
+      #scroll-copy {
+        color: rgba(230, 223, 208, 0.2);
+      }
+      .after {
+        min-height: 70vh;
+        padding: 12vh 6vw;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      #hud {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 4;
+        margin: 0;
+        padding: 8px 10px;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 11px;
+        line-height: 1.45;
+        color: #c9d0dc;
+        background: rgba(7, 11, 20, 0.72);
+        border: 1px solid rgba(201, 208, 220, 0.18);
+        pointer-events: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #scroll-copy {
+          color: var(--copy);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero" id="pointer-host">
+      <video
+        id="pointer-video"
+        muted
+        playsinline
+        preload="auto"
+        poster="file:///Users/wanglei/studio-data-root/about-hall/gen/G1-canary/canary-first.png"
+        src="file:///Users/wanglei/studio-data-root/about-hall/gen/G1-canary/canary-encode-g15.mp4"
+      ></video>
+      <p class="copy" id="hero-copy">
+        <span class="kicker">S0 · pointer</span>
+        左右移动指针。横向位置就是时间轴。
+      </p>
+    </section>
+
+    <section class="scroll-scene" id="scroll-host">
+      <div class="sticky-stage">
+        <video
+          id="scroll-video"
+          muted
+          playsinline
+          preload="auto"
+          poster="file:///Users/wanglei/studio-data-root/about-hall/gen/G1-canary/canary-first.png"
+          src="file:///Users/wanglei/studio-data-root/about-hall/gen/G1-canary/canary-encode-g15.mp4"
+        ></video>
+        <p class="copy" id="scroll-copy">
+          <span class="kicker">S1 · scroll</span>
+          画面钉在视口里。向下滚，帧往前走；向上滚，帧退回来。
+        </p>
+      </div>
+    </section>
+
+    <p class="after">滚动区间结束。再往上滚，第二屏应按当前位置把帧找回去。</p>
+    <pre id="hud">loading module…</pre>
+
+    <script type="module">
+      import {
+        createPointerScrub,
+        createScrollScrub,
+      } from './scrub.min.js';
+
+      const VIDEO_SRC =
+        'file:///Users/wanglei/studio-data-root/about-hall/gen/G1-canary/canary-encode-g15.mp4';
+
+      /** 文字亮度区间：进度 0.08→0.72 由暗到亮，集中配置。 */
+      const TEXT_IN = [0.08, 0.72];
+
+      const pointerHost = document.getElementById('pointer-host');
+      const pointerVideo = document.getElementById('pointer-video');
+      const scrollHost = document.getElementById('scroll-host');
+      const scrollVideo = document.getElementById('scroll-video');
+      const scrollCopy = document.getElementById('scroll-copy');
+      const hud = document.getElementById('hud');
+
+      const clamp = (n, lo, hi) => (n < lo ? lo : n > hi ? hi : n);
+      const mapRange = (p, start, end) =>
+        clamp((p - start) / (end - start), 0, 1);
+
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const state = { pointer: 0, scroll: 0 };
+
+      const paintCopy = (progress) => {
+        if (reduced) return;
+        const t = mapRange(progress, TEXT_IN[0], TEXT_IN[1]);
+        scrollCopy.style.color = `rgba(230, 223, 208, ${(0.16 + t * 0.84).toFixed(3)})`;
+      };
+
+      const paintHud = () => {
+        hud.textContent =
+          `pointer p=${state.pointer.toFixed(3)} t=${pointerVideo.currentTime.toFixed(3)}s\n` +
+          `scroll  p=${state.scroll.toFixed(3)} t=${scrollVideo.currentTime.toFixed(3)}s` +
+          (reduced ? '\nreduced-motion: bindings off' : '');
+      };
+
+      pointerVideo.src = VIDEO_SRC;
+      scrollVideo.src = VIDEO_SRC;
+
+      const pointer = createPointerScrub(pointerHost, pointerVideo, {
+        onProgress(p) {
+          state.pointer = p;
+          paintHud();
+        },
+      });
+      const scroll = createScrollScrub(scrollHost, scrollVideo, {
+        onProgress(p) {
+          state.scroll = p;
+          paintCopy(p);
+          paintHud();
+        },
+      });
+
+      const hudLoop = () => {
+        paintHud();
+        requestAnimationFrame(hudLoop);
+      };
+      hudLoop();
+      addEventListener('pagehide', () => {
+        pointer.destroy();
+        scroll.destroy();
+      });
+    </script>
+  </body>
+</html>

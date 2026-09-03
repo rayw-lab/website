@@ -1,0 +1,258 @@
+{
+  "schema": "about-hall-gate/v1",
+  "ok": true,
+  "generatedAt": "2026-09-03T20:56:05.070Z",
+  "dist": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/dist",
+  "notes": [
+    "G-Hall-10 由 e2e/about-hall.spec.ts 承担，本脚本不判。",
+    "G-Hall-2..5 扫描 HTML 与 <script src>/<link rel=modulepreload> 的**内容**；`_astro/world.` 文件名不是证据。"
+  ],
+  "gates": [
+    {
+      "id": "G-Hall-1",
+      "status": "PASS",
+      "detail": "dist/world/about-pavilion/index.html 存在；sitemap sitemap-0.xml；未知 slug 无产物（built=about-pavilion）",
+      "evidence": {
+        "exists": true,
+        "registered": [
+          "about-pavilion"
+        ],
+        "built": [
+          "about-pavilion"
+        ],
+        "extra": [],
+        "sitemap": [
+          "sitemap-0.xml"
+        ]
+      }
+    },
+    {
+      "id": "G-Hall-2",
+      "status": "PASS",
+      "detail": "扫描 4 个文件（HTML + 静态 JS），零 lab/world / initAllLabFacades / mountWorld（未用 _astro/world. 文件名）",
+      "evidence": {
+        "files": [
+          "world/about-pavilion/index.html",
+          "_astro/Hero.astro_astro_type_script_index_0_lang.BH8cvvNP.js",
+          "_astro/Curator.astro_astro_type_script_index_0_lang.BCw6FaYi.js",
+          "_astro/Transition.astro_astro_type_script_index_0_lang.bSAbYaww.js"
+        ],
+        "hits": []
+      }
+    },
+    {
+      "id": "G-Hall-3",
+      "status": "PASS",
+      "detail": "零 rapier / @dimforge / .wasm",
+      "evidence": {
+        "hits": []
+      }
+    },
+    {
+      "id": "G-Hall-4",
+      "status": "PASS",
+      "detail": "零 three/webgpu / WebGPURenderer / MeshStandardNodeMaterial",
+      "evidence": {
+        "hits": []
+      }
+    },
+    {
+      "id": "G-Hall-5",
+      "status": "PASS",
+      "detail": "零 <script> / preload 指向 public/models/** 或 hero-robot / concept-garage / autodrive",
+      "evidence": {
+        "hits": []
+      }
+    },
+    {
+      "id": "G-Hall-6",
+      "status": "PASS",
+      "detail": "额外 JS gzip 2167B ≤ 20KB 目标（Hall-S）",
+      "evidence": {
+        "gzipBytes": 2167,
+        "targetBytes": 20480,
+        "capBytes": 51200,
+        "rows": [
+          {
+            "url": "/website/_astro/Hero.astro_astro_type_script_index_0_lang.BH8cvvNP.js",
+            "kind": "script",
+            "rel": "_astro/Hero.astro_astro_type_script_index_0_lang.BH8cvvNP.js",
+            "gzipBytes": 730
+          },
+          {
+            "url": "/website/_astro/Curator.astro_astro_type_script_index_0_lang.BCw6FaYi.js",
+            "kind": "script",
+            "rel": "_astro/Curator.astro_astro_type_script_index_0_lang.BCw6FaYi.js",
+            "gzipBytes": 1045
+          },
+          {
+            "url": "/website/_astro/Transition.astro_astro_type_script_index_0_lang.bSAbYaww.js",
+            "kind": "script",
+            "rel": "_astro/Transition.astro_astro_type_script_index_0_lang.bSAbYaww.js",
+            "gzipBytes": 392
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "G-Hall-7",
+      "status": "PASS",
+      "detail": "1 条 hallPath 均对应 dist 页（deepLink 仍由 check-links 核）",
+      "evidence": {
+        "rows": [
+          {
+            "id": "about-pavilion",
+            "hallPath": "/world/about-pavilion/",
+            "ok": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "G-Hall-8",
+      "status": "PASS",
+      "detail": "9 条媒体对账通过（sha256/字节/fps/无音轨/时长）；总载荷 3379813B ≤ 6.0MB",
+      "evidence": {
+        "items": [
+          {
+            "id": "hero-s0-poster",
+            "src16x9": null,
+            "poster": "/media/about-hall/hero-s0-poster.webp",
+            "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "hero-s0",
+            "src16x9": "/media/about-hall/hero-s0-720p.mp4",
+            "poster": "/media/about-hall/hero-s0-poster.webp",
+            "resolved": [
+              "src16x9",
+              "poster"
+            ]
+          },
+          {
+            "id": "about-illustration-s0h",
+            "src16x9": null,
+            "poster": "/media/about-hall/about-illustration-s0h.webp",
+            "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "station-s1",
+            "src16x9": null,
+            "poster": "/media/about-hall/station-s1.webp",
+            "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "station-s2",
+            "src16x9": null,
+            "poster": "/media/about-hall/station-s2.webp",
+            "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "station-s3",
+            "src16x9": null,
+            "poster": "/media/about-hall/station-s3.webp",
+            "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "station-s4",
+            "src16x9": null,
+            "poster": "/media/about-hall/station-s4.webp",
+            "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "station-s5",
+            "src16x9": null,
+            "poster": "/media/about-hall/station-s5.webp",
+            "resolved": [
+              "poster"
+            ]
+          },
+          {
+            "id": "transition-s6",
+            "src16x9": "/media/about-hall/transition-s6-720p.mp4",
+            "poster": "/media/about-hall/transition-s6-poster.webp",
+            "resolved": [
+              "src16x9",
+              "poster"
+            ]
+          }
+        ],
+        "totalBytes": 3379813,
+        "capBytes": 6291456
+      }
+    },
+    {
+      "id": "G-Hall-9",
+      "status": "PASS",
+      "detail": "9 个 data-scene 均有 data-bind，其中 URL 在 dist 可解析",
+      "evidence": {
+        "sections": [
+          {
+            "scene": "s0",
+            "bind": "tagline;proof:/about/",
+            "raw": "<section class=\"hall-hero\" data-scene=\"s0\" data-bind=\"tagline;proof:/about/\" data-hero-scrub data-astro-cid-oz3wak26>"
+          },
+          {
+            "scene": "s1",
+            "bind": "stage:none;pillar:none;proof:/about/",
+            "raw": "<section class=\"hall-station\" data-scene=\"s1\" data-bind=\"stage:none;pillar:none;proof:/about/\" data-reveal=\"from-right\" data-station-progress>"
+          },
+          {
+            "scene": "s2",
+            "bind": "stage:1,2;pillar:none;proof:/about/#timeline-title",
+            "raw": "<section class=\"hall-station\" data-scene=\"s2\" data-bind=\"stage:1,2;pillar:none;proof:/about/#timeline-title\" data-reveal=\"from-bottom\" data-station-progress>"
+          },
+          {
+            "scene": "s3",
+            "bind": "stage:3;pillar:none;proof:/about/#timeline-title",
+            "raw": "<section class=\"hall-station\" data-scene=\"s3\" data-bind=\"stage:3;pillar:none;proof:/about/#timeline-title\" data-reveal=\"wipe-left\" data-station-progress>"
+          },
+          {
+            "scene": "s4",
+            "bind": "stage:4;pillar:cockpit-i18n;proof:/lab/tts-cockpit/",
+            "raw": "<section class=\"hall-station\" data-scene=\"s4\" data-bind=\"stage:4;pillar:cockpit-i18n;proof:/lab/tts-cockpit/\" data-reveal=\"circle\" data-station-progress>"
+          },
+          {
+            "scene": "s5",
+            "bind": "stage:5;pillar:edge-cloud-llm;proof:/work/llm-capability-layering/",
+            "raw": "<section class=\"hall-station\" data-scene=\"s5\" data-bind=\"stage:5;pillar:edge-cloud-llm;proof:/work/llm-capability-layering/\" data-reveal=\"split-y\" data-station-progress>"
+          },
+          {
+            "scene": "s6",
+            "bind": "stage:6;pillar:ai-workflow;proof:/work/ai-native-workflow/",
+            "raw": "<section class=\"hall-station hall-homecoming\" data-scene=\"s6\" data-bind=\"stage:6;pillar:ai-workflow;proof:/work/ai-native-workflow/\" data-s6-scrub data-astro-cid-7j466k7a>"
+          },
+          {
+            "scene": "s7",
+            "bind": "stage:none;pillar:cockpit-i18n,edge-cloud-llm,ai-workflow;proof:/about/",
+            "raw": "<section class=\"hall-crystal\" data-scene=\"s7\" data-bind=\"stage:none;pillar:cockpit-i18n,edge-cloud-llm,ai-workflow;proof:/about/\">"
+          },
+          {
+            "scene": "s8",
+            "bind": "stage:none;pillar:none;proof:/contact/",
+            "raw": "<section class=\"hall-epilogue\" data-scene=\"s8\" data-bind=\"stage:none;pillar:none;proof:/contact/\">"
+          }
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "fail": 0,
+    "warn": 0,
+    "skipped": 0,
+    "pass": 9
+  }
+}

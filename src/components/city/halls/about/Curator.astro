@@ -1,0 +1,270 @@
+---
+// 展厅馆长：空位始终在 DOM。S0 不挂 three（ADR-3）；S1 进视口才出现并 300ms 淡入。
+// three 仅宽屏 + no-preference 时动态 import。
+// 姿态单源（ADR-5 A.3/A.6）：本文件按主导幕写宿主 data-curator-pose，curator.ts 只跟随。
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const modelUrl = `${base}/models/hero-robot/HeroRobot.glb`;
+---
+
+<aside class="hall-curator" data-curator data-model={modelUrl} aria-label="展厅馆长">
+  <p class="hall-kicker hall-curator-label">馆长</p>
+  <div class="hall-curator-stage" data-curator-stage></div>
+</aside>
+
+<script>
+  const host = document.querySelector<HTMLElement>('[data-curator]');
+  if (host) {
+    const wideMq = matchMedia('(min-width: 900px)');
+    const playMq = matchMedia('(min-width: 900px) and (prefers-reduced-motion: no-preference)');
+    const laneMq = matchMedia('(min-width: 1200px) and (prefers-reduced-motion: no-preference)');
+    const s1 = document.querySelector<HTMLElement>('[data-scene="s1"]');
+    const footer = document.querySelector<HTMLElement>('.site-footer');
+    let destroy: (() => void) | undefined;
+    let footerOn = false;
+    let watching = false;
+
+    // 探测一次即缓存：syncPresence 现在挂在 scroll 上，每次真建 WebGL 上下文太贵。
+    let webgl: boolean | undefined;
+    const hasWebGL = () => {
+      if (webgl === undefined) {
+        try {
+          const canvas = document.createElement('canvas');
+          webgl = Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+        } catch {
+          webgl = false;
+        }
+      }
+      return webgl;
+    };
+
+    const bestScene = (): string => {
+      const nodes = document.querySelectorAll<HTMLElement>('[data-scene]');
+      let best: HTMLElement | null = null;
+      let bestScore = -1;
+      for (const el of nodes) {
+        const r = el.getBoundingClientRect();
+        const visible = Math.min(r.bottom, innerHeight) - Math.max(r.top, 0);
+        if (visible > bestScore) {
+          bestScore = visible;
+          best = el;
+        }
+      }
+      return best?.dataset.scene ?? 's0';
+    };
+
+    const syncLane = () => {
+      const on = laneMq.matches && hasWebGL();
+      if (on) document.documentElement.setAttribute('data-hall-curator', 'on');
+      else document.documentElement.removeAttribute('data-hall-curator');
+    };
+
+    // ADR-5 A.3 三动作表 + yield：present 只有 s5（天平幕），s6 让位，s8 致意一次，
+    // 其余在场幕（s1–s4 / s7）落 gaze 默认。
+    const POSE_BY_SCENE: Record<string, string> = { s5: 'present', s6: 'yield', s8: 'salute' };
+
+    const syncPresence = () => {
+      const scene = bestScene();
+      const leftHero = scene !== 's0';
+      const show = wideMq.matches && leftHero && !footerOn;
+      host.classList.toggle('is-on', show);
+      host.dataset.curatorOn = show ? '1' : '0';
+      host.dataset.curatorScene = scene;
+      // reduced-motion / 无 WebGL：不播骨骼，pose 停在静态 gaze。
+      const pose = !show
+        ? ''
+        : !playMq.matches || !hasWebGL()
+          ? 'gaze'
+          : (POSE_BY_SCENE[scene] ?? 'gaze');
+      if (pose) host.dataset.curatorPose = pose;
+      else delete host.dataset.curatorPose;
+      syncLane();
+      if (show) start();
+    };
+
+    // IntersectionObserver 只在跨阈值时回调，s6 是 220vh（自身比例到不了 0.5 阈值），
+    // 中段停住会让 pose 停在旧值。scroll 事件每帧至多一次，读 9 个幕的 rect 即可，
+    // 且 curator.ts 已不再每帧扫 DOM——净开销比改前更低。
+    window.addEventListener('scroll', syncPresence, { passive: true });
+
+    const stop = () => {
+      destroy?.();
+      destroy = undefined;
+    };
+
+    const start = () => {
+      if (destroy || watching || !playMq.matches || !hasWebGL()) return;
+      if (!host.classList.contains('is-on')) return;
+      watching = true;
+      void import('./curator').then((m) => {
+        watching = false;
+        if (!playMq.matches || destroy) return;
+        destroy = m.mountCurator(host).destroy;
+      });
+    };
+
+    if (s1) {
+      new IntersectionObserver(() => syncPresence(), {
+        threshold: 0.08,
+        rootMargin: '40px 0px',
+      }).observe(s1);
+    }
+
+    if (footer) {
+      new IntersectionObserver(
+        (entries) => {
+          footerOn = entries.some((e) => e.isIntersecting);
+          syncPresence();
+        },
+        { threshold: 0.02, rootMargin: '0px 0px -18% 0px' },
+      ).observe(footer);
+    }
+
+    const sceneIo = new IntersectionObserver(() => syncPresence(), {
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+    });
+    for (const el of document.querySelectorAll('[data-scene]')) sceneIo.observe(el);
+
+    playMq.addEventListener('change', () => {
+      if (playMq.matches) start();
+      else stop();
+      // 中途切到 reduced-motion：three 已卸，pose 必须跟着回落成静态 gaze。
+      syncPresence();
+    });
+    wideMq.addEventListener('change', syncPresence);
+    laneMq.addEventListener('change', syncLane);
+    syncPresence();
+  }
+</script>
+
+<style>
+  .hall-curator {
+    display: none;
+    position: fixed;
+    right: clamp(16px, 3vw, 48px);
+    bottom: clamp(5.5rem, 8vh, 7rem);
+    z-index: 5;
+    width: 160px;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  /* [AH-VIS-1 债5a] 淡入节奏：300ms 纯 opacity 让 220×300 的机器人「啪」地出现。
+     改 420ms ease-out + 8px 上浮，读作「走进来」。位移与过渡都关在
+     no-preference 里，reduced-motion 下仍是零动画直出（getAnimations 恒 0）。 */
+  @media (prefers-reduced-motion: no-preference) {
+    .hall-curator {
+      transform: translateY(8px);
+      transition:
+        opacity 420ms var(--ease-out),
+        transform 420ms var(--ease-out);
+    }
+
+    .hall-curator.is-on {
+      transform: translateY(0);
+    }
+  }
+
+  .hall-curator.is-on {
+    opacity: 1;
+  }
+
+  @media (min-width: 900px) {
+    .hall-curator {
+      display: grid;
+      gap: 0.2rem;
+      justify-items: center;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .hall-curator {
+      width: 220px;
+    }
+  }
+
+  .hall-curator-label {
+    margin: 0;
+    justify-self: center;
+    text-align: center;
+    width: 100%;
+    /* 两个汉字不加字距（中文 UI 地板）；标签退一档让机器人当主体 */
+    font-size: 0.75rem;
+    letter-spacing: 0;
+  }
+
+  .hall-curator-stage {
+    position: relative;
+    width: 160px;
+    height: 220px;
+    border: 0;
+    background: transparent;
+  }
+
+  @media (min-width: 1200px) {
+    .hall-curator-stage {
+      width: 220px;
+      height: 300px;
+    }
+  }
+
+  /* [AH-VIS-1 债5a] 接地锚。原件是 8%–92% 宽 × 28% 高的黑色大散射，在本页幕布
+     rgb(4,16,32)（相对亮度 ~0.006）上把像素只压低 2–3 级 = 肉眼无影，机器人是飘着的；
+     加浓黑色也救不回来（黑压黑）。所以改成「暗核 + 落地反光」双层，收到双脚跨度：
+       · 暗核 26%–74% 宽、extent 38%：只在幕布转亮（站点插图/浅色段）时承担接触压暗；
+       · 反光 extent 72%、冷白 0.13：机器人自身胸灯的地面反弹，是暗底上唯一读得出
+         的接地信号。用中性冷白而非楼色——签名色只留给 hold 脉冲与到达条圆点那一处。 */
+  .hall-curator-stage::after {
+    content: '';
+    position: absolute;
+    left: 26%;
+    right: 26%;
+    bottom: 9%;
+    height: 15%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 58%, rgb(0 0 0 / 0.55), transparent 38%),
+      radial-gradient(ellipse at 50% 56%, rgb(214 226 240 / 0.13), transparent 72%);
+  }
+
+  .hall-curator-stage :global(canvas) {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* [AH-W3e / ADR-5 A.4] S6 让位：rAF 已取消，画面冻在 gaze 末姿（不做新动作），
+     只把不透明度压到 ADR 上限以下 —— 读作「侧身让位看片」。回 s7 时 300ms 淡回。
+     位移/动画一概不加；transition 关在 no-preference 里，RM 下馆长根本不挂 three。 */
+  .hall-curator[data-curator-pose='yield'] .hall-curator-stage :global(canvas) {
+    opacity: 0.4;
+  }
+
+  .hall-curator[data-curator-pose='yield'] .hall-curator-stage::after {
+    opacity: 0.4;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hall-curator-stage :global(canvas),
+    .hall-curator-stage::after {
+      transition: opacity 300ms var(--ease-out);
+    }
+  }
+</style>
+
+<style is:global>
+  html[data-hall-curator='on'] {
+    --hall-curator-lane: 260px;
+  }
+
+  html[data-hall-curator='on'] .hall-station-visual,
+  html[data-hall-curator='on'] .hall-crystal-board {
+    margin-right: var(--hall-curator-lane, 260px);
+  }
+
+  html[data-hall-curator='on'] .hall-station-visual {
+    max-width: calc(100% - var(--hall-curator-lane, 260px));
+  }
+</style>

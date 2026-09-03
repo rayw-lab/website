@@ -93,6 +93,11 @@ export interface Building {
   neonColor: string;
   /** 站内路由（尾斜杠齐全）；check-links 存在性校验（CC-E8） */
   deepLink: string;
+  /**
+   * 楼内展厅路径（尾斜杠齐全，例 "/world/about-pavilion/"）。
+   * 有则城里 E 键走展厅，否则走 deepLink；DOM 快览 / 页头页脚 / 正文 CTA / noscript 仍用 deepLink（ADR-2）。
+   */
+  hallPath?: string;
   /** fallback = 目标专页未上线暂落上级索引，上线后只改 JSON 两字段 */
   deepLinkStatus: 'live' | 'fallback';
   priority: 'P0' | 'P1' | 'P2';

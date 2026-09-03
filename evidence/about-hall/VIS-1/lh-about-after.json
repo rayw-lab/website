@@ -1,0 +1,34 @@
+{
+ "url": [
+  "http://127.0.0.1:4638/website/about/"
+ ],
+ "server": "python static (dist/), port 4638",
+ "runs": [
+  {
+   "performance": 100,
+   "accessibility": 100,
+   "best-practices": 100,
+   "seo": 100
+  },
+  {
+   "performance": 100,
+   "accessibility": 100,
+   "best-practices": 100,
+   "seo": 100
+  },
+  {
+   "performance": 100,
+   "accessibility": 100,
+   "best-practices": 100,
+   "seo": 100
+  }
+ ],
+ "median": {
+  "performance": 100,
+  "accessibility": 100,
+  "best-practices": 100,
+  "seo": 100
+ },
+ "baseline_ticket": "100/100/100/100",
+ "verdict": "不降"
+}

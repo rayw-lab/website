@@ -15,6 +15,35 @@
 | 多语言 TTS 智能座舱 | `/lab/tts-cockpit` | 16 语种 × 5 场景预生成 TTS 播放，SVG 座舱 HMI，逐词字幕同步，波形画布，RTL 镜像，自托管 Noto 字体子集 |
 | 3D 汽车配置器 | `/lab/car-configurator` | Three.js 车漆/轮毂/环境实时配置，KTX2 压缩纹理，HDRI 环境光，门面海报懒加载 |
 
+## 赛博智能座舱科技城（Cyber City）
+
+### 驾驶操控与交互（WASD / 巡航变形 / Q/E 自由视角环视 / M 小地图）
+
+访客可在首页三维世界中通过 WASD 或方向键操控赛车巡航，按 Space 键触发机器人与车辆形态平滑变形切换（`src/lab/world/inputs/Inputs.ts`、`src/lab/world/player/TransformSystem.ts`）。
+驾驶状态下支持按 Q/E 键在第三人称视角进行 120°/s 速度、±135° 范围的平滑自由环视，松开按键后在 0.35s 内自动弹性回正，且在第一人称或进站前奏期间被硬门锁定（`src/lab/world/view/View.ts`、`docs/local-cmd/proposals/AH-QE-lookaround.md`）。
+按下 M 键可展开或收起全城 2D 矢量小地图，实时显示全城 12 栋建筑图标、中轴路网与车辆自身位置与航向（`src/lab/world/ui/Minimap.ts`）。
+
+### 建筑进站与城厅流转（专属泊车位 / 进站前奏 / 霓虹脉冲）
+
+科技城内规划 12 栋在册大楼与 8 个预留槽位，每栋建筑具备独立的物理包围盒、专属泊车位（parkingBay）与霓虹主色标（`src/data/cyber-city-buildings.json`）。
+当车辆驶入建筑专属泊位减速停稳后，按 E 键进站可触发 400ms 建筑同色双层霓虹边缘呼吸脉冲动效（`src/lab/world/areas/PoiArrival.ts`、`evidence/about-hall/VIS-1/RECEIPT.md`）。
+第一栋进驻大楼个人档案馆（about-pavilion）坐落于北槽位 `(-44, -150)`，进站前奏完成后平滑流转进入楼内展厅，回城时通过 `/?poi=about-pavilion` 深链精准恢复泊位朝向（`docs/local-cmd/adr/ADR-4-first-building-and-transition.md`）。
+
+## 个人档案馆展厅（About Pavilion）
+
+### /world/about-pavilion/ 沉浸展厅（指针/滚动双视频 Scrub、六站地轨、馆长程序化动作）
+
+展厅首屏 Hero 视频支持桌面端指针水平位置驱动 6s 视频 scrub 逐帧交互，过渡段采用 220vh sticky 滚动驱动 S6「回家」过渡片并支持近距 200px 预加载（`src/components/city/halls/ScrubVideo.ts`、`src/components/city/halls/about/Transition.astro`）。
+展厅底部设有六站地轨导航，区分当前站与静态索引层级，支持无障碍键盘 Tab 聚焦与 Enter 一键跳站（`src/components/city/halls/about/StationRail.astro`）。
+三维迎宾馆长机器人由程序化 3D 骨骼渲染与 CSS 驱动，支持凝视、讲解与致意动作状态切换，并在暗色幕布上投射胸灯冷白接地双层反光（`src/components/city/halls/about/Curator.astro`、`src/components/city/halls/about/curator.ts`）。
+展厅全量媒体载荷受严格预算控制且无 9:16 竖版视频多余拉取，初始 JS gzip 以当场 `evidence/about-hall/GATE.json` G-Hall-6 读数为准（目标 ≤20KB），已通过 G-Hall 自动化门控对账（`scripts/about-hall-gate.mjs`、`evidence/about-hall/W1h/RECEIPT.md`）。
+
+### /about/ 纸面双胞胎（高触感折叠摘要、六向因果晶体、LHCI 四项满分）
+
+作为展厅的纯文字零 3D 高触感镜像，纸面版以「解决什么问题」组织三张核心专业问题卡，正面呈现自然换行的 2 行限制折叠摘要，悬停或聚焦翻转呈现解法与佐证链（`src/pages/about/index.astro`、`src/data/about-copy.ts`）。
+页面中心集成六向因果晶体与职业演进主线，清晰贯穿从物联网、整车、AR-HUD、座舱多语种到端云分层与 AI 工作流的演进脉络（`src/components/city/halls/about/Crystal.astro`、`src/pages/about/index.astro`）。
+页面在零动画运行时与严格无障碍标准下，持续保持 Lighthouse（性能、可访问性、最佳实践、SEO）四项分类全部 100 分满分表现（`evidence/about-hall/VIS-1/RECEIPT.md`、`docs/local-cmd/ABOUT-HALL-TECH-ARCH.md`）。
+
 ## 本地快速启动
 
 ```bash

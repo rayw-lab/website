@@ -1,0 +1,297 @@
+{
+  "generatedAt": "2026-09-03T20:53:33.426Z",
+  "runCount": 24,
+  "urlCount": 8,
+  "medians": {
+    "http://127.0.0.1:4661/website/": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "http://127.0.0.1:4661/website/home/": {
+      "performance": 100,
+      "accessibility": 97,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "http://127.0.0.1:4661/website/work/": {
+      "performance": 100,
+      "accessibility": 96,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "http://127.0.0.1:4661/website/work/multilingual-cockpit/": {
+      "performance": 100,
+      "accessibility": 96,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "http://127.0.0.1:4661/website/about/": {
+      "performance": 100,
+      "accessibility": 96,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "http://127.0.0.1:4661/website/world/about-pavilion/": {
+      "performance": 99,
+      "accessibility": 96,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "http://127.0.0.1:4661/website/lab/car-configurator/": {
+      "performance": 100,
+      "accessibility": 96,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "http://127.0.0.1:4661/website/lab/tts-cockpit/": {
+      "performance": 100,
+      "accessibility": 96,
+      "best-practices": 100,
+      "seo": 100
+    }
+  },
+  "runs": [
+    {
+      "file": "lhr-1788468519337.json",
+      "url": "http://127.0.0.1:4661/website/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468529956.json",
+      "url": "http://127.0.0.1:4661/website/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468540192.json",
+      "url": "http://127.0.0.1:4661/website/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468550789.json",
+      "url": "http://127.0.0.1:4661/website/home/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 97,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468561249.json",
+      "url": "http://127.0.0.1:4661/website/home/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 97,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468571662.json",
+      "url": "http://127.0.0.1:4661/website/home/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 97,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468581991.json",
+      "url": "http://127.0.0.1:4661/website/work/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468592237.json",
+      "url": "http://127.0.0.1:4661/website/work/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468602554.json",
+      "url": "http://127.0.0.1:4661/website/work/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468612913.json",
+      "url": "http://127.0.0.1:4661/website/work/multilingual-cockpit/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468623559.json",
+      "url": "http://127.0.0.1:4661/website/work/multilingual-cockpit/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468634459.json",
+      "url": "http://127.0.0.1:4661/website/work/multilingual-cockpit/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468645020.json",
+      "url": "http://127.0.0.1:4661/website/about/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468655634.json",
+      "url": "http://127.0.0.1:4661/website/about/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468666255.json",
+      "url": "http://127.0.0.1:4661/website/about/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468677036.json",
+      "url": "http://127.0.0.1:4661/website/world/about-pavilion/",
+      "scores": {
+        "performance": 99,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468687819.json",
+      "url": "http://127.0.0.1:4661/website/world/about-pavilion/",
+      "scores": {
+        "performance": 99,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468698190.json",
+      "url": "http://127.0.0.1:4661/website/world/about-pavilion/",
+      "scores": {
+        "performance": 99,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468708328.json",
+      "url": "http://127.0.0.1:4661/website/lab/car-configurator/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468718558.json",
+      "url": "http://127.0.0.1:4661/website/lab/car-configurator/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468728871.json",
+      "url": "http://127.0.0.1:4661/website/lab/car-configurator/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468742337.json",
+      "url": "http://127.0.0.1:4661/website/lab/tts-cockpit/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468753368.json",
+      "url": "http://127.0.0.1:4661/website/lab/tts-cockpit/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    },
+    {
+      "file": "lhr-1788468763459.json",
+      "url": "http://127.0.0.1:4661/website/lab/tts-cockpit/",
+      "scores": {
+        "performance": 100,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      }
+    }
+  ]
+}

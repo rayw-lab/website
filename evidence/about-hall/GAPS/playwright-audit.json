@@ -1,0 +1,460 @@
+{
+  "console": [
+    {
+      "label": "hall-desktop-1440",
+      "messages": []
+    },
+    {
+      "label": "hall-desktop-1440-rm",
+      "messages": []
+    },
+    {
+      "label": "hall-mobile-375",
+      "messages": []
+    },
+    {
+      "label": "hall-mobile-375-rm",
+      "messages": []
+    },
+    {
+      "label": "about-desktop-1440",
+      "messages": []
+    },
+    {
+      "label": "about-mobile-375",
+      "messages": []
+    }
+  ],
+  "network": [
+    {
+      "label": "hall-desktop-1440",
+      "failed": []
+    },
+    {
+      "label": "hall-desktop-1440-rm",
+      "failed": []
+    },
+    {
+      "label": "hall-mobile-375",
+      "failed": []
+    },
+    {
+      "label": "hall-mobile-375-rm",
+      "failed": []
+    },
+    {
+      "label": "about-desktop-1440",
+      "failed": []
+    },
+    {
+      "label": "about-mobile-375",
+      "failed": []
+    },
+    {
+      "label": "city-poi-ready",
+      "failed": []
+    }
+  ],
+  "pages": {
+    "hall-desktop-1440": {
+      "imgs": [
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/hero-s0-poster.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s1.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s2.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s3.webp",
+          "naturalWidth": 0,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s4.webp",
+          "naturalWidth": 0,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s5.webp",
+          "naturalWidth": 0,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/transition-s6-poster.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        }
+      ],
+      "videos": [
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/hero-s0-720p.mp4",
+          "networkState": 1,
+          "error": null
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/transition-s6-720p.mp4",
+          "networkState": 1,
+          "error": null
+        }
+      ],
+      "scenes": 9,
+      "hasBracketLeak": false,
+      "animCount": 1
+    },
+    "hall-desktop-1440-rm": {
+      "imgs": [
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/hero-s0-poster.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s1.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s2.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s3.webp",
+          "naturalWidth": 0,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s4.webp",
+          "naturalWidth": 0,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s5.webp",
+          "naturalWidth": 0,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/transition-s6-poster.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        }
+      ],
+      "videos": [
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/hero-s0-720p.mp4",
+          "networkState": 1,
+          "error": null
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/transition-s6-720p.mp4",
+          "networkState": 1,
+          "error": null
+        }
+      ],
+      "scenes": 9,
+      "hasBracketLeak": false,
+      "animCount": 0
+    },
+    "hall-mobile-375": {
+      "imgs": [
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/hero-s0-poster.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s1.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s2.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s3.webp",
+          "naturalWidth": 0,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s4.webp",
+          "naturalWidth": 0,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s5.webp",
+          "naturalWidth": 0,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/transition-s6-poster.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        }
+      ],
+      "videos": [
+        {
+          "src": "",
+          "networkState": 3,
+          "error": null
+        },
+        {
+          "src": "",
+          "networkState": 3,
+          "error": null
+        }
+      ],
+      "scenes": 9,
+      "hasBracketLeak": false,
+      "animCount": 0
+    },
+    "hall-mobile-375-rm": {
+      "imgs": [
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/hero-s0-poster.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s1.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s2.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s3.webp",
+          "naturalWidth": 0,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s4.webp",
+          "naturalWidth": 0,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/station-s5.webp",
+          "naturalWidth": 0,
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/transition-s6-poster.webp",
+          "naturalWidth": 1280,
+          "broken": false
+        }
+      ],
+      "videos": [
+        {
+          "src": "",
+          "networkState": 3,
+          "error": null
+        },
+        {
+          "src": "",
+          "networkState": 3,
+          "error": null
+        }
+      ],
+      "scenes": 9,
+      "hasBracketLeak": false,
+      "animCount": 0
+    },
+    "about-desktop-1440": {
+      "imgs": [
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/about-illustration-s0h.webp",
+          "naturalWidth": 794,
+          "broken": false
+        }
+      ],
+      "videos": [],
+      "scenes": 0,
+      "hasBracketLeak": false,
+      "animCount": 3
+    },
+    "about-mobile-375": {
+      "imgs": [
+        {
+          "src": "http://127.0.0.1:4640/website/media/about-hall/about-illustration-s0h.webp",
+          "naturalWidth": 794,
+          "broken": false
+        }
+      ],
+      "videos": [],
+      "scenes": 0,
+      "hasBracketLeak": false,
+      "animCount": 3
+    },
+    "city-poi-ready": {
+      "readyTimeout": false,
+      "readyCount": 1
+    }
+  },
+  "keyboard": {
+    "focusSeq": [
+      {
+        "tag": "a",
+        "id": null,
+        "class": "skip-link",
+        "role": null,
+        "href": "#main",
+        "dataScene": null,
+        "text": "跳到主内容",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "a",
+        "id": null,
+        "class": "brand",
+        "role": null,
+        "href": "/website/",
+        "dataScene": null,
+        "text": "王磊W.L.",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "a",
+        "id": null,
+        "class": null,
+        "role": null,
+        "href": "/website/work/",
+        "dataScene": null,
+        "text": "Work",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "a",
+        "id": null,
+        "class": null,
+        "role": null,
+        "href": "/website/insights/",
+        "dataScene": null,
+        "text": "Insights",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "a",
+        "id": null,
+        "class": null,
+        "role": null,
+        "href": "/website/ai-lab/",
+        "dataScene": null,
+        "text": "AI Lab",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "a",
+        "id": null,
+        "class": null,
+        "role": null,
+        "href": "/website/about/",
+        "dataScene": null,
+        "text": "About",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "a",
+        "id": null,
+        "class": null,
+        "role": null,
+        "href": "/website/contact/",
+        "dataScene": null,
+        "text": "Contact",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "button",
+        "id": null,
+        "class": "theme-toggle",
+        "role": null,
+        "href": null,
+        "dataScene": null,
+        "text": "",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "button",
+        "id": null,
+        "class": "hall-rail-stop",
+        "role": null,
+        "href": null,
+        "dataScene": null,
+        "text": "01物联网",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "button",
+        "id": null,
+        "class": "hall-rail-stop",
+        "role": null,
+        "href": null,
+        "dataScene": null,
+        "text": "02整车前瞻",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "button",
+        "id": null,
+        "class": "hall-rail-stop",
+        "role": null,
+        "href": null,
+        "dataScene": null,
+        "text": "03AR-HUD",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "button",
+        "id": null,
+        "class": "hall-rail-stop",
+        "role": null,
+        "href": null,
+        "dataScene": null,
+        "text": "04多语种座舱",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "button",
+        "id": null,
+        "class": "hall-rail-stop",
+        "role": null,
+        "href": null,
+        "dataScene": null,
+        "text": "05端云大模型",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "button",
+        "id": null,
+        "class": "hall-rail-stop",
+        "role": null,
+        "href": null,
+        "dataScene": null,
+        "text": "06AI 工作流",
+        "focusRing": "outline"
+      },
+      {
+        "tag": "a",
+        "id": null,
+        "class": null,
+        "role": null,
+        "href": "/website/lab/tts-cockpit/",
+        "dataScene": "s4",
+        "text": "可交互佐证 · 16 语种 TTS 座舱可视化 →",
+        "focusRing": "outline"
+      }
+    ]
+  }
+}

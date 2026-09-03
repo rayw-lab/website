@@ -19,16 +19,16 @@ type Face = 'north' | 'south' | 'east' | 'west';
  * [CC-VIS-X2] 立面投资清单——NDC 可见楼取证正本（设计确认 ④「可见楼清单先行」，
  * 复现：public/models/facade-kit/README.md §NDC，1440×900 ritual_idle 八角点投影 +
  * 主干道临街面判定）。首列 face = 临街面（驾驶动线近读，全套构件）；tier 1 = 首幕
- * 入帧楼（now-signal 4/8、workflow-foundry 4/8、edge-cloud-hub 1/8 角点入帧），
+ * 入帧楼（about-pavilion 8/8、workflow-foundry 4/8、edge-cloud-hub 1/8 角点入帧），
  * 追加首幕朝向面（远读：中高层构件 + 屋顶设备剪影）；背街/不可见面零投入。
  */
 const FACADE_PLAN: Record<string, { street: Face; firstFrame?: Face; roof?: boolean }> = {
-  'now-signal': { street: 'east', firstFrame: 'south', roof: true },
+  'now-signal': { street: 'east' },
   'workflow-foundry': { street: 'west', firstFrame: 'south', roof: true },
   'edge-cloud-hub': { street: 'south', firstFrame: 'east', roof: true },
   'work-gallery': { street: 'north' },
   'insights-archive': { street: 'west' },
-  'about-pavilion': { street: 'east' },
+  'about-pavilion': { street: 'east', firstFrame: 'south', roof: true },
   'contact-beacon': { street: 'north' },
 };
 

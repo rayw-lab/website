@@ -1,0 +1,44 @@
+ritual_idle camera (12.13, 5.28, 16.08) → lookAt (3.81, 3.40, -1.77)  radius 20.40m  fov 42°  aspect 1.600
+
+== ① ritual_idle 首幕入帧审计（全部 12 栋，八角点） ==
+building            lod       inFrustum  front  ndc.x range        ndc.y range
+lingua-tower        hero         0/8   3/8   [-21.46, 21.96]    [-51.72, 16.82]
+voice-pod           hero         0/8   0/8   [-1.68, 0.01]      [-2.80, 0.75]
+agent-nexus         hero         3/8   8/8   [-1.30, -0.05]     [0.03, 4.70]
+autodrive-lab       hero         0/8   8/8   [1.21, 9.01]       [-0.45, 10.50]
+concept-garage      hero         0/8   4/8   [-64.14, 101.50]   [-7.30, 12.03]
+work-gallery        standard     0/8   0/8   [-2.93, -1.39]     [-1.20, 0.51]
+insights-archive    standard     0/8   0/8   [0.04, 0.57]       [-1.18, 0.38]
+about-pavilion      standard     8/8   8/8   [-0.05, 0.39]      [0.16, 0.87]
+contact-beacon      standard     0/8   8/8   [-15.53, -4.59]    [-0.34, 14.60]
+edge-cloud-hub      standard     1/8   8/8   [-2.20, -0.99]     [0.09, 1.08]
+workflow-foundry    standard     4/8   8/8   [0.89, 1.77]       [0.12, 0.80]
+now-signal          standard     0/8   0/8   [1.43, 2.19]       [-1.68, 0.41]
+
+== ② 主干道沿街面判定（standard 楼 / 楼近缘-路缘距离） ==
+work-gallery        @( 140,  44) w56×d32  north→NeonBlvd(16m)
+insights-archive    @(  44, 150) w32×d48  west→AxisAve(16m)
+about-pavilion      @( -44,-150) w36×d36  east→AxisAve(14m)
+contact-beacon      @(-140,  44) w24×d24  north→NeonBlvd(20m)
+edge-cloud-hub      @(-140, -44) w64×d40  south→NeonBlvd(12m)
+workflow-foundry    @(  48,-150) w48×d32  west→AxisAve(12m)
+now-signal          @( -44, 150) w20×d20  east→AxisAve(22m)
+
+== ③ 前景管线桥 NDC 预演（ritual_idle，桥位 z=-19.5） ==
+deck W end (−17, 13.4)     ndc(-0.42, 0.74)  front=true
+deck E end (+17, 13.4)     ndc(1.08, 0.97)  front=true
+pipes top W (−17, 15.6)    ndc(-0.43, 0.87)  front=true
+pipes top E (+17, 15.6)    ndc(1.09, 1.18)  front=true
+leg W base (−15.7, 0)      ndc(-0.37, -0.06)  front=true
+leg E base (+15.7, 0)      ndc(0.96, -0.20)  front=true
+robot head (0, 2.2, 0)     ndc(-0.34, -0.16)  front=true
+robot base (0, 0, 0)       ndc(-0.34, -0.44)  front=true
+
+== ④ e2e 驾驶走廊余量审计（净距纪律 ≥2.5m） ==
+桥腿 W (−15.7,-19.5)       最小净距 3.62m @ 走廊带 z∈[−24,−28]∩x∈[−28,24.5]  PASS
+桥腿 E (+15.7,-19.5)       最小净距 3.62m @ 走廊带 z∈[−24,−28]∩x∈[−28,24.5]  PASS
+东北簇 PropVending          最小净距 4.87m @ OBS/PERF 车道南下 (20,−8)→(28,−28)  PASS
+东北簇 PropCabinet          最小净距 5.54m @ OBS/PERF 车道南下 (20,−8)→(28,−28)  PASS
+东北簇 PropBin              最小净距 3.99m @ 走廊带 z∈[−24,−28]∩x∈[−28,24.5]  PASS
+④ 全部 X2-PLUG 域障碍净距 ≥2.5m —— PASS
+④-登记 X1 充电桩排（x∈[16.2,17.8]×z∈[−40.3,−25.3]）对现行动线最小净距 6.75m @ EXP-01 legA 北上 (24.5,−24.5)→(25.5,−10)（原西走廊线 ~0.25m 卡死——main 面遗留，审计/主线专项定谳）

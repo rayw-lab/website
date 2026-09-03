@@ -44,11 +44,12 @@ const SEL = {
 
 const buildingsJson = JSON.parse(
   readFileSync(new URL('../src/data/cyber-city-buildings.json', import.meta.url), 'utf8'),
-) as { buildings: Array<{ id: string; deepLink: string }> };
+) as { buildings: Array<{ id: string; deepLink: string; hallPath?: string; neonColor: string }> };
 const targetBuilding = buildingsJson.buildings.find((b) => b.id === POI_SLUG);
 if (!targetBuilding) throw new Error(`buildings JSON 缺少 ${POI_SLUG}`);
 /** navigate 目标（route abort 模式；base=/website 同 OBS-01） */
-const NAV_ROUTE = `**/website${targetBuilding.deepLink}`;
+/** ADR-2（About Hall）：进站 navigate 统一带 `?from=city&poi=<id>`；正则容纳可选 query，路径仍以 deepLink 为准 */
+const NAV_ROUTE = new RegExp('/website' + targetBuilding.deepLink.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\?.*)?$');
 
 const cameraShotsJson = JSON.parse(
   readFileSync(new URL('../src/data/camera-shots.json', import.meta.url), 'utf8'),
@@ -364,3 +365,148 @@ test.describe('科技城 POI 进站前奏（CC-FXN-C3 · world-chromium 串行 p
     expect(errors.filter((m) => !isKnownUaError(m)), '恒等门零未捕获异常').toEqual([]);
   });
 });
+
+test.describe('AH-T1b hold overlay（ADR-4 决策 B）', () => {
+  test.describe.configure({ timeout: 600_000 });
+
+  const HOLD_CLASS = 'world-poi-hold-pulse';
+  const aboutPavilion = buildingsJson.buildings.find((b) => b.id === 'about-pavilion');
+  if (!aboutPavilion) throw new Error('buildings JSON 缺少 about-pavilion');
+  const ABOUT_NEON = aboutPavilion.neonColor;
+  const ABOUT_DEST = aboutPavilion.hallPath ?? aboutPavilion.deepLink;
+  const ABOUT_NAV_ROUTE = new RegExp(
+    '/website' + ABOUT_DEST.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\?.*)?$',
+  );
+
+  const overlayOn = (target: Page): Promise<boolean> =>
+    target.evaluate((cls) => document.documentElement.classList.contains(cls), HOLD_CLASS);
+
+  /** 锁存「出现过 + 当时 neon」，不记墙钟（400ms 脉冲会被 poll 间隔漏掉） */
+  const installHoldLatch = (target: Page): Promise<void> =>
+    target.evaluate((cls) => {
+      const w = window as unknown as { __poiHoldLatch?: { seen: boolean; neon: string } };
+      w.__poiHoldLatch = { seen: false, neon: '' };
+      const mark = () => {
+        const root = document.documentElement;
+        if (!root.classList.contains(cls) || w.__poiHoldLatch!.seen) return;
+        w.__poiHoldLatch!.seen = true;
+        w.__poiHoldLatch!.neon = root.style.getPropertyValue('--poi-hold-neon').trim();
+      };
+      new MutationObserver(mark).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class'],
+      });
+      mark();
+    }, HOLD_CLASS);
+
+  const readLatch = (target: Page): Promise<{ seen: boolean; neon: string }> =>
+    target.evaluate(
+      () =>
+        (window as unknown as { __poiHoldLatch?: { seen: boolean; neon: string } }).__poiHoldLatch ?? {
+          seen: false,
+          neon: '',
+        },
+    );
+
+  test('AH-T1b hold overlay：hold 起帧挂类且一次性卸；reduced-motion 不挂', async ({
+    page,
+    browser,
+  }) => {
+    test.setTimeout(600_000);
+    const errors = trackErrors(page);
+
+    await page.route(ABOUT_NAV_ROUTE, (route) => {
+      void route.abort('aborted');
+    });
+
+    await page.goto(`${PAGE_URL}?poi=about-pavilion#debug`);
+    const host = page.locator(SEL.host);
+    await expect(host).toBeVisible({ timeout: 60_000 });
+    try {
+      await expect(host).toHaveAttribute('data-state', 'ready', { timeout: 90_000 });
+    } catch {
+      await host.locator(SEL.enter).click();
+      await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+    }
+
+    const entered = await pollDump(page, (d) => d.funnel.firstPoiIn !== null, 90_000);
+    expect(entered.ok, '深链出生应落触发圈内').toBe(true);
+
+    await installHoldLatch(page);
+    const interacted = await pressEUntil(page, (d) => firstOf(d, 'shot-apply') !== undefined, 120_000);
+    expect(interacted.ok, 'E 应触发 shot-apply（前奏开启）').toBe(true);
+
+    // 状态语义（禁墙钟阈值）：hold 起帧 class 在 + neon 单源 JSON；卸类 poll 等到 false（15s 是等待上限）
+    await expect.poll(async () => (await readLatch(page)).seen, { timeout: 240_000, intervals: [50] }).toBe(true);
+    expect((await readLatch(page)).neon, 'hold 起帧 --poi-hold-neon 须等于 about-pavilion.neonColor').toBe(
+      ABOUT_NEON,
+    );
+    await expect.poll(() => overlayOn(page), { timeout: 15_000, intervals: [50] }).toBe(false);
+    await page.waitForTimeout(1_000);
+    expect(await overlayOn(page), 'overlay 一次性：卸类后 1s 内不得重挂').toBe(false);
+
+    // 新页 + 先 emulateMedia 再 goto（CITY-PA-03 同序）；同页后设偏好会错过壳四条件检查
+    const rm = await browser.newPage();
+    const rmErrors = trackErrors(rm);
+    let rmNavHits = 0;
+    await rm.emulateMedia({ reducedMotion: 'reduce' });
+    await rm.route(ABOUT_NAV_ROUTE, (route) => {
+      rmNavHits += 1;
+      void route.abort('aborted');
+    });
+    await rm.goto(`${PAGE_URL}?poi=about-pavilion#debug`);
+    const rmHost = rm.locator(SEL.host);
+    await expect(rmHost).toHaveAttribute('data-blocked', 'reduced-motion');
+    await rmHost.locator(SEL.enter).click();
+    await expect(rmHost).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+
+    const dump0 = await readDump(rm);
+    expect(dump0.env.reducedMotion).toBe(true);
+
+    const enteredRm = await pollDump(rm, (d) => d.funnel.firstPoiIn !== null, 90_000);
+    expect(enteredRm.ok, 'reduced-motion 深链出生应落触发圈内').toBe(true);
+
+    await installHoldLatch(rm);
+    const interactedRm = await pressEUntil(
+      rm,
+      (d) => firstOf(d, 'shot-apply') !== undefined,
+      120_000,
+    );
+    expect(interactedRm.ok, 'reduced-motion E 应照常 shot-apply').toBe(true);
+    await expect.poll(() => rmNavHits, { timeout: 240_000, intervals: [200] }).toBeGreaterThanOrEqual(1);
+    expect((await readLatch(rm)).seen, 'reduced-motion 不得挂 hold overlay 类').toBe(false);
+    expect(await overlayOn(rm)).toBe(false);
+    await rm.close();
+
+    expect(
+      [...errors, ...rmErrors].filter((m) => !isKnownUaError(m)),
+      'hold overlay 腿零未捕获异常',
+    ).toEqual([]);
+  });
+});
+
+test.describe('AH-F1 北槽落点（world-chromium）', () => {
+  test('CITY-POI-ABOUT-NORTH-COORDS：?poi=about-pavilion 出生距 (−20, −150) < 1.5m', async ({
+    page,
+  }) => {
+    test.setTimeout(300_000);
+    await page.goto(`${PAGE_URL}?poi=about-pavilion#debug`);
+    const host = page.locator(SEL.host);
+    await expect(host).toBeVisible({ timeout: 60_000 });
+    try {
+      await expect(host).toHaveAttribute('data-state', 'ready', { timeout: 90_000 });
+    } catch {
+      await host.locator(SEL.enter).click();
+      await expect(host).toHaveAttribute('data-state', 'ready', { timeout: MOUNT_TIMEOUT });
+    }
+
+    const pos = await page.evaluate(() => {
+      const ws = (window as unknown as { __worldSpike?: { state(): { x: number; z: number } } })
+        .__worldSpike;
+      if (!ws) throw new Error('__worldSpike 未挂载');
+      return ws.state();
+    });
+    expect(Math.hypot(pos.x - -20, pos.z - -150)).toBeLessThan(1.5);
+  });
+});
+

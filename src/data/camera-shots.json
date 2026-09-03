@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "task": "CC-CAM-DATA",
-  "updatedAt": "2026-08-27",
+  "updatedAt": "2026-09-03",
   "sources": {
     "design": "docs/research/cyber-city-camera-poi-research.md §3.1 草案（DES 规格 docs/spec/cyber-city-camera-shots.md 合入后对齐字段命名）；drive_* 条目 = docs/spec/cyber-city-vehicle-camera.md §7.1 冻结字段（CC-VEH-C2 合流补录，§7.2 合流规则）",
     "buildings": "src/data/cyber-city-buildings.json",
@@ -86,6 +86,22 @@
         "gates": [
           { "building": "autodrive-lab", "type": "maxAbsNdcX", "limit": 0.85 },
           { "building": "autodrive-lab", "type": "inFrame" }
+        ]
+      }
+    },
+    "poi_showcase-about-pavilion": {
+      "mode": "poi",
+      "status": "proposal",
+      "anchor": { "type": "building", "buildingId": "about-pavilion" },
+      "spherical": { "phiDeg": 75, "thetaDeg": 76, "radius": 102 },
+      "lookAtHeight": 10,
+      "lateral": -14,
+      "notes": "AH-T1b / ADR-4 决策 B：北槽 about（position (−44,−150)，parkingBay (−20,−150) heading 270）泊车圈外沿东南斜后方高位偏轴。机位约 (48.2, 26.4, −112.6) 看向东立面发光门廊；门廊 NDC.x ≈ +0.36（右 1/3 竖线），楼左缘 ≈ −0.12，左侧留夜空——与展厅 Hero 左文右景 / 角色在光缆桥右侧同构。锚楼相对量，随 T1a 换位走。禁改 ritual_idle。",
+      "projectionAudit": {
+        "buildings": ["about-pavilion"],
+        "gates": [
+          { "building": "about-pavilion", "type": "maxAbsNdcX", "limit": 0.85 },
+          { "building": "about-pavilion", "type": "inFrame" }
         ]
       }
     },

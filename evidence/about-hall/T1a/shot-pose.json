@@ -1,0 +1,52 @@
+{
+  "spawn": {
+    "hostState": "ready",
+    "worldState": "robot_idle",
+    "pose": {
+      "x": 0,
+      "z": 0,
+      "yaw": 1.570796461153735,
+      "headingDeg": 90.0000076981944,
+      "shot": null
+    },
+    "keys": [
+      "x",
+      "y",
+      "z",
+      "yaw",
+      "speedKmh",
+      "grounded",
+      "cones",
+      "nippleActive",
+      "nippleProgress",
+      "view",
+      "fov",
+      "shot"
+    ]
+  },
+  "poi": {
+    "hostState": "ready",
+    "worldState": null,
+    "pose": {
+      "x": -20,
+      "z": -150,
+      "yaw": -3.141592653589793,
+      "headingDeg": 180,
+      "shot": null
+    },
+    "keys": [
+      "x",
+      "y",
+      "z",
+      "yaw",
+      "speedKmh",
+      "grounded",
+      "cones",
+      "nippleActive",
+      "nippleProgress",
+      "view",
+      "fov",
+      "shot"
+    ]
+  }
+}

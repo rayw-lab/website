@@ -65,7 +65,8 @@ const teleportTarget = cityMap.buildings.find((b) => b.id === TELEPORT_SLUG);
 if (!teleportTarget) throw new Error(`buildings JSON 缺少 ${TELEPORT_SLUG}`);
 const BAY = teleportTarget.parkingBay;
 /** E 确认进站的 navigate 目标（route abort 模式；base=/website 同 PA-01） */
-const NAV_ROUTE = `**/website${teleportTarget.deepLink}`;
+/** ADR-2（About Hall）：进站 navigate 统一带 `?from=city&poi=<id>`；正则容纳可选 query，路径仍以 deepLink 为准 */
+const NAV_ROUTE = new RegExp('/website' + teleportTarget.deepLink.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\?.*)?$');
 /** 首 pin = districts 序第一栋（Tab 顺序合同：JSON districts 序，调研 §3.4） */
 const FIRST_PIN_ID = cityMap.districts[0]!.buildings[0]!;
 

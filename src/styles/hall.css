@@ -1,0 +1,848 @@
+/* hall.css —— 仅楼内展厅。选择器全部挂在 html:has([data-hall]) / [data-hall]，
+   不改 BaseLayout。暗底 + 单一霓虹（#49c5b6，与海报光纤同色）。 */
+
+html:has([data-hall]),
+html.light:has([data-hall]),
+html.dark:has([data-hall]) {
+  color-scheme: dark;
+  --bg: #041020;
+  --bg-raised: #0a1828;
+  --ink: #e8eef6;
+  --ink-2: #9aadc2;
+  --ink-3: #7a8ea3;
+  --line: #163044;
+  --accent: #49c5b6;
+  --accent-strong: #5ed4c6;
+  --accent-soft: rgba(73, 197, 182, 0.16);
+  --on-accent: #041020;
+  --hall-scrim: rgba(4, 16, 32, 0.35);
+  --hall-header-stack: 4.75rem;
+}
+
+@media (max-width: 639.98px) {
+  html:has([data-hall]) {
+    --hall-header-stack: 6.75rem;
+  }
+}
+
+html:has([data-hall]) body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* 站头 / 页脚随暗底，避免浅色条压在暗厅上 */
+html:has([data-hall]) .site-header {
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  border-block-end-color: var(--line);
+}
+
+html:has([data-hall]) .site-footer {
+  background: var(--bg);
+  border-block-start-color: var(--line);
+}
+
+.hall-scope {
+  color-scheme: dark;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 70svh;
+  padding: 0;
+  overflow-x: clip;
+}
+
+.hall-scope .hall-ritual {
+  width: min(72rem, calc(100% - 2 * var(--container-pad)));
+  margin-inline: auto;
+  position: relative;
+  z-index: 4;
+}
+
+.hall-scope .hall-main {
+  width: 100%;
+  padding: 0;
+}
+
+.hall-scope .hall-cta {
+  width: min(72rem, calc(100% - 2 * var(--container-pad)));
+  margin: var(--space-7) auto 0;
+  padding-block: var(--space-5) var(--space-8);
+  border-block-start: 1px solid var(--line);
+}
+
+.hall-scope a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+.hall-scope a:hover {
+  text-decoration-color: var(--accent);
+}
+
+.hall-panel {
+  width: min(72rem, calc(100% - 2 * var(--container-pad)));
+  margin-inline: auto;
+}
+
+/* 到达条在暗厅里不要第二套浅底；hidden 时不占位 */
+html:has([data-hall]) .hall-chrome {
+  border-block-end-color: var(--line);
+}
+
+/* ---------- Hero ---------- */
+
+.hall-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: calc(100svh - var(--hall-header-stack));
+  display: grid;
+  grid-template-columns: minmax(18rem, 34%) 1fr;
+  overflow: hidden;
+  background: #041020;
+}
+
+.hall-hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hall-hero-media::after {
+  content: '';
+  position: absolute;
+  inset: -18% auto -18% 0;
+  width: 34%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(73, 197, 182, 0.08) 28%,
+    rgba(145, 247, 235, 0.42) 50%,
+    rgba(73, 197, 182, 0.08) 72%,
+    transparent 100%
+  );
+  transform: translateX(-160%) skewX(-14deg);
+}
+
+.hall-hero-media img,
+.hall-hero-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 72% 40%;
+}
+
+.hall-hero-media video:not([data-ready]) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hall-hero-scrim {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: min(52%, 42rem);
+  z-index: 1;
+  /* 底层是地板：左缘 .62 恒定，保住文案对比度。 */
+  background: linear-gradient(
+    to right,
+    rgba(4, 16, 32, 0.62) 0%,
+    rgba(4, 16, 32, 0.15) 58%,
+    rgba(4, 16, 32, 0) 100%
+  );
+  pointer-events: none;
+}
+
+/* 可变层：指针推到片尾时淡出，左区 58% 处合成后由 .32 提亮到 .15。 */
+.hall-hero-scrim::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(4, 16, 32, 0) 0%,
+    rgba(4, 16, 32, 0.2) 58%,
+    rgba(4, 16, 32, 0) 100%
+  );
+  opacity: calc(1 - var(--hero-progress, 0));
+}
+
+/* ---------- Hero 指针 scrub 的 DOM 反馈（AH-VIS-2） ---------- */
+
+.hall-hero-lede,
+.hall-hero-role,
+.hall-hero-scroll {
+  transform: translate3d(calc(var(--hero-progress, 0) * 12px), 0, 0);
+}
+
+.hall-hero-ticks {
+  display: none;
+  position: absolute;
+  z-index: 2;
+  inset-block: 0;
+  inset-inline-end: var(--container-pad);
+  align-content: center;
+  gap: 0.6rem;
+  pointer-events: none;
+}
+
+.hall-hero[data-hero-live] .hall-hero-ticks {
+  display: grid;
+}
+
+.hall-hero-ticks span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  /* 第 i 个点对应第 i 秒：progress × 6 越过 i 即点亮。 */
+  opacity: clamp(0.16, (var(--hero-progress, 0) * 6 - var(--i)) * 4, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hall-hero[data-hero-live]:not([data-hero-scrubbing]) .hall-hero-lede,
+  .hall-hero[data-hero-live]:not([data-hero-scrubbing]) .hall-hero-role,
+  .hall-hero[data-hero-live]:not([data-hero-scrubbing]) .hall-hero-scroll {
+    transition: transform 300ms var(--ease-out);
+  }
+
+  .hall-hero[data-hero-live]:not([data-hero-scrubbing]) .hall-hero-scrim::after,
+  .hall-hero[data-hero-live]:not([data-hero-scrubbing]) .hall-hero-ticks span {
+    transition: opacity 300ms var(--ease-out);
+  }
+}
+
+@media (hover: none), (max-width: 899px) {
+  .hall-hero[data-hero-live] .hall-hero-ticks {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (max-width: 899px),
+  (prefers-reduced-motion: no-preference) and (hover: none) {
+  .hall-hero[data-mobile-glint='1'] .hall-hero-media::after {
+    animation: hall-mobile-glint 1100ms var(--ease-out) both;
+  }
+}
+
+@keyframes hall-mobile-glint {
+  0% {
+    opacity: 0;
+    transform: translateX(-160%) skewX(-14deg);
+  }
+  18% {
+    opacity: 0.55;
+  }
+  78% {
+    opacity: 0.32;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(390%) skewX(-14deg);
+  }
+}
+
+.hall-hero-copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-5);
+  padding: var(--space-7) var(--container-pad);
+  max-inline-size: 28rem;
+}
+
+.hall-hero-copy h1 {
+  font-size: var(--text-display);
+  font-weight: 650;
+  line-height: var(--leading-display);
+  letter-spacing: 0;
+  max-inline-size: 6.2em;
+}
+
+.hall-hero-lede {
+  color: var(--ink-2);
+  line-height: var(--leading-body);
+  max-inline-size: 36em;
+}
+
+.hall-hero-role {
+  color: var(--accent);
+  font-size: var(--text-small);
+  font-weight: 500;
+  line-height: var(--leading-small);
+}
+
+.hall-hero-scroll {
+  margin-block-start: var(--space-4);
+  color: var(--ink-3);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hall-hero-scroll span {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hall-hero-scroll span {
+    animation: hall-scroll-nudge 1.8s ease-in-out infinite;
+  }
+}
+
+@keyframes hall-scroll-nudge {
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+/* ---------- Stations ---------- */
+
+.hall-station {
+  min-height: 300vh;
+  border-block-start: 1px solid var(--line);
+  --hall-reveal: 1;
+  --hall-tx: 0px;
+  --hall-ty: 0px;
+  --hall-scale: 1;
+}
+
+.hall-station-sticky {
+  position: sticky;
+  top: var(--hall-header-stack);
+  min-height: calc(100svh - var(--hall-header-stack));
+  display: grid;
+  grid-template-columns: minmax(16rem, 42%) 1fr;
+  align-items: center;
+  gap: var(--space-6);
+  padding-block: var(--space-6);
+}
+
+.hall-station-copy h2 {
+  font-size: var(--text-h2);
+  font-weight: 600;
+  line-height: var(--leading-h2);
+  text-wrap: balance;
+  margin-block: var(--space-3) var(--space-4);
+}
+
+.hall-kicker {
+  font-family: var(--font-mono);
+  font-size: var(--text-data);
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.hall-stage-list {
+  display: grid;
+  gap: var(--space-4);
+  margin-block: var(--space-5);
+}
+
+.hall-stage-list li {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.hall-stage-n {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.hall-stage-name {
+  font-weight: 600;
+}
+
+.hall-stage-note,
+.hall-station-body {
+  color: var(--ink-2);
+  line-height: var(--leading-body);
+}
+
+.hall-gap {
+  margin-block-start: var(--space-2);
+  color: var(--ink-3);
+  font-size: var(--text-small);
+  font-family: var(--font-mono);
+}
+
+.hall-question {
+  margin-block-start: var(--space-4);
+  font-weight: 600;
+  line-height: var(--leading-h3);
+}
+
+.hall-station-visual {
+  justify-self: stretch;
+  width: min(36rem, 100%);
+  margin-inline: auto;
+}
+
+.hall-station-figure {
+  margin: 0;
+}
+
+.hall-station-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: #071422;
+}
+
+.hall-station-shot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  transform-origin: center;
+  transform: translate3d(var(--hall-tx), var(--hall-ty), 0) scale(var(--hall-scale));
+}
+
+.hall-station[data-scene='s1'] {
+  --hall-scale: 1.12;
+  --hall-tx: calc((1 - var(--hall-reveal)) * 20px);
+}
+.hall-station[data-scene='s1'] .hall-station-frame {
+  aspect-ratio: 4 / 3;
+  clip-path: inset(0 0 0 calc((1 - var(--hall-reveal)) * 100%));
+}
+.hall-station[data-scene='s1'] .hall-station-shot {
+  object-position: 82% 38%;
+}
+
+.hall-station[data-scene='s2'] {
+  --hall-scale: 1.18;
+  --hall-ty: calc((1 - var(--hall-reveal)) * 24px);
+}
+.hall-station[data-scene='s2'] .hall-station-frame {
+  aspect-ratio: 1 / 1;
+  clip-path: inset(calc((1 - var(--hall-reveal)) * 100%) 0 0 0);
+}
+.hall-station[data-scene='s2'] .hall-station-shot {
+  object-position: 70% 82%;
+}
+
+.hall-station[data-scene='s3'] {
+  --hall-scale: 1.08;
+}
+.hall-station[data-scene='s3'] .hall-station-frame {
+  aspect-ratio: 5 / 4;
+  clip-path: inset(0 calc((1 - var(--hall-reveal)) * 100%) 0 0);
+}
+.hall-station[data-scene='s3'] .hall-station-shot {
+  object-position: 58% 46%;
+}
+
+.hall-station[data-scene='s4'] {
+  --hall-scale: 1.22;
+}
+.hall-station[data-scene='s4'] .hall-station-frame {
+  aspect-ratio: 1 / 1;
+  clip-path: circle(calc(var(--hall-reveal) * 78%) at 50% 50%);
+}
+.hall-station[data-scene='s4'] .hall-station-shot {
+  object-position: 58% 42%;
+}
+
+.hall-station[data-scene='s5'] {
+  --hall-scale: 1.15;
+}
+.hall-station[data-scene='s5'] .hall-station-frame {
+  aspect-ratio: 4 / 5;
+  clip-path: inset(
+    calc((1 - var(--hall-reveal)) * 50%) 0 calc((1 - var(--hall-reveal)) * 50%) 0
+  );
+}
+.hall-station[data-scene='s5'] .hall-station-shot {
+  object-position: 60% 34%;
+}
+
+.hall-station-placeholder {
+  aspect-ratio: 16 / 10;
+  display: grid;
+  align-content: center;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-card);
+  background:
+    linear-gradient(180deg, rgba(73, 197, 182, 0.07), transparent 48%),
+    #071422;
+  color: var(--ink-2);
+  line-height: var(--leading-body);
+}
+
+/* ---------- Crystal ---------- */
+
+.hall-crystal {
+  padding-block: var(--space-9);
+  border-block-start: 1px solid var(--line);
+}
+
+.hall-crystal h2 {
+  font-size: var(--text-h2);
+  font-weight: 600;
+  line-height: var(--leading-h2);
+  margin-block: var(--space-3) var(--space-4);
+}
+
+.hall-crystal-lede {
+  color: var(--ink-2);
+  max-inline-size: var(--measure);
+  line-height: var(--leading-body);
+}
+
+.hall-crystal-board {
+  display: grid;
+  grid-template-columns: minmax(16rem, 1fr) minmax(16rem, 1fr);
+  gap: var(--space-7);
+  align-items: center;
+  margin-block-start: var(--space-7);
+}
+
+.hall-crystal-visual {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: center;
+}
+
+.hall-hex {
+  position: relative;
+  width: min(26rem, 100%);
+  margin-inline: auto;
+  aspect-ratio: 1;
+}
+
+.hall-hex svg {
+  width: 100%;
+  height: 100%;
+}
+
+.hall-hex-pt {
+  fill: var(--bg-raised);
+  stroke: var(--accent);
+  stroke-width: 2;
+  transition: fill var(--duration-hover) var(--ease-out);
+}
+
+.hall-hex-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font: inherit;
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--ink-2);
+  white-space: nowrap;
+  min-height: 2.75rem;
+  padding: 0.35em 0.7em;
+  border-radius: var(--radius-chip);
+}
+
+.hall-hex-label:hover,
+.hall-hex-label:focus-visible,
+.hall-hex-label.is-active {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+
+.hall-hex-label:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.hall-hex:has(.hall-hex-label[data-axis='auto']:is(:hover, :focus-visible, .is-active)) .pt-auto,
+.hall-hex:has(.hall-hex-label[data-axis='cockpit']:is(:hover, :focus-visible, .is-active)) .pt-cockpit,
+.hall-hex:has(.hall-hex-label[data-axis='i18n']:is(:hover, :focus-visible, .is-active)) .pt-i18n,
+.hall-hex:has(.hall-hex-label[data-axis='llm']:is(:hover, :focus-visible, .is-active)) .pt-llm,
+.hall-hex:has(.hall-hex-label[data-axis='workflow']:is(:hover, :focus-visible, .is-active)) .pt-workflow,
+.hall-hex:has(.hall-hex-label[data-axis='delivery']:is(:hover, :focus-visible, .is-active)) .pt-delivery {
+  fill: var(--accent);
+}
+
+.hall-axis-blurb {
+  max-inline-size: 36em;
+  margin: 0;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+  line-height: var(--leading-small);
+  text-wrap: pretty;
+}
+
+.hall-jobs {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.hall-jobs article {
+  padding: var(--space-5);
+}
+
+.hall-jobs h3 {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  margin-block-end: var(--space-3);
+}
+
+.hall-jobs p {
+  color: var(--ink-2);
+  line-height: var(--leading-body);
+}
+
+/* ---------- Epilogue ---------- */
+
+.hall-epilogue {
+  padding-block: var(--space-9) var(--space-10);
+  border-block-start: 1px solid var(--line);
+}
+
+.hall-epilogue h2 {
+  font-size: var(--text-h2);
+  font-weight: 600;
+  line-height: var(--leading-h2);
+  margin-block-end: var(--space-6);
+}
+
+.hall-qgrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--grid-gutter);
+}
+
+.hall-qcard {
+  min-height: 16rem;
+  perspective: 900px;
+}
+
+.hall-qcard-inner {
+  position: relative;
+  min-height: 16rem;
+  transform-style: preserve-3d;
+  transition: transform 400ms var(--ease-out);
+}
+
+.hall-qcard.is-flipped .hall-qcard-inner {
+  transform: rotateY(180deg);
+}
+
+.hall-qcard-face {
+  position: absolute;
+  inset: 0;
+  padding: var(--space-5);
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.hall-qcard-back {
+  transform: rotateY(180deg);
+}
+
+.hall-qcard h3,
+.hall-qcard p {
+  line-height: var(--leading-h3);
+}
+
+.hall-qcard p {
+  color: var(--ink-2);
+  font-size: var(--text-small);
+  line-height: var(--leading-small);
+}
+
+.hall-qcard button {
+  margin-block-start: auto;
+  align-self: flex-start;
+  min-height: 2.75rem;
+  color: var(--accent);
+  font-size: var(--text-small);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.hall-bio {
+  margin-block-start: var(--space-8);
+  padding: var(--space-6);
+  max-inline-size: 48rem;
+}
+
+.hall-bio blockquote {
+  line-height: var(--leading-body);
+}
+
+.hall-bio-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-block-start: var(--space-5);
+}
+
+.hall-copy-btn {
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  font-size: var(--text-small);
+  font-weight: 500;
+}
+
+.hall-copy-btn:hover {
+  border-color: var(--accent-strong);
+  background: var(--accent-soft);
+}
+
+.hall-copy-done {
+  color: var(--accent);
+}
+
+.hall-bio-note {
+  margin-block-start: var(--space-5);
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+
+.hall-exits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-block-start: var(--space-7);
+}
+
+.hall-exit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-card);
+  font-weight: 500;
+  text-decoration: none !important;
+}
+
+.hall-exit-primary {
+  background: var(--accent-strong);
+  color: var(--on-accent) !important;
+}
+
+.hall-exit-secondary {
+  border: 1px solid var(--line);
+  color: var(--ink) !important;
+}
+
+.hall-exit-city {
+  margin-inline-start: auto;
+  border: 1px solid var(--accent);
+  color: var(--accent) !important;
+}
+
+.hall-score {
+  margin-block-start: var(--space-5);
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-data);
+}
+
+.hall-avatar-note {
+  margin-block-start: var(--space-8);
+  color: var(--ink-3);
+  font-size: var(--text-data);
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Mobile：单列；视频退化为 poster ---------- */
+
+@media (max-width: 767px) {
+  .hall-hero {
+    grid-template-columns: 1fr;
+    min-height: unset;
+  }
+
+  .hall-hero-media {
+    position: relative;
+    height: 42vh;
+    min-height: 14rem;
+  }
+
+  .hall-hero-media video {
+    display: none;
+  }
+
+  .hall-hero-scrim {
+    display: none;
+  }
+
+  .hall-hero-copy {
+    max-inline-size: none;
+    padding-block: var(--space-6);
+  }
+
+  .hall-station-sticky,
+  .hall-crystal-board,
+  .hall-qgrid {
+    grid-template-columns: 1fr;
+  }
+
+  .hall-qcard,
+  .hall-qcard-inner {
+    min-height: 14rem;
+    position: relative;
+  }
+
+  .hall-exit-city {
+    margin-inline-start: 0;
+  }
+
+  .hall-station[data-scene='s1'] .hall-station-frame,
+  .hall-station[data-scene='s2'] .hall-station-frame,
+  .hall-station[data-scene='s3'] .hall-station-frame,
+  .hall-station[data-scene='s4'] .hall-station-frame,
+  .hall-station[data-scene='s5'] .hall-station-frame {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+/* 展厅页：减少动效时关掉本页动画（含到达条脉冲由 HallChrome 自管） */
+@media (prefers-reduced-motion: reduce) {
+  html:has([data-hall]) *,
+  html:has([data-hall]) *::before,
+  html:has([data-hall]) *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .hall-qcard.is-flipped .hall-qcard-inner {
+    transform: none;
+  }
+
+  .hall-qcard.is-flipped .hall-qcard-front {
+    display: none;
+  }
+
+  .hall-qcard.is-flipped .hall-qcard-back {
+    transform: none;
+    position: relative;
+  }
+
+  .hall-station {
+    --hall-reveal: 1 !important;
+    --hall-tx: 0px !important;
+    --hall-ty: 0px !important;
+  }
+
+  .hall-station-frame {
+    clip-path: none !important;
+  }
+
+  .hall-station-shot {
+    transform: scale(var(--hall-scale, 1)) !important;
+  }
+}

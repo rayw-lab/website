@@ -1,0 +1,194 @@
+---
+// 第 2–5 幕 + 工作台出发幕：sticky 长区间，左文右图。
+// S1–S5 静帧按媒体清单 id 取 poster；S6「回家」在 Transition.astro，本文件不渲。
+import { hallStations } from '../../../../data/about-copy';
+import mediaDoc from '../../../../data/about-hall-media.json';
+import StationRail from './StationRail.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+type MediaRow = { id: string; poster: string };
+const mediaById = new Map((mediaDoc as MediaRow[]).map((m) => [m.id, m]));
+
+type Reveal = 'from-right' | 'from-bottom' | 'wipe-left' | 'circle' | 'split-y' | 'hold';
+
+const REVEAL_BY_SCENE: Record<string, Reveal> = {
+  s1: 'from-right',
+  s2: 'from-bottom',
+  s3: 'wipe-left',
+  s4: 'circle',
+  s5: 'split-y',
+  s6: 'hold',
+};
+
+const MEDIA_BY_SCENE: Record<string, string | null> = {
+  s1: 'station-s1',
+  s2: 'station-s2',
+  s3: 'station-s3',
+  s4: 'station-s4',
+  s5: 'station-s5',
+  s6: null,
+};
+
+const ALT_BY_SCENE: Record<string, string> = {
+  s1: '程序化生成的化身坐在深色工作台前，三块曲面屏显示抽象波形与几何',
+  s2: '程序化生成的化身站在发光地脉平台上，身后是线框车体',
+  s3: '程序化生成的化身从指尖投出光锥，贴合弯曲路面',
+  s4: '程序化生成的化身被多层光环围绕',
+  s5: '程序化生成的化身双手托起全息天平，一端芯片一端星云',
+};
+
+type StationView = {
+  scene: string;
+  bind: string;
+  kicker: string;
+  title: string;
+  stages: { n: string; name: string; note: string; gap?: string }[];
+  body: string;
+  proofPath?: string;
+  proofLabel?: string;
+  question?: string;
+  gapSolo?: string;
+};
+
+const desk: StationView = {
+  scene: 's1',
+  bind: 'stage:none;pillar:none;proof:/about/',
+  kicker: '工作台 · 出发',
+  title: '方案从问题现场开始，不从口号开始',
+  stages: [],
+  body: '三块屏上是波形、线框和状态灯，不是演示稿。下面按演进展开：地基、光锥、十六环、天平，最后回家。',
+};
+
+const scenes: StationView[] = [desk, ...hallStations.filter((s) => s.scene !== 's6')];
+---
+
+<StationRail />
+{
+  scenes.map((station) => {
+    const mediaId = MEDIA_BY_SCENE[station.scene];
+    const poster = mediaId ? mediaById.get(mediaId)?.poster : undefined;
+    const src = poster ? `${base}${poster}` : '';
+    const reveal = REVEAL_BY_SCENE[station.scene] ?? 'hold';
+    const alt = ALT_BY_SCENE[station.scene] ?? '';
+    return (
+      <section
+        class="hall-station"
+        data-scene={station.scene}
+        data-bind={station.bind}
+        data-reveal={reveal}
+        data-station-progress
+      >
+        <div class="hall-panel hall-station-sticky">
+          <div class="hall-station-copy">
+            <p class="hall-kicker">{station.kicker}</p>
+            <h2>{station.title}</h2>
+            {
+              station.stages.length > 0 && (
+                <ol class="hall-stage-list">
+                  {station.stages.map((st) => (
+                    <li>
+                      <span class="hall-stage-n">{st.n}</span>
+                      <div>
+                        <p class="hall-stage-name">{st.name}</p>
+                        <p class="hall-stage-note">{st.note}</p>
+                        {st.gap && <p class="hall-gap">{st.gap}</p>}
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              )
+            }
+            {station.gapSolo && <p class="hall-gap">{station.gapSolo}</p>}
+            {station.question && <p class="hall-question">{station.question}</p>}
+            <p class="hall-station-body">{station.body}</p>
+            {station.proofPath && station.proofLabel && (
+              <p>
+                <a href={`${base}${station.proofPath}`}>{station.proofLabel} →</a>
+              </p>
+            )}
+          </div>
+          <div class="hall-station-visual">
+            {
+              src ? (
+                <figure class="hall-station-figure">
+                  <div class="hall-station-frame">
+                    <img
+                      class="hall-station-shot"
+                      src={src}
+                      alt={alt}
+                      width="1280"
+                      height="720"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                </figure>
+              ) : (
+                <div class="hall-station-placeholder" role="img" aria-label="人到机甲过渡视频待接入">
+                  <p class="hall-kicker">回家 · 人与城市相接</p>
+                  <p>
+                    中景，腰部以上：人站在圆形对接平台，双臂松松交叉；光栅扫过身体，青色光子上飘，同位置凝聚为钛灰块面机甲，青眼最后点亮。固定机位，左四成负空间。片长 10 秒。
+                  </p>
+                </div>
+              )
+            }
+          </div>
+        </div>
+      </section>
+    );
+  })
+}
+
+<script is:inline>
+  (function () {
+    var roots = document.querySelectorAll('[data-station-progress]');
+    if (!roots.length) return;
+    var reduceMq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = new Set();
+    var raf = 0;
+
+    function progressOf(el) {
+      var total = el.offsetHeight - window.innerHeight;
+      if (total <= 0) return 1;
+      var t = -el.getBoundingClientRect().top;
+      if (t <= 0) return 0;
+      if (t >= total) return 1;
+      return Math.min(1, t / total / 0.42);
+    }
+
+    function apply() {
+      var freeze = reduceMq.matches;
+      for (var i = 0; i < roots.length; i++) {
+        var el = roots[i];
+        el.style.setProperty('--hall-reveal', freeze ? '1' : String(progressOf(el)));
+      }
+    }
+
+    function loop() {
+      apply();
+      raf = visible.size && !reduceMq.matches ? requestAnimationFrame(loop) : 0;
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) visible.add(entries[i].target);
+        else visible.delete(entries[i].target);
+      }
+      if (visible.size && !raf && !reduceMq.matches) raf = requestAnimationFrame(loop);
+      apply();
+    });
+
+    for (var j = 0; j < roots.length; j++) io.observe(roots[j]);
+    reduceMq.addEventListener('change', function () {
+      if (reduceMq.matches && raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      } else if (!reduceMq.matches && visible.size && !raf) {
+        raf = requestAnimationFrame(loop);
+      }
+      apply();
+    });
+    apply();
+  })();
+</script>

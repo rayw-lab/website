@@ -1,0 +1,54 @@
+---
+// WorldHallLayout —— 楼内展厅页壳（ADR-2 / ABOUT-HALL-TECH-ARCH §1–§2）。
+// 包 BaseLayout：全站导航 / SEO / JSON-LD / 统计沿用；C 到达横幅代码路径自动存在。
+// 展厅仪式走 HallChrome（ritual 槽）；[data-hall] 下把 C 横幅收成紧凑一行，禁止到达条喊两次。
+// 暗底 token 经 hall.css 作用在 html:has([data-hall])：站头与页脚随暗底，不改 BaseLayout。
+import BaseLayout from './BaseLayout.astro';
+import '../styles/hall.css';
+import type { JsonLd } from '../data/jsonld';
+
+interface Props {
+  title: string;
+  description: string;
+  /** world-halls.json slug，写入 [data-hall] */
+  slug: string;
+  /** 本栋 neonColor（buildings JSON），作 --hall-neon；楼色不走 neon-tokens */
+  neonColor: string;
+  jsonLd?: JsonLd | JsonLd[];
+}
+
+const { title, description, slug, neonColor, jsonLd } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <Fragment slot="head"><slot name="head" /></Fragment>
+
+  <div
+    class="hall-scope"
+    data-hall={slug}
+    style={`--hall-neon: ${neonColor}`}
+  >
+    {Astro.slots.has('ritual') && (
+      <div class="hall-ritual">
+        <slot name="ritual" />
+      </div>
+    )}
+    <div class="hall-main">
+      <slot />
+    </div>
+    {Astro.slots.has('cta') && (
+      <div class="hall-cta">
+        <slot name="cta" />
+      </div>
+    )}
+  </div>
+</BaseLayout>
+
+<style is:global>
+  /* 展厅页若 BaseLayout 稍后挂上 C 横幅：收成紧凑一行，仪式以 HallChrome 为准 */
+  body:has([data-hall]) .arrival-banner {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    padding-block: 0.35rem;
+  }
+</style>

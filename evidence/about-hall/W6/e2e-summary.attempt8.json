@@ -1,0 +1,16 @@
+{
+  "attempt": 8,
+  "headSha": "985d338 (built) — tree at run start; 97f80ab (S6 headline) committed during run, hall-only",
+  "totalTests": 109,
+  "totalFiles": 22,
+  "passed": 109,
+  "failed": 0,
+  "didNotRun": 0,
+  "flaky": 0,
+  "skipped": 0,
+  "durationMs": 6845693.441000001,
+  "workers": 1,
+  "retries": 0,
+  "port": 4645,
+  "startTime": "2026-09-03T10:10:42.086Z"
+}

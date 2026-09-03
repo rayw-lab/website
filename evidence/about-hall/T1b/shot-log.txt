@@ -1,0 +1,4 @@
+[t1b-shot] wrote 01-spawn.png
+[t1b-shot] 02-hold-overlay.png captured=true
+[t1b-shot] wrote 03-hall-chrome.png
+[t1b-shot] wrote 04-hold-reduced.png overlayOn=false

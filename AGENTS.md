@@ -92,6 +92,21 @@
 北极星 **98 / 98 / 90 / 85** vs 生产登记 **80 / 73 / 87 / —**（综合/视觉/功能/性能；见看板「登记矩阵」表，以指挥官最新口径为准；视觉 73 = 看板单源定谳，董事会 R1 §6）。
 性能未登记时显式写 **—** 并说明解锁条件（真机 human-gate 六腿 → AL-PERF）。
 
+### 5. 本地 Loop 编排（About Hall 起，磊哥 2026-09-02 指定）
+
+范式母版 = `~/workspace/raw/loop-commander/SKILL.md`；本仓任务书与索引在 `docs/local-cmd/`（`ABOUT-HALL-CHARTER-*.md` / `ABOUT-HALL-INDEX.md` / WBS / TECH-ARCH）。父代理（Cursor 会话）**只编排与复审**，直改仅限 §2.1 白名单。
+
+| 席 | 载体 | 用途 | 禁止 |
+|---|---|---|---|
+| 董事会 | **Grok 4.6 xhigh 常态一路**（`grok -p` 纯推理） | 重大决策裁决 = 磊哥决定，落 `docs/local-cmd/adr/` | 施工；重开已拍死项 |
+| 开发 worker | `glm-5-3-flash@ark-plan`（api_direct，`--attach` 代码 / `--attach-image` 截图） | 组件、脚本、门、像素复核 | 无文件系统：产出由父代理落盘并跑门 |
+| 多面 worker | `gemini-3.8-flash`（agy；`gemini-3.7-flash` 别名同路由） | 调研 / 分镜 / 文档 / 秘书 / 批评者 / 小切片 | **不再使用 gemini-3.1-pro** |
+| **前端视觉 worker** | Cursor Task `model: claude-opus-5-thinking-medium`（磊哥 2026-09-03 14:32 指定） | 页面/组件视觉实装、CSS/动效打磨、截图级审美修正；终审仍归指挥官 | 派给 Grok/Gemini 做视觉实装（它们只做逻辑/数据/门/初审） |
+| 生成/编码 worker | Grok Build CLI（`image_gen` / `image_edit` / `image_to_video` {6,10}s；也可编码、联网） | 全部生图生视频 | 引用任何外部生图生视频引擎；生成路与审计路同 lane |
+| 收账/门控 worker | Cursor Task `model: composer-2.5` | e2e 收账、机器门、LHCI、盯长跑 | 不写业务代码 |
+
+约定：worker 可多轮多路多次；依赖与工具**授权 worker 自行安装**并登记到 TECH-ARCH 依赖表；prompt 文件放 `~/.codex/state/<goal>/prompts/` 0600；一单一 write root；worker 不 commit/push、不占 4321；收稿必宿主回读。i2v 在本仓**解禁**（座舱系列 D-003 不适用），护栏 = 固定机位 + 单一主事件 + first/last 双帧独立审计 + 3 连 REJECT 熔断；diffusion 零文字；六站演进不编年份。
+
 ## Cursor Cloud specific instructions
 
 本仓库是个人网站工程（Astro + TypeScript + MDX，部署到 GitHub Pages），总纲见 `docs/website-plan/master-plan.md`（第 7 章为技术实现）。Cloud Agent 环境由 `.cursor/environment.json` 定义：install 阶段运行 `.cursor/install.sh`（确保 Node 20+ / pnpm / git 并安装依赖），`astro-dev` 终端由 `.cursor/dev-server.sh` 启动 dev server。

@@ -6,9 +6,9 @@
 // generateMipmaps=false——WebGPU/WebGL 双后端一致的前提），在其外做自由排版：
 //   · 双语：同一张图集同时容纳 EN 楼名行（楼顶主匾）与 zh 竖排列（楼身竖幅）；
 //   · 竖排：中文楼名逐字纵向堆叠（港式挂旗阅读向，StreetLamps 旋转映射的原生版）；
-//   · 图标合成：产品线符号图形（车轮廓/声波纹/语言气泡/智能中枢/方向盘）Canvas 2D
+//   · 图标合成：产品线符号图形（车轮廓/声波纹/语言气泡/智能中枢/方向盘/档案卡）Canvas 2D
 //     矢量笔画直绘进行内——零外部字体零图片资产（R8 资产纪律：全程序化 0 字节）。
-// 每 hero 楼 1 张图集 = 楼顶主匾 + 街层灯箱 + 楼身竖幅三层共用 → 每楼灯箱/竖幅
+// 每参与楼 1 张图集 = 楼顶主匾 + 街层灯箱 + 楼身竖幅三层共用 → 每楼灯箱/竖幅
 // 合并几何后仍 1 draw call（BuildingSigns 台账），广告板 4 块共用另 1 张图集。
 import * as THREE from 'three/webgpu';
 
@@ -23,7 +23,7 @@ export interface AtlasRegion {
 }
 
 /** 产品线符号图形（design-confirm §4.2「车库=车轮廓、座舱=声波纹……」的执行位） */
-export type SignIconKind = 'car' | 'wave' | 'lang' | 'agent' | 'radar';
+export type SignIconKind = 'car' | 'wave' | 'lang' | 'agent' | 'radar' | 'profile';
 
 export interface BuildingSignContent {
   /** 楼顶主匾：EN 楼名（buildings JSON title.en） */
@@ -81,7 +81,7 @@ function makeMaskTexture(canvas: HTMLCanvasElement): THREE.Texture {
  * 产品线符号图形直绘（白色 mask 笔画，s = 图标外接方边长，中心 (cx, cy)）。
  * 五种图形对应五条产品线语义：car=车轮廓（配置器车库）、wave=声波纹（座舱语音）、
  * lang=语言气泡（多语种本地化）、agent=神经中枢节点（Master Agent）、
- * radar=方向盘（智驾实验）。
+ * radar=方向盘（智驾实验）、profile=人物档案卡（About 馆）。
  */
 export function drawSignIcon(
   ctx: CanvasRenderingContext2D,
@@ -191,6 +191,20 @@ export function drawSignIcon(
       }
       ctx.beginPath();
       ctx.arc(cx, cy, 0.1 * s, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+    case 'profile': {
+      // 档案卡：外框 + 人像头肩，远景仍能读成个人资料语义。
+      ctx.lineWidth = 0.07 * s;
+      ctx.beginPath();
+      ctx.roundRect(cx - 0.42 * s, cy - 0.46 * s, 0.84 * s, 0.92 * s, 0.08 * s);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy - 0.15 * s, 0.16 * s, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx, cy + 0.29 * s, 0.3 * s, Math.PI, Math.PI * 2);
       ctx.fill();
       break;
     }

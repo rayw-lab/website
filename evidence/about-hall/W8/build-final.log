@@ -1,0 +1,51 @@
+[WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+
+> website@0.1.0 build /Users/wanglei/studio-data-root/worktrees/website-about-hall
+> astro build
+
+01:13:29 [content] Syncing content
+01:13:29 [content] Synced content
+01:13:29 [types] Generated 301ms
+01:13:29 [build] output: "static"
+01:13:29 [build] mode: "static"
+01:13:29 [build] directory: /Users/wanglei/studio-data-root/worktrees/website-about-hall/dist/
+01:13:29 [build] Collecting build info...
+01:13:29 [build] ✓ Completed in 337ms.
+01:13:29 [build] Building static entrypoints...
+01:13:30 [vite] ✓ built in 305ms
+01:13:30 [WARN] [vite] [plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+01:13:30 [vite] ✓ built in 242ms
+01:13:30 [build] Rearranging server assets...
+
+ generating static routes 
+01:13:30   ├─ /about/index.html (+9ms) 
+01:13:30   ├─ /ai-lab/multilingual-testcase-generation/index.html (+5ms) 
+01:13:30   ├─ /ai-lab/world-spike-parallel-agents/index.html (+2ms) 
+01:13:30   ├─ /ai-lab/index.html (+2ms) 
+01:13:30   ├─ /contact/index.html (+1ms) 
+01:13:30   ├─ /home/index.html (+2ms) 
+01:13:30   ├─ /insights/cockpit-llm-bottleneck/index.html (+2ms) 
+01:13:30   ├─ /insights/multilingual-review-checklist/index.html (+2ms) 
+01:13:30   ├─ /insights/index.html (+2ms) 
+01:13:30   ├─ /lab/car-configurator/index.html (+6ms) 
+01:13:30   ├─ /lab/tts-cockpit/index.html (+2ms) 
+01:13:30   ├─ /lab/index.html (+1ms) 
+01:13:30   ├─ /now/index.html (+2ms) 
+01:13:30   ├─ /rss.xml (+25ms) 
+01:13:30   ├─ /work/ai-native-workflow/index.html (+3ms) 
+01:13:30   ├─ /work/llm-capability-layering/index.html (+2ms) 
+01:13:30   ├─ /work/multilingual-cockpit/index.html (+2ms) 
+01:13:30   ├─ /work/index.html (+1ms) 
+01:13:30   ├─ /world/about-pavilion/index.html (+2ms) 
+01:13:30   ├─ /world-spike/index.html (+1ms) 
+01:13:30   ├─ /index.html (+1ms) 
+01:13:30 ✓ Completed in 95ms.
+
+01:13:30 [build] ✓ Completed in 667ms.
+01:13:30 [@astrojs/sitemap] `sitemap-index.xml` created at `dist`
+01:13:30 [build] 20 page(s) built in 1.03s
+01:13:30 [build] Complete!
