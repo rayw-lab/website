@@ -1,0 +1,65 @@
+# NEXUS-HALL-INDEX · CURRENT AUTHORITY · 2026-09-04
+
+> 本文是本楼唯一 ACTIVE TODO。冲突时：**live Git / 隔离栈 / 日志 > 本文 > 任何旧看板**。
+> 目标：`/world/agent-nexus/`「墨迹 · Ink Ledger」——水墨物理承载真实 agent 会话元数据。
+> 设计 SSOT = `NEXUS-HALL-DRAFT-2026-09-03.md`；施工 SSOT = `NEXUS-HALL-CHARTER-2026-09-04.md`。
+> 分支 `codex/nexus-hall-20260903` · worktree `~/studio-data-root/worktrees/website-nexus-hall` · base `codex/about-hall-20260902@f942a22` · 上次合流 — · 人测窗口 none
+
+## 状态机
+
+`PLANNED → RESEARCHED（agy 稿已收并亲核）→ BUILT（执行方实装完）→ AUDITED（xhsapi 反核过）→ GATE_PASS（机器门绿）→ LIVE_OBSERVED（隔离栈真开过页面）`
+**只有 `LIVE_OBSERVED` 作验收。** worker 自报、build 绿、门绿都不是验收。
+
+## 票册
+
+| 票 | 波 | 目标（一句） | 席位 | write root（唯一） | 依赖 | 最小 Live 验收 | 状态 |
+|---|---|---|---|---|---|---|---|
+| NX-W0a | W0 | charter + INDEX + 草案入库 | 执行方 | `docs/local-cmd/` | — | 三文件在分支上 | **BUILT** |
+| NX-W0b | W0 | 草案对抗审（P0/P1/P2 register） | xhsapi | `~/.codex/state/nexus-hall/out/W0-draft-audit.md` | — | findings 逐条亲核裁决 | **DISPATCHED** |
+| NX-W0c | W0 | 董事会 ADR ×3（白名单尺度 / 手卷横向 vs 竖滚 / 合流序） | Grok 董事会 | `docs/local-cmd/adr/` | W0b | ADR 落地 | PLANNED |
+| NX-W1r | W1 | 三家水墨/流体引擎 teardown + 20 条高级感视觉参考 | agy | `~/.codex/state/nexus-hall/out/W1-ink-engine-teardown.md`、`~/studio-data-root/refs/nexus-hall/` | — | 报告有 file:line 锚点 + 许可裁定 + E 节「明确没证的」 | **DISPATCHED** |
+| NX-W1 | W1 | `InkEngine` 六场十二 pass + display + `?demo` 确定性 + LOCKED 纸色墨谱 | 执行方 | `src/components/city/halls/nexus/ink/` | W1r | spike 页一滴墨洇开 + 可试画；≤30KB gzip；RM 不起 rAF | PLANNED |
+| NX-W2r | W2 | 多格式会话日志字段映射 + 脱敏做法调研 | agy | 同上 out 目录 | — | 五种格式各给字段表 | PLANNED |
+| NX-W2 | W2 | reducer + redact 门 + LEDGER-RECEIPT | 执行方（**仅本机**） | `scripts/`、`public/demo/agent-nexus/`、`evidence/nexus-hall/` | W2r, W0c | ledger 过门；条数对账 | PLANNED |
+| NX-W3r | W3 | suminagashi 数学 + 时间序列艺术化 + scrubber 交互调研 | agy | 同上 | — | 单滴变换公式可实现 | PLANNED |
+| NX-W3 | W3 | S0 洇 + S1 墨流 + 印抽屉 | 执行方 | `halls/nexus/{Yin,Flow,Seal,Drawer}.*` | W1, W2, W3r | 10s 脚本成立；数字全 ledger 渲染 | PLANNED |
+| NX-W4r | W4 | 手卷横向叙事 + 中文排版 + 印章设计调研 | agy | 同上 | — | 移动端退化方案明确 | PLANNED |
+| NX-W4 | W4 | 手卷 + 五跋 + 试墨 + 收官 | 执行方 | `halls/nexus/{Scroll,Colophon,Trial,Epilogue}.*` | W3, W4r | C 维 100% 绑定；干纸拒墨可见 | PLANNED |
+| NX-W5r | W5 | Astro hall 路由/主题作用域 + 构建期 WebGL 截图坑调研 | agy | 同上 | — | SSIM 门做法明确 | PLANNED |
+| NX-W5 | W5 | 接线 + 三个门脚本 + e2e + 海报 + sitemap | 执行方 | §3.3 热点文件 + `scripts/` + `e2e/` | W4, W5r | 城里 E 进楼；about-hall e2e 不回归 | PLANNED |
+| NX-W6 | W6 | 全量 e2e + 盲审双评 + PR + handoff | 执行方 + agy/xhsapi 批评者 | `evidence/nexus-hall/W6/` | 全部 | 人门三维 ≥7 | PLANNED |
+
+## 在途 worker（每轮 tick 必核）
+
+| 单 | 席 | 发起 | 产物落点 | 身份核验 | 状态 |
+|---|---|---|---|---|---|
+| W1-agy-ink-engine-teardown | agy flash | 2026-09-04 | `~/.codex/state/nexus-hall/out/W1-ink-engine-teardown.md` | receipt `identity_ok` + `served_label` | 在跑 |
+| W0-xhsapi-draft-adversarial | xhsapi | 2026-09-04 | `~/.codex/state/nexus-hall/out/W0-draft-audit.md` | `APIDIRECT_RECEIPT` `identity_ok` | 在跑 |
+
+## 热点文件持有表（单 writer）
+
+| 文件 | 当前持有票 | 释放条件 |
+|---|---|---|
+| `src/pages/world/[slug].astro` | — | W5 收稿 |
+| `src/layouts/WorldHallLayout.astro` | — | W5 收稿 |
+| `src/styles/hall.css` | — | W5 收稿 |
+| `src/data/world-halls.json` | — | W5 收稿 |
+| `src/data/cyber-city-buildings.json` | — | W5 收稿 |
+
+## NEEDS_LEIGE
+
+| 项 | 状态 |
+|---|---|
+| 五跋正文与每跋「迹」（真实翻车） | 待 |
+| rule 文件公开尺度（标题/摘录/全文，逐条） | 待 |
+| 数据白名单终审（`*-cli-codex` 探针目录是否可公开） | 待 |
+| PR 合入 main | W6 |
+| 与 about-hall 合流序 | ADR-③ |
+
+## DEFERRED
+
+| 项 | 解除条件 |
+|---|---|
+| `/world/agent-nexus/` 进 LHCI collect | Hall 稳定后第二刀 |
+| 题跋「背面」的 claude-replay 脱敏 HTML 导出 | 五跋正文定稿后 |
+| xterm / asciinema 会话回放 | 不在第一刀 |
