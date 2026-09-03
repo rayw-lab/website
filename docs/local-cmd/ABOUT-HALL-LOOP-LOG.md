@@ -46,3 +46,11 @@
 - 派：W3c（六站幕接静帧 + 差异化揭示动效 + Crystal 键盘可达 + Epilogue 打磨）。
 - 磊哥休息，指令：自动推进到 W6；agy 只用 3.8；grok/glm 灵活用。
 - ZDR 仍拦 i2v：每 ~30 分钟由指挥官 canary 一次，解除即自动跑 S0-T/S6-T i2v → 压制 → 媒体清单 `hero-s0` 条目 → Hero 自动接片。
+
+### L6 · 2026-09-03 06:55–08:40（W3 收口 + W6 开跑）
+- 收稿：W3c（六站接静帧 + 五种差异化揭示、Crystal 键盘可达、Epilogue 打磨、reduced-motion `getAnimations()`=0）。首次派单 373s 后 Grok proxy 断流（`reqwest error stream`），错峰重发成功。宿主回读全绿，提交 `eff78a6`。
+- **W6 批评者双席（fresh，只看截图）**：Gemini 3.8 Flash `A=8.5 B=9 E=9.5`；GLM-5.3-Flash `A=8 B=8 E=9`。|Δ| ≤1 通过。三维均 ≥ 阈值 7。改进点：① 首屏 poster 静帧待视频"活"起来（ZDR 解除即接）；② `/about/` 文案泄露内部编号 `ABT-02/05` → 指挥官 ≤10 行直改已删；③ 问题卡折叠态露一句摘要（记 W7 债）；④ 六向交汇补一句"AI 工作流如何赋能座舱交付"的因果抓手（记 W7 债）。
+- **沉淀席**：`raw/skills-distilled/about-hall/LESSONS-2026-09-03.md`（28 行）+ `SKILL-DRAFT-avatar-hero-pipeline.md` + INDEX 行。
+- **全量 e2e**：attempt1/2 因指挥官自起的 4612 preview 与 astro 7 单实例锁冲突（webServer 起不来）→ 清干净后 attempt3：**80 passed / 2 failed / 11 did not run（1.2h）**。两失败 = `CITY-NAV-01`、`CITY-PA-01`，根因：`NAV_ROUTE` glob 按裸 `deepLink` 拦截 navigate，而 ADR-2 让进站统一带 `?from=city&poi=`，query 使 glob 不匹配 → 页面真跳转。**测试侧修**（正则容纳可选 query，路径仍以 deepLink 为准），提交 `f6d9ed8`；attempt4 已起（08:40）。
+- ZDR canary 06:49 / 07:30 仍 BLOCKED。
+- tick=6。

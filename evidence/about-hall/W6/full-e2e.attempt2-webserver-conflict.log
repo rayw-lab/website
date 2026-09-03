@@ -1,0 +1,185 @@
+[WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+[WebServer] [WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+[WebServer] Another astro preview server is already running.
+[WebServer] 
+[WebServer]   URL:  http://127.0.0.1:4612
+[WebServer]   PID:  93051
+[WebServer] 
+[WebServer] Run `astro preview stop` to stop it, or use `astro preview --force` to replace it.
+[WebServer]   Location:
+[WebServer]     /Users/wanglei/studio-data-root/worktrees/website-about-hall/node_modules/.pnpm/astro@7.2.4_@astrojs+markdown-remark@7.2.4_@emnapi+core@1.11.1_@emnapi+runtime@1.11.3_@types+node@24.13.3_yaml@2.9.0/node_modules/astro/dist/cli/preview/index.js:82:11
+[WebServer]   Stack trace:
+[WebServer]     at preview (file:///Users/wanglei/studio-data-root/worktrees/website-about-hall/node_modules/.pnpm/astro@7.2.4_@astrojs+markdown-remark@7.2.4_@emnapi+core@1.11.1_@emnapi+runtime@1.11.3_@types+node@24.13.3_yaml@2.9.0/node_modules/astro/dist/cli/preview/index.js:82:11)
+[WebServer]     at async cli (file:///Users/wanglei/studio-data-root/worktrees/website-about-hall/node_modules/.pnpm/astro@7.2.4_@astrojs+markdown-remark@7.2.4_@emnapi+core@1.11.1_@emnapi+runtime@1.11.3_@types+node@24.13.3_yaml@2.9.0/node_modules/astro/dist/cli/index.js:220:5)
+Error: Process from config.webServer was not able to start. Exit code: 1
+
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.1/bin/node",
+      "/Users/wanglei/studio-data-root/worktrees/website-about-hall/node_modules/@playwright/test/cli.js",
+      "test",
+      "--workers=1",
+      "--retries=0",
+      "--reporter=list,json"
+    ],
+    "configFile": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/playwright.config.ts",
+    "rootDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "desktop-chromium",
+        "name": "desktop-chromium",
+        "testDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/e2e",
+        "testIgnore": [
+          "/mobile\\.spec\\.ts|world-spike.*\\.spec\\.ts|cyber-city.*\\.spec\\.ts|car-configurator\\.spec\\.ts|visual[\\\\/].*\\.spec\\.ts/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "mobile-375",
+        "name": "mobile-375",
+        "testDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/mobile\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "car-chromium",
+        "name": "car-chromium",
+        "testDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/car-configurator\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "world-chromium",
+        "name": "world-chromium",
+        "testDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/e2e",
+        "testIgnore": [
+          "/cyber-city-perf\\.spec\\.ts/"
+        ],
+        "testMatch": [
+          "/world-spike\\.spec\\.ts|cyber-city.*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "world-perf-chromium",
+        "name": "world-perf-chromium",
+        "testDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/world-spike-perf\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "city-perf-chromium",
+        "name": "city-perf-chromium",
+        "testDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/cyber-city-perf\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "visual-chromium",
+        "name": "visual-chromium",
+        "testDir": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/visual[\\\\/].*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "pnpm preview --host 127.0.0.1 --port 4620",
+      "url": "http://127.0.0.1:4620/website/",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [],
+  "errors": [
+    {
+      "message": "Error: Process from config.webServer was not able to start. Exit code: 1",
+      "stack": "Error: Process from config.webServer was not able to start. Exit code: 1"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-09-02T23:09:34.157Z",
+    "duration": 1234.386,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
+EXIT=1
