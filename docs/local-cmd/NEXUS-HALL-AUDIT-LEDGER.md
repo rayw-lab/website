@@ -1458,3 +1458,40 @@ residual：移动端毛刺相对偏大（displacement scale 46+13 是按 1440 �
 ### R36-4 门与提交
 build rc=0 · 预算门 PASS · ledger-verify rc=0 · ledger-gate rc=0 · check-links rc=0 · 本厅 e2e **25/25** · 全量 **137/137**。`9345bc4`。
 `自看：产物 grep 实证 rule 路径 18→0；披露句「画面陈列 600 滴 / 全期 3025 次」在墨流小注可见。`
+
+## R37 · 端到端动线走查 + grok 接缝审计（2026-09-04 16:5x–17:3x）
+
+### R37-0 起因与自认
+磊哥问「三个部分除内容填充外是否都 90 分以上、完整动线是否顺畅」。
+**自认**：此前所有绿都是分段的（137/137 e2e、七门、双评 7/8），**我从未端到端走过一次真实动线**——
+这正是本日反复栽的「门绿≠画面对」在动线维度的同型盲区。先取证再答。
+
+### R37-1 一手走查（4321 preview，合并后 dist，SwiftShader）
+段一（`shots/walk/10~12`）：ready@16.0s → robot-idle@46.4s（CTA「变形 · 巡航态 Space」armed、pointer-events auto、可见）
+→ 按 Space → car_ready@89.9s → 按 W → driving speed=18。**零 pageerror**，漏斗事件序完整：
+`mount > world-reveal > robot-idle > world-audio > transform-start > hint-shown > world-transform > world-quest > world-drive-start`。
+段二（`shots/walk/20~24`）：`?poi=about-pavilion` 落圈 → E → about 厅（到达条「个人档案馆|探索|1/12|返回科技城」）
+→ 点「返回科技城」→ 回城重新落圈 → `?poi=agent-nexus` → E → **城侧墨吞 10 帧** → 水墨厅（到达条 2/12、题款 canvas 就位）。
+**探索计数真的在涨（1/12 → 2/12）**，动线本身走得通。
+
+### R37-2 走查抓到我自己的坑
+转场实测 `endedAt-startedAt=2357.7ms`、`frames=10`，**超过我 e2e 写的 2200ms 上界**（那是按设计时长 820ms 拍的）。
+门自己 flaky 比没门更坏 → 上界按慢环境实测放宽到 6000ms，只拦「压根没退场」。`f68b3c8`。
+
+### R37-3 grok 接缝审计（`out/W14-grok-fullflow.json`）四条 P1 逐条亲核（带 2×2 对照）
+| 条 | grok 判 | 我的实测 | 裁决 |
+|---|---|---|---|
+| **P1-4 快照残留 A 进 B → 到达条整条藏** | 属实 | **属实**：注入 `world-arrival-v1={poi:about}` 后打开 nexus 厅 → `hidden:true`（含「返回科技城」一起消失）；**对照**清掉残留卡同 URL → `hidden:false` 正常显示。唯一变量成立 | **采纳**。触发条件比 grok 描述窄（常规路径会被新快照覆盖，只在写入失败/隐私模式下发生），但「query 合法却把楼名+探索+返回一起藏掉」的处置本身不合理 |
+| **P1-3 375 回城再被 viewport 门拦** | 属实 | **属实**：375 打开 `/?poi=about-pavilion` → `data-blocked=viewport`、`state=idle`、封面仍是首访文案「进入科技城」 | **采纳**（文案与挂载策略属产品口径，上抛） |
+| **P1-1 回城走 wandering 不是 driving** | 属实 | **属实**：回城后 `html.class=input-filter-wandering`、无 `data-world-state`；按 V 无 FPV 切换 | **采纳**（是否要「续驶协议」属产品口径，上抛） |
+| **P1-2 Back 后满屏墨（bfcache 残留墨类）** | 存疑需复核 | **证否**：真跳转进楼后 `goBack()` → `inkClass:false`、`::before` display=inline 背景透明、页面重新挂载（`input-filter-intro`）。Chromium+本地 http 下未复现 | **驳回**（grok 自标存疑，判得诚实） |
+
+命中率 3/4 属实，优于经验误报率。
+
+### R37-4 走查另见（我自己看图判的）
+驾驶态**三层提示同屏**：状态条「驾驶中 · WASD…」+ 全键位条「W/A/S/D…Q/E 视角侧转」+「键位 H」按钮，
+同一件事说三遍占掉画面下部一条带。属信息冗余，非功能缺陷。
+
+### R37-5 结论（写给磊哥的口径）
+单厅内部接近可交付；**跨楼动线的接缝是短板**，grok 六段评分 ①86 ②84 ③72 ④88 ⑤58 ⑥55、综合约 72。
+我实测坐实了 ⑤⑥ 段的三个扣分点。**「90 分以上」在动线维度不成立**，卡点集中在「退出回城 → 再进第二栋」。
