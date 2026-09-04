@@ -32,3 +32,4 @@ vendor/*
 !vendor/README.md
 dist-next/
 dist-before/
+.tmp/

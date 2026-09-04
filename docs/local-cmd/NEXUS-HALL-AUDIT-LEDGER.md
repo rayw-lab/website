@@ -1603,3 +1603,11 @@ nexus 厅 e2e **26/26**、about 厅 e2e **16/16**（共用组件改动不回归�
 - 自动「滑行驶出」（agy 方案一精神）未做：与物理输入接管耦合未验。
 - 外部 `?poi=` 深链仍走 wandering 灰盒腿（口径不变）。
 - xhsapi 两次 SSL EOF 改派 glm53flash 写 LESSONS（通道史记一笔）。
+
+## R40 · NX-W17 回城协议真 GPU 复验（2026-09-04，Apple M5，Chromium headed `--use-angle=metal`，城侧 WebGPU 渲染）
+
+- 探针：`.tmp/return-look-gpu.mjs`（两楼各一轮截图）、`.tmp/return-timeline.mjs`（每 250 ms 读 rAF 计数 / `--return-k` / `data-return-done` / visibility）。
+- R40-1 **收幕在真 GPU 下成立**：agent-nexus 热启动 car_ready +1.37–1.42 s；`--return-k` 0.35 → 0.25 → 0.07 → 0，+1.04 s `visibility:hidden`，期间 rAF ≈120 fps（`+259ms raf 54 … +1016ms raf 145`）。about-pavilion（fade）car_ready +1.7 s，收幕后 hidden，`V` 切 fpv 成功。R39-5「真 GPU 手感未验」**关闭**。
+- R40-2 **观察一次未复现**：首轮（本机首次 headed Metal 启动）agent-nexus car_ready +18.1 s，其后 +1.5 s 幕布仍 `visible`，+2.5 s 截图仍全幕（`shots/return-gpu/desk-nexus-02-recede-1300.png`）。用 `--disable-gpu-shader-disk-cache --disable-gpu-program-cache` 复现失败（car_ready +1.37 s、收幕正常）。`[推断]` 首次启动的系统级冷缓存导致 car_ready 后主线程仍被占用数秒、rAF 不出帧，幕布按设计等待真实帧（LESSONS 第 2 条）；未复现故只是推断。不改代码；记为「冷启动幕布可能多滞留 2–3 s」的已知现象，待有第二次观察再定。
+- R40-3 楼侧退场：`hall-leaving` 挂类 + 460 ms 后跳转，真 GPU 下与 SwiftShader 一致。
+- R40-4 about-pavilion 楼侧退场（fade）真 GPU：点击后 +40 ms `html.hall-leaving` + `data-hall-leaving-fx=fade` + 遮罩 opacity 0.967；+160 ms 已跳转（`.tmp/about-exit-gpu.mjs`）。两楼楼侧退场均已真 GPU 目击。
