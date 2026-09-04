@@ -83,13 +83,16 @@ const { dry = { x: 0.72, y: 0.5, radius: 0.17 } } = Astro.props;
      与印章那处的 dashed 不同，那处是拿网页惯用语冒充金石。 */
   .trial__dry {
     position: absolute; transform: translate(-50%, 50%);
-    border: 1px dashed #1c1f2633; border-radius: 50%;
+    /* 干区不是工程制图的虚线圆，是矾水干过留下的水渍环：内外两圈极淡、边缘发虚（agy W9 P1-8 采纳） */
+    border: 0; border-radius: 50%;
+    box-shadow: inset 0 0 0 1px #1c1f2614, inset 0 0 18px 6px #1c1f260d, 0 0 0 1px #1c1f2610, 0 0 14px 4px #1c1f260a;
+    background: radial-gradient(circle, transparent 78%, #1c1f2608 92%, transparent 100%);
     display: grid; place-items: end center; padding-bottom: .5rem;
     pointer-events: none;
   }
   .trial__dry span {
     font: 400 clamp(.6rem, .8vw, .7rem)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-    letter-spacing: .18em; color: #1c1f2659;
+    letter-spacing: .18em; color: #9e2a2bb3;
   }
   .trial__caret {
     position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px;
@@ -108,7 +111,9 @@ const { dry = { x: 0.72, y: 0.5, radius: 0.17 } } = Astro.props;
     cursor: pointer;
   }
   .trial__b:hover { border-color: #9e2a2b; color: #9e2a2b; }
-  .trial__seals { position: absolute; top: .9rem; right: .9rem; display: flex; gap: .45rem; }
+  /* 功能印退到从属位：内缩 1.5rem、平时 45% 不透明，悬停/聚焦才饱满（agy W9 P1-9 采纳） */
+  .trial__seals { position: absolute; top: 1.5rem; right: 1.5rem; display: flex; gap: .45rem; opacity: .45; transition: opacity .25s; }
+  .trial__seals:hover, .trial__seals:focus-within { opacity: 1; }
   .trial__seal {
     inline-size: 2.1rem; aspect-ratio: 1; padding: 0; cursor: pointer; border-radius: 1px;
     font: 500 .95rem/1 "Songti SC", "STSong", "Source Han Serif SC", serif;
@@ -116,8 +121,9 @@ const { dry = { x: 0.72, y: 0.5, radius: 0.17 } } = Astro.props;
   .trial__seal--zhu { color: #9e2a2b; background: #efe9dc; border: 1.5px solid #9e2a2b; transform: rotate(-1.2deg); }
   .trial__seal--bai { color: #efe9dc; background: #9e2a2b; border: 1.5px solid #9e2a2b; transform: rotate(1deg); }
   .trial__seal:focus-visible { outline: 2px solid #1c1f26; outline-offset: 2px; }
+  .trial__live kbd { font: inherit; padding: .05em .4em; border: 1px solid #1c1f2640; border-radius: 2px; }
   .trial__live {
-    margin: 0; color: #4a4f5a; min-height: 1.4em;
+    margin: 0; color: #33312e; min-height: 1.4em;
     font: 400 clamp(.72rem, 1vw, .82rem)/1.4 ui-sans-serif, system-ui, sans-serif;
   }
 </style>

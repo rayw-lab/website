@@ -48,6 +48,15 @@ test.describe('S0 洇', () => {
 });
 
 test.describe('S1 墨流', () => {
+  // 🔴 口径门：标题栏「N 席位」= totals.seats（有会话的席位数）；墨带若照名册画会 5 对 6 打架（agy W9 P0-1 属实）。
+  test('墨带数 == totals.seats（口径门），且每条带都在明细里出现过', async ({ page }) => {
+    await page.goto(u(HALL));
+    const bands = await page.locator('.nexus-flow__band').count();
+    expect(bands).toBe(ledger.totals.seats);
+    const present = new Set((ledger.sessions as Array<{ seat: string }>).map((s) => s.seat));
+    expect(present.size).toBe(bands);
+  });
+
   test('注入条数与 ledger 明细一致，且不手写数字', async ({ page }) => {
     await page.goto(u(FLOW));
     const injected = await page.evaluate(

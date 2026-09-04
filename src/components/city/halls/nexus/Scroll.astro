@@ -34,8 +34,9 @@ const { stripVh } = scenes.scroll;
     position: sticky; top: var(--hall-header-stack, 0px);
     /* 画心高度收到 31rem（agy W4r 诊断：46rem 时内容只占 260px，上下各飘 230px，
        题跋退化成浮在空中的文字片断）。 */
-    /* 🔴 尺寸自洽：题跋面 ≥22rem + 天头 2.2rem + 地脚 1.4rem + 标题行 ≈ 30rem，画心封顶 34rem 才装得下；
-       首版按 W4r 的 31rem + 27rem 面配，地脚线被裁掉、下半仍是空纸——两组数值互相顶牛，自看出图才发现。 */
+    /* 🔴 尺寸自洽（glm W9 反核复算）：标题行 ≤3 + 间距 .6 + 题跋面 27 + 天头 2.2 + 地脚 1.4 = 34.2rem，
+       画心封顶 36rem；矮屏（<720px 高）由 Colophon 的 max-height 媒体查询放开面高，否则 overflow:hidden 会再裁掉地脚线。
+       首版按 W4r 的 31rem + 27rem 面配，地脚线被裁掉——两组数值互相顶牛，自看出图才发现。 */
     block-size: min(calc(100svh - var(--hall-header-stack, 0px)), 36rem);
     overflow: hidden; display: grid; grid-template-rows: auto 1fr; gap: .6rem;
     padding: clamp(1rem, 3vh, 1.6rem) clamp(1.5rem, 6vw, 6rem) 0;

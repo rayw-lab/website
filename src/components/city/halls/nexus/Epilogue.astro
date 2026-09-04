@@ -11,7 +11,7 @@ const exits = [
 ] as const;
 ---
 
-<section class="ep" data-scene="s8" data-nexus-epilogue data-bind="url:/ai-lab/;url:/lab/;url:/about/">
+<section class="ep" data-scene="s8" data-nexus-epilogue data-bind="url:/ai-lab/;url:/lab/;url:/about/" style={`--nx-poster:url(${base}/posters/nexus-yin.webp)`}>
   <p class="ep__line">{t.sessions} 次会话、{t.days} 天。纸干了，墨还在。</p>
   <figure class="ep__bio">
     <blockquote id="nx-speaker-bio">{speakerBio}</blockquote>
@@ -30,6 +30,16 @@ const exits = [
 
 <style>
   /* 顶部留足一屏的呼吸：上一幕的定/清小印不该在收官首屏露半截（agy 盲审 P0：截图伪影，但节奏问题属实） */
+  /* 「墨还在」要真的还在：开篇那一滴（构建期海报）低调压在收官右侧，椭圆遮罩去掉海报的纸边（agy W9 P0-4 部分采纳）。 */
+  .ep { position: relative; isolation: isolate; }
+  .ep::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .32;
+    /* 🔴 海报是整幕 S0 的停帧，右侧带竖排题款与款印。只要那一滴：墨团在海报 x≈0.35，
+       把它定位到本幕 76% 处，海报右缘（题款）因此落在视口外；遮罩收成墨团大小的椭圆。 */
+    --nx-pw: min(76vw, 1100px);
+    background: var(--nx-poster) no-repeat left calc(76% - .35 * var(--nx-pw)) center / var(--nx-pw) auto;
+    -webkit-mask-image: radial-gradient(ellipse 13% 30% at 76% 49%, #000 45%, transparent 100%);
+    mask-image: radial-gradient(ellipse 13% 30% at 76% 49%, #000 45%, transparent 100%); }
+  @media (prefers-reduced-motion: no-preference) { .ep::before { transition: opacity .6s; } }
   .ep { display: grid; gap: 1.6rem; padding: clamp(5rem, 16vh, 10rem) clamp(1.5rem, 6vw, 6rem) clamp(3rem, 9vh, 6rem);
     min-block-size: 60svh; align-content: center;
     font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif; color: #1c1f26; }
@@ -38,7 +48,11 @@ const exits = [
   .ep__bio blockquote { margin: 0; padding-inline-start: 1rem; border-inline-start: 2px solid #9e2a2b;
     font: 400 clamp(.86rem, 1.15vw, .98rem)/1.9 ui-sans-serif, system-ui, sans-serif; color: #4a4f5a; }
   .ep__bio figcaption { display: flex; align-items: center; gap: .8rem; font: 400 .8rem/1.4 ui-sans-serif, system-ui, sans-serif; color: #6b6357; }
-  .ep__copy { min-height: 2.4rem; padding: .35rem .9rem; background: transparent; color: #1c1f26;
+  /* 复制钮不做灰底矩形，做行内文字链：前置一枚 .55em 朱砂小方作印标（agy W9 P2-11 采纳） */
+  .ep__copy::before { content: ''; display: inline-block; inline-size: .55em; block-size: .55em; margin-inline-end: .5em;
+    border: 1px solid #9e2a2b; vertical-align: .1em; }
+  .ep__copy { min-height: 2.4rem; padding: .35rem 0; background: transparent; color: #1c1f26; border: 0 !important;
+    border-block-end: 1px solid #1c1f2633 !important; font-family: "Songti SC", "Noto Serif CJK SC", serif; letter-spacing: .08em;
     border: 1px solid #1c1f2633; border-radius: 1px; font: inherit; cursor: pointer; }
   .ep__copy:hover { border-color: #9e2a2b; color: #9e2a2b; }
   /* 全站其它元素都是直角细线，唯独出口沿用了 about 厅的圆角实心胶囊——风格突变（agy 盲审 P1，属实）。
@@ -49,7 +63,9 @@ const exits = [
   .ep :global(.hall-exit) { border-radius: 1px !important; background: transparent !important; box-shadow: none !important;
     border: 1px solid #1c1f2666 !important; color: #1c1f26 !important;
     font-family: "Songti SC", "STSong", "Source Han Serif SC", serif !important; letter-spacing: .06em; }
-  .ep :global(.hall-exit-primary), .ep :global(.hall-exit-city) { border-color: #9e2a2b !important; color: #9e2a2b !important; }
+  /* 行动阶梯只有一级红：主出口朱砂，其余含回城一律墨线（agy W9 P2-12：两个红说不清主次） */
+  .ep :global(.hall-exit-primary) { border-color: #9e2a2b !important; color: #9e2a2b !important; }
+  .ep :global(.hall-exit-city) { border-color: #1c1f2680 !important; color: #1c1f26 !important; }
   .ep :global(.hall-exit:hover) { background: #1c1f26 !important; color: #efe9dc !important; border-color: #1c1f26 !important; }
   .ep :global(.hall-exit-primary:hover), .ep :global(.hall-exit-city:hover) { background: #9e2a2b !important; border-color: #9e2a2b !important; color: #efe9dc !important; }
 </style>

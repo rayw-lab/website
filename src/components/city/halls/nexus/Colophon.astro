@@ -30,12 +30,15 @@ const bind = [
   <p class="cf__ph" data-ph="trace">迹 · 一条真实事件，待点名</p>
   <div class="cf__seals" aria-label="印">
     {seals.length > 0
-      ? seals.map((r) => (
+      ? seals.slice(0, 4).map((r) => (
           <span class={`cf__seal cf__seal--${state(r)}`} title={`${r.seat} · ${r.servedModel ?? '未知模型'}`}>
             {r.id}
           </span>
         ))
       : <span class="cf__seal cf__seal--unknown" title="该跋无机器收据">无收据</span>}
+    {seals.length > 4 && (
+      <span class="cf__seal cf__seal--sum" title={seals.map((r) => r.id).join('、')}>共 {seals.length} 迹</span>
+    )}
   </div>
   <p class="cf__back">背面 · 绑定 {c.rules.length} 条规则（标题级，公开尺度待批）</p>
 </article>
@@ -65,7 +68,11 @@ const bind = [
   .cf__cand { margin-inline-start: .5em; font: 400 .6em/1 ui-monospace, Menlo, monospace; letter-spacing: .14em; color: #9e2a2b; vertical-align: .3em; white-space: nowrap; }
   .cf__ph { margin: 0; color: #524c42; font: 400 .95rem/1.95 inherit; letter-spacing: .03em; }
   .cf__ph[data-ph="trace"] { font-size: .8125rem; line-height: 1.65; letter-spacing: .04em; }
-  .cf__seals { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .3rem; }
+  /* 卷尾钤印：最多 4 枚 + 合印，不排成发票码；错落=每枚微转（agy W9 P1-7 采纳） */
+  .cf__seals { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .3rem; }
+  .cf__seals > :nth-child(2n) { transform: rotate(-1.2deg) translateY(1px); }
+  .cf__seals > :nth-child(3n) { transform: rotate(1deg); }
+  .cf__seal--sum { color: #9e2a2b; border-color: #9e2a2b66; background: transparent; }
   .cf__seal {
     display: inline-grid; place-items: center; inline-size: 2.3rem; aspect-ratio: 1;
     font: 500 .56rem/1 ui-monospace, Menlo, monospace; letter-spacing: .05em; border-radius: 1px;
@@ -77,5 +84,7 @@ const bind = [
   .cf__seal--unknown { color: #1c1f2659; border: 1.5px solid #1c1f2626; box-shadow: inset 0 -6px 10px -8px #1c1f2633; inline-size: auto; padding: 0 .5rem; }
   .cf__back { margin: 0; padding-inline-start: .6rem; border-inline-start: 1.5px solid #1c1f2626;
     font: 400 .72rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: #82786a; letter-spacing: .08em; }
+  /* 矮视口：画心 = 100svh − header < 36rem 时，27rem 面装不下，地脚线会被 overflow:hidden 裁掉（glm W9 反核遗漏角度 1） */
+  @media (max-height: 720px) { .cf { min-block-size: 18rem; } }
   @media (max-width: 768px) { .cf { inline-size: auto; min-block-size: auto; padding-block-end: 1.6rem; border-block-end: 1px solid #1c1f2618; } .cf::after, .cf::before { display: none; } }
 </style>

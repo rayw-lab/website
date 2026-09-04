@@ -128,7 +128,10 @@ const tally = {
   .seals__of { opacity: .8; margin-left: .6em; }
 
   .seals__grid { list-style: none; margin: 1.4rem 0 0; padding: 0;
-                 display: grid; grid-template-columns: repeat(auto-fill, minmax(4.6rem, 1fr)); gap: .9rem; }
+                 display: grid; grid-template-columns: repeat(12, 1fr); gap: .9rem; }
+  /* 24 枚锁 12×2 满阵，不再 14+10 缺角（agy W9 P0-3 部分采纳：阵列与灰印） */
+  @media (max-width: 1100px) { .seals__grid { grid-template-columns: repeat(8, 1fr); } }
+  @media (max-width: 640px) { .seals__grid { grid-template-columns: repeat(4, 1fr); } }
 
   .seal {
     inline-size: 100%; aspect-ratio: 1; padding: 0; cursor: pointer;

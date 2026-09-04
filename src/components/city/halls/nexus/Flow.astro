@@ -28,7 +28,11 @@ const { count, spanSeconds = 14, label } = Astro.props;
 // 墨分五色 → 光学密度。席位的 tone 由 reducer 写在 ink.tone 上。
 const TONE_D: Record<string, number> = { 焦: 1.55, 浓: 1.12, 重: 0.82, 淡: 0.5, 清: 0.3 };
 
-const SEATS = ledger.seats as Array<{ id: string; label: string; tone: string }>;
+// 🔴 口径：标题栏的「N 席位」= totals.seats = 有会话的席位数；墨带表若照抄名册（含 0 会话的席）
+// 就会 5 对 6 打架（agy W9 P0-1 属实）。只画明细里出现过的席位，e2e 断言带数 == totals.seats。
+const ALL_SEATS = ledger.seats as Array<{ id: string; label: string; tone: string }>;
+const presentSeats = new Set((ledger.sessions as Array<{ seat: string }>).map((s) => s.seat));
+const SEATS = ALL_SEATS.filter((s) => presentSeats.has(s.id));
 const bandOf = new Map(SEATS.map((s, i) => [s.id, i] as const));
 const BAND_TOP = 0.1;
 const BAND_H = 0.8 / SEATS.length;
@@ -45,6 +49,12 @@ const picked = (ledger.sessions as Array<Record<string, any>>).slice(0, count ??
 const tMin = picked.reduce((m, s) => Math.min(m, s.t0 as number), Infinity);
 const tMax = picked.reduce((m, s) => Math.max(m, s.t0 as number), -Infinity);
 const tSpan = Math.max(1, tMax - tMin);
+
+const fmtMD = (t: number) => {
+  const d = new Date((t < 1e12 ? t * 1000 : t));
+  return `${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+};
+const TICKS = [0, 1, 2, 3, 4].map((k) => ({ x: 0.07 + (k / 4) * 0.86, label: fmtMD(tMin + (k / 4) * tSpan) }));
 
 const sessions = picked
   .map((s, i) => ({
@@ -83,10 +93,15 @@ const alt =
       </span>
     ))}
   </div>
+  <!-- 时间锚点：五个等距日期 + 4% 的垂向水线，横轴才是时间轴而不是装饰（agy W9 P1-6 采纳）。
+       锚点位置与落墨 x 同一公式（0.07 + k/4 · 0.86），不是另一套手写刻度。 -->
+  <div class="nexus-flow__ticks" aria-hidden="true">
+    {TICKS.map((tk) => (
+      <span class="nexus-flow__tick" style={`--x:${(tk.x * 100).toFixed(2)}%`}>{tk.label}</span>
+    ))}
+  </div>
   <div class="nexus-flow__axis" aria-hidden="true">
-    <span>{range?.from}</span>
     <span class="nexus-flow__legend">一滴 = 一次会话 · 大小 = 体量 · 浓淡 = 席位墨色 · 横 = 时间 · 纵 = 席位</span>
-    <span>{range?.to}</span>
   </div>
   <noscript><p class="nexus-flow__fallback">{alt}</p></noscript>
 </figure>
@@ -119,8 +134,13 @@ const alt =
     font-style: normal; font-family: "Songti SC", "Noto Serif CJK SC", serif;
     font-size: 1.05em; color: #8a8070;
   }
-  .nexus-flow__axis { display: flex; justify-content: space-between; align-items: flex-end; }
+  .nexus-flow__axis { display: flex; justify-content: center; align-items: flex-end; }
   .nexus-flow__axis span { padding: 0 1.2% 1.4%; opacity: .7; }
+  .nexus-flow__ticks { position: absolute; inset: 0; pointer-events: none;
+    font: 400 clamp(.62rem, .75vw, .7rem)/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: #4a4f5a; letter-spacing: .06em; }
+  .nexus-flow__tick { position: absolute; left: var(--x); bottom: 3.4%; transform: translateX(-50%); opacity: .75; }
+  .nexus-flow__tick::before { content: ''; position: absolute; left: 50%; bottom: 1.6em; width: 1px; height: 72vh; max-height: 100%;
+    background: #1c1f260a; }
   .nexus-flow__legend { letter-spacing: .1em; }
 
   @media (max-width: 768px) { .nexus-flow { aspect-ratio: 9 / 14; } }
