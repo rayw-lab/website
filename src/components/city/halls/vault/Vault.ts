@@ -56,6 +56,7 @@ export class Vault {
     new ResizeObserver(() => this.resize()).observe(this.canvas);
     this.setPhase('idle');
     this.requestFrame();
+    this.nudge();
     (window as unknown as { __vault?: unknown }).__vault = {
       state: () => ({ phase: this.phase, ...this.view, n: this.frames(), stride: Number(this.host.dataset.vaultStride), ep: this.manifest.ep }),
       set: (o: Partial<VolumeView>) => { Object.assign(this.target, o); this.requestFrame(); },
@@ -221,6 +222,15 @@ export class Vault {
   }
 
   private frames(): number { return this.engine?.frames ?? 1; }
+
+  /** 一次性引导：idle 1.2 s 后浮出，首次输入或 7 s 后收起；只发一次 */
+  private nudge(): void {
+    if (MOBILE || sessionStorage.getItem('vault-nudged')) return;
+    const off = (): void => { delete this.host.dataset.vaultNudge; try { sessionStorage.setItem('vault-nudged', '1'); } catch { /* 隐私模式 */ } };
+    setTimeout(() => { if (this.phase === 'idle') this.host.dataset.vaultNudge = '1'; }, 1200);
+    setTimeout(off, 8200);
+    for (const ev of ['pointerdown', 'wheel', 'keydown'] as const) this.host.addEventListener(ev, off, { once: true });
+  }
   private video(): HTMLVideoElement | null { return this.host.querySelector<HTMLVideoElement>('[data-vault-video]'); }
 
   // ---------- 抽帧成片 ----------

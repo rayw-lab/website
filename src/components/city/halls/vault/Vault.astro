@@ -36,6 +36,7 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
     <canvas class="vault__canvas" data-vault-canvas aria-hidden="true"></canvas>
     <!-- 快门：进馆一格黑 + 光锥。只在 loading→idle 那一次播放 -->
     <div class="vault__shutter" aria-hidden="true"></div>
+    <p class="vault__nudge" data-vault-nudge aria-hidden="true">滚轮 沿时间刮 · 拖动 转动 · 双击 抽帧成片</p>
     <!-- 降级：无 WebGL2 时顶上（构建期海报 W5 补；先用第一张图集的首格） -->
     <!-- 降级海报：构建期由 scripts/frame-vault-poster.mjs 截真实引擎画面（非占位图），无 WebGL2 / 无 JS 时顶上 -->
     <img class="vault__poster" src={`${base}/posters/frame-vault-tilted.webp`} alt="帧库：一支视频切成的时间固体（斜切面）" width="780" height="680" loading="eager" />
@@ -74,7 +75,7 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
         aria-pressed={x.key === cur.key ? 'true' : 'false'}
         title={`${x.m.ep} · ${x.m.title} · ${stageName[x.m.stage] ?? x.m.stage}`}
       >
-        <b>{i + 1}</b><span>{x.m.ep}</span><i>{x.m.stage}</i>
+        <b>{i + 1}</b><span>{x.m.ep}</span><i>{x.m.stage} {stageName[x.m.stage] ?? ''}</i>
       </button>
     ))}
   </nav>
@@ -169,6 +170,10 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
   .vault__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; display: none; }
   .vault[data-vault-state='unsupported'] .vault__poster { display: block; }
   .vault[data-vault-state='unsupported'] .vault__unsupported { bottom: 1rem; top: auto; }
+  /* 一次性引导：seed 盲评 B/D「首屏缺轻量引导」；只在 idle 且尚无输入时短暂出现，不常驻 */
+  .vault__nudge { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); margin: 0; padding: .35rem .9rem; border: 1px solid #ffffff1f; border-radius: 999px;
+    font: 12px/1.4 ui-monospace, Menlo, monospace; letter-spacing: .1em; color: var(--metal); background: #05070dcc; opacity: 0; pointer-events: none; transition: opacity .5s; }
+  .vault[data-vault-nudge='1'] .vault__nudge { opacity: 1; }
   .vault__unsupported { display: none; position: absolute; inset: 0; margin: 0; place-content: center; text-align: center; color: var(--paper); }
   .vault[data-vault-state='unsupported'] .vault__unsupported { display: grid; }
   .vault[data-vault-state='unsupported'] .vault__canvas,
@@ -182,7 +187,7 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
   .vault__mono { font: 12px/1.5 ui-monospace, "SF Mono", Menlo, monospace; color: var(--metal); letter-spacing: .04em; }
 
   .vault__hud { display: flex; align-items: baseline; gap: 1.2rem; padding: .7rem clamp(1rem, 3vw, 2.5rem) .2rem; }
-  .vault__tc { color: var(--paper); font: 500 22px/1 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+  .vault__tc { color: var(--paper); font: 500 18px/1 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
   .vault__sub { font: 12px/1 ui-monospace, Menlo, monospace; color: var(--metal); opacity: .55; letter-spacing: .06em; }
   .vault__help { margin-left: auto; position: relative; }
   .vault__help summary { list-style: none; cursor: pointer; width: 1.5rem; height: 1.5rem; display: grid; place-content: center; border: 1px solid #ffffff2a; border-radius: 50%; color: var(--metal); font: 12px/1 ui-monospace, Menlo, monospace; }
@@ -223,12 +228,12 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
   /* 片架：右侧竖排小格，当前集金边 */
   .vault__rail { position: absolute; right: clamp(1rem, 3vw, 2.5rem); top: 50%; transform: translateY(-50%); display: grid; gap: .45rem; }
   .vault__slot {
-    display: grid; grid-template-columns: 1.1rem 1fr auto; align-items: center; gap: .5rem; width: 7.2rem;
+    display: grid; grid-template-columns: 1.1rem 1fr auto; align-items: center; gap: .5rem; width: 9.6rem;
     padding: .35rem .55rem; background: #0b0e16; border: 1px solid #ffffff1a; color: var(--metal); cursor: pointer;
     font: 12px/1.2 ui-monospace, Menlo, monospace; letter-spacing: .06em; text-align: left; transition: border-color .2s, color .2s;
   }
   .vault__slot b { font-weight: 500; opacity: .5; }
-  .vault__slot i { font-style: normal; color: var(--gold); opacity: .7; }
+  .vault__slot i { font-style: normal; color: var(--gold); opacity: .7; font-size: 11px; white-space: nowrap; }
   .vault__slot[data-stage='F'] i { opacity: 1; }
   .vault__slot:hover { border-color: #ffffff55; color: var(--paper); }
   .vault__slot[aria-pressed='true'] { border-color: var(--gold); color: var(--paper); }
