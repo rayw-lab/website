@@ -10,7 +10,9 @@ export interface Colophon {
   n: '一' | '二' | '三' | '四' | '五';
   method: string;           // 墨法（草案 §1.3）
   titleCandidate: string;   // ≤14 字
-  rules: string[];          // ~/.claude/rules/<basename>（标题级绑定）
+  /** 规则文件名（标题级绑定）。渲染进 data-bind 时只取去掉扩展名的 **id**，
+   *  不带 `~/.claude/rules/` 路径——那是作者本机布局，不该进公开产物。 */
+  rules: string[];
   sealsFrom?: 'models';     // 跋④的印来自 ledger.receipts
 }
 export const COLOPHONS: Colophon[] = [

@@ -54,6 +54,8 @@ interface Props {
 const { hall, building } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const nx = ledger.totals as Record<string, number>;
+// 画面只画明细批次（reducer --top 截断），标题数字是全期总量——两者必须同页披露，见下方小注。
+const nxShown = (ledger.sessions as unknown[]).length;
 const nxRange = ledger.range as { from: string; to: string };
 const copy = HALL_COPY[hall.slug]!;   // 存在性已由 assertHallCopyClosed() 在构建期担保
 const title = `${copy.title}${TITLE_SUFFIX}`;
@@ -98,6 +100,9 @@ const jsonLd = breadcrumbJsonLd([
             <span><b>{nx.sessions}</b> 会话　</span>
             <span><b>{nx.days}</b> 天　</span>
             <span><b>{nx.seats}</b> 席位　</span>
+            {/* 🔴 与印阵「此处陈列 24 / 80」同款披露：画面画的是明细批次，标题数字是全期总量，
+                同页两个会话数必须自己说清楚，否则读者读到的是两个互相矛盾的「真实」。 */}
+            <span class="nx-band__part">画面陈列 {nxShown} 滴 / 全期 {nx.sessions} 次　</span>
             {nxRange.from} — {nxRange.to}
           </p>
         </div>
@@ -136,6 +141,7 @@ const jsonLd = breadcrumbJsonLd([
     font: 400 clamp(.72rem, 1.1vw, .84rem)/1.7 ui-sans-serif, system-ui, sans-serif;
   }
   .nx-band__n b { font-weight: 600; opacity: .9; }
+  .nx-band__part { opacity: .72; }
   /* 幕与幕之间留一段纸：印阵刚排完、试墨的大标题就挤进同一屏，节奏失控（agy 盲审 P1，属实） */
   /* 🔴 一幕一屏：印阵、试墨各自撑满视口并垂直居中，否则短幕（印阵约 60vh）总把下一幕标题顶进同屏。
      与墨流 .nx-band 的 min-height:100svh 同一处置（agy W8：P1-6 与「墨流底部露标题」是同形状问题）。

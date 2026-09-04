@@ -72,7 +72,8 @@ const range = ledger.range as { from?: string; to?: string } | undefined;
 // 无障碍文本同样从数据派生，不手写
 const alt =
   label ??
-  `水墨手卷：${sessions.length} 次 AI 协作会话按真实时间从左向右落在同一张宣纸上，` +
+  `水墨手卷：AI 协作会话按真实时间从左向右落在同一张宣纸上；` +
+    `此处陈列 ${sessions.length} 滴，全期共 ${(ledger.totals as { sessions: number }).sessions} 次会话（画面取最近的一批，不是全量）；` +
     `时间跨度 ${range?.from ?? ''} 至 ${range?.to ?? ''}；` +
     `纵向分为 ${SEATS.length} 条席位墨带，自上而下为 ${SEATS.map((s) => `${s.label}（${s.tone}）`).join('、')}。` +
     `每一滴是一次会话，大小对应体量，浓淡对应席位墨色；空白的带表示该席位在这段时间没有落点。`;

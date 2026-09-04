@@ -17,8 +17,12 @@ const seals = c.sealsFrom
   ? (machine?.seals ?? []).slice(0, 8).map((s) => receipts.find((r) => r.id === s.receipt)).filter(Boolean) as Receipt[]
   : [];
 const state = (r: Receipt) => (r.identityOk === true ? 'go' : r.identityOk === false ? 'nogo' : 'unknown');
+// 🔴 绑定只写**相对 id**，不写本机路径：`rule:~/.claude/rules/<f>` 会把作者机器的目录结构
+// 印进公开 HTML（构建产物里曾出现 18 次，grok 会话审计 P0-2 实证）。id = 去掉 .md 的规则名，
+// 既能溯源又不泄漏路径；跨机器复现也不再依赖某个 home 布局。
+const ruleId = (f: string) => f.replace(/\.md$/, '');
 const bind = [
-  ...c.rules.map((r) => `rule:~/.claude/rules/${r}`),
+  ...c.rules.map((r) => `rule:${ruleId(r)}`),
   ...seals.map((r) => `receipt:${r.id}`),
 ].join(';');
 ---

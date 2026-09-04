@@ -199,7 +199,25 @@ test.describe('接线 · /world/agent-nexus/', () => {
         (window as any).__samples.push({
           t: performance.now(), cls: r.className,
           r: (document.querySelector('[data-nx-arrive]') as HTMLElement | null)?.style.getPropertyValue('--nx-r') ?? '',
-          bg: getComputedStyle(r, '::before').backgroundColor,
+          // 🔴 「首帧满屏墨」有两个可能的承担者：head 的 ::before 纯色帘，或接管后的两层 DOM。
+          // 只读 ::before 的 backgroundColor 会被 display:none 骗过（computed 值照样在，
+          // grok 会话审计 P1-4 属实），只认 ::before 又会被「DOM 已接管」误判成红。
+          // 判据改成：**这一帧里存在一个铺满视口的墨层**，谁承担都算。
+          headInk: (() => {
+            const cs = getComputedStyle(r, '::before');
+            return cs.display !== 'none' && Number(cs.opacity) > 0.99 && cs.backgroundColor === 'rgb(28, 31, 38)';
+          })(),
+          domInk: (() => {
+            const el = document.querySelector('[data-nx-arrive]') as HTMLElement | null;
+            if (!el || el.hidden) return false;
+            const ink = el.firstElementChild as HTMLElement | null;
+            if (!ink) return false;
+            const cs = getComputedStyle(ink);
+            if (cs.backgroundColor !== 'rgb(28, 31, 38)') return false;
+            // 遮罩半径必须还盖得住整个视口（否则是「已经收缩过」，不算首帧满屏）
+            const rr = parseFloat(el.style.getPropertyValue('--nx-r'));
+            return Number.isFinite(rr) && rr >= Math.hypot(innerWidth, innerHeight) / 2;
+          })(),
         });
         if ((window as any).__samples.length < 14) requestAnimationFrame(s);
       };
@@ -229,7 +247,13 @@ test.describe('接线 · /world/agent-nexus/', () => {
     const samples = await page.evaluate(() => (window as any).__samples as Array<{ t: number; cls: string; r: string; bg: string }>);
     const first = samples[0];
     expect(first.cls, '首帧 <html> 必须已带 nx-transit（head 内联脚本抢在首绘前）').toMatch(/nx-transit/);
-    expect(first.bg, '首帧墨色').toBe('rgb(28, 31, 38)');
+    expect(
+      first.headInk || first.domInk,
+      '首帧必须存在铺满视口的墨层（head 纯色帘或未收缩的两层 DOM，二者其一）',
+    ).toBe(true);
+    // 末尾几帧必须都不再有满屏墨（证明它确实退场了，不是一直挂着）
+    const last = samples[samples.length - 1];
+    expect(last.headInk || last.domInk, '末帧不应再有满屏墨').toBe(false);
     // 首帧墨帘是 head 里的纯色 ::before（无 mask/filter，0 计算即在）；两层 DOM 稍后接管。
     // 所以首帧只断言「墨色满屏」，收缩半径的断言留给 hold 钩子那一段。
     const trace = await page.evaluate(() => (window as any).__nxArrive);
