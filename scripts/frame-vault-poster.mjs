@@ -133,6 +133,8 @@ for (const s of SHOTS) {
 
       // 🔴 截的是 canvas 元素本身，不是整页：canvas 视觉上被 .vault__id / .vault__rail /
       // HUD 等绝对定位层压在上面，但那些层不参与 WebGL 合成语义判断——真正的风险是「整页截图
+      // 海报只要引擎画面：把压在 canvas 上的 DOM 覆盖层藏掉（标题块/片架/卡片/抽帧层/快门），否则降级态会与 SSR 的同一批 DOM 重影（R6 实证）
+      await page.addStyleTag({ content: '.vault__id,.vault__rail,.vault__card,.vault__pull,.vault__shutter,.vault__unsupported,.vault__poster{display:none!important}' });
       // 因为 WebGL 缓冲被清空而读到底色」，locator.screenshot() 精确裁到 canvas 的合成后像素，
       // 移植自 nexus-poster.mjs 同一处理（该脚本对 nexus-yin/nexus-flow 两张海报用的是同一招）。
       const raw = await page.locator('[data-vault-canvas]').screenshot({ type: 'png' });
