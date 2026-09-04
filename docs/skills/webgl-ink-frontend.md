@@ -116,3 +116,38 @@ source: 墨迹 · Ink Ledger 展厅 W1/W1b 一手实证（2026-09-03/04）
 ## 33 · 出图验收的顺序：先 commit 后跑门 = 顺序错
 R18 那笔是改完直接 commit，门在之后才补跑。门要在 commit **之前**跑完并贴 rc，
 否则"绿"是关于上一个版本的声称。
+
+---
+
+## 34 · `astro check` 不等于 `astro build`；commit 只能挂在 build 之后
+`astro check` 对一个根本编译不过的 `.astro` 报 0 errors（对象字面量被函数声明截断、`getStaticPaths`
+引用作用域外的常量、重复 import，三种它都不报）。凡改 `.astro`，验证下限是 `pnpm build` rc=0。
+**判据：`git commit` 必须写在 `pnpm build && <门> &&` 之后，顺序不是依赖，`&&` 才是。**
+
+## 35 · Astro `getStaticPaths()` 在独立作用域求值，只认 import
+frontmatter 顶层的 `const` 对它不可见（运行期 `X is not defined`，check 零报错）。要在构建期跑的断言
+（文案表闭合之类）必须放进独立模块 import 进来——顺带也就成了单源。
+
+## 36 · 脚本化替换的命中断言只验「每处命中」，不验「合起来还成立」
+把 `const X = {` 上提、表体留在原位，两处替换各自命中、组合出坏结构。护栏的已知盲区：
+**跨行块的搬移要整块搬（含闭合），搬完 build 一次。**
+
+## 37 · zsh 未引号变量不分词
+`node x.mjs $ARGS` 在 zsh 里整串是一个参数（reducer 报"未知参数 --codex … --top 600"），
+而我一度以为台账已重生成。传参用数组：`A=(--a b --c d); cmd "${A[@]}"`。
+
+## 38 · 席位「不通」先做直连 vs 代理双路探测，再定性
+agy 与 dots 同时 `Connection reset`，看似两个席各自坏了；`curl` 双路一测：直连境外三站全 rc=35，
+走代理 Google 通——是「本机直连外网」这个前提失效，不是席坏。wrapper 硬剥代理时补 opt-in 逃生门
+（`AGY_ALLOW_PROXY=1`，镜像 `APIDIRECT_ALLOW_PROXY`），负控仍 RST、正控 OK 才算修好。
+**判据：报「对方挂了」之前，同链路换一个已知能通的端点跑一次，一条命令分开两种结论。**
+
+## 39 · 竖滚驱动横移的手卷：验收是三态门，不是"看着会动"
+正控：桌面滚到区间末尾 progress≈1 且 `translateX ≈ p·(stripWidth − viewport)`；
+负控 A：窄视口 `transform:none`；负控 B：reduced-motion `transform:none` 且 sticky 退为 static。
+少了负控，一条写漏的媒体查询会让手机端也横移而无人发现。sticky 高度别取整屏：内容只占上半时
+是"顶着上沿"的默认布局味——封顶到内容高度附近并把 strip 垂直居中。
+
+## 40 · 门全绿 ≠ 构图成立：出图后自己先看一遍，再派审
+手卷首版 22/22 全绿，截图一看五跋浮在空纸上。**e2e 断言的是行为与数据，不是审美；
+每幕落地后先自己读一张图，再把图交给审计席，别把"自己没看"外包成"等审计说"。**
