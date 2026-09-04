@@ -37,6 +37,12 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
     <!-- 快门：进馆一格黑 + 光锥。只在 loading→idle 那一次播放 -->
     <div class="vault__shutter" aria-hidden="true"></div>
     <p class="vault__nudge" data-vault-nudge aria-hidden="true">滚轮 沿时间刮 · 拖动 转动 · 双击 抽帧成片</p>
+    <!-- 翻面读稿：立方体背面 = 台本纵轴（F）。句子与时间来自构建期 mlx_whisper 对成片音轨的转写（manifest.script），
+         当前刀锋时刻那句高亮；点句子刀锋跳过去。无转写时只显示提示。 -->
+    <aside class="vault__script" data-vault-script hidden aria-label="台本">
+      <header><b data-vault-script-title>台本</b><span class="vault__mono" data-vault-script-meta></span></header>
+      <ol data-vault-cues></ol>
+    </aside>
     <!-- 降级：无 WebGL2 时顶上（构建期海报 W5 补；先用第一张图集的首格） -->
     <!-- 降级海报：构建期由 scripts/frame-vault-poster.mjs 截真实引擎画面（非占位图），无 WebGL2 / 无 JS 时顶上 -->
     <img class="vault__poster" src={`${base}/posters/frame-vault-tilted.webp`} alt="帧库：一支视频切成的时间固体（斜切面）" width="780" height="680" loading="eager" />
@@ -89,7 +95,7 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
       <summary aria-label="操作说明">?</summary>
       <dl>
         <dt>拖动</dt><dd>旋转</dd><dt>滚轮</dt><dd>沿时间刮</dd><dt>← →</dt><dd>逐帧（⇧ 整秒）</dd>
-        <dt>⌥ ← →</dt><dd>把刀面拧斜 · 0 归正</dd><dt>双击 / Enter</dt><dd>抽帧成片</dd><dt>1–8</dt><dd>片架切集</dd><dt>E</dt><dd>拆开：看它怎么造出来的</dd>
+        <dt>⌥ ← →</dt><dd>把刀面拧斜 · 0 归正</dd><dt>双击 / Enter</dt><dd>抽帧成片</dd><dt>F</dt><dd>翻到背面读台本</dd><dt>1–8</dt><dd>片架切集</dd><dt>E</dt><dd>拆开：看它怎么造出来的</dd>
       </dl>
     </details>
     <button class="vault__btn" type="button" data-vault-poster>留影</button>
@@ -174,6 +180,23 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
   .vault__nudge { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); margin: 0; padding: .35rem .9rem; border: 1px solid #ffffff1f; border-radius: 999px;
     font: 12px/1.4 ui-monospace, Menlo, monospace; letter-spacing: .1em; color: var(--metal); background: #05070dcc; opacity: 0; pointer-events: none; transition: opacity .5s; }
   .vault[data-vault-nudge='1'] .vault__nudge { opacity: 1; }
+  /* 背面台本：磨砂玻璃板压在盒子背面位置；当前句金色，其余 40% 灰 */
+  .vault__script { position: absolute; left: 50%; top: 50%; width: min(46%, 40rem); height: 76%; transform: translate(-50%, -50%) rotateY(90deg); opacity: 0;
+    background: #0b0e16d9; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #ffffff1a; box-shadow: 0 30px 80px #000c;
+    display: grid; grid-template-rows: auto 1fr; transition: transform .5s cubic-bezier(.2,.7,.2,1), opacity .35s; pointer-events: none; }
+  .vault__script[hidden] { display: grid; }
+  .vault[data-vault-state='flipped'] .vault__script { transform: translate(-50%, -50%) rotateY(0); opacity: 1; pointer-events: auto; }
+  .vault[data-vault-state='flipped'] .vault__canvas { opacity: .55; transition: opacity .5s; }
+  .vault__script header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .8rem 1rem .6rem; border-bottom: 1px solid #ffffff12; }
+  .vault__script header b { font: 500 .95rem/1.3 "Songti SC", "Source Han Serif SC", serif; letter-spacing: .08em; color: var(--paper); }
+  .vault__script ol { list-style: none; margin: 0; padding: .4rem 0 1rem; overflow: auto; scrollbar-width: thin; }
+  .vault__cue { display: grid; grid-template-columns: 4.4rem 1fr; gap: .6rem; padding: .3rem 1rem; cursor: pointer; color: #cfd3dc; opacity: .42; transition: opacity .2s, background .2s; }
+  .vault__cue time { font: 11px/1.7 ui-monospace, Menlo, monospace; color: var(--metal); }
+  .vault__cue span { font-size: .9rem; line-height: 1.55; }
+  .vault__cue:hover { opacity: .8; }
+  .vault__cue.is-now { opacity: 1; background: #ffd27812; }
+  .vault__cue.is-now time { color: var(--gold); }
+  .vault__cue.is-now span { color: var(--paper); }
   .vault__unsupported { display: none; position: absolute; inset: 0; margin: 0; place-content: center; text-align: center; color: var(--paper); }
   .vault[data-vault-state='unsupported'] .vault__unsupported { display: grid; }
   .vault[data-vault-state='unsupported'] .vault__canvas,

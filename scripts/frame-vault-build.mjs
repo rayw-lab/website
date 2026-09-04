@@ -13,7 +13,7 @@
  */
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, writeFileSync, rmSync, existsSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, rmSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { encodePngGray } from './lib/png-gray.mjs';
@@ -26,6 +26,7 @@ const LOCKS = [
   { letter: 'P', name: '画面锁' }, { letter: 'M', name: '声音锁' }, { letter: 'F', name: '定稿' },
 ];
 const FORBIDDEN = /\/Users\/|studio-data-root|worktrees\//;
+const WHISPER_MODEL = 'mlx-community/whisper-large-v3-turbo';
 
 const args = parseArgs(process.argv.slice(2));
 const statePath = resolve(args.state ?? '');
@@ -90,12 +91,16 @@ function buildEpisode(ep) {
     .map(({ id, date, verdict, category, timecode }) => ({ id, date, verdict, category, timecode: timecode ?? null }));
 
   const videoSha = sha256File(video);
+  // whisper 片尾会幻听出超出时长的句子（EP5 实证 300–316 s，成片 306.7 s）：起点越界的丢，终点夹到时长
+  const cuesRaw = transcribe(video, videoSha, join(ROOT, 'evidence/frame-vault', key));
+  const cues = cuesRaw ? cuesRaw.filter((c) => c.start < ep.duration_s).map((c) => ({ ...c, end: Math.min(c.end, +ep.duration_s.toFixed(2)) })) : null;
   const manifest = {
     ep: ep.ep, title: ep.title, stage: ep.stage, label: ep.current_label ?? null,
     gates: ep.gates ?? null, sha256: sha, bytes: ep.bytes, duration_s: ep.duration_s, frames: ep.frames ?? null,
     fps_src: ep.frames ? ep.frames / ep.duration_s : null,
     volume: { w: W, h: H, n, fps, atlas: atlas.map((a) => a.name), proj: { xt: proj.xt.name, yt: proj.yt.name } },
     rings, reviews, locks: LOCKS,
+    script: cues ? { source: 'asr', model: WHISPER_MODEL, segments: cues.length, cues } : null,
     script_pack: ep.script_pack ? { narration_sha256: ep.script_pack.narration_sha256 ?? null, director_sha256: ep.script_pack.director_sha256 ?? null } : null,
     video: { src: `/website/video/frame-vault/${key}.mp4`, sha256: videoSha, bytes: statSize(video) },
     built_at: new Date().toISOString(),
@@ -161,6 +166,30 @@ function writeProjections(raw, n, outDir) {
   writeFileSync(join(outDir, 'proj-xt.png'), encodePngGray(xt, n, W));
   writeFileSync(join(outDir, 'proj-yt.png'), encodePngGray(yt, n, H));
   return { xt: fileInfo(outDir, 'proj-xt.png'), yt: fileInfo(outDir, 'proj-yt.png') };
+}
+
+/**
+ * 台本时间对齐：磊哥 2026-09-05——不装新模型，直接用本机现成 mlx_whisper（scout 系工作流同款）。
+ * 成片没有带时间的字幕（烧在画面里），所以对成片音轨做 ASR 得到句级时间；按视频 sha 缓存在 evidence，
+ * 同一 sha 不重跑。mlx_whisper 缺席 → 返回 null（背面只显示无时间台本，草案 §7 降级）。
+ */
+function transcribe(video, videoSha, evDir) {
+  mkdirSync(evDir, { recursive: true });
+  const cache = join(evDir, `cues-${videoSha.slice(0, 8)}.json`);
+  if (!existsSync(cache)) {
+    const probe = spawnSync('mlx_whisper', ['--help'], { stdio: 'pipe' });
+    if (probe.status !== 0) { console.warn(`[frame-vault] mlx_whisper 不可用，${video} 不做台本对齐`); return null; }
+    const tmp = join(evDir, '_asr');
+    rmSync(tmp, { recursive: true, force: true }); mkdirSync(tmp, { recursive: true });
+    run('mlx_whisper', [video, '--model', WHISPER_MODEL, '--language', 'zh', '--output-format', 'json', '--output-dir', tmp, '--word-timestamps', 'True']);
+    const outName = readdirSync(tmp).find((f) => f.endsWith('.json'));
+    // mlx_whisper 会把 avg_logprob 写成裸 NaN（非法 JSON，EP5 实证）：先按 JSON 语法换成 null 再解析
+    const raw = JSON.parse(readFileSync(join(tmp, outName), 'utf8').replace(/:\s*(NaN|-?Infinity)\b/g, ': null'));
+    const cues = raw.segments.map((sg) => ({ start: +sg.start.toFixed(2), end: +sg.end.toFixed(2), text: String(sg.text).trim() })).filter((c) => c.text);
+    writeFileSync(cache, JSON.stringify({ model: WHISPER_MODEL, video_sha256: videoSha, cues }, null, 1) + '\n');
+    rmSync(tmp, { recursive: true, force: true });
+  }
+  return JSON.parse(readFileSync(cache, 'utf8')).cues;
 }
 
 function readJsonl(path) {

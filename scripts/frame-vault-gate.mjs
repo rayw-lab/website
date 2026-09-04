@@ -45,6 +45,8 @@ export function gate(demoDir, dataDir, state) {
       else if (reg.current_sha256 !== m.sha256) violations.push(`${tag} sha256 与 EPISODE-STATE 不符`);
     }
     for (const r of m.rings ?? []) if (!(r.time_s >= 0 && r.time_s <= m.duration_s)) violations.push(`${tag} 环 ${r.id} time_s=${r.time_s} 超出时长 ${m.duration_s}`);
+    for (const c of m.script?.cues ?? []) if (!(c.start >= 0 && c.end <= m.duration_s + 0.5 && c.end >= c.start)) violations.push(`${tag} 台本句 ${c.start}–${c.end} 越界`);
+    if (m.script && (m.script.cues?.length ?? 0) !== m.script.segments) violations.push(`${tag} script.segments 与 cues 数不符`);
     const n = m.volume?.n ?? 0;
     if (!(n >= 2 && n <= 2000)) violations.push(`${tag} 片数 ${n} 不在 2..2000`);
     if ((m.volume?.atlas ?? []).length !== Math.ceil(n / 256)) violations.push(`${tag} 图集张数 ${m.volume?.atlas?.length} ≠ ceil(${n}/256)`);

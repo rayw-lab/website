@@ -155,3 +155,12 @@
 ### R6-3 回城幕布冷路径滞留第二次观察 + 墙钟兜底
 - 一镜到底落地城侧 +1.5 s 截图仍全黑（`walk/6-city-back.png`），而独立探针（`.tmp/return-timeline.mjs workflow-foundry`）+779 ms 即 `hidden`——与 NEXUS R40-2 同形状，同一现象两次。
 - 修：`src/lab/world/index.ts` 收幕加 2.5 s 墙钟兜底（未收完则卸监听、相机复位、`--return-k` 0、`data-return-done`）。帧正常时无副作用（t≥1 已卸）。**未复现路径下无法证明兜底触发**，只保证黑屏上限 2.5 s。
+
+## R7 · 翻面读稿的时间源：本机 mlx_whisper 接进管线（2026-09-05）
+
+- 磊哥令：「不需要装模型，scout-r0 有现成的下载到转写工作流，杀掉直接用，mlx-whisper」。agy W25（跑了 40 min 在装环境）已杀，无产物。
+- 本机实况 `[实测]`：`/opt/homebrew/bin/mlx_whisper`，缓存模型 `mlx-community/whisper-large-v3-turbo`（另有 small/tiny）；scout-x `runtime-x.sh:35` 同款调用。
+- EP3 直跑：`mlx_whisper ep3.mp4 --model mlx-community/whisper-large-v3-turbo --language zh --output-format json --word-timestamps True` → 24.5 s 墙钟，227 句，词级时间齐全，首句 10.02–11.80「咱们还是从那辆车讲起」，末句 316.4–317.66「这集就讲到这」。
+- 管线：`transcribe()` 按重编码视频 sha 缓存到 `evidence/frame-vault/<ep>/cues-<sha8>.json`，manifest 加 `script{source:'asr', model, segments, cues[]}`；门加「句子在时长内」「segments == cues 数」。两处产出侧修正：whisper JSON 裸 `NaN`（EP5 实证）→ 解析前换 null；片尾幻听句超时长（EP5 300–316 s > 306.7 s）→ 起点越界丢弃、终点夹到时长。四集：EP2 283 / EP3 227 / EP4 153 / EP5 80 句；门 4/0，selftest 3/3。
+- UI：F 翻面（不在播放态时），`ry += π`，磨砂台本板浮出；当前刀锋时刻那句金色高亮并滚到可见（二分查 start ≤ t）；点句子刀锋跳过去；切集重建。对齐质量 `[未亲核逐句]`——ASR 是对成片音轨的转写，不是台本原稿；板头标 `ASR 对齐 · whisper-large-v3-turbo` 如实披露。
+- 合流前 e2e：桌面 project 48/48（帧库 6 + 二楼 25 + 一楼 16 + 1）`[实测]`；world project 在跑。

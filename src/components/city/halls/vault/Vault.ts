@@ -14,9 +14,10 @@ export interface VaultManifest {
   rings: { id: string; time_s: number; frame: number; defect_class: string; quote: string; fixed_in: string; status: string }[];
   reviews: { id: string; date: string; verdict: string; category: string; timecode: string | null }[];
   video: { src: string; sha256: string; bytes: number };
+  script: { source: string; model: string; segments: number; cues: { start: number; end: number; text: string }[] } | null;
 }
 
-type Phase = 'loading' | 'idle' | 'blade' | 'tilted' | 'poster' | 'pulled' | 'exploded' | 'unsupported';
+type Phase = 'loading' | 'idle' | 'blade' | 'tilted' | 'poster' | 'pulled' | 'flipped' | 'exploded' | 'unsupported';
 
 const REDUCED = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const DPR_CAP = 2;
@@ -84,6 +85,7 @@ export class Vault {
     this.host.dataset.vaultEp = m.ep;
     this.bindHeader(m);
     this.buildRings(m);
+    this.buildScript(m);
     const video = this.video();
     if (video) { video.pause(); video.removeAttribute('src'); video.load(); }
     this.host.querySelectorAll<HTMLElement>('[data-vault-slot]').forEach((s) => s.setAttribute('aria-pressed', s.dataset.manifest === manifestUrl ? 'true' : 'false'));
@@ -190,7 +192,7 @@ export class Vault {
       if (e.key === 'e' || e.key === 'E') { e.preventDefault(); this.explode(this.phase !== 'exploded'); }
       if (e.key === 'Enter' && this.phase !== 'pulled') { e.preventDefault(); void this.pull(); }
       if (e.key === 'Escape' && this.phase === 'pulled' && !document.fullscreenElement) this.unpull();
-      if ((e.key === 'f' || e.key === 'F') && this.phase === 'pulled') { e.preventDefault(); void this.fullscreen(); }
+      if (e.key === 'f' || e.key === 'F') { e.preventDefault(); if (this.phase === 'pulled') void this.fullscreen(); else this.flip(this.phase !== 'flipped'); }
     });
     c.addEventListener('dblclick', () => void this.pull());
     const video = this.video();
@@ -261,6 +263,56 @@ export class Vault {
       if (document.fullscreenElement) { await document.exitFullscreen(); this.host.focus({ preventScroll: true }); }
       else await fig.requestFullscreen();
     } catch { /* 浏览器拒绝全屏（iframe/策略）→ 保持内嵌播放 */ }
+  }
+
+  // ---------- 翻面读稿 ----------
+  private buildScript(m: VaultManifest): void {
+    const ol = this.host.querySelector<HTMLElement>('[data-vault-cues]');
+    const meta = this.host.querySelector<HTMLElement>('[data-vault-script-meta]');
+    if (!ol) return;
+    ol.replaceChildren();
+    const cues = m.script?.cues ?? [];
+    if (meta) meta.textContent = m.script ? `${m.script.segments} 句 · ${m.script.source.toUpperCase()} 对齐 · ${m.script.model.replace(/^.*\//, '')}` : '本集无时间对齐台本';
+    cues.forEach((c, i) => {
+      const li = document.createElement('li');
+      li.className = 'vault__cue'; li.dataset.i = String(i);
+      const t = document.createElement('time'); t.textContent = mmss(c.start);
+      const sp = document.createElement('span'); sp.textContent = c.text;
+      li.append(t, sp);
+      li.addEventListener('click', () => this.blade(c.start / m.duration_s));
+      ol.appendChild(li);
+    });
+  }
+
+  /** F：转到背面，台本板浮出；当前刀锋时刻那句高亮并滚到可见 */
+  private flip(on: boolean): void {
+    const panel = this.host.querySelector<HTMLElement>('[data-vault-script]');
+    if (on) {
+      this.unpull();
+      this.setPhase('flipped');
+      this.target.ry += Math.PI;
+      if (panel) panel.hidden = false;
+      this.syncCue(true);
+    } else {
+      this.setPhase(this.target.tilt !== 0 ? 'tilted' : 'idle');
+      this.target.ry -= Math.PI;
+      if (panel) setTimeout(() => { if (this.phase !== 'flipped') panel.hidden = true; }, 500);
+    }
+    this.requestFrame();
+  }
+
+  private syncCue(scroll = false): void {
+    const cues = this.manifest.script?.cues;
+    const ol = this.host.querySelector<HTMLElement>('[data-vault-cues]');
+    if (!cues || !ol || this.phase !== 'flipped') return;
+    const t = this.view.cut * this.manifest.duration_s;
+    let lo = 0, hi = cues.length - 1, idx = -1;
+    while (lo <= hi) { const mid = (lo + hi) >> 1; if (cues[mid].start <= t) { idx = mid; lo = mid + 1; } else hi = mid - 1; }
+    const prev = ol.querySelector('.is-now');
+    const next = idx >= 0 ? ol.children[idx] as HTMLElement : null;
+    if (prev === next) return;
+    prev?.classList.remove('is-now');
+    if (next) { next.classList.add('is-now'); next.scrollIntoView({ block: 'center', behavior: scroll || REDUCED ? 'auto' : 'smooth' }); }
   }
 
   // ---------- 爆炸分层（S1 → S2 过场） ----------
@@ -343,6 +395,7 @@ export class Vault {
     setText(this.host, '[data-vault-tilt]', this.view.tilt === 0 ? '正切' : `斜 ${(this.view.tilt * 57.3).toFixed(0)}°`);
     this.host.style.setProperty('--vault-t', String(this.view.cut));
     this.host.dataset.vaultTilted = this.view.tilt !== 0 ? '1' : '';
+    this.syncCue();
   }
 
   // ---------- 海报 / URL ----------
