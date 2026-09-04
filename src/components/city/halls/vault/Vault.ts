@@ -19,6 +19,7 @@ type Phase = 'loading' | 'idle' | 'blade' | 'tilted' | 'poster' | 'pulled' | 'ex
 
 const REDUCED = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const DPR_CAP = 2;
+const MOBILE = typeof matchMedia === 'function' && matchMedia('(max-width: 768px)').matches;
 
 export class Vault {
   private engine: VolumeEngine | null = null;
@@ -157,8 +158,13 @@ export class Vault {
     c.addEventListener('pointerup', () => { this.drag = null; });
     c.addEventListener('pointermove', (e) => {
       if (!this.drag) return;
-      this.target.ry += (e.clientX - this.drag.x) * 0.006;
-      this.target.rx = clamp(this.target.rx + (e.clientY - this.drag.y) * 0.006, -1.2, 1.2);
+      if (MOBILE) {
+        // 移动端「只看」态（草案 §7）：单指横滑 = 沿时间刮，不旋转、不斜切
+        this.blade(this.target.cut + (e.clientX - this.drag.x) / Math.max(200, c.clientWidth));
+      } else {
+        this.target.ry += (e.clientX - this.drag.x) * 0.006;
+        this.target.rx = clamp(this.target.rx + (e.clientY - this.drag.y) * 0.006, -1.2, 1.2);
+      }
       this.drag = { x: e.clientX, y: e.clientY };
       this.requestFrame();
     });
