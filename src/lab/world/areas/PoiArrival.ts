@@ -34,6 +34,8 @@ const HOLD_OVERLAY_VAR = '--poi-hold-neon';
 const HOLD_OVERLAY_STYLE_ID = 'world-poi-hold-style';
 /** [NX-W7] 墨吞形态类名（buildings JSON arrivalFx:'ink' 的楼）；墨幕在 finish 后**不卸**，带过跨文档跳转 */
 const HOLD_INK_CLASS = 'world-poi-hold-ink';
+/** [FV-W4] 放映机快门形态类名（buildings JSON arrivalFx:'film'）；与墨幕同为「不卸、带过跨文档跳转」 */
+const HOLD_FILM_CLASS = 'world-poi-hold-film';
 /** 墨团起点 CSS 变量（楼的世界坐标经当前相机投影而来；写死 vw/vh 会在定帧换机位后指向空处） */
 const INK_ORIGIN_X = '--poi-ink-x';
 const INK_ORIGIN_Y = '--poi-ink-y';
@@ -95,10 +97,17 @@ export class PoiArrival {
   }
 
   /** 当前前奏楼的转场形态（buildings JSON 单源；无楼/无字段 = 霓虹脉冲） */
-  private arrivalFx(): 'ink' | null {
+  private arrivalFx(): 'ink' | 'film' | null {
     const id = this.buildingId;
     if (!id) return null;
-    return this.map.buildings.find((entry) => entry.id === id)?.arrivalFx === 'ink' ? 'ink' : null;
+    const fx = this.map.buildings.find((entry) => entry.id === id)?.arrivalFx;
+    return fx === 'ink' || fx === 'film' ? fx : null;
+  }
+
+  /** 墨幕与快门都要「驻留到跨文档」；霓虹脉冲不驻留 */
+  private lingers(): boolean {
+    const fx = this.arrivalFx();
+    return fx === 'ink' || fx === 'film';
   }
 
   /** 前奏推进（ticker.delta 游戏时基——SwiftShader 慢动作下时序仍与设计秒同构） */
@@ -228,8 +237,8 @@ export class PoiArrival {
 
   /** 定帧期满：发 navigate（route abort/console 型下页面存续——监听留岗等驾驶接管） */
   private finish(): void {
-    if (this.arrivalFx() === 'ink' && this.navigate) {
-      // 墨幕不卸：视口此刻全墨，location.assign 后旧文档保持到新文档首帧，
+    if (this.lingers() && this.navigate) {
+      // 墨幕/快门不卸：视口此刻全墨，location.assign 后旧文档保持到新文档首帧，
       // 展厅 Arrive 首帧同色接力 → 跨文档零白闪。页面若存续（拦截/console），到点还世界。
       this.inkLingerTimer = setTimeout(() => {
         this.inkLingerTimer = null;
@@ -274,7 +283,7 @@ export class PoiArrival {
     const fx = this.arrivalFx();
     // 墨吞形态 reduced-motion 仍挂（CSS 内降级为 300ms 淡入全墨，不做滤镜与吞屏）——
     // 它承担跨文档接驳，不只是装饰；霓虹脉冲保持原纪律不挂。
-    if (this.reducedMotion && fx !== 'ink') return;
+    if (this.reducedMotion && fx !== 'ink' && fx !== 'film') return;
     const id = this.buildingId;
     if (!id) return;
     const neon = this.map.buildings.find((entry) => entry.id === id)?.neonColor;
@@ -283,11 +292,18 @@ export class PoiArrival {
     // 已在呼吸：禁止 clear+重挂（会把 400ms 定时器重置，类永远不卸）
     if (document.documentElement.classList.contains(HOLD_OVERLAY_CLASS)) return;
     if (document.documentElement.classList.contains(HOLD_INK_CLASS)) return;
+    if (document.documentElement.classList.contains(HOLD_FILM_CLASS)) return;
 
     this.clearHoldOverlay();
     this.ensureOverlayStyles();
     const root = document.documentElement;
     root.style.setProperty(HOLD_OVERLAY_VAR, neon);
+    if (fx === 'film') {
+      // [FV-W4] 放映机快门：上下两片叶板 .34s 合拢，合拢瞬间一格白闪，终态全黑；驻留同墨幕
+      root.classList.add(HOLD_FILM_CLASS);
+      root.dataset.poiArrivalFx = 'film';
+      return;
+    }
     if (fx === 'ink') {
       // 墨幕不走 400ms 墙钟自卸（overlayStartedAt 留 0）：驻留到 finish/interrupt 决定
       // 🔴 起笔要有着力点：定帧机位把车位推出画外后，写死的 (36vw,66vh) 只是一片没有特征的立面暗部
@@ -331,6 +347,7 @@ export class PoiArrival {
     const root = document.documentElement;
     root.classList.remove(HOLD_OVERLAY_CLASS);
     root.classList.remove(HOLD_INK_CLASS);
+    root.classList.remove(HOLD_FILM_CLASS);
     root.style.removeProperty(INK_ORIGIN_X);
     root.style.removeProperty(INK_ORIGIN_Y);
     delete root.dataset.poiArrivalFx;
@@ -380,7 +397,21 @@ export class PoiArrival {
       `@media (prefers-reduced-motion:reduce){html.${HOLD_INK_CLASS} [data-world-canvas]{filter:none}` +
       `html.${HOLD_INK_CLASS}::before{content:none}` +
       `html.${HOLD_INK_CLASS}::after{animation:world-poi-ink-fill-rm .3s ease-out forwards}}` +
-      `@keyframes world-poi-ink-fill-rm{to{opacity:1}}`;
+      `@keyframes world-poi-ink-fill-rm{to{opacity:1}}` +
+      // [FV-W4] 快门：::before 上叶板从画外落下，::after 下叶板升起，.34s 合拢；合拢后 ::after 一格白闪（85–91%）再落黑。
+      //   画布同帧轻微去色压暗（读作放映机关灯），HUD 淡出同墨幕。
+      `html.${HOLD_FILM_CLASS} [data-world-canvas]{filter:saturate(.6) brightness(.8);transition:filter .2s ease-out}` +
+      `html.${HOLD_FILM_CLASS} .hud,html.${HOLD_FILM_CLASS} .hint,html.${HOLD_FILM_CLASS} .quest,` +
+      `html.${HOLD_FILM_CLASS} .explore-chip{opacity:0;transition:opacity .12s ease-out;pointer-events:none}` +
+      `html.${HOLD_FILM_CLASS}::before{content:"";position:fixed;left:0;right:0;top:0;height:50.5%;z-index:41;pointer-events:none;background:#000;` +
+      `transform:translateY(-100%);animation:world-poi-film-top .34s cubic-bezier(.6,0,.2,1) forwards}` +
+      `html.${HOLD_FILM_CLASS}::after{content:"";position:fixed;left:0;right:0;bottom:0;height:50.5%;z-index:42;pointer-events:none;background:#000;` +
+      `transform:translateY(100%);animation:world-poi-film-bottom .4s cubic-bezier(.6,0,.2,1) forwards}` +
+      `@keyframes world-poi-film-top{to{transform:translateY(0)}}` +
+      `@keyframes world-poi-film-bottom{0%{transform:translateY(100%)}85%{transform:translateY(0);background:#000}88%{background:#fff;height:100%;bottom:0}91%{background:#fff;height:100%}100%{transform:translateY(0);background:#000;height:100%}}` +
+      `@media (prefers-reduced-motion:reduce){html.${HOLD_FILM_CLASS} [data-world-canvas]{filter:none}` +
+      `html.${HOLD_FILM_CLASS}::before{content:none}` +
+      `html.${HOLD_FILM_CLASS}::after{height:100%;transform:none;animation:world-poi-ink-fill-rm .3s ease-out forwards;opacity:0}}`;
     document.head.appendChild(style);
   }
 

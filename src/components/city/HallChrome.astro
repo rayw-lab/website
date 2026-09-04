@@ -139,7 +139,7 @@ const returnFx = (building as { arrivalFx?: string }).arrivalFx ?? 'fade';
         var fx = root.getAttribute('data-return-fx') || 'fade';
         html.setAttribute('data-hall-leaving-fx', fx);
         html.classList.add('hall-leaving');
-        window.setTimeout(function () { location.assign(href); }, fx === 'ink' ? 460 : 300);
+        window.setTimeout(function () { location.assign(href); }, fx === 'ink' ? 460 : fx === 'film' ? 380 : 300);
       });
       window.addEventListener('pageshow', function (e6) {
         if (e6.persisted) html.classList.remove('hall-leaving');
@@ -197,6 +197,38 @@ const returnFx = (building as { arrivalFx?: string }).arrivalFx ?? 'fade';
     to {
       transform: scale(6.5);
     }
+  }
+  /* [FV-W4] 帧库退场 = 快门合上：上下两片叶板 .34s 合拢 + 一格白闪，与到达快门同一母题 */
+  html.hall-leaving[data-hall-leaving-fx='film'] .hall-leave-veil {
+    background: transparent;
+    opacity: 1;
+    animation: none;
+  }
+  html.hall-leaving[data-hall-leaving-fx='film'] .hall-leave-veil::before,
+  html.hall-leaving[data-hall-leaving-fx='film'] .hall-leave-veil::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 50.5%;
+    background: #000;
+  }
+  html.hall-leaving[data-hall-leaving-fx='film'] .hall-leave-veil::before {
+    top: 0;
+    transform: translateY(-100%);
+    animation: hall-leave-film-top 340ms cubic-bezier(0.6, 0, 0.2, 1) forwards;
+  }
+  html.hall-leaving[data-hall-leaving-fx='film'] .hall-leave-veil::after {
+    bottom: 0;
+    transform: translateY(100%);
+    animation: hall-leave-film-bottom 380ms cubic-bezier(0.6, 0, 0.2, 1) forwards;
+  }
+  @keyframes hall-leave-film-top { to { transform: translateY(0); } }
+  @keyframes hall-leave-film-bottom {
+    0% { transform: translateY(100%); }
+    85% { transform: translateY(0); background: #000; }
+    88%, 91% { transform: translateY(0); background: #fff; height: 100%; }
+    100% { transform: translateY(0); background: #000; height: 100%; }
   }
   @keyframes hall-leave-fade {
     to {

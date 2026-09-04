@@ -134,6 +134,7 @@ const returnMap = Object.fromEntries(
         content: ''; position: fixed; inset: 0; z-index: 99; pointer-events: none; background: #05070d;
       }
       html.world-return[data-return-fx='ink']::before { background: #1c1f26; }
+      html.world-return[data-return-fx='film']::before { background: #000; }
       html.world-return--dom::before { display: none; }
     </style>
   </head>
@@ -893,6 +894,14 @@ const returnMap = Object.fromEntries(
   html[data-return-fx='ink'] .return {
     color: #efe9dc;
   }
+  /* [FV-W4] 帧库：快门黑，收拢形态沿用（黑幕从车位收成一点，读作放映机灯光打开） */
+  html[data-return-fx='film'] .return::before {
+    background:
+      radial-gradient(closest-side at 50% 50%, #000 0 60%, transparent 100%),
+      radial-gradient(closest-side at 64% 36%, #000 0 46%, transparent 100%);
+  }
+  html[data-return-fx='film'] .return { color: #ece9e1; }
+  html[data-return-fx='film'] .return-progress i { background: #ffd278; }
   .return-line {
     margin: 0;
     font-size: 0.78rem;

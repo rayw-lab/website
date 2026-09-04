@@ -341,7 +341,14 @@ export class Vault {
     history.replaceState(null, '', `${location.pathname}?${p}`);
   }
 
-  private setPhase(p: Phase): void { this.phase = p; this.host.dataset.vaultState = p; }
+  private setPhase(p: Phase): void {
+    this.phase = p; this.host.dataset.vaultState = p;
+    // 城→楼首帧黑帘（VaultArriveHead）在快门打开那一刻让位；卸类延后到快门白闪之后（.12s）
+    if (p !== 'loading' && document.documentElement.classList.contains('vault-transit')) {
+      const html = document.documentElement;
+      setTimeout(() => { html.classList.add('vault-transit--open'); setTimeout(() => html.classList.remove('vault-transit', 'vault-transit--open'), 300); }, 120);
+    }
+  }
 }
 
 function clamp(v: number, lo: number, hi: number): number { return Math.min(hi, Math.max(lo, v)); }
