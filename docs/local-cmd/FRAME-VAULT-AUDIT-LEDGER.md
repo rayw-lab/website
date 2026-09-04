@@ -118,3 +118,16 @@
 
 ### R4-3 管线补全集状态
 - `frame-vault-build.mjs` 新产 `src/data/frame-vault/episodes.json`（7 集：EP2 F/85 分、EP3–5 P、EP6 A / EP7 S / EP8 D 无成片 → 线框），供 S2 陈列；glob 排除 `episodes`。
+
+## R5 · 城侧到达闭环 + e2e 首绿（2026-09-05）
+
+### R5-1 城 → 第三楼真机目击（`.tmp/city-film-arrive2.mjs`，Apple M5）
+- 首次探针：按 E 后 263 ms 内即跳转，**快门没合**——根因不是 token，是 `camera-shots.json` 无 `poi_showcase-workflow-foundry`，`PoiArrival` 无 showcase 条目时降级为直跳（Areas.ts 注释「无条目楼由 PoiArrival 内部降级为 Phase 1 直跳」）。
+- 修：新增 `poi_showcase-workflow-foundry`（about 机位沿南北轴镜像：θ −76、lateral +14、radius 110、lookAtHeight 9），`tools/camera/audit-shot-ndc.mjs` 门 2/2 PASS（ndc.x ∈ [−0.673, 0.096]，八角 8/8 入帧）。`a760abc`。
+- 复测：E 后 1.09 s 挂 `world-poi-hold-film` + `data-poi-arrival-fx=film`；截图 `20-city-film-40.png` 上下叶板合拢中（中间一条城景）、`-180` 白闪、`-300/-400` 全黑；跨文档落地 `?from=city&poi=workflow-foundry`，首帧 `html.vault-transit`。城→楼→城三段快门母题闭环。
+
+### R5-2 W27 gpt terra e2e 收稿（`~/.codex/state/nexus-hall/out/W27-terra-e2e.log`，rc=0，1206 s）
+- 打到本 worktree 的做法：`E2E_PORT=4341`（config 读 env）+ 自起 `astro preview --port 4341`。
+- `e2e/frame-vault.spec.ts`：**6/6**（desktop-chromium）。它改了门环用例：默认集 EP2 无环导致 skip → 改为显式 `?ep=ep3` 真环点击验证，不以跳过掩盖链路（采纳，合理）。
+- `e2e/cyber-city-return.spec.ts`：**5/5**（world-chromium）零回归。首轮一次 404 + 2 did not run，单跑与整组复跑均绿，归因 UNKNOWN（服务时序），按「观察一次」记，不改 spec。
+- 自报「未 kill 4321/4324、未 git 操作」与 `git status` 一致 `[亲核]`。
