@@ -87,8 +87,10 @@ const jsonLd = breadcrumbJsonLd([
   )}
   {hall.slug === 'agent-nexus' && (
     <>
-      <Arrive />
       <Yin />
+      {/* 🔴 Arrive 必须排在 Yin 之后：它的脚本要读 [data-yin-canvas] 的实际几何算收缩靶心，
+          排在前面时 querySelector 返回 null（v13 实证：三个 CSS 变量全空、退回兜底值）。 */}
+      <Arrive />
       <section class="nx-band">
         <div class="nx-band__head">
           <h2 class="nx-band__t">墨流 · 这 {nx.days} 天落在同一张纸上</h2>

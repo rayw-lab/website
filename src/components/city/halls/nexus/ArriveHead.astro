@@ -16,16 +16,16 @@
   })();
 </script>
 <style is:global>
-  /* 满屏墨幕：t=0 时遮罩半径是 170vmax（铺满），由 body 脚本逐帧收到 S0 落点。
-     mask 用绝对长度定位（视口坐标），落点 (36vw, 46.8vh) 与宽高比 1.45 来自 S0 真墨像素实测。 */
+  /* 首帧墨帘：**纯色满屏，不带 mask 也不带 filter**。它只负责顶住跨文档接驳的白闪期，
+     0 计算、首绘即在。收缩动画由 Arrive 的两层 DOM 接管（见下方 --dom 类）。
+     🔴 不要在这里加 mask+filter：CSS 里 filter 先于 mask 作用，同一元素上位移的是**未被遮罩的
+     纯色矩形**，等于没位移，边仍是几何椭圆（v10 已实证一次，v14 移动端又复发一次）。 */
   html.nx-transit::before {
     content: ''; position: fixed; inset: 0; z-index: 99; pointer-events: none; background: #1c1f26;
-    --nx-r: 170vmax;
-    -webkit-mask-image: radial-gradient(ellipse calc(var(--nx-r) * 1.45) var(--nx-r) at 36vw 46.8vh, #000 0 99%, transparent 100%);
-    mask-image: radial-gradient(ellipse calc(var(--nx-r) * 1.45) var(--nx-r) at 36vw 46.8vh, #000 0 99%, transparent 100%);
   }
-  /* defs 解析到之后才挂滤镜：首帧满屏墨看不见边，不必为它阻塞首绘 */
-  html.nx-transit.nx-transit--edge::before { filter: url(#nx-arrive-edge); }
-  html.nx-transit--fade::before { -webkit-mask-image: none; mask-image: none; filter: none; transition: opacity .3s ease-out; }
-  html.nx-transit--fade.nx-transit--out::before { opacity: 0; }
+  /* Arrive 的两层 DOM 就位后，首帧墨帘让位（同色，交接无闪） */
+  html.nx-transit--dom::before { display: none; }
+  /* reduced-motion：不接管 DOM、不做收缩，首帧墨帘自己淡出即可 */
+  html.nx-transit--fade::before { transition: opacity .3s ease-out; }
+  html.nx-transit--out::before { opacity: 0; }
 </style>

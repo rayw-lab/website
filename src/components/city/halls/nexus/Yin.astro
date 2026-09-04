@@ -36,7 +36,10 @@ const {
 ---
 
 <section class="yin" data-nexus-yin>
-  <canvas data-yin-canvas aria-hidden="true"></canvas>
+  <!-- data-yin-drop = 开篇那一滴在 canvas 内的归一化 CSS 坐标（x, y）。与下面 ink.drop 的
+       (0.36, 0.60) 同源：引擎 y 原点在左下，CSS 系 y = 1 − 0.60 = 0.40。
+       转场墨幕（Arrive）靠它算收缩靶心——写死视口百分比会在移动端偏 11vh（canvas 顶边随版心变）。 -->
+  <canvas data-yin-canvas data-yin-drop="0.36,0.40" aria-hidden="true"></canvas>
   <!-- 降级海报：canvas 被隐藏时顶上。构建期由 scripts/nexus-poster.mjs 截真实停帧，
        不是占位图 —— 弱环境看到的应该是「墨已经洇开的那一帧」，不是一张空白纸。 -->
   <img class="yin__poster" src={`${base}/posters/nexus-yin.webp`} alt="" hidden />
@@ -199,6 +202,7 @@ const {
         // 单滴 = 磊哥发出的一次派单，随后流体自主分离出多道晕 = 生发多个席位，
         // 「一令生万象」。这比「疏密对比」更贴本厅主题。
         // 位置偏左上：中国画的重心从不居中，正中扩散像罗夏墨迹测验。
+        // 落点与 data-yin-drop 必须同源：转场墨幕靠它算收缩靶心（写死视口百分比会在移动端偏 11vh）
         if (!a && t > 0.4) { a = true; ink.drop(0.36, 0.60, 0.072, [1.3, 1.3, 1.3], 19, { vigor: 1.2, eccentricity: 0.26 }); }
       },
       onFallback: (reason) => {

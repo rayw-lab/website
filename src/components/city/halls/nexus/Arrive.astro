@@ -5,6 +5,8 @@
 // 🔴 落点/宽高比不是按引擎坐标推的，是对 S0 成片做像素质心实测：canvas 顶边 y=69 但高仍 900，
 //    引擎 y=0.60 → canvas 内 40% → 视口 46.8%；质心 (36.1%, 46.8%)、宽高比 1.48。
 ---
+<!-- 两层：外层只挂湍流位移，内层承墨色与遮罩。filter 处理的是「已被遮罩过的子渲染」，毛边才出得来。 -->
+<div class="nx-arrive" data-nx-arrive hidden aria-hidden="true"><div class="nx-arrive__ink"></div></div>
 <svg class="nx-arrive__defs" width="0" height="0" aria-hidden="true" focusable="false">
   <filter id="nx-arrive-edge" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
     <!-- 低频=大起伏的洇形，高频=纤维缝里的细碎毛刺。只有低频时边缘是「水下气泡」（agy W11 P1）。 -->
@@ -26,8 +28,9 @@
     var done = function () {
       if (trace.endedAt) return;
       trace.endedAt = performance.now();
-      root.classList.remove('nx-transit', 'nx-transit--edge', 'nx-transit--fade', 'nx-transit--out');
-      root.style.removeProperty('--nx-r');
+      root.classList.remove('nx-transit', 'nx-transit--dom', 'nx-transit--fade', 'nx-transit--out');
+      var e = document.querySelector('[data-nx-arrive]');
+      if (e) e.remove();
     };
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
       root.classList.add('nx-transit--fade');
@@ -35,19 +38,39 @@
       setTimeout(done, 420);
       return;
     }
-    root.classList.add('nx-transit--edge');   // defs 已解析，可以挂毛边滤镜了
+    // 两层 DOM 就位 → 接管 head 的纯色墨帘（同色，交接无闪）
+    var el = document.querySelector('[data-nx-arrive]');
+    if (!el) { setTimeout(done, 400); return; }
+    document.body.appendChild(el); el.hidden = false; root.classList.add('nx-transit--dom');
+    // 🔴 变量写 el 的 inline style，不写 <html>：`.nx-arrive` 类规则里的兜底声明属于**元素自身**，
+    // 会压过从 html 继承的值（v15 实证：mask 的纵向半径一直卡在 170vmax，横向却已按 ratio 算出来，
+    // 于是「看着在动其实没动」）。inline style 优先于自身类规则，这是唯一稳的写入面。
+    // 🔴 靶心从 canvas 实际几何解算，不写死视口百分比：canvas 顶边随版心变（桌面 y=69/高 900 →
+    // 视口 46.8%；移动 375×667 时 y=114/高 667 → 57.1%），写死 46.8vh 在移动端偏 11vh。
+    // 归一化落点取自 data-yin-drop（与 Yin 的 ink.drop 同源），椭圆比例跟 canvas 宽高比走。
+    var cv = document.querySelector('[data-yin-canvas]');
+    if (cv) {
+      var rc = cv.getBoundingClientRect();
+      var d = (cv.getAttribute('data-yin-drop') || '0.36,0.40').split(',');
+      var dx = parseFloat(d[0]) || 0.36, dy = parseFloat(d[1]) || 0.40;
+      if (rc.width > 0 && rc.height > 0) {
+        el.style.setProperty('--nx-cx', ((rc.left + dx * rc.width) / innerWidth * 100).toFixed(2) + 'vw');
+        el.style.setProperty('--nx-cy', ((rc.top + dy * rc.height) / innerHeight * 100).toFixed(2) + 'vh');
+        // 桌面实测：canvas 1.6 → 墨团 1.48，系数 .925
+        el.style.setProperty('--nx-ratio', (rc.width / rc.height * 0.925).toFixed(3));
+      }
+    }
     var vmax = Math.max(innerWidth, innerHeight) / 100;
     // 170vmax → 7vmax（不是 0）：收到 S0 墨团一半大小就交棒，剩下的由真墨自己长出来，
     // 避免「缩成一点再凭空冒出一团」。720ms easeOutExpo，起始延 100ms 给引擎抢跑。
     var R0 = 170 * vmax, R1 = 7 * vmax, DUR = 720, DELAY = 100, t0 = performance.now();
-    root.style.setProperty('--nx-r', R0 + 'px');
+    el.style.setProperty('--nx-r', R0 + 'px');
     var tick = function (now) {
       var t = Math.min(1, Math.max(0, (now - t0 - DELAY) / DUR));
       trace.frames += 1;
       if (hold && t > 0.35) { trace.hold = true; t = 0.35; root.setAttribute('data-nx-arrive-state', 'hold'); }
       var e = t >= 1 ? 1 : 1 - Math.pow(2, -10 * t);
-      root.style.setProperty('--nx-r', (R1 + (R0 - R1) * (1 - e)) + 'px');
-      if (t > 0.88) root.style.setProperty('opacity', '');
+      el.style.setProperty('--nx-r', (R1 + (R0 - R1) * (1 - e)) + 'px');
       if (t < 1) requestAnimationFrame(tick); else done();
     };
     requestAnimationFrame(tick);
@@ -56,6 +79,18 @@
 </script>
 <style is:global>
   .nx-arrive__defs { position: absolute; width: 0; height: 0; overflow: hidden; }
-  /* 收尾 12%：墨核已缩到 S0 墨团大小，用透明度把最后一层交给真墨 */
-  html.nx-transit::before { transition: opacity .09s linear; }
+  .nx-arrive[hidden] { display: none; }
+  /* 外层：只挂湍流位移。内层：墨色 + 椭圆遮罩（靶心/比例由 Arrive 按 canvas 实际几何写入）。 */
+  /* 兜底值放在**元素**上（伪元素自带的自定义属性声明会盖掉继承值，JS 逐帧写的 --nx-r 就不生效，
+     而 e2e 读 html.style 照样全绿——属性绿画面错，与 skill 规则 41 同型，v13 实证）。 */
+  .nx-arrive { position: fixed; inset: 0; z-index: 99; pointer-events: none; filter: url(#nx-arrive-edge);
+    --nx-r: 170vmax; --nx-cx: 36vw; --nx-cy: 46.8vh; --nx-ratio: 1.45; }
+  .nx-arrive__ink { position: absolute; inset: -14vmax; background: #1c1f26; transition: opacity .09s linear;
+    -webkit-mask-image: radial-gradient(ellipse calc(var(--nx-r) * var(--nx-ratio)) var(--nx-r) at calc(14vmax + var(--nx-cx)) calc(14vmax + var(--nx-cy)), #000 0 99%, transparent 100%);
+    mask-image: radial-gradient(ellipse calc(var(--nx-r) * var(--nx-ratio)) var(--nx-r) at calc(14vmax + var(--nx-cx)) calc(14vmax + var(--nx-cy)), #000 0 99%, transparent 100%); }
+  /* 🔴 内层被 inset:-14vmax 扩过框，框内偏移必须用**绝对长度**（14vmax + 视口内坐标），
+     不能拿百分比当补偿——v9 那版 `46.8% + 12vmax*.468` 实测把质心推到 54.4%（差 7.6vh）。 */
+  html.nx-transit--fade .nx-arrive { filter: none; }
+  html.nx-transit--fade .nx-arrive__ink { -webkit-mask-image: none; mask-image: none; inset: 0; transition: opacity .3s ease-out; }
+  html.nx-transit--out .nx-arrive__ink { opacity: 0; }
 </style>

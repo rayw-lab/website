@@ -198,7 +198,7 @@ test.describe('接线 · /world/agent-nexus/', () => {
         const r = document.documentElement;
         (window as any).__samples.push({
           t: performance.now(), cls: r.className,
-          r: r.style.getPropertyValue('--nx-r'),
+          r: (document.querySelector('[data-nx-arrive]') as HTMLElement | null)?.style.getPropertyValue('--nx-r') ?? '',
           bg: getComputedStyle(r, '::before').backgroundColor,
         });
         if ((window as any).__samples.length < 14) requestAnimationFrame(s);
@@ -211,7 +211,7 @@ test.describe('接线 · /world/agent-nexus/', () => {
     // hold 钩子：停在 35% 时半径必须已远小于起始（真在收缩，不是挂着不动）
     await page.goto(u(`${HALL}?from=city&poi=agent-nexus#nx-arrive-hold`));
     await expect(page.locator('html')).toHaveAttribute('data-nx-arrive-state', 'hold', { timeout: 9000 });
-    const held = await page.evaluate(() => parseFloat(document.documentElement.style.getPropertyValue('--nx-r')));
+    const held = await page.evaluate(() => parseFloat((document.querySelector('[data-nx-arrive]') as HTMLElement).style.getPropertyValue('--nx-r')));
     expect(held).toBeGreaterThan(0);
     expect(held).toBeLessThan(170 * 14.4 * 0.5);
 
@@ -230,8 +230,8 @@ test.describe('接线 · /world/agent-nexus/', () => {
     const first = samples[0];
     expect(first.cls, '首帧 <html> 必须已带 nx-transit（head 内联脚本抢在首绘前）').toMatch(/nx-transit/);
     expect(first.bg, '首帧墨色').toBe('rgb(28, 31, 38)');
-    // 起始半径 = 170vmax；视口 1440×900 → vmax=14.4 → 2448px
-    expect(parseFloat(first.r)).toBeGreaterThan(170 * 14.4 * 0.98);
+    // 首帧墨帘是 head 里的纯色 ::before（无 mask/filter，0 计算即在）；两层 DOM 稍后接管。
+    // 所以首帧只断言「墨色满屏」，收缩半径的断言留给 hold 钩子那一段。
     const trace = await page.evaluate(() => (window as any).__nxArrive);
     expect(trace.frames, '至少两帧（起帧 + 终帧）才算收缩过').toBeGreaterThanOrEqual(2);
     expect(trace.endedAt - trace.startedAt).toBeGreaterThan(300);
