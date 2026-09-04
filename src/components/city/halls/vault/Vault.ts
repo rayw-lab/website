@@ -15,7 +15,7 @@ export interface VaultManifest {
   video: { src: string };
 }
 
-type Phase = 'loading' | 'idle' | 'blade' | 'tilted' | 'poster' | 'unsupported';
+type Phase = 'loading' | 'idle' | 'blade' | 'tilted' | 'poster' | 'pulled' | 'unsupported';
 
 const REDUCED = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const DPR_CAP = 2;
@@ -93,7 +93,26 @@ export class Vault {
         else this.blade(this.target.cut + dir * step);
       }
       if (e.key === '0') this.tilt(0);
+      if (e.key === 'Enter' && this.phase !== 'pulled') { e.preventDefault(); void this.pull(); }
+      if (e.key === 'Escape' && this.phase === 'pulled') this.unpull();
     });
+    c.addEventListener('dblclick', () => void this.pull());
+    const video = this.video();
+    if (video) {
+      video.addEventListener('click', () => this.unpull());
+      video.addEventListener('ended', () => this.unpull());
+      // 播放中把视频时刻回写到刀锋：切面与金色时间线跟着成片走（rVFC 有则逐帧，无则 timeupdate）
+      const follow = (): void => {
+        if (this.phase !== 'pulled') return;
+        const cut = clamp(video.currentTime / this.manifest.duration_s, 0, 1);
+        this.target.cut = cut; this.target.line = cut; this.requestFrame();
+      };
+      const rvfc = (video as HTMLVideoElement & { requestVideoFrameCallback?: (cb: () => void) => number }).requestVideoFrameCallback;
+      if (typeof rvfc === 'function') {
+        const loop = (): void => { follow(); if (this.phase === 'pulled') rvfc.call(video, loop); };
+        video.addEventListener('playing', loop);
+      } else video.addEventListener('timeupdate', follow);
+    }
     this.host.querySelector('[data-vault-poster]')?.addEventListener('click', () => void this.poster());
     this.host.querySelectorAll<HTMLElement>('[data-vault-ring]').forEach((el) => {
       el.addEventListener('click', () => this.blade(Number(el.dataset.t)));
@@ -101,6 +120,32 @@ export class Vault {
   }
 
   private frames(): number { return this.engine?.frames ?? 1; }
+  private video(): HTMLVideoElement | null { return this.host.querySelector<HTMLVideoElement>('[data-vault-video]'); }
+
+  // ---------- 抽帧成片 ----------
+  /** 切面抽出来变成真视频：从当前刀锋时刻续播，带音频（用户手势触发） */
+  private async pull(): Promise<void> {
+    const video = this.video();
+    if (!video || !this.manifest.video?.src || this.phase === 'pulled' || this.phase === 'loading') return;
+    if (!video.src) video.src = this.manifest.video.src;
+    this.setPhase('pulled');
+    const t = this.view.cut * this.manifest.duration_s;
+    try {
+      if (video.readyState < 1) await new Promise<void>((res) => video.addEventListener('loadedmetadata', () => res(), { once: true }));
+      video.currentTime = t;
+      await video.play();
+    } catch {
+      // 自动播放被拒（无手势）→ 静音重试；仍失败就放回
+      video.muted = true;
+      try { await video.play(); } catch { this.unpull(); }
+    }
+  }
+
+  private unpull(): void {
+    const video = this.video();
+    if (video) video.pause();
+    if (this.phase === 'pulled') { this.setPhase(this.target.tilt !== 0 ? 'tilted' : 'blade'); this.requestFrame(); }
+  }
 
   private blade(cut: number): void {
     this.target.cut = clamp(cut, 0, 1);

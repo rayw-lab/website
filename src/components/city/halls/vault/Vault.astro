@@ -35,6 +35,11 @@ const stageName: Record<string, string> = { D: '开发', S: '台本锁', A: '样
     <div class="vault__shutter" aria-hidden="true"></div>
     <!-- 降级：无 WebGL2 时顶上（构建期海报 W5 补；先用第一张图集的首格） -->
     <p class="vault__unsupported">此浏览器不支持体纹理（WebGL2）。<a href={m.video.src}>直接看成片</a></p>
+    <!-- 抽帧成片：切面抽出来变成真 <video>，从当前时刻续播；角标 = 视频文件 sha 前 8 位（manifest 绑定） -->
+    <figure class="vault__pull" data-vault-pull>
+      <video data-vault-video playsinline preload="metadata" aria-label={`${m.ep} 成片`}></video>
+      <figcaption class="vault__mono">{m.stage === 'F' ? '成片' : `工作剪 ${m.label ?? ''}`} · sha {m.video.sha256.slice(0, 8)} · 单击 / Esc 放回</figcaption>
+    </figure>
   </div>
 
   <header class="vault__id" aria-live="polite">
@@ -48,7 +53,7 @@ const stageName: Record<string, string> = { D: '开发', S: '台本锁', A: '样
     <span class="vault__mono vault__tc" data-vault-tc>00:00.000</span>
     <span class="vault__mono" data-vault-frame>f0</span>
     <span class="vault__mono" data-vault-tilt>正切</span>
-    <span class="vault__hint">拖动 旋转 · 滚轮 刮时 · ←→ 逐帧 · ⌥←→ 斜切 · 0 归正</span>
+    <span class="vault__hint">拖动 旋转 · 滚轮 刮时 · ←→ 逐帧 · ⌥←→ 斜切 · 0 归正 · 双击 / Enter 抽帧成片</span>
     <button class="vault__btn" type="button" data-vault-poster>留影</button>
   </div>
 
@@ -108,6 +113,17 @@ const stageName: Record<string, string> = { D: '开发', S: '台本锁', A: '样
     9%   { opacity: 1; background: #000; }
     100% { opacity: 0; background: #000; }
   }
+  /* 抽帧：从切面处放大到 70% 宽，带一圈「体」的厚度（右下双层描边），背后的盒子压暗 */
+  .vault__pull {
+    position: absolute; left: 50%; top: 50%; width: min(70%, 118svh); aspect-ratio: 16 / 9; margin: 0;
+    transform: translate(-50%, -50%) scale(.55); opacity: 0; pointer-events: none;
+    transition: transform .42s cubic-bezier(.2,.7,.2,1), opacity .3s;
+    box-shadow: 6px 6px 0 #2a2d36, 12px 12px 0 #15171d, 0 30px 80px #000c;
+  }
+  .vault__pull video { width: 100%; height: 100%; display: block; background: #000; cursor: pointer; }
+  .vault__pull figcaption { position: absolute; right: 0; bottom: -1.7rem; }
+  .vault[data-vault-state='pulled'] .vault__pull { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
+  .vault[data-vault-state='pulled'] .vault__canvas { opacity: .32; transition: opacity .4s; }
   .vault__unsupported { display: none; position: absolute; inset: 0; margin: 0; place-content: center; text-align: center; color: var(--paper); }
   .vault[data-vault-state='unsupported'] .vault__unsupported { display: grid; }
   .vault[data-vault-state='unsupported'] .vault__canvas,
