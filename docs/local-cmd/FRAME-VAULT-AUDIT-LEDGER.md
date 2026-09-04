@@ -131,3 +131,10 @@
 - `e2e/frame-vault.spec.ts`：**6/6**（desktop-chromium）。它改了门环用例：默认集 EP2 无环导致 skip → 改为显式 `?ep=ep3` 真环点击验证，不以跳过掩盖链路（采纳，合理）。
 - `e2e/cyber-city-return.spec.ts`：**5/5**（world-chromium）零回归。首轮一次 404 + 2 did not run，单跑与整组复跑均绿，归因 UNKNOWN（服务时序），按「观察一次」记，不改 spec。
 - 自报「未 kill 4321/4324、未 git 操作」与 `git status` 一致 `[亲核]`。
+
+### R5-3 W5 收口读数（2026-09-05 凌晨）
+- 本 worktree 六门全绿 `[实测 sh -c 逐门取 rc]`：nexus-ledger-gate 0 / nexus-budget-gate 0 / about-hall-gate 0（G-Hall-1..9）/ check-links 0 / frame-vault-gate 0（checked=4）/ audit-shot-ndc 0（13/13 含新机位）。
+- `astro check`（CI 类型门，本机这次跑起来了）：4 错 → 0 错（manifest 类型补 `reviews`、`video.sha256/bytes` 必填），`6de668f`。
+- hall chunk：`Vault.astro_astro_type_script…js` raw 21,059 B / **gzip 8,409 B**（D 维 ≤50 KB）。
+- 海报（sonnet 移植 `nexus-poster.mjs` → `frame-vault-poster.mjs`，255 行）：首版把标题块/片架截进图，降级态与 SSR DOM 重影（`23-unsupported.png`）→ 截图前 `addStyleTag` 藏覆盖层，重出 idle 14.6 KB / tilted 16.8 KB，非底色 23.0% / 21.9%；其「视口 780×1000 才过 ≥20% 门」的偏离合理（盒子像素随高度不随宽度缩放）。
+- 移动端只看态：≤768 单指横滑 = 刮时（`b657b1c`）。
