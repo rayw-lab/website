@@ -173,6 +173,34 @@ test.describe('接线 · /world/agent-nexus/', () => {
     expect(await page.locator('[data-nexus-seals] .seal').count()).toBeGreaterThan(0);
   });
 
+  // 城→厅链路：楼宇 hallPath 只是数据，真正要验的是「从城里带着 poi 进来，
+  // 到达条认得这栋楼」。只断言 [data-hall-chrome] 存在证明不了这件事——
+  // 它在任何厅都存在，认错楼也照样存在。
+  test('从城里进楼：到达条认出「主智能体中枢」', async ({ page }) => {
+    await page.goto(u(`${HALL}?from=city&poi=agent-nexus`));
+    const chrome = page.locator('[data-hall-chrome]');
+    await expect(chrome).toBeVisible();
+    await expect(chrome).toHaveAttribute('data-poi', 'agent-nexus');
+    await expect(chrome).toContainText('主智能体中枢');
+    await expect(chrome).toContainText('返回科技城');
+  });
+
+  test('移动端 375：到达条不压首屏，且不横向溢出', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto(u(`${HALL}?from=city&poi=agent-nexus`));
+    const m = await page.evaluate(() => {
+      const c = document.querySelector('[data-hall-chrome]')!.getBoundingClientRect();
+      const y = document.querySelector('[data-nexus-yin]')!.getBoundingClientRect();
+      return {
+        overlap: Math.max(0, Math.min(c.bottom, y.bottom) - Math.max(c.top, y.top)),
+        docW: document.documentElement.scrollWidth,
+        winW: window.innerWidth,
+      };
+    });
+    expect(m.overlap).toBe(0);
+    expect(m.docW).toBeLessThanOrEqual(m.winW);
+  });
+
   // 🔴 主题 2×2。正控证明纸色生效，负控证明它没漏到别的厅去。
   // 只做正控时，一条写漏的全局选择器会让 about 厅一起变成纸色而无人发现。
   test('主题正控：本厅是纸色', async ({ page }) => {

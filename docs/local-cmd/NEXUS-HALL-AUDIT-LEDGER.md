@@ -911,3 +911,29 @@ NX-W2 还写着「1067 会话 / 31 天」（现值 **3025 / 40**），在途 wor
 两块 canvas + 24 枚印；`<title>`＝「墨迹 · Ink Ledger｜…」；描述里的 3025 / 40 从台账渲染。
 门：`astro check` 0 errors · `check-links` rc=0 · `about-hall-gate` rc=0（负控，无回归）
 · 发布安全门 rc=0 · 正确性门 rc=0 · **e2e 29/29**（墨迹 13 + about 16）· build 25 页 · sitemap 含新页。
+
+### R21-6 agy W5r 收稿：接线清单四处与我实装**完全重合**（异源独立确认）
+它另外坐实了两条我原本只是"顺手做了"的事：`hallPath` 是 `Areas.ts:187`
+`building.hallPath ?? building.deepLink` 的分流点（不配这行，城里按 E 仍去 `/ai-lab/`）；
+`about-hall-gate` G-Hall-1 要求 `dist/world/` 与 `world-halls.json` 严格 1:1 闭合（登记与产出必须同步）。
+
+🔴 **但它有一处技术判断是错的，而且照做会留下脆弱实现**：它说
+`[data-hall="agent-nexus"]` 比 `[data-hall]` 有「更高的属性选择器特异性」。
+**不对**——CSS 里带值与不带值的属性选择器特异度同为 (0,1,0)。
+照它的写法，纸色覆盖只能靠「写在后面」取胜，任何人往下追加一条通用规则就静默翻车。
+我实装的是两段 `:has()` 抬特异度。判据：**调研席给的"因为 X 所以安全"，
+X 本身也是 claim**；这条恰好是能一句话验证的规范事实，不该照抄。
+
+### R21-7 agy 的 5 条「明确没证的」——本轮坐实 4 条
+| # | 它的存疑 | 亲核结果 |
+|---|---|---|
+| 2 | 城→厅端到端：到达条能否认出 agent-nexus | ✅ **坐实**：`?from=city&poi=agent-nexus` 下到达条显示「主智能体中枢 · 探索 0/12 · 返回科技城」，`data-poi` 正确。已固化成 e2e——只断言 `[data-hall-chrome]` 存在证明不了这件事，它在任何厅都存在，**认错楼也照样存在** |
+| 3 | 台账双门退出码 | ✅ 坐实：安全门 rc=0、正确性门 rc=0 |
+| 4 | 375px 下到达条与首屏重叠 | ✅ 坐实无问题：重叠 **0px**，`scrollWidth == innerWidth`（无横向溢出）。已进 e2e |
+| 5 | LHCI 是否误收展厅页 | ✅ 坐实未收：collect 7 条 URL 均不含 agent-nexus（合 ADR-2 §6 的第一刀豁免） |
+| 1 | 海报改指向正式路由后的耗时与体积基准 | ⏸ **不做**：采纳它的建议维持独立 spike 端点。理由与它给的一致且我这边有实测支撑——正式页两块 canvas 同屏，软件渲染实测约 0.7 帧/秒，同屏抢主线程正是 R20-5 抽屉交互被饿死的同一机理 |
+
+### R21-8 本批门禁（接线后重跑，非旧读数）
+`astro check` 0 errors · `check-links` rc=0 · `about-hall-gate` rc=0（负控无回归）
+· 发布安全门 rc=0 · 正确性门 rc=0 · **e2e 15/15**（墨迹本册；与 about 合跑 29/29）
+· build 25 页 · sitemap 含 `/world/agent-nexus/`。
