@@ -115,6 +115,24 @@ if (sessions) {
   if (badB) fail('PRIVACY', `${badB} 条 session 的 tk 桶索引非法`);
 }
 
+// 🔴 同一事实会换口袋：会话级 tokens 早已分箱，但精确总量原来还留在 totals 和 days 里，
+// 而本门只扫 sessions[] —— 门全绿而指纹仍在公开 JSON 中（异源会话审计 P0-3 实证）。
+// 判据必须覆盖「这个事实可能出现的所有层」，不只覆盖当初发现它的那一层。
+if (L.totals && 'tokens' in L.totals) {
+  fail('PRIVACY', 'totals 仍带精确 tokens 总量（精确 token 数对已知文档是确定性指纹）');
+}
+const daysWithTokens = Array.isArray(L.days) ? L.days.filter((d) => 'tokens' in d).length : 0;
+if (daysWithTokens) {
+  fail('PRIVACY', `${daysWithTokens} 天仍带精确 tokens（同上，按日粒度可加总还原）`);
+}
+// 收据摘要只作唯一键，不做可对外校验的完整性指纹（R1 拍板：只存前 12 位）
+const badSha = Array.isArray(L.receipts)
+  ? L.receipts.filter((r) => typeof r.sha256 === 'string' && !/^[0-9a-f]{12}$/.test(r.sha256)).length
+  : 0;
+if (badSha) {
+  fail('PRIVACY', `${badSha} 枚收据的 sha256 不是 12 位摘要（全量 sha256 = 可校验指纹）`);
+}
+
 // ⑥ 溯源：ledger 必须能说出自己是从多少输入产生的，且与普查对得上
 const g = L.generatedFrom ?? {};
 if (g.lines !== undefined && g.lines !== census.lines) {

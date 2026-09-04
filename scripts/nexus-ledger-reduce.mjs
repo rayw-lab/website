@@ -18,6 +18,11 @@
  * 3) Claude Code 行格式口径（字段名按实测防御式读取）：
  *    turns = 含非空 text 块的 assistant 消息数；tools = tool_use 块数；
  *    patches ∈ {Edit, Write, MultiEdit, NotebookEdit}；
+ * 🔴 重跑前必读（2026-09-04 实证）：本机源数据已不完整——直接重跑产出 **1069 会话 / 1 席位
+ *    / 32 天 / 0 收据**，而在仓 ledger 是完整数据下产出的 **3025 / 5 / 40 / 80**。
+ *    重跑会静默把 ledger 降级成残片，且所有门仍然绿（门只查自洽，不查"是不是比上次少了一半"）。
+ *    只有能访问全部原始会话日志的机器才可以重跑；否则对现有 ledger 做定向转换，别重新生成。
+ *
  *    tokens = Σ(input_tokens + output_tokens)。cache_* 不计：跨轮重复累计会放大数倍，
  *    而墨量半径只取对数近似， 宁小勿假。
  *    compacted = isCompactSummary === true 计数；
@@ -105,8 +110,9 @@ const DENY_RULES = [
 const PATCH_TOOLS = new Set(['Edit', 'Write', 'MultiEdit', 'NotebookEdit']);
 
 const REDACTED = '[REDACTED]';
-// key/token 形态（整体连前缀一起替换，避免 gate grep 'sk-' 残留）。sha256 为 64 位 hex，
-// 不含这些前缀，不受影响——gate 要求 receipts[].sha256 保持 ^[0-9a-f]{64}$。
+// key/token 形态（整体连前缀一起替换，避免 gate grep 'sk-' 残留）。sha256 已截到 12 位 hex，
+// 不含这些前缀，不受影响。（旧注释写「gate 要求 ^[0-9a-f]{64}$」——全仓没有任何门这样要求，
+// 是未坐实的自述被当成前提，随本次隐私收口一并纠正。）
 const TOKEN_PATTERNS = [
   /sk-[A-Za-z0-9_-]{6,}/g,
   /ark-[A-Za-z0-9._-]{4,}/g,
@@ -491,7 +497,10 @@ async function buildDispatch(entry) {
     if (role === 'prompt') { prompts.push({ rel: f.rel, mtimeMs: f.st.mtimeMs, bytes: f.st.size }); continue; }
     if (artifacts.length >= 400) { truncated += 1; continue; } // 体积预算：按 rel 排序截断，确定性
     const art = { path: f.rel, bytes: f.st.size, role, sha256: null };
-    if (role === 'out') art.sha256 = await sha256File(f.abs); // gate 要求 ^[0-9a-f]{64}$
+    // 🔴 只留前 12 位：够做唯一键，不构成可对外校验的完整性指纹（R1 第 43 行已拍板
+    // 「默认按建议做，磊哥反对再改」，此前实现一直是 64 位全值，执行没跟上决策）。
+    // 印文只显前 7 位，12 位不影响任何展示。
+    if (role === 'out') art.sha256 = (await sha256File(f.abs)).slice(0, 12);
     artifacts.push(art);
   }
   prompts.sort((a, b) => (a.rel < b.rel ? -1 : a.rel > b.rel ? 1 : 0));
@@ -779,10 +788,9 @@ async function main() {
   for (const s of kept) {
     const d = new Date(s.t0).toISOString().slice(0, 10);
     let e = daysMap.get(d);
-    if (!e) { e = { d, n: 0, bySeat: {}, tokens: 0, aborted: 0, compacted: 0 }; daysMap.set(d, e); }
+    if (!e) { e = { d, n: 0, bySeat: {}, aborted: 0, compacted: 0 }; daysMap.set(d, e); }
     e.n += 1;
     e.bySeat[s.seat] = (e.bySeat[s.seat] || 0) + 1;
-    e.tokens += s.tokens;
     if (s.aborted > 0) e.aborted += 1;
     if (s.compacted > 0) e.compacted += 1;
   }
@@ -795,7 +803,6 @@ async function main() {
         if (e.bySeat[seat.id] !== undefined) o[seat.id] = e.bySeat[seat.id];
         return o;
       }, {}),
-      tokens: e.tokens,
       aborted: e.aborted,
       compacted: e.compacted,
     }));
@@ -820,7 +827,9 @@ async function main() {
     sessions: kept.length,
     seats: new Set(kept.map((s) => s.seat)).size,
     days: days.length,
-    tokens: kept.reduce((a, s) => a + s.tokens, 0),
+    // 🔴 不输出精确 token 总量：会话级已按 R（「精确 tokens 删除，替换为量级桶 tk」）分箱，
+    // 但同一事实原来还留在 totals 和 days 两个口袋里，而隐私门只扫 sessions[] 所以一直全绿。
+    // 前端与 e2e 对该字段零消费（已 grep 证实），直接去掉。
     aborted: kept.filter((s) => s.aborted > 0).length,
     compacted: kept.filter((s) => s.compacted > 0).length,
     dispatches: DISPATCH_ACC.dispatches.length,
