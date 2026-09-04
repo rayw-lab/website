@@ -244,7 +244,7 @@ test.describe('接线 · /world/agent-nexus/', () => {
     await expect
       .poll(() => page.evaluate(() => (window as any).__nxArrive?.endedAt ?? 0), { timeout: 9000 })
       .toBeGreaterThan(0);
-    const samples = await page.evaluate(() => (window as any).__samples as Array<{ t: number; cls: string; r: string; bg: string }>);
+    const samples = await page.evaluate(() => (window as any).__samples as Array<{ t: number; cls: string; r: string; bg: string; headInk?: boolean; domInk?: boolean }>);
     const first = samples[0];
     expect(first.cls, '首帧 <html> 必须已带 nx-transit（head 内联脚本抢在首绘前）').toMatch(/nx-transit/);
     expect(
