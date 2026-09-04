@@ -54,6 +54,7 @@ export class InkEngine {
 
   private aspect = 1;
   private disposed = false;
+  private inkOps = 0;
   /** 有笔在纸上时传给 bleed，让笔尖附近洇得更凶 */
   private brush: [number, number, number] = [0, 0, -1];
 
@@ -184,6 +185,7 @@ export class InkEngine {
     shape: { vigor?: number; eccentricity?: number } = {},
   ): void {
     if (this.disposed) return;
+    this.inkOps++; // 落墨=活动。空转判据靠它区分「洇完了」与「还在落」，见 InkSurface.tick
     const vigor = shape.vigor ?? 1;           // 冲量倍率 ∝ 会话强度
     const ecc = Math.min(Math.max(shape.eccentricity ?? 0, 0), 0.9); // 偏心 ∝ 不均衡度
     // 🔴 扰动必须随笔触尺寸缩放。W1b 出图实测：冲量写死 34 时，
@@ -355,6 +357,11 @@ export class InkEngine {
   /** 无交互多久后停转（秒）。InkSurface 的 idle 判据从这里取，不再硬编码 */
   get idleSeconds(): number {
     return this.params.idleSeconds;
+  }
+
+  /** 单调递增的落墨次数。消费方比对两帧之间是否变化来判断「还在落墨」。 */
+  get inkOpCount(): number {
+    return this.inkOps;
   }
 
   step(dtRaw: number): void {

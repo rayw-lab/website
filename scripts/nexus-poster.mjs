@@ -25,7 +25,9 @@ const BUDGET = 60 * 1024;
 // 每张海报：源页面 + 停帧时刻 + 目标文件。停帧走 `?poster=1`（开 preserveDrawingBuffer）。
 const SHOTS = [
   { name: 'nexus-yin', path: '/website/world-spike/nexus-yin/?poster=1', wait: 12000, sel: '[data-yin-canvas]' },
-  { name: 'nexus-flow', path: '/website/world-spike/nexus-flow/?poster=1', wait: 22000, sel: '[data-flow-canvas]' },
+  // flow 用完成信号而不是等墙钟：软件渲染只有约 0.7 帧/秒，等 22 秒截到的是半成品，
+  // 而半成品「看着像留白」，最容易被当成设计。ready 由分片 seek 跑完后立旗。
+  { name: 'nexus-flow', path: '/website/world-spike/nexus-flow/?poster=1', wait: 2000, sel: '[data-flow-canvas]', ready: true },
 ];
 
 const ping = await fetch(`${ORIGIN}/website/`).then((r) => r.ok).catch(() => false);
@@ -47,6 +49,11 @@ for (const s of SHOTS) {
     await page.waitForTimeout(Math.min(s.wait, 8000));
     await page.goto(ORIGIN + s.path, { waitUntil: 'load', timeout: 120000 });
     await page.waitForTimeout(s.wait);
+    if (s.ready) {
+      await page.waitForFunction(() => document.documentElement.dataset.inkPoster === 'ready', null, {
+        timeout: 300000,
+      });
+    }
     const raw = await page.locator(s.sel).screenshot({ type: 'png' });
     // 🔴 内容门：海报必须真的有墨。空白海报比没有海报更糟 —— 它让降级路径看起来正常。
     if (raw.length < 40_000) throw new Error(`原始帧疑似空白（${raw.length} B）`);

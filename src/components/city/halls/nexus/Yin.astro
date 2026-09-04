@@ -18,8 +18,19 @@ import ledger from '../../../../data/nexus-ledger.json';
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 // 起手印的印文也由 ledger 派生：会话数 / 天数，不手写
 const tot = ledger.totals as Record<string, number>;
+// 天数写成中文数字，且**必须从台账取**。此前默认文案写死「一百天」，
+// 而同屏的起手印从台账派生写着「40日」—— 首屏自己跟自己打架，
+// 还破了本组件「不手写任何数字」的规矩（agy 视觉审 P0，属实）。
+const CN = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+const cnNum = (n: number): string => {
+  if (n < 10) return CN[n];
+  if (n < 20) return `十${n % 10 ? CN[n % 10] : ''}`;
+  return `${CN[Math.floor(n / 10)]}十${n % 10 ? CN[n % 10] : ''}`;
+};
 const {
-  lines = ['会话即笔迹，收据即印。', '一个人与多智能体共事的一百天。'],
+  // 竖排题款不用现代标点：断句靠换行与留白，这是题款的规矩，
+  // 「，。」放进宋体竖排里是最直接的现代感泄漏（agy 判，采纳）。
+  lines = ['会话即笔迹　收据即印', `与多智能体共事${cnNum(tot.days ?? 0)}日`],
   sub = '墨迹 · Ink Ledger',
 } = Astro.props;
 ---
@@ -32,16 +43,18 @@ const {
 
   <div class="yin__type">
     <p class="yin__sub">{sub}</p>
-    <h1 class="yin__h">
-      <span class="yin__l" style="--d:1.6s">{lines[0]}</span>
-      <span class="yin__l" style="--d:2.9s">{lines[1]}</span>
-    </h1>
+    <div class="yin__col">
+      <h1 class="yin__h">
+        <span class="yin__l" style="--d:1.6s">{lines[0]}</span>
+        <span class="yin__l" style="--d:2.9s">{lines[1]}</span>
+      </h1>
     <!-- 起手印。草案 §1「第一枚印落下时标题浮现」—— 缺了它，标题写着「收据即印」
          而画面无印，概念在首屏就断了（k3 视觉审 5/10 的主要扣分项）。
          印文同样由 ledger 派生，不手写数字。 -->
-    <span class="yin__seal" aria-hidden="true">
-      <b>{tot.sessions}</b><i>{tot.days}日</i>
-    </span>
+      <span class="yin__seal" aria-hidden="true">
+        <b>{tot.sessions}</b><i>{cnNum(tot.days ?? 0)}日</i>
+      </span>
+    </div>
   </div>
 
   <div class="yin__more" aria-hidden="true"><span></span></div>
@@ -64,6 +77,10 @@ const {
     position: absolute;
     right: clamp(1.5rem, 6vw, 6rem);
     bottom: clamp(4rem, 12vh, 9rem);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1.05rem;
     text-align: right;
     /* em 相对的是本元素字号（继承 16px = 544px），不是标题的 46px；
        用它会把第二行挤成两行。改用 rem 锚定根字号。
@@ -81,13 +98,23 @@ const {
     opacity: 0;
     animation: yin-in .9s cubic-bezier(.22,.61,.36,1) .8s forwards;
   }
+  /* 款印贴着最末一列的下缘 —— 竖排题款读作右起，印落在左下收尾。 */
+  .yin__col { display: flex; flex-direction: row-reverse; align-items: flex-end; gap: .8rem; }
+
   .yin__h {
+    /* 🔴 真竖排。此前注释写着「竖排题款」而实际渲染是水平两行 ——
+       注释描述的是意图，不是事实（agy 逐像素看出来的）。 */
+    writing-mode: vertical-rl;
+    block-size: auto;
+    height: min(62vh, 28rem);
     margin: 0;
     font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC",
                  "SimSun", "PingFang SC", serif;
     font-weight: 400;                    /* 宋体本身有骨，加粗反而俗 */
-    font-size: clamp(1.35rem, 3.4vw, 2.7rem);
-    line-height: 1.85;                   /* 中文正文级行高，给字留呼吸 */
+    /* 字号上限从 2.7rem 收到 2.35rem：竖排一列 10 字要放进 28rem 高度内，
+       超出会折成第三列（e2e「不折行」判据在竖排下量的是列宽）。 */
+    font-size: clamp(1.15rem, 2.9vw, 2.35rem);
+    line-height: 1.85;                   /* 竖排时这是列间距 */
     letter-spacing: .06em;
   }
   .yin__l {
@@ -109,8 +136,11 @@ const {
        印该与主标题字号相当（约 40-48px），否则「整幅唯一的颜色」小到看不见。 */
     box-sizing: border-box;   /* 否则 padding+border 叠在 inline-size 之外，实测 51px 变 64px */
     inline-size: clamp(2.1rem, 2.7vw, 2.6rem); aspect-ratio: 1;
-    color: #a855f7; border: 2px solid #a855f7; border-radius: 1px;
-    background: #a855f70d;
+    /* 🔴 印色改朱砂。此前用的是站点强调色楼紫 #a855f7 ——
+       在宣纸与水墨语境里，一个紫色细线方框读起来就是前端组件库的 Badge，
+       整幅唯一的颜色用错了，「收据即印」的隐喻当场破功（agy 判，采纳）。 */
+    color: #9e2a2b; border: 2px solid #9e2a2b; border-radius: 1px;
+    background: #9e2a2b0f;
     font: 500 clamp(.52rem, .74vw, .64rem)/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
     letter-spacing: .04em;
     transform: rotate(-1.4deg);
@@ -122,22 +152,25 @@ const {
 
   @keyframes yin-ink { to { opacity: 1; letter-spacing: .06em; } }
 
+  /* 下滑指示：一枚呼吸的淡墨点，不是竖线。
+     竖线版在纸上是一根孤立的 1px 直线 —— 水墨里没有这种笔画，
+     读起来像渲染残影而不是设计（agy P2，采纳）。 */
   .yin__more {
     position: absolute;
     left: 50%;
-    bottom: 1.6rem;
-    width: 1px;
-    height: 3.2rem;
-    background: linear-gradient(to bottom, transparent, #1c1f2655);
+    bottom: 2rem;
+    width: .34rem;
+    height: .34rem;
+    margin-left: -.17rem;
     opacity: 0;
     animation: yin-in 1.2s ease 6s forwards;
   }
   .yin__more span {
-    position: absolute; left: 0; top: 0; width: 1px; height: 1.1rem;
-    background: #1c1f26aa;
-    animation: yin-drop 2.6s cubic-bezier(.5,0,.5,1) 6.4s infinite;
+    position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(circle at 45% 40%, #1c1f26aa, #1c1f2600 72%);
+    animation: yin-breathe 3.4s ease-in-out 6.4s infinite;
   }
-  @keyframes yin-drop { 0% { transform: translateY(0); opacity: 0 } 30% { opacity: 1 } 100% { transform: translateY(2.1rem); opacity: 0 } }
+  @keyframes yin-breathe { 0%, 100% { transform: scale(.72); opacity: .35 } 50% { transform: scale(1.15); opacity: .9 } }
 
   @media (prefers-reduced-motion: reduce) {
     /* 不许动时：字直接在位，墨由构建期海报承担（canvas 由脚本隐藏） */

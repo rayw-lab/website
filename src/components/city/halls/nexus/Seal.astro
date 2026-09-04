@@ -3,7 +3,9 @@
  * 印 —— 整幅单色画里唯一的颜色（草案 §1.3 已定设计，不重评）。
  *
  * 三态严格对应机器收据，**不做美化也不做兜底**：
- *   朱文（红字白底 · 楼紫 #a855f7）= identity_ok true  → GO
+ *   朱文（朱砂 #9e2a2b）= identity_ok true  → GO
+ *   🔴 印色曾用站点强调色楼紫 #a855f7：在水墨语境里一排紫色细线方框读作
+ *   前端组件库的 Badge 列表，与金石印章毫无关系（agy 视觉审判为全稿质感最崩处，采纳）。
  *   白文（白字红底 · 朱砂 #b8321a）= identity_ok false → NO_GO（红灯比绿灯亮）
  *   灰印                              = identity_ok null  → 该通道无机器收据
  * 🔴 三态铁律：缺失就是灰印，**禁止推断为 GO**。印文只放机器字段，不放形容词。
@@ -130,22 +132,28 @@ const tally = {
   .seal:hover, .seal:focus-visible { transform: translateY(-2px) rotate(0deg) !important; }
   /* 选中态用双层印边，不用浏览器默认 focus ring 那种黑框 */
   .seal[data-current] {
-    box-shadow: 0 0 0 2px #efe9dc, 0 0 0 4px #a855f7;
+    box-shadow: 0 0 0 2px #efe9dc, 0 0 0 4px #9e2a2b;
   }
   .seal__l2 { opacity: .78; }
 
   /* 朱文：红字白底（此处红=楼紫，承接城市楼色） */
-  .seal[data-state='go'] { color: #a855f7; background: #efe9dc; border: 1.5px solid #a855f7; }
+  .seal[data-state='go'] { color: #9e2a2b; background: #efe9dc; border: 1.5px solid #9e2a2b; }
   /* 白文：白字红底 —— 红灯比绿灯亮，失败要更显眼 */
   .seal[data-state='nogo'] { color: #f6efe6; background: #b8321a; border: 1.5px solid #b8321a; }
   /* 灰印：无机器收据，既不算过也不算败 */
-  .seal[data-state='unknown'] { color: #1c1f2666; background: transparent; border: 1.5px dashed #1c1f2644; }
+  /* 🔴 灰印不用 dashed。网页虚线是「未激活/占位」的前端惯用语，
+     一眼就是脚手架产物；这里要的是「干拓残印」——极淡的实线加不匀的透明度，
+     像印泥不足只拓下一半（agy 指认 dashed 是最出卖 AI 默认产出的细节，采纳）。 */
+  .seal[data-state='unknown'] {
+    color: #1c1f2659; background: transparent; border: 1.5px solid #1c1f2626;
+    box-shadow: inset 0 -6px 10px -8px #1c1f2633, inset 3px 0 8px -7px #1c1f2626;
+  }
 
   /* 🔴 [hidden] 的 UA 样式是 display:none，但它比 .drawer{display:grid} 更不具体，
      于是被覆盖、所有抽屉全部展开。给 hidden 补一条同等具体度的规则。 */
   .drawer[hidden] { display: none; }
   .drawer {
-    margin: 1.1rem 0 0; padding: .8rem 1rem; background: #1c1f2608; border-left: 2px solid #a855f7;
+    margin: 1.1rem 0 0; padding: .8rem 1rem; background: #1c1f2608; border-left: 2px solid #9e2a2b;
     font: 400 .68rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
     display: grid; grid-template-columns: max-content 1fr; gap: .25rem 1.2rem;
   }

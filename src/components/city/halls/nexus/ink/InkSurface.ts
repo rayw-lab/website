@@ -47,6 +47,7 @@ export class InkSurface {
   private lastTime = 0;
   private elapsed = 0;
   private idleSince = 0;
+  private lastInkOps = -1;
   private inView = false;
   private stepped = false;
   private disposed = false;
@@ -183,6 +184,15 @@ export class InkSurface {
     this.idleSince += wall;
 
     this.opts.onFrame?.(this.engine, this.elapsed, dt);
+    // 🔴 落墨算活动。此前空转只由 poke() 复位，而回放场景没人 poke ——
+    // idleSeconds=12 却要落满 14 秒的构图，动画会在**墨还没落完时**停转。
+    // 这个雷一直在，只是此前一帧就把 600 滴全落完了（帧预算上限一加就当场引爆）：
+    // 实测 26 秒后纸上只剩 5 滴，而引擎、门禁、e2e 全绿。
+    // 判据：省电类停转的条件必须是「没有新产出」，不能只是「没有交互」。
+    if (this.engine.inkOpCount !== this.lastInkOps) {
+      this.lastInkOps = this.engine.inkOpCount;
+      this.idleSince = 0;
+    }
     this.engine.step(dt);
     this.engine.render();
     this.stepped = true;

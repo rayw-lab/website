@@ -27,12 +27,22 @@ test.describe('S0 洇', () => {
     // 纸色背景必须来自组件而非浏览器默认白
     const bg = await page.locator('.yin').evaluate((e) => getComputedStyle(e).backgroundColor);
     expect(bg).toBe('rgb(239, 233, 220)');
-    // 两行题款各自单行：折行会让高度翻倍
-    const hs = await page.locator('.yin__l').evaluateAll((els) =>
-      els.map((e) => Math.round(e.getBoundingClientRect().height)),
+    // 两行题款各自单列不折行。🔴 题款改真竖排后判据必须换量纲：
+    // 竖排下折行表现为**列数增加**（宽度翻倍），高度反而是内容长度，比高度会误判。
+    // 判据 = 每一列宽度 ≈ 一个行高（竖排时 line-height 就是列宽），
+    // 折成第二列会让它翻倍。🔴 分母是 line-height 不是 font-size：
+    // 实测列宽 70px = 字号 38 × 行高 1.85，拿字号当分母会把正常单列判成折行。
+    const cols = await page.locator('.yin__l').evaluateAll((els) =>
+      els.map((e) => ({
+        w: e.getBoundingClientRect().width,
+        lh: parseFloat(getComputedStyle(e).lineHeight),
+      })),
     );
-    expect(hs).toHaveLength(2);
-    expect(Math.max(...hs) / Math.min(...hs)).toBeLessThan(1.6);
+    expect(cols).toHaveLength(2);
+    for (const c of cols) expect(c.w / c.lh).toBeLessThan(1.4);
+    // 正控：确实处在竖排模式（否则上面的判据在水平排版下恒真，等于没测）
+    const wm = await page.locator('.yin__h').evaluate((e) => getComputedStyle(e).writingMode);
+    expect(wm).toMatch(/vertical/);
     await expect(page.locator('[data-nexus-yin]')).not.toHaveAttribute('data-yin-fallback', /.+/);
   });
 });
@@ -81,6 +91,12 @@ test.describe('印 · 三态严格对应机器收据', () => {
     }
   });
 
+  // 🔴 单独放宽超时，原因写在这里而不是调全局：本条与一个正在跑的重型 WebGL
+  // 构图**同页竞争主线程**。CI 用 SwiftShader，实测约 0.7 帧/秒，600 滴的构图要
+  // 跑约 75 秒，期间点击响应被饿慢 —— 放宽后稳定通过（实测 1.3 分钟）。
+  // 断言一个字没松：仍然要求点开、5 个字段、再点关闭。放宽的是环境余量，不是判据。
+  // 这条同时是**已知弱设备限制**的登记点：无 GPU 环境下展厅交互会变迟钝。
+  test.describe.configure({ timeout: 240_000 });
   test('抽屉：初始关闭 → 点击开一屉 → 再点关闭', async ({ page }) => {
     await page.goto(u(HALL));
     const drawer = page.locator('[data-drawer]');

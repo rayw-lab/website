@@ -41,7 +41,7 @@ const stat = [
     <Yin />
     <section class="band">
       <div class="band__head">
-        <h2 class="band__t">墨流 · 这一百天落在同一张纸上</h2>
+        <h2 class="band__t">墨流 · 这 {ledger.totals.days} 天落在同一张纸上</h2>
         <p class="band__n">
           {stat.map((s) => (<span><b>{s.v}</b> {s.k}　</span>))}
           {r.from} — {r.to}

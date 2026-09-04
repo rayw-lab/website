@@ -127,7 +127,8 @@ const alt =
     const canvas = root.querySelector<HTMLCanvasElement>('[data-flow-canvas]');
     const raw = root.querySelector<HTMLScriptElement>('[data-flow-data]')?.textContent;
     if (!canvas || !raw) continue;
-    const { span, items } = JSON.parse(raw) as { span: number; items: Item[] };
+    const { span: spanSeconds, items } = JSON.parse(raw) as { span: number; items: Item[] };
+    const span = spanSeconds;
     if (items.length === 0) continue;
     // 时间只决定「落下顺序」，落点本身已由构建期按台账算好（见 frontmatter）
     items.sort((a, b) => a.t - b.t);
@@ -136,8 +137,14 @@ const alt =
     // 构建期截海报走 ?poster=1：不开 preserveDrawingBuffer 时 WebGL 内容
     // 不进入页面合成截图（实测截整页只剩文字），海报会拍成一张白纸。
     const poster = new URLSearchParams(location.search).has('poster');
-    InkSurface.mount(canvas, {
+    const surface = InkSurface.mount(canvas, {
       preserveDrawingBuffer: poster,
+      // 🔴 海报走 seek 停帧，不靠"等够墙钟"。实测软件渲染只有约 0.7 帧/秒，
+      // 每帧上限 12 滴时 32 秒也只落到第 5 个十分位 —— 截出来永远是半成品，
+      // 而画面「看着像留白」，最容易被当成设计而不是缺陷。
+      // seek 是构建期确定性停帧，与帧率无关；nexus-ink.astro 早就是这么用的，
+      // 这里属于移植既有用法，不是新发明。
+      autoLoop: !poster,
       mobile: window.matchMedia('(max-width: 768px)').matches,
       onFrame: (ink: InkEngine, elapsed: number) => {
         const want = Math.min(items.length, Math.floor((elapsed / span) * items.length));
@@ -145,6 +152,11 @@ const alt =
         // 那两秒会在**第一帧**一次性要求补落约 85 滴 ≈ 2000 次绘制，渲染线程当场堵死
         // ——实测表现为构建期截图 30s 超时拿不到稳定帧，页面本身却不报错。
         // 有上限后慢设备只是把构图拖长，不会卡死；快设备（60fps 需 0.7 滴/帧）永不触顶。
+        // 🔴 预算取固定 12，不做"慢设备多落几滴"的自适应。实测过自适应版
+        // （上限 48）：软件渲染下每帧工作量暴涨，主线程被占死，**印章抽屉的点击
+        // 交互直接超时**（e2e 8 passed / 1 failed），而画面本身看不出异常。
+        // 判据：给动画加速的代价常常记在交互账上，而交互没有截图会说话。
+        // 弱设备宁可构图慢一点——海报路径已改走 seek，不再依赖帧率。
         let budget = 12;
         while (placed < want && budget-- > 0) {
           const i = placed++;
@@ -172,5 +184,22 @@ const alt =
         root.dataset.flowFallback = reason;
       },
     });
+    // 停帧到构图完成时刻：所有滴都已落下且墨已洇开。
+    // 🔴 必须分片。一次 seek(16) = 480 个定步长同步跑完，软件渲染下把主线程
+    // 堵死 >120s，症状是构建期 page.goto 直接超时（不是截图超时，更难归因）。
+    // 分片后仍是定步长（确定性没丢），只是摊到多帧；完成后立旗，
+    // 海报脚本等这面旗而不是等墙钟 —— 等墙钟等到的永远是半成品。
+    if (poster && surface) {
+      const STEP = 1 / 30;
+      const total = Math.round((spanSeconds + 2) / STEP);
+      let n = 0;
+      const pump = () => {
+        const end = Math.min(total, n + 12);
+        for (; n < end; n++) surface.seek(STEP, STEP);
+        if (n < total) requestAnimationFrame(pump);
+        else document.documentElement.dataset.inkPoster = 'ready';
+      };
+      pump();
+    }
   }
 </script>
