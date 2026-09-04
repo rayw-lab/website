@@ -3,7 +3,7 @@
 > 本文是第三栋楼唯一 ACTIVE TODO。冲突时：**live Git / 隔离栈 / 日志 > 本文 > 任何旧看板**。
 > 目标：`/world/frame-vault/`「帧库 · Frame Vault」——把视频当成可切开的时间固体，科普磊哥的 AI 视频自动化闭环。
 > 设计 SSOT = `FRAME-VAULT-DRAFT-2026-09-04.md`；施工 SSOT = `FRAME-VAULT-CHARTER-2026-09-04.md`。
-> 更新 2026-09-04 22:40 · 分支 **未开**（计划 `codex/frame-vault-20260904`，base `codex/nexus-hall-20260903@3e0680f`）· 建筑 `workflow-foundry` · 分支 `codex/frame-vault-20260904`（自 `0f1cdd0`）· 一二楼已合入 main `51fa87d`（PR #238）· 状态：**e2e 62/62 绿；PR 开出，等 CI 合入 main**
+> 更新 2026-09-04 22:40 · 分支 **未开**（计划 `codex/frame-vault-20260904`，base `codex/nexus-hall-20260903@3e0680f`）· 建筑 `workflow-foundry` · 分支 `codex/frame-vault-20260904`（自 `0f1cdd0`）· 一二楼已合入 main `51fa87d`（PR #238）· 状态：**已合入 main（PR #239）**；残余见流水 R8（视频托管口径待磊哥）
 
 ## 状态机
 `PLANNED → RESEARCHED → BUILT → AUDITED → GATE_PASS → LIVE_OBSERVED`（只有 LIVE_OBSERVED 作验收）
