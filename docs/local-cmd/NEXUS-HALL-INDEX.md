@@ -3,7 +3,7 @@
 > 本文是本楼唯一 ACTIVE TODO。冲突时：**live Git / 隔离栈 / 日志 > 本文 > 任何旧看板**。
 > 目标：`/world/agent-nexus/`「墨迹 · Ink Ledger」——水墨物理承载真实 agent 会话元数据。
 > 设计 SSOT = `NEXUS-HALL-DRAFT-2026-09-03.md`；施工 SSOT = `NEXUS-HALL-CHARTER-2026-09-04.md`。
-> 更新 2026-09-04 11:45 · 分支 `codex/nexus-hall-20260903` · worktree `~/studio-data-root/worktrees/website-nexus-hall` · base `codex/about-hall-20260902@f942a22` · 上次合流 — · 人测窗口 none
+> 更新 2026-09-04 12:35 · 分支 `codex/nexus-hall-20260903` · worktree `~/studio-data-root/worktrees/website-nexus-hall` · base `codex/about-hall-20260902@f942a22` · 上次合流 — · 人测窗口 none
 
 ## 状态机
 
@@ -25,7 +25,7 @@
 | NX-W3r | W3 | suminagashi 数学 + 时间序列艺术化 + scrubber 交互调研 | agy | 同上 | — | 单滴变换公式可实现 | **CLOSED-AS-VERIFIED**（W3 已先行且 R19 把落点改成台账坐标；调研若再派只能是事后背书，无增量，故关闭而非空挂 PLANNED） |
 | NX-W3 | W3 | S0 洇 + S1 墨流 + 印抽屉 | 执行方 | `halls/nexus/{Yin,Flow,Seal,Drawer}.*` | W1, W2, W3r | 10s 脚本成立；数字全 ledger 渲染 | **LIVE_OBSERVED**（R19/R20：墨流改台账坐标[横=时间/纵=席位带]+轴标；S0 改真竖排题款+朱砂款印+天数从台账派生。真路由实开自证：2 块 canvas、24 枚印。五跋正文待磊哥） |
 | NX-W4r | W4 | 手卷横向叙事 + 中文排版 + 印章设计调研 | agy | 同上 | — | 移动端退化方案明确 | **AUDITED**（W4r-agy-handscroll.md 收稿，整套数值改法采纳，R28-3；其画心 31rem 与面 27rem 顶牛由 R29-2 修正为 36/27） |
-| NX-W4 | W4 | 手卷 + 五跋 + 试墨 + 收官 | 执行方 | `halls/nexus/{Scroll,Colophon,Trial,Epilogue}.*` | W3, W4r | C 维 100% 绑定；干纸拒墨可见 | **LIVE_OBSERVED**（R27：手卷 sticky 驱动三态门实测 + 五跋骨架[题候选明标、印严格来自台账、绑定标题级] + 收官四出口与简介复制；试墨 R22；印 Seal R20。**唯一余项：五跋正文与迹[NEEDS_LEIGE]**。R29：agy B 段验修 11 条裁决落地，降级文案真因=CSS 盖 [hidden]（非 WebGL），e2e 23/23，`d2c03ab`） |
+| NX-W4 | W4 | 手卷 + 五跋 + 试墨 + 收官 | 执行方 | `halls/nexus/{Scroll,Colophon,Trial,Epilogue}.*` | W3, W4r | C 维 100% 绑定；干纸拒墨可见 | **LIVE_OBSERVED**（R27：手卷 sticky 驱动三态门实测 + 五跋骨架[题候选明标、印严格来自台账、绑定标题级] + 收官四出口与简介复制；试墨 R22；印 Seal R20。**唯一余项：五跋正文与迹[NEEDS_LEIGE]**。R29：agy B 段验修 11 条裁决落地，降级文案真因=CSS 盖 [hidden]（非 WebGL）；R30：盲评 C 13 条整改 + 席位口径门 + 吸收量软肩 2×2，e2e 24/24，`e8587c0`） |
 | NX-W5r | W5 | Astro hall 路由/主题作用域 + 构建期 WebGL 截图坑调研 | agy | `out/W5r-agy-wiring.md` | — | SSIM 门做法明确 | **AUDITED**（接线清单四处与实装完全重合；驳回其 CSS 特异度判断[实测证否]；5 条「明确没证的」坐实 4 条、1 条采纳其建议不做，R21-6/7） |
 | NX-W5 | W5 | 接线 + 三个门脚本 + e2e + 海报 + sitemap | 执行方 | §3.3 热点文件 + `scripts/` + `e2e/` | W4, W5r | 城里 E 进楼；about-hall e2e 不回归 | **LIVE_OBSERVED**（`/world/agent-nexus/` 200；`world-halls.json` 登记 + 楼宇 `hallPath` 已补[`Areas.ts` 据此进楼]；纸色主题 2×2 正负控进 e2e；`check-links` rc=0、`about-hall-gate` rc=0 无回归；29/29 e2e[墨迹 13 + about 16]；sitemap 含新页；build 25 页） |
 | NX-W6 | W6 | 全量 e2e + 盲审双评 + PR + handoff | 执行方 + agy/xhsapi 批评者 | `evidence/nexus-hall/W6/` | 全部 | 人门三维 ≥7 | PLANNED |
@@ -40,7 +40,8 @@
 | W6-xhsapi-crosscheck | xhsapi | 2026-09-04 07:38 | `out/W6-xhsapi-crosscheck.md` | receipt | **已收稿并裁决**（3 采纳 / 1 驳回，R20-4） |
 | W5r-agy-wiring | agy flash | 2026-09-04 08:23 | `out/W5r-agy-wiring.md` | receipt | **已收稿并亲核**（R21-6/7） |
 | W7-agy-blind-A / W8-agy-verify-B | agy flash | 2026-09-04 10:5x / 11:14 | `out/W7-agy-blind-A.md`、`/tmp/agy-w8-verify.log`（receipt agy-rescue-20260904-111428-ad946b91） | receipt rc=0 | **已收稿并裁决**（R28-1 / R29-2）；下一单=定稿后盲审 C 段（只给分不给修单） |
-| W9-agy-blind-C / W9-glm-crosscheck | agy flash / glm53flash | 2026-09-04 11:5x | `out/W9-agy-blind-C.md`、`out/W9-glm-crosscheck.md` | receipt | **在跑**（R29-4） |
+| W9-agy-blind-C / W9-glm-crosscheck | agy flash / glm53flash | 2026-09-04 11:5x | `out/W9-agy-blind-C.md`、`out/W9-glm-crosscheck.md` | receipt | **已收稿并裁决**（R30-1 / R30-2：13 条采纳 10、部分 2、驳回 1；反核坐实 4 不可核 1） |
+| W9-lessons | xhsapi→glm53flash（端点 RST 自动换席） | 2026-09-04 12:0x | `docs/local-cmd/NEXUS-HALL-LESSONS-2026-09-04.md` | receipt identity_ok | **已收编**（R30-3） |
 | W7-glm-crosscheck | glm53flash | 2026-09-04 | `out/W7-glm-crosscheck.md` | APIDIRECT_RECEIPT | **已收稿并裁决**（R28-2） |
 
 ## 热点文件持有表（单 writer）
