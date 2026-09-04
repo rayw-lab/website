@@ -1305,3 +1305,36 @@ build rc=0 → 海报重生成（yin 14902→14722 B，flow 同步；软肩改�
 - 一手事实：本楼**无** `poi_showcase-agent-nexus` 机位 → 现在是直跳无前奏；城侧 PoiArrival 0.8s tween + 0.4s 定帧（ADR-4 锁定）+ 霓虹脉冲 + `location.assign`；楼侧 HallChrome 读 `?from=city`。
 - 引子「墨吞霓虹」已写进 brief（`prompts/w10-agy-transition.md`），要求 ≥3 案 + 分镜 ms 级 + 机位数值 + ⭐排序 + 明确没证的。产物 `out/W10-agy-transition.md`。
 - 磊哥同时令：收口要像第一栋楼一样合流到首页（PR #234 形态：merge origin/main → 全量 e2e → push → PR → 合入）。排在转场落地之后。
+
+## R32 · NX-W7 转场「墨吞霓虹」落地（2026-09-04 12:5x–13:2x）
+
+### R32-1 调研收稿（`out/W10-agy-transition.md` + `docs/local-cmd/proposals/NX-T1-transition-concepts.md`，receipt agy-rescue-20260904-124x）
+- agy 三案：⭐一「墨拓化境·宣纸返生」/ 二「紫霓引线·笔洗化界」/ 三「折叠残卷」。⭐一包容引子并补三处：**以墨充帘**（墨幕带过跨文档跳转消灭白闪）、**动量沿车头 315° 贯穿 (36%,40%)**、Sobel 墨拓质感。采纳一，Sobel 不做（WebGL 后处理超预算，用 CSS filter 灰度+高对比达意）。
+- 机位：agy 自己跑了 `audit-shot-ndc` 给出 φ70/θ45/r170/lah50/lat−16，与我枚举的首个双门全过解**逐字相同**（异源收敛）。
+- 一手病灶：`shots/city/2-city-press-e.png`——按 E 600ms 后已是空白纸页（本楼此前无 showcase 条目 → 直跳）。
+
+### R32-2 实装（我亲自）
+- 数据：`cyber-city-buildings.json` agent-nexus `arrivalFx:"ink"`（`CityMap.ts` 新字段，缺省=霓虹脉冲，ADR-4 决策 B 不动）；`camera-shots.json` 新条目 `poi_showcase-agent-nexus`（status proposal，全表审计 11/11 PASS）。
+- 城侧 `PoiArrival.ts`：hold 起帧按楼挂 `world-poi-hold-ink`（不挂脉冲类）：画布 `filter` .12s 褪墨拓 → `::before` 三层径向墨团自 (36vw,66vh) 放大吞屏 .38s → `::after` 最后 30% 补满；**finish 后不卸**，`INK_LINGER_MS=1500` 兜底（route abort/console 型）；interrupt 照卸；RM 下只做 .3s 淡入全墨。取证面 `data-poi-arrival-fx`（session.log 有白名单，不扩规格）。0.4s 定帧常量未动。
+- 楼侧 `halls/nexus/Arrive.astro`（新）：`?from=city&poi=agent-nexus` 命中才点亮；首帧内联全墨遮罩，rAF 驱动 `--nx-r` 170vmax→0 easeOutExpo 720ms（延 100ms）向 (36%,40%) 收缩，最后 12% 交给 opacity；`window.__nxArrive` 痕迹；`#nx-arrive-hold` 停在 35% 供自看；RM 淡出。
+- 🔴 两处探针教训：①`@property --nx-r` 在本机 Chromium 全程不插值（只有 opacity 动）→ 改 rAF；②`goto` 只差 hash 走片段导航脚本不重跑 → e2e 三次导航 URL 两两不同。
+- `astro check` 本机 dyld SIGABRT、`tsc` shim rc=127 → **类型门本轮 UNVERIFIED**，以 build rc=0 + e2e 为准。
+
+### R32-3 2×2
+- 楼侧（`nexus-hall.spec` 新用例）：hold 版 r=216px<起始 2448（真在收缩）/ 直链无元素无痕迹 / 正常版 7 帧 124→1024ms 后删。探针 `shots/transit/hall-hold35.png`。
+- 城侧（`cyber-city-nexus-transit.spec` 新）：nexus 按 E → ink 类 3 帧、脉冲类 0、拦下跳转后 1.5s 自卸；about 同流程 ink 0、属性 null。首跑探针原文见 task bhh6vcn96。
+### R32-4 墨幕毛边三态对照（唯一变量=滤镜挂载层）
+| 版本 | 产物 | 边缘 |
+|---|---|---|
+| 无滤镜 | `shots/transit/hall-hold35.png` | 几何圆 |
+| 滤镜挂父层（纯色矩形） | `hall-hold35-edge.png` | **仍是几何圆**——位移一个纯色矩形等于没位移（负控，证明「滤镜生效」≠「毛边生效」） |
+| 滤镜挂父层 + 墨与遮罩下沉 `::before` | `hall-hold35-edge2.png` | 洇散毛边成立（正控） |
+`computed filter` 三版都是 `url("#nx-arrive-edge")`——**只看 computed 会判「已生效」，这正是式二型假绿**。
+
+### R32-5 门与提交
+build rc=0 · 预算门四行 PASS（9785/3768/0/15771 B）· 相机审计 11/11 · 本厅 e2e **25/25**（新增到达墨幕 2×2）·
+城侧 `cyber-city-nexus-transit.spec` **3/3**（world-chromium，`--no-deps`）。`b13f5ea`。
+- 🔴 城侧首跑用默认 project 集会连带跑 about-hall 全组，其中 scrub 两条在 4322 静态栈红（video 在 4321 preview 下 2/2 绿，属栈差异非回归）——转场 spec 必须带 `--project=world-chromium --no-deps`。
+- 超慢放（playbackRate 0.006）抓中段帧 **0 帧 = 探针窗口不足**（循环 72s 内 tween 未走完），不是被测对象问题；ink 类已有 3 帧实证 + e2e 绿。中段慢放帧记 residual。
+
+`自看：楼侧 hold · shots/transit/hall-hold35-edge2.png · 墨核洇散边成立、落点对（36%,40%）；城侧定帧 · slow-1.png · 96m 塔偏右、左上留夜空、紫霓招牌入画，构图与展厅左文右景同构；城侧墨吞中段 · [未进片]。`
