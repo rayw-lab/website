@@ -18,7 +18,7 @@
 | FV-W0r | W0 | GitHub-first 视频体/切片轮子 + clone teardown | agy pro | `~/.codex/state/nexus-hall/out/W20-agy-videocube.md`、`~/studio-data-root/x-archives/hall3-research/repos/` | — | 报告有 file:line + adopt/adapt/drop | **RESEARCHED-IN-PROGRESS**（已 clone 5 仓；中途收稿 R0-5：三流派结论与 spike 一致，采纳 rVFC + 上限硬截断；锚点待亲核） |
 | FV-W1 | W1 | 管线 + 门 + 四集 manifest | 执行方 | `scripts/`、`public/demo/frame-vault/`、`src/data/frame-vault/`、`evidence/frame-vault/` | go | 四集过门 | **GATE_PASS**（R2-4：四集全通，门 4/0，selftest 3/3；预算改 10 MB） |
 | FV-W2 | W2 | VolumeEngine + 刀锋 + 斜切 + 海报 | 执行方 | `halls/vault/` | W1 | 海报可下载、URL 确定性 | **BUILT**（R2-4：引擎/控制器/首屏真机目击，刀锋与斜切成立；海报下载与 URL 复现未验；e2e 未写） |
-| FV-W3 | W3 | 抽帧成片 + 翻面 + 门环 + 爆炸 | 执行方 | 同上 | W2 | 四交互 Live | PLANNED |
+| FV-W3 | W3 | 抽帧成片 + 翻面 + 门环 + 爆炸 + 片架 | 执行方 | 同上 | W2 | 四交互 Live | **BUILT**（R3-2：抽帧成片/全屏/下载、片架、门环真机目击；翻面缺时间对齐源、爆炸并入 W4） |
 | FV-W4 | W4 | 片库布局 + 快门 + S2/S3 + `film` token | 执行方 | 同上 + 热点文件 | W3 | 全程 Live | PLANNED |
 | FV-W5 | W5 | 接线 + e2e + 五门 | 执行方 | 热点文件 + `e2e/` | W4 | 200 + 进楼 + 回城 | PLANNED |
 | FV-W6 | W6 | 盲评 + 修 + LIVE_OBSERVED | xhsapi + 执行方 | — | W5 | 面板分 | PLANNED |

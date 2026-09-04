@@ -81,3 +81,20 @@
 - 门 `frame-vault-gate.mjs`：正控 checked=4 violations=0；`--selftest` 三负控（环越界 / 本地路径 / 图集张数）全部命中且报对集名 `[实测 rc=0]`。
 - glm W23（管线脚本初稿）**空稿**：`api-direct: empty content with non-empty reasoning_content`（flash 推理吃光预算）。未重试，执行方直接写；记通道认知：glm-5-3-flash 写 ≥300 行代码单不可靠，改用 hermes-code 或 sonnet 直跑。
 - 首屏真机（Apple M5，`.tmp/vault-look.mjs`）：EP2 装载 540–739 ms 到 idle；四处修：`vault__stage` 容器与锁状态 span 撞类名（标题块被挤没，第二楼 LESSONS 第 1 条再犯）、EP2 无 `frames` 时帧号恒 f0（改为切片号 `s####` 前缀区分）、滚轮灵敏度、侧面投影无 mipmap 出摩尔纹（开 `LINEAR_MIPMAP_LINEAR` 后读作叠纸金边）。截图 `~/.codex/state/nexus-hall/shots/vault/0{1,3,4}-*.png`。
+
+## R3 · W3 四交互施工 + W24 收稿（2026-09-05 凌晨）
+
+### R3-1 W24 agy「帧精确 seek」收稿（flash，产物 27.9 KB，脚本 `~/studio-data-root/hall3-spike/seek-test/run_seek_benchmark.py`，结果 `benchmark_results.json`）
+- 30 个伪随机时刻实测（Chrome 152，EP3 默认 GOP 250）：`|mediaTime − t|` p50 17.7 ms / p95 31.4 ms / max 32.3 ms，全部 ≤ 1 源帧 `[agy 实测，表格 30 行逐行给出；未亲跑脚本，抽核 3 行数字与 json 一致——待补]`。
+- 采纳：**不重编码短 GOP**（体积 +75%、精度 +0）；`currentTime = t` 与 `play()` 必须在手势同一同步段（已改 `pull()`，之前 await loadedmetadata 会耗尽用户激活）；`fastSeek()` 禁用；rVFC 回写（已在用）。
+- 驳回/搁置：WebCodecs 自解管线（过重，留作储备）。
+
+### R3-2 W3 已落地（`e67c04f`、`189a50c` + 本批）
+- 抽帧成片：双击/Enter → 切面抽出为真 `<video>` 从刀锋时刻续播（真机：seek 178.6 s 落 179.8 s 含 1.5 s 播放；rVFC 回写 cut 与 `currentTime/duration` 一致到 1e-4）；单击/Esc 放回；**全屏（F / 按钮）+ 下载 mp4** 按磊哥「全屏 → 退出 → 选其他 / 下载」流程补齐；全屏后焦点落 body → 键盘监听改挂 document。
+- 片架：1–8 / 点击切集，帧体重装（引擎 `unload()` 先释放三张纹理），URL `?ep=` 记忆并优先于 SSR 默认集；EP4 切换后 21 条退回 → 19 枚环（同秒合并成粗环，`data-count`）。
+- 门环：客户端按 manifest.rings 渲染（Astro scoped 样式作用不到 JS 创建节点 → `<style is:global>`）；悬停卡出原话 + 缺陷类 + 修复版本；点击刀锋跳到 `time_s`（实测 cut 0.0589 == data-t）。
+- 布局：舞台 `clamp(420px, 64svh, 760px)`，标题块移到左上，标尺进首屏（之前被页头 69 px 顶出视口，门环悬停不到）。
+- **未做**：翻面读稿（台本无时间对齐源：EP2/EP3 无 srt/DIRECTOR，只有烧进画面的字幕；候选 = whisper 对成片音轨做词级对齐，派 agy 下一波）、爆炸分层（W4 与 S2 一起做）。
+
+### R3-3 e2e 骨架收稿（sonnet 子代理）
+- `e2e/frame-vault.spec.ts` 202 行 6 例，tsc 零错；其自报「project 应为 `desktop-chromium`（`--list` 验证）」`[未亲核]`；尚未实跑（需停掉 4321 上的 nexus preview 或改端口，W5 处理）。

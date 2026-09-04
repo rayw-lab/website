@@ -164,7 +164,11 @@ export class Vault {
       e.preventDefault();
       this.blade(this.target.cut + e.deltaY * 0.00025);
     }, { passive: false });
-    this.host.addEventListener('keydown', (e) => {
+    // 键盘挂 document：全屏后焦点落到 body（W3 实测），挂宿主会失灵。只在宿主含焦点、全屏中或播放态时接管
+    document.addEventListener('keydown', (e) => {
+      const t = e.target as HTMLElement | null;
+      if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+      if (!this.host.contains(document.activeElement) && !document.fullscreenElement && this.phase !== 'pulled') return;
       const step = e.shiftKey ? this.manifest.volume.fps / this.frames() : 1 / this.frames();
       if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         e.preventDefault();
@@ -198,7 +202,8 @@ export class Vault {
     this.host.querySelector('[data-vault-poster]')?.addEventListener('click', () => void this.poster());
     const slots = Array.from(this.host.querySelectorAll<HTMLElement>('[data-vault-slot]'));
     slots.forEach((s) => s.addEventListener('click', () => void this.switchEp(s)));
-    this.host.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', (e) => {
+      if (!this.host.contains(document.activeElement) && !document.fullscreenElement && this.phase !== 'pulled') return;
       const i = Number(e.key) - 1;
       if (Number.isInteger(i) && i >= 0 && i < slots.length && !e.altKey && !e.metaKey) void this.switchEp(slots[i]);
     });
@@ -232,7 +237,7 @@ export class Vault {
     const fig = this.host.querySelector<HTMLElement>('[data-vault-pull]');
     if (!fig) return;
     try {
-      if (document.fullscreenElement) await document.exitFullscreen();
+      if (document.fullscreenElement) { await document.exitFullscreen(); this.host.focus({ preventScroll: true }); }
       else await fig.requestFullscreen();
     } catch { /* 浏览器拒绝全屏（iframe/策略）→ 保持内嵌播放 */ }
   }
