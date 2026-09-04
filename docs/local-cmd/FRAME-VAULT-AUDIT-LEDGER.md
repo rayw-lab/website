@@ -176,3 +176,7 @@
   3. 门：`frame-vault-gate` 视频外链只认 Release 白名单前缀；e2e 降级链接断言同步。
 - 代价 `[实测 curl]`：Release 资产本机整段 7.28 MB 用时 237 s / 246 s（≈30 KB/s），Range 400 KB 用时 16 s（206，ttfb 2.96 s），本地 dist 同文件 0.002 s；真机跨域起播等 13.7 s（buffered 先拉 0–21 s）。客户端缓解：装集即 `preload=metadata`，第一次刮时 `preload=auto`。**NEEDS_LEIGE**：视频回 Pages 需上调 SRD §12.6（40 → ≥100 MB）；或改 OSS/R2 直链（manifest `--video-base` 一处切换）。⭐ 建议后者。
 - 帧库 e2e 6/6 复跑绿。
+
+## R9 · 合入 main + 线上核验（2026-09-05 01:xx）
+- PR #239 第二轮 CI 全绿（5m26s）→ `--merge` 合入，main `4f4b527`。Pages 部署完成后线上 `[实测 curl]`：`/website/world/frame-vault/` 200（HTML 含 `data-vault-ep="EP2"`、视频指向 `frame-vault-media-v1/ep2..ep5.mp4`）、`/website/demo/frame-vault/ep3/manifest.json` 200、`/website/posters/frame-vault-tilted.webp` 200、`/website/?poi=workflow-foundry&from=hall` 200。
+- 三楼战役到此收口；残余：视频托管口径（R8 NEEDS_LEIGE）、回城冷路径滞留（兜底 2.5 s 封顶）、浮尘粒子未做、五跋正文（二楼 NEEDS_LEIGE）。
