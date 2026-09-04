@@ -46,14 +46,18 @@ const { dry = { x: 0.72, y: 0.5, radius: 0.17 } } = Astro.props;
       <span>纸已干</span>
     </div>
     <div class="trial__caret" data-trial-caret aria-hidden="true" hidden></div>
+    <!-- 定 / 清：两枚小印落在画布右上，与右下的干纸圈成对角（agy 盲审 P2，采纳）。
+         语义没变：定 = 颜料沉入纸；清 = 换一张纸。 -->
+    <div class="trial__seals">
+      <button type="button" data-trial-fix class="trial__seal trial__seal--zhu" aria-label="定：让这一笔沉入纸">定</button>
+      <button type="button" data-trial-clear class="trial__seal trial__seal--bai" aria-label="清：换一张纸">清</button>
+    </div>
     <p class="trial__fallback" data-trial-fallback hidden>
       这一幕需要 WebGL2。它想说的是：纸湿的地方墨会洇开，纸干的地方落笔即止。
     </p>
   </div>
 
   <div class="trial__bar">
-    <button type="button" data-trial-fix class="trial__b">定</button>
-    <button type="button" data-trial-clear class="trial__b">清</button>
     <p class="trial__live" data-trial-live role="status" aria-live="polite"></p>
   </div>
 </section>
@@ -101,6 +105,14 @@ const { dry = { x: 0.72, y: 0.5, radius: 0.17 } } = Astro.props;
     cursor: pointer;
   }
   .trial__b:hover { border-color: #9e2a2b; color: #9e2a2b; }
+  .trial__seals { position: absolute; top: .9rem; right: .9rem; display: flex; gap: .45rem; }
+  .trial__seal {
+    inline-size: 2.1rem; aspect-ratio: 1; padding: 0; cursor: pointer; border-radius: 1px;
+    font: 500 .95rem/1 "Songti SC", "STSong", "Source Han Serif SC", serif;
+  }
+  .trial__seal--zhu { color: #9e2a2b; background: #efe9dc; border: 1.5px solid #9e2a2b; transform: rotate(-1.2deg); }
+  .trial__seal--bai { color: #efe9dc; background: #9e2a2b; border: 1.5px solid #9e2a2b; transform: rotate(1deg); }
+  .trial__seal:focus-visible { outline: 2px solid #1c1f26; outline-offset: 2px; }
   .trial__live {
     margin: 0; color: #4a4f5a; min-height: 1.4em;
     font: 400 clamp(.72rem, 1vw, .82rem)/1.4 ui-sans-serif, system-ui, sans-serif;

@@ -29,7 +29,9 @@ const exits = [
 </section>
 
 <style>
-  .ep { display: grid; gap: 1.6rem; padding: clamp(3rem, 9vh, 6rem) clamp(1.5rem, 6vw, 6rem);
+  /* 顶部留足一屏的呼吸：上一幕的定/清小印不该在收官首屏露半截（agy 盲审 P0：截图伪影，但节奏问题属实） */
+  .ep { display: grid; gap: 1.6rem; padding: clamp(5rem, 16vh, 10rem) clamp(1.5rem, 6vw, 6rem) clamp(3rem, 9vh, 6rem);
+    min-block-size: 60svh; align-content: center;
     font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif; color: #1c1f26; }
   .ep__line { margin: 0; font-size: clamp(1.3rem, 2.6vw, 2rem); letter-spacing: .06em; line-height: 1.7; }
   .ep__bio { margin: 0; max-width: 46rem; display: grid; gap: .8rem; }
@@ -39,6 +41,14 @@ const exits = [
   .ep__copy { min-height: 2.4rem; padding: .35rem .9rem; background: transparent; color: #1c1f26;
     border: 1px solid #1c1f2633; border-radius: 1px; font: inherit; cursor: pointer; }
   .ep__copy:hover { border-color: #9e2a2b; color: #9e2a2b; }
+  /* 全站其它元素都是直角细线，唯独出口沿用了 about 厅的圆角实心胶囊——风格突变（agy 盲审 P1，属实）。
+     统一为 1px 直角描边：主出口朱砂线、次出口墨线、回城朱砂线，悬停反色，像印信不像按钮。 */
+  .ep :global(.hall-exit) { border-radius: 1px !important; background: transparent !important; box-shadow: none !important;
+    border: 1px solid #1c1f2666 !important; color: #1c1f26 !important;
+    font-family: "Songti SC", "STSong", "Source Han Serif SC", serif !important; letter-spacing: .06em; }
+  .ep :global(.hall-exit-primary), .ep :global(.hall-exit-city) { border-color: #9e2a2b !important; color: #9e2a2b !important; }
+  .ep :global(.hall-exit:hover) { background: #1c1f26 !important; color: #efe9dc !important; border-color: #1c1f26 !important; }
+  .ep :global(.hall-exit-primary:hover), .ep :global(.hall-exit-city:hover) { background: #9e2a2b !important; border-color: #9e2a2b !important; color: #efe9dc !important; }
 </style>
 
 <script is:inline>

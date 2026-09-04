@@ -294,7 +294,9 @@ test.describe('S2–S6 手卷', () => {
       const r = document.querySelector('[data-nexus-scroll]') as HTMLElement;
       const s = r.querySelector('[data-strip]') as HTMLElement;
       const st = r.querySelector('.scroll__sticky') as HTMLElement;
-      window.scrollTo(0, r.offsetTop + r.offsetHeight - innerHeight);
+      // 🔴 "到底"= 让 section 底沿与 sticky 底沿对齐（sticky 高度可小于视口），
+      // 直接滚到文档末尾最稳：p 必须到 1.000，不接受 0.978 这种"差 2%"。
+      window.scrollTo(0, document.documentElement.scrollHeight);
       return new Promise<{ prog: number; tx: number; expect: number }>((res) =>
         setTimeout(() => {
           const m = new DOMMatrixReadOnly(getComputedStyle(s).transform === 'none' ? '' : getComputedStyle(s).transform);
@@ -303,12 +305,14 @@ test.describe('S2–S6 手卷', () => {
       );
     });
 
-  test('正控：桌面滚到底，progress≈1 且 strip 平移到位', async ({ page }) => {
+  test('正控：桌面滚到底，progress=1 且 computed matrix 的 tx 等于独立量得的 -(strip-视口)', async ({ page }) => {
     await page.goto(u(HALL));
     const e = await readEnd(page);
-    expect(e.prog).toBeGreaterThan(0.9);
-    expect(e.expect).toBeLessThan(-200);                    // 确实有可平移的宽度
-    expect(Math.abs(e.tx - e.prog * e.expect)).toBeLessThan(8); // tx = p·dx
+    expect(e.prog).toBe(1);                                  // 不接受 0.978
+    expect(e.expect).toBeLessThan(-200);                     // 确实有可平移的宽度
+    // 🔴 非循环验证：tx 读自 getComputedStyle 的矩阵，expect 由 scrollWidth/clientWidth 独立量得；
+    // 两者相等才证明"平移到位"，"tx = p·dx"只是重算公式，证明不了任何东西（glm 反核指出）。
+    expect(Math.abs(e.tx - e.expect)).toBeLessThan(1.5);
   });
 
   test('负控 A：375 视口纯竖滚，不平移', async ({ page }) => {
@@ -341,6 +345,13 @@ test.describe('S2–S6 手卷', () => {
       for (const b of c.bind.split(';').filter((x) => x.startsWith('receipt:'))) expect(rids.has(b.slice(8))).toBe(true);
       expect(c.status).toBe('needs-leige'); // 正文待磊哥：机器面必须如实标注，不冒充定稿
     }
+    // 人面：「候选 · 待定稿」标签五跋各一且可见（不是 DOM 里有个字符串）
+    await expect(page.locator('[data-colophon] .cf__cand')).toHaveCount(5);
+    for (const el of await page.locator('[data-colophon] .cf__cand').all()) await expect(el).toBeVisible();
+    // 印严格来自台账：渲染出来的每一枚朱文/白文印文都是台账里的 receipt id（渲染集合 ⊆ 台账集合）
+    const rendered = await page.locator('[data-colophon] .cf__seal--go, [data-colophon] .cf__seal--nogo').allTextContents();
+    expect(rendered.length).toBeGreaterThan(0);
+    for (const t of rendered) expect(rids.has(t.trim())).toBe(true);
   });
 
   test('收官：四出口 + 讲者简介复制钮', async ({ page }) => {

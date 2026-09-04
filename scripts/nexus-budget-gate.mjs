@@ -18,7 +18,8 @@ import { dirname, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
-const HTML = join(ROOT, 'dist/world/agent-nexus/index.html');
+const DIST = process.env.NEXUS_DIST ?? 'dist'; // 隔离验证时可指向 dist-next
+const HTML = join(ROOT, DIST, 'world/agent-nexus/index.html');
 const CAP = { engine: 30 * 1024, motion: 12 * 1024, loader: 4 * 1024, island: 60 * 1024 };
 const OWN_KEYS = [['手卷 Scroll', ['data-strip', 'data-scroll-']], ['印阵 Seal', ['data-nexus-seals', 'data-drawer']], ['收官 Epilogue', ['data-copy-target', 'nx-speaker']], ['试墨 Trial', ['__nexusTrialDry']]];
 
@@ -41,7 +42,7 @@ const data = dataIslands.reduce((a, x) => a + gz(x), 0);
 // ③ 外链沿 import 图
 const start = [...html.matchAll(/<script[^>]*\bsrc="([^"]+)"/g), ...html.matchAll(/<link[^>]*rel="modulepreload"[^>]*href="([^"]+)"/g)].map((m) => m[1]);
 const seen = new Map();
-const todo = start.map((u) => join(ROOT, 'dist', u.replace(/^\/website/, '')));
+const todo = start.map((u) => join(ROOT, DIST, u.replace(/^\/website/, '')));
 while (todo.length) {
   const f = todo.pop();
   if (seen.has(f) || !existsSync(f)) continue;

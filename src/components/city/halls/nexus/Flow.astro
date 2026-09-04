@@ -84,7 +84,9 @@ const alt =
     ))}
   </div>
   <div class="nexus-flow__axis" aria-hidden="true">
-    <span>{range?.from}</span><span>{range?.to}</span>
+    <span>{range?.from}</span>
+    <span class="nexus-flow__legend">一滴 = 一次会话 · 大小 = 体量 · 浓淡 = 席位墨色 · 横 = 时间 · 纵 = 席位</span>
+    <span>{range?.to}</span>
   </div>
   <noscript><p class="nexus-flow__fallback">{alt}</p></noscript>
 </figure>
@@ -99,20 +101,25 @@ const alt =
      压在纸上而不是挤在画外——手卷的题注本来就写在画心边上。 */
   .nexus-flow__bands, .nexus-flow__axis {
     position: absolute; inset: 0; pointer-events: none;
-    font: 400 clamp(.56rem, .72vw, .68rem)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-    color: #6b6357; letter-spacing: .04em;
+    /* 轴标从 .56rem/#6b6357 调到 .66rem/#4a4f5a：原来在纸纹底噪上糊成一片（agy 盲审 P2，属实） */
+    font: 400 clamp(.66rem, .8vw, .76rem)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #4a4f5a; letter-spacing: .04em;
   }
+  /* 每条墨带一条极淡基线：空带（Grok）读作「量过了、虚位以待」，不是渲染失灵 */
+  .nexus-flow__band::before { content: ''; position: absolute; left: 6.5rem; right: 1rem; top: 50%; height: 1px;
+    background: #1c1f2614; }
   .nexus-flow__band {
     position: absolute; left: .9%; transform: translateY(-50%);
     display: inline-flex; align-items: baseline; gap: .3em; white-space: nowrap;
-    opacity: .62;
+    opacity: .85;
   }
   .nexus-flow__band i {
     font-style: normal; font-family: "Songti SC", "Noto Serif CJK SC", serif;
     font-size: 1.05em; color: #8a8070;
   }
   .nexus-flow__axis { display: flex; justify-content: space-between; align-items: flex-end; }
-  .nexus-flow__axis span { padding: 0 1.2% 1.4%; opacity: .55; }
+  .nexus-flow__axis span { padding: 0 1.2% 1.4%; opacity: .7; }
+  .nexus-flow__legend { letter-spacing: .1em; }
 
   @media (max-width: 768px) { .nexus-flow { aspect-ratio: 9 / 14; } }
 </style>

@@ -24,6 +24,17 @@ interface Receipt {
   identityOk: boolean | null; exitCode: number | null; sha256: string | null;
 }
 const all = (ledger.receipts ?? []) as Receipt[];
+/** 语义缩写：已知模型给固定印文；未知的按「字母头 + 数字」切整词，最多 9 位且不切在词中间。 */
+const SEAL_ABBR: Record<string, string> = {
+  gemini38f: 'gemini·f', glm53flash: 'glm·flash', dots3noteprev: 'dots·3', dots3note: 'dots·3',
+  apidirect: 'api·dir', deepseekv4flash: 'ds·flash', deepseekv4pro: 'ds·pro', minimaxm3: 'minimax',
+};
+const shortSeal = (s: string): string => {
+  if (SEAL_ABBR[s]) return SEAL_ABBR[s];
+  const m = /^([a-z]+)(\d*)/.exec(s);
+  const head = m ? m[1] + (m[2] ? '·' + m[2].slice(0, 2) : '') : s;
+  return head.length <= 9 ? head : (m ? m[1].slice(0, 9) : s.slice(0, 9));
+};
 // 🔴 跨席位交错取样：receipts 按 mtime 排序，直接 slice 会让前 24 枚**全来自同一席**
 // （实测印文去重后只剩一个 `gemini38f`）。印阵要体现「与多智能体共事」，
 // 不能是同一席的 24 连拍。灰印/白文这类稀有态也要保证被取到。
@@ -56,7 +67,9 @@ const seals = picked.map((r) => {
   return {
     id: r.id,
     state,
-    line1: (model || r.seat).slice(0, 9),
+    // 🔴 印文禁硬裁：`slice(0,9)` 把 glm53flash 裁成 glm53flas、api-direct 裁成 api-direc，
+    // 现代字符串截断的毛边直接破坏印章的严谨感（agy 盲审 P1，属实）。按语义缩写，永远保留整词。
+    line1: shortSeal(model || r.seat),
     line2: r.sha256 ? r.sha256.slice(0, 7) : '—',
     // 抽屉里的字段摘录：全部是机器字段，一个形容词都没有
     fields: [
