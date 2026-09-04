@@ -164,3 +164,5 @@
 - 管线：`transcribe()` 按重编码视频 sha 缓存到 `evidence/frame-vault/<ep>/cues-<sha8>.json`，manifest 加 `script{source:'asr', model, segments, cues[]}`；门加「句子在时长内」「segments == cues 数」。两处产出侧修正：whisper JSON 裸 `NaN`（EP5 实证）→ 解析前换 null；片尾幻听句超时长（EP5 300–316 s > 306.7 s）→ 起点越界丢弃、终点夹到时长。四集：EP2 283 / EP3 227 / EP4 153 / EP5 80 句；门 4/0，selftest 3/3。
 - UI：F 翻面（不在播放态时），`ry += π`，磨砂台本板浮出；当前刀锋时刻那句金色高亮并滚到可见（二分查 start ≤ t）；点句子刀锋跳过去；切集重建。对齐质量 `[未亲核逐句]`——ASR 是对成片音轨的转写，不是台本原稿；板头标 `ASR 对齐 · whisper-large-v3-turbo` 如实披露。
 - 合流前 e2e：桌面 project 48/48（帧库 6 + 二楼 25 + 一楼 16 + 1）`[实测]`；world project 在跑。
+- R7-2 翻面真机：227 句板子浮出，当前句高亮且在可见区（`visible:true`），点第 41 句 → cut .210 高亮 40，F 收回 → idle。修了两处：`blade()/tilt()` 在 flipped/pulled 态不改相位；滚动改容器 `scrollTop`（`scrollIntoView` 会带走整页）。
+- R7-3 合流前 e2e 全组 `[实测 blucrfvt0]`：desktop 48/48（1.9 min）+ world 14/14（14.1 min，回城 5 + 二楼转场 + 到达）= **62/62**。

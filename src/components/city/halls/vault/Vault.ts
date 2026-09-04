@@ -180,7 +180,7 @@ export class Vault {
     document.addEventListener('keydown', (e) => {
       const t = e.target as HTMLElement | null;
       if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
-      if (!this.host.contains(document.activeElement) && !document.fullscreenElement && this.phase !== 'pulled') return;
+      if (!this.host.contains(document.activeElement) && !document.fullscreenElement && this.phase !== 'pulled' && this.phase !== 'flipped') return;
       const step = e.shiftKey ? this.manifest.volume.fps / this.frames() : 1 / this.frames();
       if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         e.preventDefault();
@@ -279,7 +279,7 @@ export class Vault {
       const t = document.createElement('time'); t.textContent = mmss(c.start);
       const sp = document.createElement('span'); sp.textContent = c.text;
       li.append(t, sp);
-      li.addEventListener('click', () => this.blade(c.start / m.duration_s));
+      li.addEventListener('click', () => { this.blade(c.start / m.duration_s); this.host.focus({ preventScroll: true }); });
       ol.appendChild(li);
     });
   }
@@ -312,7 +312,12 @@ export class Vault {
     const next = idx >= 0 ? ol.children[idx] as HTMLElement : null;
     if (prev === next) return;
     prev?.classList.remove('is-now');
-    if (next) { next.classList.add('is-now'); next.scrollIntoView({ block: 'center', behavior: scroll || REDUCED ? 'auto' : 'smooth' }); }
+    if (next) {
+      next.classList.add('is-now');
+      // 只滚台本容器，不滚页面（scrollIntoView 会把整页也带走）
+      const top = next.offsetTop - ol.clientHeight / 2 + next.offsetHeight / 2;
+      if (scroll || REDUCED) ol.scrollTop = top; else ol.scrollTo({ top, behavior: 'smooth' });
+    }
   }
 
   // ---------- 爆炸分层（S1 → S2 过场） ----------
@@ -344,7 +349,8 @@ export class Vault {
     this.target.cut = clamp(cut, 0, 1);
     this.target.line = this.target.cut;
     this.target.edge = 1;
-    this.setPhase(this.target.tilt !== 0 ? 'tilted' : 'blade');
+    // 翻面 / 播放态下刀锋只动时间，不改相位（否则台本高亮停更、F 收不回）
+    if (this.phase !== 'flipped' && this.phase !== 'pulled') this.setPhase(this.target.tilt !== 0 ? 'tilted' : 'blade');
     clearTimeout(this.bladeTimer);
     this.bladeTimer = window.setTimeout(() => { this.target.edge = 0; this.requestFrame(); }, 800);
     this.requestFrame();
@@ -352,7 +358,7 @@ export class Vault {
 
   private tilt(t: number): void {
     this.target.tilt = clamp(t, -0.9, 0.9);
-    this.setPhase(this.target.tilt !== 0 ? 'tilted' : 'blade');
+    if (this.phase !== 'flipped' && this.phase !== 'pulled') this.setPhase(this.target.tilt !== 0 ? 'tilted' : 'blade');
     this.requestFrame();
   }
 
