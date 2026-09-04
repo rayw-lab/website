@@ -1306,9 +1306,9 @@
   },
   "script_pack": null,
   "video": {
-    "src": "/website/video/frame-vault/ep3.mp4",
+    "src": "https://github.com/rayw-lab/website/releases/download/frame-vault-media-v1/ep3.mp4",
     "sha256": "4481eef24c23dbd8eca82348df913ff63205705f97d3f39a06b790d84306568f",
     "bytes": 7280536
   },
-  "built_at": "2026-09-04T16:19:09.538Z"
+  "built_at": "2026-09-04T16:33:13.259Z"
 }

@@ -87,7 +87,13 @@ export class Vault {
     this.buildRings(m);
     this.buildScript(m);
     const video = this.video();
-    if (video) { video.pause(); video.removeAttribute('src'); video.load(); }
+    if (video) {
+      video.pause();
+      // 视频在 GitHub Release（跨域、本机实测 <120 KB/s）：装集即拉元数据（moov 在头部，faststart），
+      // 第一次刮时再整段预载（见 blade()），双击抽帧时不至于等十几秒
+      video.preload = 'metadata';
+      video.src = m.video.src;
+    }
     this.host.querySelectorAll<HTMLElement>('[data-vault-slot]').forEach((s) => s.setAttribute('aria-pressed', s.dataset.manifest === manifestUrl ? 'true' : 'false'));
     return true;
   }
@@ -241,6 +247,7 @@ export class Vault {
     const video = this.video();
     if (!video || !this.manifest.video?.src || this.phase === 'pulled' || this.phase === 'loading') return;
     if (!video.src) video.src = this.manifest.video.src;
+    video.preload = 'auto';
     this.setPhase('pulled');
     const t = this.view.cut * this.manifest.duration_s;
     try {
@@ -346,6 +353,8 @@ export class Vault {
   }
 
   private blade(cut: number): void {
+    const v = this.video();
+    if (v && v.preload !== 'auto') v.preload = 'auto';   // 开始刮 = 大概率会抽帧，整段预载
     this.target.cut = clamp(cut, 0, 1);
     this.target.line = this.target.cut;
     this.target.edge = 1;

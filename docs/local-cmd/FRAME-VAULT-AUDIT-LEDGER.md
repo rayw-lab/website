@@ -166,3 +166,13 @@
 - 合流前 e2e：桌面 project 48/48（帧库 6 + 二楼 25 + 一楼 16 + 1）`[实测]`；world project 在跑。
 - R7-2 翻面真机：227 句板子浮出，当前句高亮且在可见区（`visible:true`），点第 41 句 → cut .210 高亮 40，F 收回 → idle。修了两处：`blade()/tilt()` 在 flipped/pulled 态不改相位；滚动改容器 `scrollTop`（`scrollIntoView` 会带走整页）。
 - R7-3 合流前 e2e 全组 `[实测 blucrfvt0]`：desktop 48/48（1.9 min）+ world 14/14（14.1 min，回城 5 + 二楼转场 + 到达）= **62/62**。
+
+## R8 · 合流第一轮 CI 红：public/ 40 MB 宪法门（2026-09-05）
+
+- PR #239 首跑：`audit-budget.mjs` G-E「public/ 总量 ≤ 40 MB（SRD §12.6）」实测 71.1 MB FAIL（视频 45 MB + 帧体 23 MB + 基线）。其余（astro check 0 错、G-Hall、links）绿。
+- 分诊：门对代码错还是代码对门错——门是站点宪法，不为本楼改数（白名单结案 = 覆盖面单调收缩）。处置：
+  1. 四支 mp4 挪 GitHub Release `frame-vault-media-v1`（磊哥授权「GitHub 公开托管」仍成立）；资产 `accept-ranges: bytes`、`content-disposition: attachment`，`<video>` 跨域可播、seek 可用、`<a download>` 可下 `[实测 curl -I + 真机 Enter 起播 ct 129.5→129.61 readyState 4]`。
+  2. EP2 帧体 4 → 3 fps（1276 片 / 5 图集 7.4 MB），`--fps EP2=3`；public/ 实测 **24.9 MB / 40 MB** PASS。
+  3. 门：`frame-vault-gate` 视频外链只认 Release 白名单前缀；e2e 降级链接断言同步。
+- 代价 `[实测]`：Release 资产本机下载 <120 KB/s，跨域起播等 13.7 s（buffered 先拉 0–21 s）。客户端缓解：装集即 `preload=metadata`，第一次刮时 `preload=auto`。**NEEDS_LEIGE**：视频回 Pages 需上调 SRD §12.6（40 → ≥100 MB）；或改 OSS/R2 直链（manifest `--video-base` 一处切换）。⭐ 建议后者。
+- 帧库 e2e 6/6 复跑绿。

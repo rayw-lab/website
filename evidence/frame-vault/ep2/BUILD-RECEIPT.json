@@ -1,62 +1,52 @@
 {
   "ep": "EP2",
   "input_sha256": "1034fc9378aeb1bdb1748fd88c24b4e16805dff3e4667adb31c7fa68230d004e",
-  "fps": 4,
-  "n": 1701,
-  "atlas_count": 7,
+  "fps": 3,
+  "n": 1276,
+  "atlas_count": 5,
   "products": [
     {
       "name": "atlas-0.webp",
-      "bytes": 1795170,
-      "sha256": "6b11599d5fef6d3e2d155efe934b11b250783128a7bc6e17fbc8e5336e105d51"
+      "bytes": 2100218,
+      "sha256": "700930a71bf10de6c2c74d76ab86d217b6a8ac023cc4fab154fca6f0341c0688"
     },
     {
       "name": "atlas-1.webp",
-      "bytes": 1549852,
-      "sha256": "6fcec9ceef5ffc9a3bae49741aaa76cf12339775c400d02fad863418b6495c33"
+      "bytes": 1122006,
+      "sha256": "d0d28055acc6e385e5d46605d9fd551051f602bd3a71c5824bacaf356a5d77a5"
     },
     {
       "name": "atlas-2.webp",
-      "bytes": 1210726,
-      "sha256": "c645bda6c697c03e749131a0d83a50c797769bf5937d1da3559b2add4c69b29b"
+      "bytes": 2065744,
+      "sha256": "ed5835425bc9e9913c3338db206cdc5aefd6dc1c619106b5ad289f05289c6635"
     },
     {
       "name": "atlas-3.webp",
-      "bytes": 2204154,
-      "sha256": "de2e618a0342ee37ad85dab7da15eeb7c4f20e0f6e6195ac3a95533b3dd56a24"
+      "bytes": 1347726,
+      "sha256": "28f2cae9ffc708538a69b222901e978f86b54e14f1ebe0c437a50abf4a795cb4"
     },
     {
       "name": "atlas-4.webp",
-      "bytes": 1344868,
-      "sha256": "57d19dffa6c9e54e93b1d87571b50649bb153ba594da1f8ae27428c1945edd8c"
-    },
-    {
-      "name": "atlas-5.webp",
-      "bytes": 1215072,
-      "sha256": "053af686be2fcc9e0fc470dc1ea0256b14b204ba7d6b93f60cd2928c443ba2cd"
-    },
-    {
-      "name": "atlas-6.webp",
-      "bytes": 543100,
-      "sha256": "98a35c916b2cbebf8908ea3691d69b2e21302df851c9935ce87eef3594d509d3"
+      "bytes": 1112616,
+      "sha256": "32e9c93b6b6a647807b29a2cec2b08c1d08c677b85152a34b2bf087e44ec79a7"
     },
     {
       "name": "proj-xt.png",
-      "bytes": 175946,
-      "sha256": "1cbc03c8cbfaec954c200824bc031ad42ce3363d09b786beb8d88077b11d4477"
+      "bytes": 135347,
+      "sha256": "4e760133753a4a47409e8c94eed6dd695c874563707576eb34d6184198a92834"
     },
     {
       "name": "proj-yt.png",
-      "bytes": 93483,
-      "sha256": "4bcedd68b6576ee5c3063ad60d739f241ba06a33889123fc41b2b5830a8e717b"
+      "bytes": 70993,
+      "sha256": "8f6bf6c6b0ed24d74e7a56030ee3bbd9ed3bc542f1644f020baea0f50a402456"
     }
   ],
-  "atlas_bytes_total": 9862942,
+  "atlas_bytes_total": 7748310,
   "video": {
     "bytes": 24095263,
     "sha256": "91b68027b7db7a1ad4ec39b873e07b574a08234ee6b01a85f9524ae9857ed17f"
   },
   "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
   "cwebp": "1.6.0",
-  "built_at": "2026-09-04T16:18:16.080Z"
+  "built_at": "2026-09-04T16:32:47.566Z"
 }

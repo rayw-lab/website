@@ -63,8 +63,9 @@ export function gate(demoDir, dataDir, state) {
       const s = pngSize(readFileSync(p));
       if (!s || s.width !== n || s.height !== h) violations.push(`${tag} 投影 ${k} 尺寸 ${s?.width}×${s?.height} ≠ ${n}×${h}`);
     }
-    const video = join(ROOT, 'public', String(m.video?.src ?? '').replace(/^\/website/, ''));
-    if (!existsSync(video)) violations.push(`${tag} 视频缺失 ${m.video?.src}`);
+    const src = String(m.video?.src ?? '');
+    if (/^https?:\/\//.test(src)) { if (!/^https:\/\/github\.com\/rayw-lab\/website\/releases\/download\//.test(src)) violations.push(`${tag} 视频外链不在 Release 白名单：${src}`); }
+    else if (!existsSync(join(ROOT, 'public', src.replace(/^\/website/, '')))) violations.push(`${tag} 视频缺失 ${src}`);
   }
   return { checked, violations };
 }

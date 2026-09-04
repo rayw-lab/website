@@ -17,16 +17,14 @@
   "volume": {
     "w": 160,
     "h": 90,
-    "n": 1701,
-    "fps": 4,
+    "n": 1276,
+    "fps": 3,
     "atlas": [
       "atlas-0.webp",
       "atlas-1.webp",
       "atlas-2.webp",
       "atlas-3.webp",
-      "atlas-4.webp",
-      "atlas-5.webp",
-      "atlas-6.webp"
+      "atlas-4.webp"
     ],
     "proj": {
       "xt": "proj-xt.png",
@@ -1485,9 +1483,9 @@
   },
   "script_pack": null,
   "video": {
-    "src": "/website/video/frame-vault/ep2.mp4",
+    "src": "https://github.com/rayw-lab/website/releases/download/frame-vault-media-v1/ep2.mp4",
     "sha256": "91b68027b7db7a1ad4ec39b873e07b574a08234ee6b01a85f9524ae9857ed17f",
     "bytes": 24095263
   },
-  "built_at": "2026-09-04T16:18:16.080Z"
+  "built_at": "2026-09-04T16:32:47.566Z"
 }

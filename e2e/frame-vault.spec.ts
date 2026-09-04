@@ -172,9 +172,9 @@ test.describe('降级 · 无 WebGL2', () => {
     await expect(fallback).toBeVisible();
     await expect(fallback).toContainText('不支持体纹理');
     const href = await fallback.locator('a').getAttribute('href');
-    // 防：manifest 里的 video.src 是构建期算好的地址（src/data/frame-vault/ep2.json
-    // 的 video.src），必须真的落在 /website/video/frame-vault/ 下才是「直接看成片」
-    expect(href).toMatch(/^\/website\/video\/frame-vault\//);
+    // 防：manifest 里的 video.src 是构建期算好的地址。R8 起视频托管在 GitHub Release
+    //（public/ 有 40 MB 宪法上限），白名单前缀与 frame-vault-gate.mjs 同一条
+    expect(href).toMatch(/^https:\/\/github\.com\/rayw-lab\/website\/releases\/download\/frame-vault-media-v1\/ep\d\.mp4$/);
   });
 });
 

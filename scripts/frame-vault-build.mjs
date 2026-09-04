@@ -4,7 +4,7 @@
  *
  * ops 机运行（需要 ffmpeg、cwebp、raw 仓），产物入库；不进 CI。
  * 用法：
- *   node scripts/frame-vault-build.mjs --state <EPISODE-STATE.json> --video-dir <重编码 mp4 目录> [--eps EP2,EP3]
+ *   node scripts/frame-vault-build.mjs --state <EPISODE-STATE.json> --video-dir <重编码 mp4 目录> [--eps EP2,EP3] [--fps EP2=3] [--video-base <URL>]
  * 产物：
  *   public/demo/frame-vault/<ep>/{atlas-k.webp, proj-xt.png, proj-yt.png, manifest.json}
  *   src/data/frame-vault/<ep>.json（同 manifest，Astro 构建期读）
@@ -31,6 +31,11 @@ const WHISPER_MODEL = 'mlx-community/whisper-large-v3-turbo';
 const args = parseArgs(process.argv.slice(2));
 const statePath = resolve(args.state ?? '');
 const videoDir = resolve(args['video-dir'] ?? '');
+// 视频托管：磊哥授权 GitHub 公开托管；站点 public/ 有 40 MB 宪法上限（SRD §12.6，CI G-E 门），
+// 四支 mp4 45 MB 放不进 dist → 放 GitHub Release 资产（accept-ranges: bytes，seek 可用；content-disposition: attachment，下载可用）
+const VIDEO_BASE = String(args['video-base'] ?? 'https://github.com/rayw-lab/website/releases/download/frame-vault-media-v1').replace(/\/+$/, '');
+// 逐集帧率上限（`--fps EP2=3,EP4=4`）：EP2 烧字幕镜头多，4 fps 图集 9.6 MB 顶破 public/ 总量，压到 3 fps
+const FPS_MAX = Object.fromEntries(String(args.fps ?? '').split(',').filter(Boolean).map((kv) => { const [k, v] = kv.split('='); return [k.trim().toUpperCase(), Number(v)]; }));
 if (!existsSync(statePath) || !existsSync(videoDir)) usage();
 const state = JSON.parse(readFileSync(statePath, 'utf8'));
 const rawDir = dirname(statePath);
@@ -71,7 +76,7 @@ function buildEpisode(ep) {
   const video = join(videoDir, `${key}.mp4`);
   if (!existsSync(video)) throw new Error(`重编码视频缺失：${video}`);
 
-  const fps = FPS_LADDER.find((f) => Math.ceil(ep.duration_s * f) <= MAX_SLICES);
+  const fps = FPS_LADDER.find((f) => Math.ceil(ep.duration_s * f) <= MAX_SLICES && f <= (FPS_MAX[ep.ep] ?? Infinity));
   if (!fps) throw new Error('时长超出 0.5 fps 仍 >2000 片');
   const raw = execFileSync('ffmpeg', ['-v', 'error', '-i', src, '-vf', `fps=${fps},scale=${W}:${H}`, '-pix_fmt', 'rgb24', '-f', 'rawvideo', '-'], { maxBuffer: 1 << 30 });
   const n = Math.floor(raw.length / (W * H * 3));
@@ -102,7 +107,7 @@ function buildEpisode(ep) {
     rings, reviews, locks: LOCKS,
     script: cues ? { source: 'asr', model: WHISPER_MODEL, segments: cues.length, cues } : null,
     script_pack: ep.script_pack ? { narration_sha256: ep.script_pack.narration_sha256 ?? null, director_sha256: ep.script_pack.director_sha256 ?? null } : null,
-    video: { src: `/website/video/frame-vault/${key}.mp4`, sha256: videoSha, bytes: statSize(video) },
+    video: { src: `${VIDEO_BASE}/${key}.mp4`, sha256: videoSha, bytes: statSize(video) },
     built_at: new Date().toISOString(),
   };
   const text = JSON.stringify(manifest, null, 2) + '\n';
