@@ -37,6 +37,8 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
     <!-- 快门：进馆一格黑 + 光锥。只在 loading→idle 那一次播放 -->
     <div class="vault__shutter" aria-hidden="true"></div>
     <!-- 降级：无 WebGL2 时顶上（构建期海报 W5 补；先用第一张图集的首格） -->
+    <!-- 降级海报：构建期由 scripts/frame-vault-poster.mjs 截真实引擎画面（非占位图），无 WebGL2 / 无 JS 时顶上 -->
+    <img class="vault__poster" src={`${base}/posters/frame-vault-tilted.webp`} alt="帧库：一支视频切成的时间固体（斜切面）" width="780" height="680" loading="eager" />
     <p class="vault__unsupported">此浏览器不支持体纹理（WebGL2）。<a href={m.video.src}>直接看成片</a></p>
     <!-- 抽帧成片：切面抽出来变成真 <video>，从当前时刻续播；角标 = 视频文件 sha 前 8 位（manifest 绑定） -->
     <figure class="vault__pull" data-vault-pull>
@@ -163,6 +165,10 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
   .vault__pull:fullscreen figcaption { bottom: .6rem; left: 1rem; right: 1rem; }
   .vault[data-vault-state='pulled'] .vault__pull { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
   .vault[data-vault-state='pulled'] .vault__canvas { opacity: .32; transition: opacity .4s; }
+  /* 海报只在无 JS（section 仍是 loading 且永不改）或 unsupported 时露出；引擎起来后藏 */
+  .vault__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; display: none; }
+  .vault[data-vault-state='unsupported'] .vault__poster { display: block; }
+  .vault[data-vault-state='unsupported'] .vault__unsupported { bottom: 1rem; top: auto; }
   .vault__unsupported { display: none; position: absolute; inset: 0; margin: 0; place-content: center; text-align: center; color: var(--paper); }
   .vault[data-vault-state='unsupported'] .vault__unsupported { display: grid; }
   .vault[data-vault-state='unsupported'] .vault__canvas,
