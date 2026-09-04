@@ -266,6 +266,38 @@ test.describe('接线 · /world/agent-nexus/', () => {
     expect(await page.evaluate(() => document.documentElement.className)).not.toMatch(/nx-transit/);
   });
 
+  // 🔴 A 楼出来进 B 楼：sessionStorage 里可能还留着 A 的到达卡（新卡写入失败时——
+  // 隐私模式 / 配额满）。旧实现 poi 不匹配就整条 return，楼名、探索、「返回科技城」
+  // 一起消失，用户失去回城入口。判据：query 合法即显示身份条，只丢驾驶短句。
+  test('🔴 跨楼快照 2×2：残留 A 卡进 B 厅仍显示身份条（只丢驾驶短句）；匹配卡则短句在', async ({ page }) => {
+    // 负控：注入 about 的旧卡，打开 nexus 厅
+    await page.addInitScript(() => {
+      sessionStorage.setItem(
+        'world-arrival-v1',
+        JSON.stringify({ v: 1, poi: 'about-pavilion', sessionId: 'e2e-stale', t: 1000, maxKmh: 88 }),
+      );
+    });
+    await page.goto(u(`${HALL}?from=city&poi=agent-nexus`));
+    const strip = page.locator('[data-hall-chrome]');
+    await expect(strip, '身份条必须仍然可见').toBeVisible();
+    await expect(strip).toContainText('主智能体中枢');
+    await expect(strip.locator('.hall-chrome-back'), '回城入口不许随旧卡一起消失').toBeVisible();
+    await expect(page.locator('[data-hall-drive]'), '别人楼的驾驶短句不该显示').toBeHidden();
+    // 陈旧卡应被清掉，不再污染下一栋
+    expect(await page.evaluate(() => sessionStorage.getItem('world-arrival-v1'))).toBeNull();
+
+    // 正控：本楼自己的卡 → 身份条 + 驾驶短句都在
+    await page.addInitScript(() => {
+      sessionStorage.setItem(
+        'world-arrival-v1',
+        JSON.stringify({ v: 1, poi: 'agent-nexus', sessionId: 'e2e-own', t: 1000, maxKmh: 66 }),
+      );
+    });
+    await page.goto(u(`${HALL}?from=city&poi=agent-nexus&own=1`));
+    await expect(page.locator('[data-hall-chrome]')).toBeVisible();
+    await expect(page.locator('[data-hall-drive]')).toHaveText('最高巡航 66 km/h');
+  });
+
   test('从城里进楼：到达条认出「主智能体中枢」', async ({ page }) => {
     await page.goto(u(`${HALL}?from=city&poi=agent-nexus`));
     const chrome = page.locator('[data-hall-chrome]');

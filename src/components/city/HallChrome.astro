@@ -60,8 +60,17 @@ const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
         if (raw) {
           var parsed = JSON.parse(raw);
           if (parsed && typeof parsed === 'object') {
-            if (parsed.poi && parsed.poi !== poi) return;
-            snap = parsed;
+            if (parsed.poi && parsed.poi !== poi) {
+              // 🔴 旧卡属于上一栋楼：只丢掉驾驶短句，**不藏整条到达条**。
+              // 原来这里 `return`，会把楼名 + 探索计数 + 「返回科技城」一起藏掉——
+              // 从 A 楼出来再进 B 楼时，只要新快照没写成（隐私模式 / 配额满），
+              // 用户就失去了回城入口。实测对照：注入 A 卡进 B 厅 → hidden:true；
+              // 清掉 A 卡同 URL → hidden:false（grok 动线审计 P1-4，R37-3 坐实）。
+              // 合法 query 即应显示身份条；顺手清陈旧卡，免得继续污染下一栋。
+              try { sessionStorage.removeItem('world-arrival-v1'); } catch (e3) { /* 清不掉不影响本次显示 */ }
+            } else {
+              snap = parsed;
+            }
           }
         }
       } catch (e) {
