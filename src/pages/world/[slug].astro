@@ -18,6 +18,7 @@ import Seal from '../../components/city/halls/nexus/Seal.astro';
 import Trial from '../../components/city/halls/nexus/Trial.astro';
 import Scroll from '../../components/city/halls/nexus/Scroll.astro';
 import NexusEpilogue from '../../components/city/halls/nexus/Epilogue.astro';
+import Vault from '../../components/city/halls/vault/Vault.astro';
 import ledger from '../../data/nexus-ledger.json';
 import hallsDoc from '../../data/world-halls.json';
 import cityMap from '../../data/cyber-city-buildings.json';
@@ -87,6 +88,7 @@ const jsonLd = breadcrumbJsonLd([
       <Epilogue />
     </>
   )}
+  {hall.slug === 'frame-vault' && <Vault />}
   {hall.slug === 'agent-nexus' && (
     <>
       <Yin />

@@ -1,0 +1,148 @@
+---
+/**
+ * 帧库 · S0 门厅 + S1 帧库（一块可切开的视频固体）
+ *
+ * 首屏三件事（草案 §1.1）：悬浮的深色长方体、时码行（全部从 manifest 渲染）、
+ * 时间标尺上的门环（真实人审退回）。快门进馆用 data-vault-state 驱动 CSS，
+ * reduced-motion 直达终态。片架 1–8 切集在 W3 接；本组件先立一集。
+ */
+import type { VaultManifest } from './Vault';
+
+interface Props {
+  /** 默认展示的集（manifest 文件名，不含扩展名），缺省取第一个 F 锁集 */
+  ep?: string;
+}
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const files = import.meta.glob<{ default: VaultManifest }>('../../../../data/frame-vault/*.json', { eager: true });
+const manifests = Object.entries(files)
+  .map(([path, mod]) => ({ key: path.replace(/^.*\/(.+)\.json$/, '$1'), m: mod.default }))
+  .sort((a, b) => a.key.localeCompare(b.key));
+if (manifests.length === 0) throw new Error('帧库：src/data/frame-vault/ 下没有任何 manifest（先跑 scripts/frame-vault-build.mjs）');
+const wanted = Astro.props.ep ?? (manifests.find((x) => x.m.stage === 'F') ?? manifests[0]).key;
+const cur = manifests.find((x) => x.key === wanted);
+if (!cur) throw new Error(`帧库：manifest「${wanted}」不存在`);
+const m = cur.m;
+const manifestUrl = `${base}/demo/frame-vault/${cur.key}/manifest.json`;
+const rings = m.rings.filter((r) => r.status === 'LOCATABLE' && r.time_s <= m.duration_s);
+const mmss = (t: number): string => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+const stageName: Record<string, string> = { D: '开发', S: '台本锁', A: '样片锁', P: '画面锁', M: '声音锁', F: '定稿' };
+---
+
+<section class="vault" data-vault data-vault-state="loading" data-vault-ep={m.ep} tabindex="0" aria-label={`帧库 · ${m.ep} ${m.title}`}>
+  <div class="vault__stage">
+    <canvas class="vault__canvas" data-vault-canvas aria-hidden="true"></canvas>
+    <!-- 快门：进馆一格黑 + 光锥。只在 loading→idle 那一次播放 -->
+    <div class="vault__shutter" aria-hidden="true"></div>
+    <!-- 降级：无 WebGL2 时顶上（构建期海报 W5 补；先用第一张图集的首格） -->
+    <p class="vault__unsupported">此浏览器不支持体纹理（WebGL2）。<a href={m.video.src}>直接看成片</a></p>
+  </div>
+
+  <header class="vault__id" aria-live="polite">
+    <span class="vault__ep">{m.ep}</span>
+    <span class="vault__title">{m.title}</span>
+    <span class="vault__lock" data-stage={m.stage}>{stageName[m.stage] ?? m.stage}{m.label ? ` · ${m.label}` : ''}{m.stage !== 'F' ? ' · 工作剪' : ''}</span>
+    <span class="vault__mono">{m.duration_s.toFixed(2)} s · {m.volume.n} slices @ {m.volume.fps} fps · sha {m.sha256.slice(0, 8)}</span>
+  </header>
+
+  <div class="vault__hud">
+    <span class="vault__mono vault__tc" data-vault-tc>00:00.000</span>
+    <span class="vault__mono" data-vault-frame>f0</span>
+    <span class="vault__mono" data-vault-tilt>正切</span>
+    <span class="vault__hint">拖动 旋转 · 滚轮 刮时 · ←→ 逐帧 · ⌥←→ 斜切 · 0 归正</span>
+    <button class="vault__btn" type="button" data-vault-poster>留影</button>
+  </div>
+
+  <!-- 时间标尺：位置 = t/duration；门环 = 真实人审退回（fixtures/human-rejects.jsonl） -->
+  <div class="vault__ruler" role="group" aria-label="时间标尺">
+    <i class="vault__needle" aria-hidden="true"></i>
+    {rings.map((r) => (
+      <button
+        class="vault__ring"
+        type="button"
+        data-vault-ring
+        data-t={(r.time_s / m.duration_s).toFixed(4)}
+        style={`--x:${((r.time_s / m.duration_s) * 100).toFixed(2)}%`}
+        title={`${mmss(r.time_s)} · ${r.defect_class} · ${r.quote}${r.fixed_in ? ` · 修于 ${r.fixed_in}` : ''}`}
+        aria-label={`人审退回 ${r.id}：${mmss(r.time_s)} ${r.quote}`}
+      ></button>
+    ))}
+    <span class="vault__mono vault__ruler-l">0:00</span>
+    <span class="vault__mono vault__ruler-r">{mmss(m.duration_s)}</span>
+  </div>
+</section>
+
+<script>
+  import { Vault } from './Vault';
+  const host = document.querySelector<HTMLElement>('[data-vault]');
+  if (host) {
+    const url = host.dataset.manifest!;
+    const base = host.dataset.base ?? '';
+    void new Vault(host).mount(url, base);
+  }
+</script>
+<script is:inline define:vars={{ manifestUrl, base }}>
+  // 把构建期算好的地址挂到宿主上（module script 里拿不到 define:vars）
+  const h = document.querySelector('[data-vault]');
+  if (h) { h.dataset.manifest = manifestUrl; h.dataset.base = base; }
+</script>
+
+<style>
+  .vault {
+    --bg: #05070d; --paper: #ece9e1; --gold: #ffd278; --metal: #9aa3ad; --ink: #1c1f26;
+    position: relative; min-height: 100svh; background: var(--bg); color: #cfd3dc;
+    display: grid; grid-template-rows: 1fr auto auto; outline: none;
+  }
+  .vault__stage { position: relative; min-height: 70svh; }
+  .vault__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  .vault__canvas:active { cursor: grabbing; }
+
+  /* 快门：loading 时全黑；idle 那一刻一格白闪 → 光锥打开 */
+  .vault__shutter { position: absolute; inset: 0; background: #000; pointer-events: none; }
+  .vault[data-vault-state='idle'] .vault__shutter,
+  .vault[data-vault-state='blade'] .vault__shutter,
+  .vault[data-vault-state='tilted'] .vault__shutter,
+  .vault[data-vault-state='poster'] .vault__shutter { animation: vault-shutter 900ms cubic-bezier(.2,.7,.2,1) forwards; }
+  @keyframes vault-shutter {
+    0%   { opacity: 1; background: #000; }
+    6%   { opacity: 1; background: #fff; }
+    9%   { opacity: 1; background: #000; }
+    100% { opacity: 0; background: #000; }
+  }
+  .vault__unsupported { display: none; position: absolute; inset: 0; margin: 0; place-content: center; text-align: center; color: var(--paper); }
+  .vault[data-vault-state='unsupported'] .vault__unsupported { display: grid; }
+  .vault[data-vault-state='unsupported'] .vault__canvas,
+  .vault[data-vault-state='unsupported'] .vault__shutter { display: none; }
+
+  .vault__id { position: absolute; left: clamp(1rem, 3vw, 2.5rem); bottom: calc(16svh + 3.2rem); display: grid; gap: .25rem; pointer-events: none; }
+  .vault__ep { font: 600 clamp(1.4rem, 3vw, 2.4rem)/1 "Songti SC", "Source Han Serif SC", serif; color: var(--paper); letter-spacing: .04em; }
+  .vault__title { font-size: clamp(.95rem, 1.4vw, 1.15rem); color: var(--paper); opacity: .85; }
+  .vault__lock { font-size: .8rem; letter-spacing: .12em; color: var(--metal); }
+  .vault__lock[data-stage='F'] { color: var(--gold); }
+  .vault__mono { font: 12px/1.5 ui-monospace, "SF Mono", Menlo, monospace; color: var(--metal); letter-spacing: .04em; }
+
+  .vault__hud { display: flex; align-items: center; gap: 1.4rem; padding: .8rem clamp(1rem, 3vw, 2.5rem); border-top: 1px solid #ffffff12; }
+  .vault__tc { color: var(--paper); font-size: 15px; }
+  .vault__hint { font-size: .78rem; color: var(--metal); opacity: .7; margin-left: auto; }
+  .vault__btn { background: none; border: 1px solid var(--metal); color: var(--paper); padding: .35rem .9rem; border-radius: 999px; font-size: .8rem; letter-spacing: .1em; cursor: pointer; opacity: .55; transition: opacity .3s, border-color .3s; }
+  .vault[data-vault-tilted='1'] .vault__btn { opacity: 1; border-color: var(--gold); color: var(--gold); }
+
+  .vault__ruler { position: relative; height: 3rem; margin: 0 clamp(1rem, 3vw, 2.5rem) 1.2rem; }
+  .vault__ruler::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: linear-gradient(90deg, #ffffff30, #ffffff60, #ffffff30); }
+  .vault__needle { position: absolute; top: calc(50% - 9px); left: calc(var(--vault-t, 0) * 100%); width: 1px; height: 18px; background: var(--paper); box-shadow: 0 0 6px var(--gold); }
+  .vault__ring {
+    position: absolute; left: var(--x); top: 50%; width: 14px; height: 14px; transform: translate(-50%, -50%);
+    border-radius: 50%; border: 2px solid var(--metal); background: var(--bg); padding: 0; cursor: pointer;
+    box-shadow: inset 0 0 0 2px var(--bg), 0 0 0 1px #00000080; transition: border-color .2s, transform .2s;
+  }
+  .vault__ring:hover, .vault__ring:focus-visible { border-color: #e0483a; transform: translate(-50%, -50%) scale(1.35); outline: none; }
+  .vault__ruler-l, .vault__ruler-r { position: absolute; top: calc(50% + 10px); }
+  .vault__ruler-r { right: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vault[data-vault-state] .vault__shutter { animation: none; opacity: 0; }
+  }
+  @media (max-width: 768px) {
+    .vault__hint, .vault__btn { display: none; }
+    .vault__id { bottom: auto; top: 1rem; }
+  }
+</style>

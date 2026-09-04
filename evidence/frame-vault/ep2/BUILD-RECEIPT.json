@@ -1,0 +1,62 @@
+{
+  "ep": "EP2",
+  "input_sha256": "1034fc9378aeb1bdb1748fd88c24b4e16805dff3e4667adb31c7fa68230d004e",
+  "fps": 4,
+  "n": 1701,
+  "atlas_count": 7,
+  "products": [
+    {
+      "name": "atlas-0.webp",
+      "bytes": 1795170,
+      "sha256": "6b11599d5fef6d3e2d155efe934b11b250783128a7bc6e17fbc8e5336e105d51"
+    },
+    {
+      "name": "atlas-1.webp",
+      "bytes": 1549852,
+      "sha256": "6fcec9ceef5ffc9a3bae49741aaa76cf12339775c400d02fad863418b6495c33"
+    },
+    {
+      "name": "atlas-2.webp",
+      "bytes": 1210726,
+      "sha256": "c645bda6c697c03e749131a0d83a50c797769bf5937d1da3559b2add4c69b29b"
+    },
+    {
+      "name": "atlas-3.webp",
+      "bytes": 2204154,
+      "sha256": "de2e618a0342ee37ad85dab7da15eeb7c4f20e0f6e6195ac3a95533b3dd56a24"
+    },
+    {
+      "name": "atlas-4.webp",
+      "bytes": 1344868,
+      "sha256": "57d19dffa6c9e54e93b1d87571b50649bb153ba594da1f8ae27428c1945edd8c"
+    },
+    {
+      "name": "atlas-5.webp",
+      "bytes": 1215072,
+      "sha256": "053af686be2fcc9e0fc470dc1ea0256b14b204ba7d6b93f60cd2928c443ba2cd"
+    },
+    {
+      "name": "atlas-6.webp",
+      "bytes": 543100,
+      "sha256": "98a35c916b2cbebf8908ea3691d69b2e21302df851c9935ce87eef3594d509d3"
+    },
+    {
+      "name": "proj-xt.png",
+      "bytes": 175946,
+      "sha256": "1cbc03c8cbfaec954c200824bc031ad42ce3363d09b786beb8d88077b11d4477"
+    },
+    {
+      "name": "proj-yt.png",
+      "bytes": 93483,
+      "sha256": "4bcedd68b6576ee5c3063ad60d739f241ba06a33889123fc41b2b5830a8e717b"
+    }
+  ],
+  "atlas_bytes_total": 9862942,
+  "video": {
+    "bytes": 24095263,
+    "sha256": "91b68027b7db7a1ad4ec39b873e07b574a08234ee6b01a85f9524ae9857ed17f"
+  },
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "cwebp": "1.6.0",
+  "built_at": "2026-09-04T15:04:24.246Z"
+}

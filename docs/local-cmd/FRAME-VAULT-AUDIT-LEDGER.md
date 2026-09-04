@@ -57,3 +57,27 @@
 ### R1-3 合流序
 - about-hall 已由 PR #234 合入 main（2026-09-03T21:08Z）；nexus 分支领先 origin/main 83 个 commit、落后 0，`git merge-tree` 干净（tree `7ceddf79`）。
 - 合流前跑聚合门（`~/.codex/state/nexus-hall/w21-gate.sh`：astro build + nexus-ledger-gate + nexus-hall-gate + about-hall-gate + check-links），绿后 push 分支 + PR + merge；hall 3 worktree 从合流后的 main 开。
+
+## R2 · 合流落地 + W22 图集编码收稿 + W1 开工（2026-09-04 深夜）
+
+### R2-1 一二楼合流
+- PR #238（`codex/nexus-hall-20260903` → main）：首次 CI 红 = `astro check` 抓到 `e2e/nexus-hall.spec.ts` 采样数组类型缺 `headInk/domInk`（本机该门跑不动，第二楼 D 维「type gate UNVERIFIED」的账在这里兑现）；修 `0f1cdd0` 后 CI 绿（5m52s），`--merge` 合入。
+- hall 3 分支 `codex/frame-vault-20260904` 自 `0f1cdd0` 开（与合流后 main 同内容），worktree `~/studio-data-root/worktrees/website-frame-vault`。
+
+### R2-2 W22 agy「图集编码」收稿（flash，产物 18 KB，`~/studio-data-root/hall3-spike/atlas-test/benchmark_summary.json` 亲核）
+- 全矩阵实测（EP3 1943 帧 → 8 张 2560×1440 图集）：**WebP 无损 `-z 9` 总 997,672 B（0.95 MB）**，默认无损 1,231,796 B，PNG 2,270,392 B，有损 q75/85/95 = 1.61/2.23/3.71 MB，AVIF 无损 7.5 MB。`[实测，summary.json 键 webp_lossless / png_baseline 数值逐一对上]`。
+- 结论：纸色 + 锐利文字的内容，无损反而比有损小（有损的振铃噪声毁掉平坦背景的游程压缩）。**采纳 `cwebp -lossless -z 9`**；解码 8 张 26 ms `[agy 报，未亲核]`。
+- 其「2D 纹理 + FBO + copyTexSubImage3D」上传路径**不采纳**：引擎已用 CPU 重排 + 一次 `texSubImage3D`（每图集），更少状态切换；两者耗时都在几十 ms 量级，不值再加 FBO。
+- 草案 §5.2 第 3 步改：图集编码 = WebP 无损 `-z 9`；§5.3 体积门定值：**每集图集合计 ≤ 2.5 MB**（EP3 0.95 MB 的 2.6 倍余量给暗场多的集）。
+
+### R2-3 W1 开工（执行方）
+- 已写：`halls/vault/volume/{shaders,VolumeEngine}.ts`（264 行，tsc 通过）、`halls/vault/{Vault.ts,Vault.astro}`；登记 `world-halls.json`（`frame-vault`/`volume`）、`workflow-foundry` 改名「帧库 · 视频闭环车间」+ `hallPath` + `arrivalFx: film`、`hall-copy.ts`、`[slug].astro` 分支。
+- manifest 落点改为 `src/data/frame-vault/<ep>.json`（Astro 构建期 `import.meta.glob` 读，与 nexus-ledger 同法），图集/投影/视频在 `public/demo/frame-vault/<ep>/` 与 `public/video/frame-vault/`。
+- 视频四集重编码（libx264 crf27 maxrate 550k 720p）：EP2 24.1 MB / EP3 7.3 MB / EP4 8.7 MB / EP5 6.2 MB `[实测 W21-video.log]`，全部 ≤25 MB。
+
+### R2-4 管线首跑 + 体积门改口径 + 首屏真机目击
+- `scripts/frame-vault-build.mjs` 四集全通 `[实测]`：EP2 4 fps 1701 片 7 图集 9,632 KB；EP3 6 fps 1943 片 974 KB；EP4 1979 片 2,697 KB（21 环 / 26 人审）；EP5 1840 片 768 KB。EP3 与 W22 agy 的 974.3 KB 逐字节同量级（同参数 `cwebp -lossless -z 9`）。
+- 体积门 2.5 MB 被 EP2 顶破（烧字幕 + 案例镜头多，帧间熵高）。分诊：门对代码错还是代码对门错——是**口径**（预算从单一低熵集外推）。改 10 MB/集，理由：桌面受众、只加载当前集、EP2 9.6 MB 在 50 Mbps 下 1.6 s。记为 ADR-FV-2 关闭（图集编码 = WebP 无损 z9，预算 10 MB）。
+- 门 `frame-vault-gate.mjs`：正控 checked=4 violations=0；`--selftest` 三负控（环越界 / 本地路径 / 图集张数）全部命中且报对集名 `[实测 rc=0]`。
+- glm W23（管线脚本初稿）**空稿**：`api-direct: empty content with non-empty reasoning_content`（flash 推理吃光预算）。未重试，执行方直接写；记通道认知：glm-5-3-flash 写 ≥300 行代码单不可靠，改用 hermes-code 或 sonnet 直跑。
+- 首屏真机（Apple M5，`.tmp/vault-look.mjs`）：EP2 装载 540–739 ms 到 idle；四处修：`vault__stage` 容器与锁状态 span 撞类名（标题块被挤没，第二楼 LESSONS 第 1 条再犯）、EP2 无 `frames` 时帧号恒 f0（改为切片号 `s####` 前缀区分）、滚轮灵敏度、侧面投影无 mipmap 出摩尔纹（开 `LINEAR_MIPMAP_LINEAR` 后读作叠纸金边）。截图 `~/.codex/state/nexus-hall/shots/vault/0{1,3,4}-*.png`。

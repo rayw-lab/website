@@ -1,0 +1,71 @@
+{
+  "ep": "EP2",
+  "title": "复杂任务编排（r30f）",
+  "stage": "F",
+  "label": null,
+  "gates": {
+    "L0": "PASS",
+    "L1": "PASS",
+    "L2": "OBSERVED",
+    "L3": "HUMAN_PASS"
+  },
+  "sha256": "1034fc9378aeb1bdb1748fd88c24b4e16805dff3e4667adb31c7fa68230d004e",
+  "bytes": 80015225,
+  "duration_s": 425.299674,
+  "frames": null,
+  "fps_src": null,
+  "volume": {
+    "w": 160,
+    "h": 90,
+    "n": 1701,
+    "fps": 4,
+    "atlas": [
+      "atlas-0.webp",
+      "atlas-1.webp",
+      "atlas-2.webp",
+      "atlas-3.webp",
+      "atlas-4.webp",
+      "atlas-5.webp",
+      "atlas-6.webp"
+    ],
+    "proj": {
+      "xt": "proj-xt.png",
+      "yt": "proj-yt.png"
+    }
+  },
+  "rings": [],
+  "reviews": [],
+  "locks": [
+    {
+      "letter": "D",
+      "name": "开发"
+    },
+    {
+      "letter": "S",
+      "name": "台本锁"
+    },
+    {
+      "letter": "A",
+      "name": "样片锁"
+    },
+    {
+      "letter": "P",
+      "name": "画面锁"
+    },
+    {
+      "letter": "M",
+      "name": "声音锁"
+    },
+    {
+      "letter": "F",
+      "name": "定稿"
+    }
+  ],
+  "script_pack": null,
+  "video": {
+    "src": "/website/video/frame-vault/ep2.mp4",
+    "sha256": "91b68027b7db7a1ad4ec39b873e07b574a08234ee6b01a85f9524ae9857ed17f",
+    "bytes": 24095263
+  },
+  "built_at": "2026-09-04T15:04:24.246Z"
+}

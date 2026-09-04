@@ -1,0 +1,83 @@
+{
+  "ep": "EP5",
+  "title": "能力包加载（LoRA）",
+  "stage": "P",
+  "label": "v1.9",
+  "gates": {
+    "L0": "PASS",
+    "L1": "PASS",
+    "L2": "OBSERVED",
+    "L3": "HUMAN_UNKNOWN"
+  },
+  "sha256": "43367beda79a66afe10cb00d4bd1c07e2ae884706027a1f5a2d1d919bf99eec9",
+  "bytes": 11939534,
+  "duration_s": 306.666667,
+  "frames": 9200,
+  "fps_src": 29.999999967391304,
+  "volume": {
+    "w": 160,
+    "h": 90,
+    "n": 1840,
+    "fps": 6,
+    "atlas": [
+      "atlas-0.webp",
+      "atlas-1.webp",
+      "atlas-2.webp",
+      "atlas-3.webp",
+      "atlas-4.webp",
+      "atlas-5.webp",
+      "atlas-6.webp",
+      "atlas-7.webp"
+    ],
+    "proj": {
+      "xt": "proj-xt.png",
+      "yt": "proj-yt.png"
+    }
+  },
+  "rings": [
+    {
+      "id": "FX-030",
+      "time_s": 138.37,
+      "frame": 4151,
+      "defect_class": "board_restart_from_near_blank",
+      "quote": "4151帧看到后续旧章节仍从近空板重新开始（主控核片）",
+      "fixed_in": "v2.1",
+      "status": "LOCATABLE",
+      "region": "full"
+    }
+  ],
+  "reviews": [],
+  "locks": [
+    {
+      "letter": "D",
+      "name": "开发"
+    },
+    {
+      "letter": "S",
+      "name": "台本锁"
+    },
+    {
+      "letter": "A",
+      "name": "样片锁"
+    },
+    {
+      "letter": "P",
+      "name": "画面锁"
+    },
+    {
+      "letter": "M",
+      "name": "声音锁"
+    },
+    {
+      "letter": "F",
+      "name": "定稿"
+    }
+  ],
+  "script_pack": null,
+  "video": {
+    "src": "/website/video/frame-vault/ep5.mp4",
+    "sha256": "3282d63fab59dba7f7d2d51936d14a87b33c476bb40f48c6d9a7e5dd441dce7c",
+    "bytes": 6230526
+  },
+  "built_at": "2026-09-04T15:05:45.887Z"
+}

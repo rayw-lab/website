@@ -129,7 +129,7 @@ reduced-motion：所有转移无 tween，直接终态；exploded 用静态排版
 
 # 5. 数据绑定（C 维：无绑定 = FAIL）
 
-## 5.1 `public/demo/frame-vault/<ep>/manifest.json`（构建期产物，每集一份）
+## 5.1 `src/data/frame-vault/<ep>.json`（构建期产物，每集一份；同一份复制到 `public/demo/frame-vault/<ep>/manifest.json` 供运行时 fetch）
 | 字段 | 来源（一手） | 消费点 |
 |---|---|---|
 | `ep`, `title`, `stage`, `gates{L0..L3}`, `current_label` | raw `EPISODE-STATE.json.episodes[]` | 首屏时码行、线框/实心、爆炸层灯 |
@@ -145,13 +145,13 @@ reduced-motion：所有转移无 tween，直接终态；exploded 用静态排版
 ## 5.2 构建期管线 `scripts/frame-vault-build.mjs`（ops 机运行，不进 CI；产物入库）
 1. 读 `EPISODE-STATE.json`，对每个 `current_sha256 != null` 的集：`shasum -a 256` 校验 mp4 与登记一致，不一致即 FAIL（**不是**警告）。
 2. 选 fps：`fps = max{6,4,3,2,1,0.5}` 使 `n = ceil(duration_s × fps) ≤ 2000`（留 48 片余量给 2048 上限；EP2 425 s → 4 fps = 1702 片）。
-3. `ffmpeg -vf fps=<fps>,scale=160:90 -pix_fmt rgb24 -f rawvideo` → 帧体；切成每 256 帧一张 `2560×1440` WebP 图集（16×16 网格），**质量与体积 `[未坐实-待验 W1]`**（spike 只测了 raw+gzip：6 fps EP3 84 MB raw / 9.3 MB gz `[实测]`）。
+3. `ffmpeg -vf fps=<fps>,scale=160:90 -pix_fmt rgb24 -f rawvideo` → 帧体；切成每 256 帧一张 `2560×1440` **WebP 无损（`cwebp -lossless -z 9`）**图集（16×16 网格）。`[实测 W22，流水 R2-2]`：EP3 全集 8 张 0.95 MB 位精确；有损 q75 反而 1.61 MB 且文字振铃，PNG 2.17 MB，AVIF 无损 7.5 MB。
 4. 逐帧差分 → `xt`/`yt` 最大值投影 → 两张 PNG（N×160、N×90，8-bit 单通道，EP3 6 fps 约 300 KB 级 `[推断]`）。
 5. 合 manifest；跑 §5.3 门；写 `evidence/frame-vault/<ep>/BUILD-RECEIPT.json`（输入 sha、fps、n、各产物 sha、ffmpeg 版本）。
 
 ## 5.3 门（构建期必跑）
 - `frame-vault-gate.mjs`：manifest 每集 sha == EPISODE-STATE sha；`rings[].time_s ≤ duration_s`；无本地路径字面量（正则 `/Users/|studio-data-root|worktrees/`）；atlas 张数 == `ceil(n/256)`；投影图尺寸 == (n, 160/90)。负控：注入一条 `time_s = duration+1` 必 rc≠0。
-- 体积门：每集 atlas 合计 ≤ `[未坐实-待验]` KB（W1 实测后定，不预写数字）；hall chunk ≤ 50 KB gzip（沿第二栋楼）。
+- 体积门：每集 atlas 合计 ≤ 2.5 MB（EP3 实测 0.95 MB 的 2.6 倍余量，R2-2）；hall chunk ≤ 50 KB gzip（沿第二栋楼）。
 
 # 6. 技术栈（⭐ 已选，不再开放）
 
@@ -208,7 +208,7 @@ reduced-motion：所有转移无 tween，直接终态；exploded 用静态排版
 
 # 10. 明确没证的
 
-- WebP 图集的体积/画质 `[未坐实-待验 W1]`；GitHub Pages 是否对 `.bin.gz` 走 `Content-Encoding` 未查（所以选 WebP 图集而不是 gzip 二进制）。
+- ~~WebP 图集的体积/画质~~ 已坐实（R2-2）；GitHub Pages 是否对 `.bin.gz` 走 `Content-Encoding` 未查（已无需要）。
 - 其它 GPU 的 `MAX_3D_TEXTURE_SIZE`（只测了 Apple M5）；Windows/ANGLE-D3D11 的 `texImage3D` 上传耗时未测。
 - 切片渲染的 GPU 余量：读数被 120 Hz vsync 封顶，需 `EXT_disjoint_timer_query_webgl2` 或关 vsync 复测。
 - `texImage3D` 16 ms 是 `gl.finish()` 后读数，Metal 下可能仍有延迟提交；W2 用 `fence sync` 复测。
