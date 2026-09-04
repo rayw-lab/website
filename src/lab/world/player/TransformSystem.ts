@@ -273,6 +273,22 @@ export class TransformSystem {
     return promise;
   }
 
+  /**
+   * [NX-W17 回城协议] 续驶：跳过机器人仪式，robot_idle → car_ready 瞬切（等价 reduced-motion
+   * 的 instant swap：hotSwap 减去落地 + finish）。机器人保持隐藏，不打 transform-start
+   * （那是首幕漏斗步③，回城不是变形）；finish 照常热切 filters intro→driving、
+   * 触发 world-transform（QuestLine deferred 激活、WorldAudio 等既有消费方零改动）。
+   * 幂等：非 robot_idle 或变形在途一律空操作。
+   */
+  resumeAsCar(): void {
+    if (this.disposed || this.ritual || this._state !== 'robot_idle') return;
+    this.game.view.setDriveViewMode('third');
+    this.robot.setVisible(false);
+    if (this.game.visualVehicle) this.game.visualVehicle.root.visible = true;
+    this.events.trigger('swap', ['car']);
+    this.finish('car');
+  }
+
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true;

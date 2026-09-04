@@ -76,6 +76,13 @@ export interface AreasOptions {
    * 视锥）。缺省 false = 挂载即激活（非 ritual 腿无状态机，FB-06 同构口径）。
    */
   deferQuestUntilCarReady?: boolean;
+  /**
+   * [NX-W17 回城协议] 深链出生朝向：'door'（缺省，朝楼门 = parkingBay.heading）|
+   * 'street'（回城续驶：车头朝街 = exitHeading ?? heading+180，「开出来」的方向感；R 键回位同向）
+   */
+  deepLinkFacing?: 'door' | 'street';
+  /** [NX-W17] true = 目标线以 ExploreProgress 持久集做种子（回城后世界记得你） */
+  seedQuestFromExplore?: boolean;
 }
 
 interface PoiRecord {
@@ -249,13 +256,14 @@ export class Areas {
           label: questConfig.label,
           stations,
           deferUntilCarReady: options.deferQuestUntilCarReady ?? false,
+          seedCompleted: options.seedQuestFromExplore ? this.explore.foundIds() : [],
         });
       }
     }
     this.quest = quest;
 
     // ———— ?poi= 深链出生（非 ritual）————
-    if (highlightPoi) this.applyDeepLink(highlightPoi, buildingById);
+    if (highlightPoi) this.applyDeepLink(highlightPoi, buildingById, options.deepLinkFacing ?? 'door');
 
     console.info(
       `[areas] CC-E9 POI 系统就位：触发圈 ${this.records.length}/${this.config.pois.length}` +
@@ -267,7 +275,7 @@ export class Areas {
   }
 
   /** 出生点改写到目标楼 parkingBay（朝向楼门，SRD §12.7.5 深链出生条款） */
-  private applyDeepLink(slug: string, buildingById: Map<string, Building>): void {
+  private applyDeepLink(slug: string, buildingById: Map<string, Building>, facing: 'door' | 'street'): void {
     const building = buildingById.get(slug);
     const registered = this.records.some((record) => record.building.id === slug);
     if (!building || !registered) {
@@ -283,12 +291,13 @@ export class Areas {
     landing.position.set(bay.x, 0, bay.z);
     // heading（0=北，顺时针）→ PlayerVehicle rotationY（forward=(cos r,0,-sin r)）：
     // 与 index.ts ritual 出生锚点同一换算式
-    landing.rotation = Math.PI / 2 - (bay.heading * Math.PI) / 180;
+    const headingDeg = facing === 'street' ? exitHeadingOf(bay) : bay.heading;
+    landing.rotation = Math.PI / 2 - (headingDeg * Math.PI) / 180;
     this.game.player.respawn();
 
     console.info(
       `[areas] ?poi=${slug} 深链出生：${building.title.zh}（${building.title.en}）` +
-        ` parkingBay (${bay.x}, ${bay.z}) heading ${bay.heading}，触发圈半径 ${bay.radius}m 已高亮`,
+        ` parkingBay (${bay.x}, ${bay.z}) heading ${headingDeg}（${facing === 'street' ? '朝街·续驶' : '朝楼门'}），触发圈半径 ${bay.radius}m 已高亮`,
     );
   }
 
@@ -299,4 +308,9 @@ export class Areas {
     this.explore.dispose();
     this.points.dispose();
   }
+}
+
+/** [NX-W17 回城协议] 续驶车头朝向（度）：JSON 显式 exitHeading 优先，缺省背对楼门 */
+export function exitHeadingOf(bay: { heading: number; exitHeading?: number }): number {
+  return bay.exitHeading ?? (bay.heading + 180) % 360;
 }

@@ -18,7 +18,10 @@ if (!building) {
 
 const poiIds = cityMap.buildings.map((b) => b.id);
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
-const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
+// [NX-W17 回城协议] from=hall = 城侧续驶（跳过机器人仪式、车头朝街、filters driving、幕布替代封面）；
+// 退场 fx 与进站同一 token（buildings JSON arrivalFx，缺席 = 'fade'）——第 3–12 楼零代码接入
+const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}&from=hall`;
+const returnFx = (building as { arrivalFx?: string }).arrivalFx ?? 'fade';
 ---
 
 <aside
@@ -27,6 +30,7 @@ const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
   data-poi={building.id}
   data-allow={poiIds.join(',')}
   data-explore-total={String(poiIds.length)}
+  data-return-fx={returnFx}
   hidden
   aria-label="从科技城到达"
 >
@@ -42,6 +46,9 @@ const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
   <span class="hall-chrome-drive" data-hall-drive hidden></span>
   <a class="hall-chrome-back" href={returnHref}>返回科技城</a>
 </aside>
+<!-- [NX-W17] 退场遮罩：点「返回科技城」→ ink 从指尖漫开吞屏（进站 bloom 同构，接城侧首帧幕布 #1c1f26）
+     / 缺省城市底色淡入 → 跳转。reduced-motion 直接跳转。bfcache 回到本页时自卸（pageshow persisted）。 -->
+<div class="hall-leave-veil" data-hall-leave-veil aria-hidden="true"></div>
 
 <script is:inline>
   (function () {
@@ -54,6 +61,11 @@ const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
       var hallPoi = root.getAttribute('data-poi') || '';
       var allow = (root.getAttribute('data-allow') || '').split(',').filter(Boolean);
       if (from !== 'city' || !poi || allow.indexOf(poi) === -1 || poi !== hallPoi) return;
+      // [NX-W17] 续驶记忆：合法从城里到达 = 已看过首幕；浏览器后退/手势返回不带 from=hall，
+      // 城侧无显式场景参数时读此键续驶（读后即清）。直接落地本厅的访客不写——首幕留给他们。
+      try {
+        sessionStorage.setItem('world-return-v1', JSON.stringify({ poi: poi, at: Date.now() }));
+      } catch (e4) { /* 无 storage = 后退走默认首幕 */ }
       var snap = null;
       try {
         var raw = sessionStorage.getItem('world-arrival-v1');
@@ -106,13 +118,92 @@ const returnHref = `${base}/?poi=${encodeURIComponent(building.id)}`;
       }
       root.hidden = false;
     }
+    // [NX-W17] 退场：主键左击且无修饰键才接管；键盘 Enter（clientX/Y=0）从链接中心漫开
+    function armExit() {
+      var root = document.querySelector('[data-hall-chrome]');
+      var link = root && root.querySelector('.hall-chrome-back');
+      if (!link) return;
+      var html = document.documentElement;
+      link.addEventListener('click', function (ev) {
+        if (ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+        if (html.classList.contains('hall-leaving')) { ev.preventDefault(); return; }
+        var reduced = false;
+        try { reduced = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e5) { /* 当作不减动 */ }
+        if (reduced) return;
+        ev.preventDefault();
+        var href = link.getAttribute('href');
+        var x = ev.clientX, y = ev.clientY;
+        if (!x && !y) { var r = link.getBoundingClientRect(); x = r.left + r.width / 2; y = r.top + r.height / 2; }
+        html.style.setProperty('--hall-leave-x', x + 'px');
+        html.style.setProperty('--hall-leave-y', y + 'px');
+        var fx = root.getAttribute('data-return-fx') || 'fade';
+        html.setAttribute('data-hall-leaving-fx', fx);
+        html.classList.add('hall-leaving');
+        window.setTimeout(function () { location.assign(href); }, fx === 'ink' ? 460 : 300);
+      });
+      window.addEventListener('pageshow', function (e6) {
+        if (e6.persisted) html.classList.remove('hall-leaving');
+      });
+    }
+    function boot() { reveal(); armExit(); }
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', reveal);
+      document.addEventListener('DOMContentLoaded', boot);
     } else {
-      reveal();
+      boot();
     }
   })();
 </script>
+
+<style is:global>
+  /* [NX-W17] 退场遮罩（global：类挂在 <html> 上，scoped 选择器够不到） */
+  /* 🔴 类名不能叫 .hall-exit：hall.css:746 已有同名（展厅出口链接块），撞名会被它的纸白底盖成全白（自看实证） */
+  .hall-leave-veil {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  html.hall-leaving .hall-leave-veil {
+    display: block;
+    pointer-events: auto;
+    background: #05070d;
+    opacity: 0;
+    animation: hall-leave-fade 300ms ease-out forwards;
+  }
+  html.hall-leaving[data-hall-leaving-fx='ink'] .hall-leave-veil {
+    background: transparent;
+    opacity: 1;
+    animation: none;
+  }
+  html.hall-leaving[data-hall-leaving-fx='ink'] .hall-leave-veil::before {
+    content: '';
+    position: absolute;
+    left: var(--hall-leave-x, 50%);
+    top: var(--hall-leave-y, 50%);
+    width: 100vmax;
+    height: 100vmax;
+    margin: -50vmax 0 0 -50vmax;
+    border-radius: 50%;
+    background:
+      radial-gradient(closest-side at 50% 50%, #1c1f26 0 56%, transparent 100%),
+      radial-gradient(closest-side at 64% 36%, #1c1f26 0 46%, transparent 100%),
+      radial-gradient(closest-side at 38% 64%, #1c1f26 0 38%, transparent 100%);
+    transform: scale(0.04);
+    animation: hall-leave-ink 460ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+  @keyframes hall-leave-ink {
+    to {
+      transform: scale(6.5);
+    }
+  }
+  @keyframes hall-leave-fade {
+    to {
+      opacity: 1;
+    }
+  }
+</style>
 
 <style>
   /* [AH-VIS-1 债5c] 三段原本只靠 gap 分隔、探索与驾驶卡同字号同色，读成一串没有

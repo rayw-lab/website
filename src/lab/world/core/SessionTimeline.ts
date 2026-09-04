@@ -67,7 +67,7 @@ type EventFamily =
  * schemaVersion 不动；破坏性（改名/删除/改语义）schemaVersion +1 且消费方同 PR 适配。
  */
 const WHITELIST: Readonly<Record<EventFamily, string>> = {
-  lifecycle: 'mount ready world-reveal robot-idle dispose',
+  lifecycle: 'mount ready world-reveal robot-idle world-resume dispose',
   ritual: 'transform-start transform-hold world-transform',
   drive: 'world-drive-start respawn cone-hit boost-first brake-first suspension-jump upside-down flip-jump',
   poi: 'poi-bounding-in poi-bounding-out world-poi deep-link',

@@ -32,6 +32,11 @@ export class ExploreProgress {
   private readonly validIds: ReadonlySet<string>;
   private readonly found = new Set<string>();
 
+  /** [NX-W17] 已到过的楼（持久集快照，合法 id）——QuestLine 回城种子消费 */
+  foundIds(): string[] {
+    return [...this.found];
+  }
+
   private root!: HTMLElement;
   private label!: HTMLElement;
   private count!: HTMLElement;

@@ -1568,3 +1568,38 @@ nexus 厅 e2e **26/26**、about 厅 e2e **16/16**（共用组件改动不回归�
 | 无 JS 海报未挂 noscript（grok P1-5） | 工程 | 未核 |
 | 白文印在真实数据里是空集（grok P1-6） | 数据 | ledger 现为 true 75 / null 5 / false 0 |
 | `generatedFrom` 缺席仍绿（grok P1-8） | 门 | 溯源字段可整段缺席 |
+
+## R39 · 回城协议（NX-W17，磊哥授权拍板 2026-09-04 20:40，Fable 5.1）
+
+### R39-1 定性
+两条待办（回城续驶 / 375 回城再拦）不是两个 bug，是同一条缺失的基础设施：**「楼 → 城」接缝**。10+ 楼 × 每楼一次往返 = 城里最高频接缝。
+裁决：建 **回城协议** 三段式，token 驱动、楼侧零代码接入。
+
+### R39-2 三路外援收稿（W17）
+- agy hub-world（`~/.codex/state/nexus-hall/out/W17-agy-hubworld.md`）：5 案例（BotW 神庙/2077 拔管/尼尔黑客空间/GTA V 卫星砸落/Bruno Simon）；⭐推荐「滑行驶出」（动量掩盖读档感）。**采纳其精神**（画面亮起时车已朝街、镜头在收拢），**不采纳自动样条驶出**（与 filters/物理输入接管耦合未验，记 residual）。
+- agy grill（`W17-agy-grill.md`）：结论「改造后采纳」。逐条：
+  - P0-1 掩护应在城侧不在楼侧 → **采纳**：城侧首帧幕布「墨退霓虹」（head 内联脚本，data-return-fx 由 buildings JSON `arrivalFx` 构建期内联）。
+  - P0-2 浏览器后退不带 from=hall → **采纳**：HallChrome 合法到达时写 `sessionStorage['world-return-v1']{poi}`；城侧无显式场景参数且有此记录 → 同走续驶。
+  - P0-3 跳仪式绕过音频解锁 → **驳回加「按任意键」门**：首个 WASD 即手势，与 ritual 路径同性质（Space/点击才是它的手势）；引擎音在 driving 起。把刚拆的门装回去不是修复。
+  - P1-4 「车头朝街=heading+180 是伪命题」→ **部分采纳**：核 12 楼 bay 几何——全部成对隔街相向（±28 四角朝路口中心、x=140 两楼夹东西街、z=±150 两对夹南北街），反向即朝街成立；同时给 `parkingBay.exitHeading?` 留显式覆盖位，数据零改动。
+  - P1-5 375 换文案不算 → **采纳且更进一步**：`from=hall` 免 `viewport` 门（本机已付过 5.5MB 且已选 3D；save-data/reduced-motion/webgl 门不免）。幕布 + 自动挂载，回城不再点第二次。
+  - P1-6 砍楼侧定制退场 → **驳回**：不做逐楼定制，做 HallChrome 一个 token 驱动通用退场遮罩（ink / 缺省淡出），第 3–12 楼零代码。有它才有「墨 → 墨」首帧连续。
+  - P2-7 外部 `?poi=` 语义 → 不变（无 from=hall 走原 wandering 深链）。
+- glm53flash 代码方案：在跑（收稿后对 `world-reveal`/`world-transform`/白名单 逐项核）。
+
+### R39-3 实装（本批次）
+- 引擎：`index.ts` resume 腿（`?poi=&from=hall`，复用 ritual 管线减机器人仪式）；`TransformSystem.resumeAsCar()`；`Reveal{resume}`；`Areas{deepLinkFacing:'street', seedQuestFromExplore}` + `exitHeadingOf()`；`QuestLine{seedCompleted}`；`ExploreProgress.foundIds()`；`CityMap.parkingBay.exitHeading?`；白名单 `lifecycle/world-resume{poi}`（规格表同 PR 加行）。
+- 壳：`index.astro` `PARAM_ALLOWLIST+from`；head 内联脚本首帧幕布（URL 或 `sessionStorage[world-return-v1]` 判定，fx 由 buildings JSON `arrivalFx` 构建期内联）；`from=hall` 免 `viewport` 门、免 1.8s 让路拍；幕布替代封面，拦截态/错误态让位。
+- 楼侧：`HallChrome` 返回链接 `&from=hall`；合法到达写 `world-return-v1`；退场遮罩 `.hall-leave-veil`（ink 从指尖漫开 / 缺省淡入，token 驱动，第 3–12 楼零代码）。
+- 幕布收拢改 **ticker 逐帧驱动**（`--return-k`，帧画出来才推进），墨滴末段落在车身投影（`--return-x/y` 每帧写）。
+
+### R39-4 门与证据
+- 回城 e2e `cyber-city-return.spec.ts` **5/5**（三跑三绿）；城侧回归六 spec（return/transit/poi-arrival/explore/observability/cyber-city）**35/35 passed (51.7m)** `/tmp/nx-w17-e2e-reg.log`。
+- 五门：nexus-budget / audit-budget / about-hall-gate / ledger-verify / ledger-gate 全 rc=0；check-links rc=0；账本 3025/40/80 未动。
+- 自看：`~/.codex/state/nexus-hall/shots/return/`（desk/m375 首帧→加载→收拢五帧→fpv；hall 退场四帧）。两处只有看图才抓到的问题（类名撞 `hall.css .hall-exit`、CSS 时钟先于渲染跑完）已修，见 LESSONS NX-W17 条 1/2。
+- 明确没证：真机 GPU 上收拢 0.9s 的手感（SwiftShader 只能证「按帧推进」）；hall 退场 ink 在 SwiftShader 下首帧即近满覆盖，真机应有 460ms 漫开。
+
+### R39-5 residual
+- 自动「滑行驶出」（agy 方案一精神）未做：与物理输入接管耦合未验。
+- 外部 `?poi=` 深链仍走 wandering 灰盒腿（口径不变）。
+- xhsapi 两次 SSL EOF 改派 glm53flash 写 LESSONS（通道史记一笔）。

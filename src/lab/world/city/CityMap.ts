@@ -116,7 +116,12 @@ export interface Building {
    */
   heroGlb?: string;
   /** 楼前泊车触发区（圆心/车头朝向/触发半径）——进楼判定归 CC-P1/CC-E9 */
-  parkingBay: { x: number; z: number; heading: number; radius: number };
+  /**
+   * parkingBay.heading 朝楼门（进站/深链出生）；exitHeading 可选 = 回城续驶时的车头朝向
+   * （[NX-W17 回城协议]，缺省 heading+180 = 背对楼门朝街——12 楼 bay 两两隔街相向，反向即朝街；
+   * 某楼路况特殊时在 JSON 显式给值覆盖，不靠运行时猜）
+   */
+  parkingBay: { x: number; z: number; heading: number; radius: number; exitHeading?: number };
 }
 
 /** 预留槽位 13–20（外环）：占位可解析，激活 = 补齐 Building 字段升入 buildings[] */
