@@ -97,6 +97,9 @@ const { dry = { x: 0.72, y: 0.5, radius: 0.17 } } = Astro.props;
   }
   .trial__fallback { position: absolute; inset: 0; display: grid; place-items: center;
     margin: 0; padding: 1rem; text-align: center; color: #4a4f5a; }
+  /* 🔴 author 的 display:grid 会盖过 UA 的 [hidden]{display:none}——首版降级文案在 WebGL 正常时也一直露着，
+     截图里反复出现被误判成「资源争用伪影」。hidden 必须在 author 层再声明一次。 */
+  .trial__fallback[hidden] { display: none; }
   .trial__bar { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
   .trial__b {
     min-width: 3.2rem; min-height: 2.4rem; padding: .35rem .9rem;

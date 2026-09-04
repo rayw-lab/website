@@ -238,6 +238,31 @@ test.describe('S3 试墨 · 干纸拒墨', () => {
     await expect(page.locator('[data-trial-live]')).not.toBeEmpty();
   });
 
+  // 🔴 显隐 2×2：首版 .trial__fallback{display:grid} 盖过 UA 的 [hidden]{display:none}，
+  // 降级文案在 WebGL 正常时也一直露着；属性层（data-trial-ready=1）全绿，只有截图看得见。
+  // 所以这里断言的是 computed 可见性，不是属性。
+  test('🔴 降级文案显隐 2×2：WebGL 正常时不可见（正控），WebGL2 拿不到时可见且画布让位（负控）', async ({ page }) => {
+    await page.goto(u(HALL));
+    const root = page.locator('[data-nexus-trial]');
+    await expect(root).toHaveAttribute('data-trial-ready', '1', { timeout: 15000 });
+    await expect(page.locator('p[data-trial-fallback]')).toBeHidden();
+    await expect(page.locator('[data-trial-canvas]')).toBeVisible();
+
+    await page.addInitScript(() => {
+      const orig = HTMLCanvasElement.prototype.getContext;
+      // @ts-ignore
+      HTMLCanvasElement.prototype.getContext = function (type: string, ...rest: any[]) {
+        if (type === 'webgl2') return null;
+        // @ts-ignore
+        return orig.call(this, type, ...rest);
+      };
+    });
+    await page.goto(u(HALL));
+    await expect(root).toHaveAttribute('data-trial-fallback', /.+/, { timeout: 15000 });
+    await expect(page.locator('p[data-trial-fallback]')).toBeVisible();
+    await expect(page.locator('[data-trial-canvas]')).toBeHidden();
+  });
+
   test('🔴 2×2 行为门：湿处落墨画面变黑（正控），干处不变（负控）', async ({ page }) => {
     await page.goto(u(HALL));
     const root = page.locator('[data-nexus-trial]');

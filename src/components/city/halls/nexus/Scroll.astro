@@ -34,7 +34,9 @@ const { stripVh } = scenes.scroll;
     position: sticky; top: var(--hall-header-stack, 0px);
     /* 画心高度收到 31rem（agy W4r 诊断：46rem 时内容只占 260px，上下各飘 230px，
        题跋退化成浮在空中的文字片断）。 */
-    block-size: min(calc(100svh - var(--hall-header-stack, 0px)), 31rem);
+    /* 🔴 尺寸自洽：题跋面 ≥22rem + 天头 2.2rem + 地脚 1.4rem + 标题行 ≈ 30rem，画心封顶 34rem 才装得下；
+       首版按 W4r 的 31rem + 27rem 面配，地脚线被裁掉、下半仍是空纸——两组数值互相顶牛，自看出图才发现。 */
+    block-size: min(calc(100svh - var(--hall-header-stack, 0px)), 36rem);
     overflow: hidden; display: grid; grid-template-rows: auto 1fr; gap: .6rem;
     padding: clamp(1rem, 3vh, 1.6rem) clamp(1.5rem, 6vw, 6rem) 0;
     /* 卷轴两端淡出：平移中的上一则题跋从左缘退出时不再被硬切成半个字（agy 盲审 P0，属实） */
@@ -51,7 +53,7 @@ const { stripVh } = scenes.scroll;
   .scroll__n { margin: 0; letter-spacing: .12em; opacity: .62; font: 400 clamp(.72rem, 1.1vw, .84rem)/1.7 ui-sans-serif, system-ui, sans-serif; }
   /* 画心：天大地下（天头 2.6rem : 地脚 1.6rem ≈ 1.6:1），上下两条宣纸界线；跋间用 4rem 留白断句 */
   .scroll__strip { display: flex; align-items: stretch; align-self: center; inline-size: max-content; will-change: transform;
-    gap: 4rem; padding: 2.6rem 1rem 1.6rem; border-block: 1px solid #1c1f2629; }
+    gap: 4rem; padding: 2.2rem 1rem 1.4rem; border-block: 1px solid #1c1f2629; }
   /* 移动端与 reduced-motion：不平移，五跋走文档流（ADR-7） */
   @media (max-width: 768px), (prefers-reduced-motion: reduce) {
     .scroll { block-size: auto; }

@@ -43,6 +43,9 @@ const exits = [
   .ep__copy:hover { border-color: #9e2a2b; color: #9e2a2b; }
   /* 全站其它元素都是直角细线，唯独出口沿用了 about 厅的圆角实心胶囊——风格突变（agy 盲审 P1，属实）。
      统一为 1px 直角描边：主出口朱砂线、次出口墨线、回城朱砂线，悬停反色，像印信不像按钮。 */
+  /* 出口左聚合：space-between 把「驾车回城」甩到极右、中间断 40vw（agy W8 新③） */
+  .ep :global(.hall-exits) { justify-content: flex-start !important; gap: .75rem !important; }
+  .ep :global(.hall-exit-city) { margin-inline-start: 0 !important; }  /* 全站壳给回城 margin-inline-start:auto，不是 space-between */
   .ep :global(.hall-exit) { border-radius: 1px !important; background: transparent !important; box-shadow: none !important;
     border: 1px solid #1c1f2666 !important; color: #1c1f26 !important;
     font-family: "Songti SC", "STSong", "Source Han Serif SC", serif !important; letter-spacing: .06em; }

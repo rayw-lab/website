@@ -106,13 +106,15 @@ const alt =
     color: #4a4f5a; letter-spacing: .04em;
   }
   /* 每条墨带一条极淡基线：空带（Grok）读作「量过了、虚位以待」，不是渲染失灵 */
-  .nexus-flow__band::before { content: ''; position: absolute; left: 6.5rem; right: 1rem; top: 50%; height: 1px;
-    background: #1c1f2614; }
+  /* 🔴 首版基线是 ::before 绝对定位在**标签自身**（inline-flex，只有标签那么宽）里，
+     left:6.5rem/right:1rem 算出来是负宽——两轮截图都「不可见」不是太淡，是根本没有。
+     改成带子横贯画心、基线做 flex 填充项，宽度由布局给，不靠猜。 */
   .nexus-flow__band {
-    position: absolute; left: .9%; transform: translateY(-50%);
-    display: inline-flex; align-items: baseline; gap: .3em; white-space: nowrap;
+    position: absolute; left: .9%; right: 1rem; transform: translateY(-50%);
+    display: flex; align-items: center; gap: .3em; white-space: nowrap;
     opacity: .85;
   }
+  .nexus-flow__band::after { content: ''; flex: 1 1 auto; height: 1px; margin-inline-start: .9rem; background: #1c1f2633; }
   .nexus-flow__band i {
     font-style: normal; font-family: "Songti SC", "Noto Serif CJK SC", serif;
     font-size: 1.05em; color: #8a8070;

@@ -131,5 +131,9 @@ const jsonLd = breadcrumbJsonLd([
   }
   .nx-band__n b { font-weight: 600; opacity: .9; }
   /* 幕与幕之间留一段纸：印阵刚排完、试墨的大标题就挤进同一屏，节奏失控（agy 盲审 P1，属实） */
-  .nx-seals { padding: 0 clamp(1.5rem, 6vw, 6rem) clamp(7rem, 20vh, 13rem); }
+  /* 🔴 一幕一屏：印阵、试墨各自撑满视口并垂直居中，否则短幕（印阵约 60vh）总把下一幕标题顶进同屏。
+     与墨流 .nx-band 的 min-height:100svh 同一处置（agy W8：P1-6 与「墨流底部露标题」是同形状问题）。
+     仍是文档流，不劫持滚轮、不做 snap（ADR-7）。 */
+  .nx-seals { min-block-size: calc(100svh - var(--hall-header-stack, 0px)); display: grid; align-content: center;
+    padding: 8vh clamp(1.5rem, 6vw, 6rem) 10vh; }
 </style>

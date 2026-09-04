@@ -30,3 +30,4 @@ playwright-report/
 # 第三方参考仓库 clone（约 760MB，静态资产过大不入库；见 vendor/README.md）
 vendor/*
 !vendor/README.md
+dist-next/

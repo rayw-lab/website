@@ -53,7 +53,11 @@ const bind = [
   }
   /* 接纸缝：不是通底网格线，是纵向 75% 的渐隐纸缝（W4r 改法 3） */
   .cf::after { content: ''; position: absolute; right: -2rem; top: 12.5%; inline-size: 1px; block-size: 75%;
-    background: linear-gradient(to bottom, transparent, #1c1f2614 20%, #1c1f261f 50%, #1c1f2614 80%, transparent); }
+    background: linear-gradient(to bottom, transparent, #1c1f262e 20%, #1c1f2647 50%, #1c1f262e 80%, transparent); }
+  /* 骑缝小印：接缝中点一枚极淡朱砂方，托裱分段的物理断连（agy W8 手卷专项） */
+  .cf::before { content: ''; position: absolute; right: calc(-2rem - 6px); top: calc(50% - 6px); inline-size: 12px; block-size: 12px;
+    border: 1px solid #9e2a2b66; border-radius: 1px; }
+  .cf:last-child::before { display: none; }
   .cf:last-child::after { display: none; }
   /* 五段 token（W4r §三）：序 .72rem/字距 .22em；题 1.4rem/1.42；文 .95rem/1.95；迹 .8125rem/1.65；背面 .72rem/1.5 */
   .cf__k { margin: 0; font: 400 .72rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .22em; color: #7a7265; }
@@ -73,5 +77,5 @@ const bind = [
   .cf__seal--unknown { color: #1c1f2659; border: 1.5px solid #1c1f2626; box-shadow: inset 0 -6px 10px -8px #1c1f2633; inline-size: auto; padding: 0 .5rem; }
   .cf__back { margin: 0; padding-inline-start: .6rem; border-inline-start: 1.5px solid #1c1f2626;
     font: 400 .72rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: #82786a; letter-spacing: .08em; }
-  @media (max-width: 768px) { .cf { inline-size: auto; min-block-size: auto; padding-block-end: 1.6rem; border-block-end: 1px solid #1c1f2618; } .cf::after { display: none; } }
+  @media (max-width: 768px) { .cf { inline-size: auto; min-block-size: auto; padding-block-end: 1.6rem; border-block-end: 1px solid #1c1f2618; } .cf::after, .cf::before { display: none; } }
 </style>
