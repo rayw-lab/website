@@ -1338,3 +1338,29 @@ build rc=0 · 预算门四行 PASS（9785/3768/0/15771 B）· 相机审计 11/11
 - 超慢放（playbackRate 0.006）抓中段帧 **0 帧 = 探针窗口不足**（循环 72s 内 tween 未走完），不是被测对象问题；ink 类已有 3 帧实证 + e2e 绿。中段慢放帧记 residual。
 
 `自看：楼侧 hold · shots/transit/hall-hold35-edge2.png · 墨核洇散边成立、落点对（36%,40%）；城侧定帧 · slow-1.png · 96m 塔偏右、左上留夜空、紫霓招牌入画，构图与展厅左文右景同构；城侧墨吞中段 · [未进片]。`
+
+## R33 · 合流准备：merge origin/main + 七门全绿（2026-09-04 13:2x–13:3x）
+
+### R33-1 脏树处置（磊哥/其它 agent 的在制品纪律）
+19 个文件是**我跑全量 e2e 的副产物**（`docs/spec/assets/e2e-batch1|e2e-integration/*.png` 16 张 + `evidence/about-hall/{GATE.json,QE/*.png}` 3 个），非磊哥手写。
+先整份 `cp` 备份到 `scratchpad/dirty-backup-1327/`（20 文件，含 list.txt），再 `git checkout --` 还原，**不提交**。
+
+### R33-2 merge origin/main（落后 65 → 0）
+`git merge origin/main` rc=1，唯一冲突 `evidence/about-hall/GATE.json`——差异只在 `generatedAt` 与 `dist` 两个**运行态字段**（我这边是本 worktree 跑门时生成的，main 那边是 about-hall 收口 worktree 的）。
+处置：取 `--theirs`（about-hall 是该证据的 owner，我的读数不该覆盖它的收口记录）；内容层 `ok:true` 两侧一致。`0af19e3`。
+`src/styles/hall.css` 自动合并成功（两厅各自加段，无重叠）。
+
+### R33-3 合并后七门（每门单跑取 rc，不经管道）
+| 门 | rc |
+|---|---|
+| `astro build`（25 页） | 0 |
+| `nexus-budget-gate` | 0 |
+| `audit-shot-ndc`（全表） | 0 · **11/11 PASS** |
+| `check-links` | 0 |
+| `about-hall-gate` | 0 |
+| `nexus-ledger-verify` | 0 |
+| `nexus-ledger-gate` | 0 |
+
+### R33-4 现役核（ADR-8「merge ≠ 进现役」前置认知）
+`curl` 4321 实取 `/world/agent-nexus/` → `data-nx-arrive` 命中 2；`dist/_astro/world.*.js` 含 `arrivalFx`；`/world/about-pavilion/` 200。
+preview 服务的是**合并后新产物**，非旧 dist。全量五项目 e2e 已在 4321 起跑（合并后首跑）。
