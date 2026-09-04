@@ -41,24 +41,22 @@ vec3 tape(float a, float t){
   if (uLine >= 0.0) c += uGold * 0.9 * (1.0 - smoothstep(0.0, 0.006, abs(t - uLine)));
   return c;
 }
-void main(){
-  vec2 s = v * vec2(uRes.x / uRes.y, 1.0);
-  vec3 ro = uRot * uEye;
-  vec3 rd = uRot * normalize(vec3(s * 0.62, -1.0));
+// 盒子表面着色（含刀面裁剪）。返回 false = 这条射线没打到实体
+bool shadeBox(vec3 ro, vec3 rd, out vec3 col, out float dist){
   float t0, t1;
-  if (!hitBox(ro, rd, t0, t1)) { o = vec4(uBg, 1.0); return; }
+  if (!hitBox(ro, rd, t0, t1)) return false;
   float te = t0; int face = -1;                 // -1 = 盒面；1 = 刀面
   if (uCutOn > 0.5) {
     float dn = dot(uCut.xyz, rd), dp = dot(uCut.xyz, ro) - uCut.w;
     if (dp + t0 * dn > 0.0) {                    // 入点在被裁掉的一侧
-      if (dn >= 0.0) { o = vec4(uBg, 1.0); return; }
+      if (dn >= 0.0) return false;
       float tc = -dp / dn;
-      if (tc > t1) { o = vec4(uBg, 1.0); return; }
+      if (tc > t1) return false;
       te = max(tc, t0); face = 1;
     }
   }
   vec3 p = ro + rd * te; vec3 u = clamp(uvw(p), 0.0, 1.0);
-  vec3 n; vec3 col;
+  vec3 n;
   if (face == 1) {
     n = uCut.xyz; col = paper(u);
     // 刀口：离盒边 2% 内提亮，读起来像被切开的金属边
@@ -71,5 +69,38 @@ void main(){
     else                        { n = vec3(0.0, 0.0, sign(c.z)); col = paper(vec3(u.x, u.y, c.z > 0.0 ? 1.0 : 0.0)); }
   }
   float l = 0.72 + 0.28 * max(0.0, dot(n, normalize(vec3(0.35, 0.85, 0.45))));
-  o = vec4(pow(col * l, vec3(0.96)), 1.0);
+  col *= l; dist = te;
+  return true;
+}
+// 片库环境：放映机光锥（左上打下）+ 一块暗地面（柔和倒影 + 接触阴影）+ 微弱边缘暗角
+const float FLOOR_Y = -0.92;
+vec3 environment(vec3 ro, vec3 rd, vec2 s){
+  vec3 bg = uBg;
+  // 光锥：以盒子上方为锥顶的软亮区，沿屏幕向下变宽变淡
+  vec2 cone = s - vec2(-0.18, 0.55);
+  float coneK = smoothstep(0.9, 0.0, abs(cone.x) / max(0.08, -cone.y * 0.9 + 0.12)) * smoothstep(0.35, -1.2, cone.y);
+  bg += vec3(0.11, 0.10, 0.08) * coneK * 0.55;
+  if (rd.y < -1e-4) {
+    float tf = (FLOOR_Y - ro.y) / rd.y; vec3 pf = ro + rd * tf;
+    // 地面基色随距离沉入黑；盒脚下接触阴影
+    float horiz = length(max(abs(pf.xz) - uHalf.xz, 0.0));
+    float shadow = 1.0 - 0.75 * smoothstep(0.9, 0.0, horiz);
+    float fall = exp(-0.28 * length(pf.xz));
+    vec3 floorCol = (uBg * 2.2 + vec3(0.03, 0.03, 0.035)) * fall * shadow;
+    // 倒影：反射射线再打一次盒子，按反射距离衰减
+    vec3 rr = reflect(rd, vec3(0.0, 1.0, 0.0)); vec3 rc; float rdist;
+    if (shadeBox(pf + vec3(0.0, 1e-3, 0.0), rr, rc, rdist)) floorCol += rc * 0.22 * exp(-0.9 * rdist) * fall;
+    bg = mix(bg, floorCol, smoothstep(0.0, 0.02, -rd.y));
+  }
+  // 暗角
+  bg *= 1.0 - 0.35 * smoothstep(0.7, 1.6, length(s));
+  return bg;
+}
+void main(){
+  vec2 s = v * vec2(uRes.x / uRes.y, 1.0);
+  vec3 ro = uRot * uEye;
+  vec3 rd = uRot * normalize(vec3(s * 0.62, -1.0));
+  vec3 col; float dist;
+  if (!shadeBox(ro, rd, col, dist)) col = environment(ro, rd, s);
+  o = vec4(pow(col, vec3(0.96)), 1.0);
 }`;
