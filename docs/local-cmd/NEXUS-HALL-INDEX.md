@@ -3,7 +3,7 @@
 > 本文是本楼唯一 ACTIVE TODO。冲突时：**live Git / 隔离栈 / 日志 > 本文 > 任何旧看板**。
 > 目标：`/world/agent-nexus/`「墨迹 · Ink Ledger」——水墨物理承载真实 agent 会话元数据。
 > 设计 SSOT = `NEXUS-HALL-DRAFT-2026-09-03.md`；施工 SSOT = `NEXUS-HALL-CHARTER-2026-09-04.md`。
-> 更新 2026-09-04 12:35 · 分支 `codex/nexus-hall-20260903` · worktree `~/studio-data-root/worktrees/website-nexus-hall` · base `codex/about-hall-20260902@f942a22` · 上次合流 — · 人测窗口 none
+> 更新 2026-09-04 12:45 · 分支 `codex/nexus-hall-20260903` · worktree `~/studio-data-root/worktrees/website-nexus-hall` · base `codex/about-hall-20260902@f942a22` · 上次合流 — · 人测窗口 none
 
 ## 状态机
 
@@ -28,7 +28,8 @@
 | NX-W4 | W4 | 手卷 + 五跋 + 试墨 + 收官 | 执行方 | `halls/nexus/{Scroll,Colophon,Trial,Epilogue}.*` | W3, W4r | C 维 100% 绑定；干纸拒墨可见 | **LIVE_OBSERVED**（R27：手卷 sticky 驱动三态门实测 + 五跋骨架[题候选明标、印严格来自台账、绑定标题级] + 收官四出口与简介复制；试墨 R22；印 Seal R20。**唯一余项：五跋正文与迹[NEEDS_LEIGE]**。R29：agy B 段验修 11 条裁决落地，降级文案真因=CSS 盖 [hidden]（非 WebGL）；R30：盲评 C 13 条整改 + 席位口径门 + 吸收量软肩 2×2，e2e 24/24，`e8587c0`） |
 | NX-W5r | W5 | Astro hall 路由/主题作用域 + 构建期 WebGL 截图坑调研 | agy | `out/W5r-agy-wiring.md` | — | SSIM 门做法明确 | **AUDITED**（接线清单四处与实装完全重合；驳回其 CSS 特异度判断[实测证否]；5 条「明确没证的」坐实 4 条、1 条采纳其建议不做，R21-6/7） |
 | NX-W5 | W5 | 接线 + 三个门脚本 + e2e + 海报 + sitemap | 执行方 | §3.3 热点文件 + `scripts/` + `e2e/` | W4, W5r | 城里 E 进楼；about-hall e2e 不回归 | **LIVE_OBSERVED**（`/world/agent-nexus/` 200；`world-halls.json` 登记 + 楼宇 `hallPath` 已补[`Areas.ts` 据此进楼]；纸色主题 2×2 正负控进 e2e；`check-links` rc=0、`about-hall-gate` rc=0 无回归；29/29 e2e[墨迹 13 + about 16]；sitemap 含新页；build 25 页） |
-| NX-W6 | W6 | 全量 e2e + 盲审双评 + PR + handoff | 执行方 + agy/xhsapi 批评者 | `evidence/nexus-hall/W6/` | 全部 | 人门三维 ≥7 | PLANNED |
+| NX-W7 | W7 | 城→厅转场（开车进楼动效/画面/跳转）+ 本楼 showcase 机位 | agy 调研 + 执行方实装 | `src/lab/world/areas/PoiArrival.ts`、`src/data/camera-shots.json`、`halls/nexus/*`、`HallChrome` 到达钩 | W5 | 城里按 E 进楼有前奏与转场，2×2（from=city 有/无） | **RESEARCHED-IN-FLIGHT**（W10-agy-transition 在跑，R31-4） |
+| NX-W6 | W6 | 全量 e2e + 盲审双评 + PR + 合流首页 + handoff | 执行方 + agy/seed 批评者 | `evidence/nexus-hall/W6/` | 全部 + W7 | 双评 ≥7；PR 合入 main（像 #234） | **AUDITED**（双评 agy 7 / seed 8 已收，R30-1/R31-3；旧 dist 全量 131/131；合流待 W7 落地后） |
 
 ## 在途 worker（每轮 tick 必核）
 
