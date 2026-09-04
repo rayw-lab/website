@@ -1,0 +1,68 @@
+---
+/**
+ * 一篇题跋的骨架：题 / 文 / 迹 / 印 / 背面（草案 §2.1，机器可校验）。
+ * 正文与迹待磊哥；这里只把**形状与绑定**立起来，占位明写「待定稿」，不假装有内容。
+ */
+import ledger from '../../../../data/nexus-ledger.json';
+import type { Colophon } from '../../../../data/nexus-colophons';
+interface Props { c: Colophon }
+const { c } = Astro.props;
+
+interface Receipt { id: string; seat: string; servedModel: string | null; identityOk: boolean | null }
+const machine = (ledger.colophons as Array<{ id: string; seals: Array<{ kind: string; receipt: string }> }>)
+  .find((x) => x.id === c.id);
+const receipts = (ledger.receipts ?? []) as Receipt[];
+// 印：跋④来自真实收据（三态严格对应 identityOk），其余跋没有机器收据 → 一枚灰印，如实。
+const seals = c.sealsFrom
+  ? (machine?.seals ?? []).slice(0, 8).map((s) => receipts.find((r) => r.id === s.receipt)).filter(Boolean) as Receipt[]
+  : [];
+const state = (r: Receipt) => (r.identityOk === true ? 'go' : r.identityOk === false ? 'nogo' : 'unknown');
+const bind = [
+  ...c.rules.map((r) => `rule:~/.claude/rules/${r}`),
+  ...seals.map((r) => `receipt:${r.id}`),
+].join(';');
+---
+
+<article class="cf" data-scene={c.scene} data-colophon={c.id} data-bind={bind} data-status="needs-leige">
+  <p class="cf__k">跋{c.n} · {c.method}</p>
+  <h3 class="cf__t">{c.titleCandidate}<span class="cf__cand">候选 · 待定稿</span></h3>
+  <p class="cf__ph" data-ph="body">文 · 正文待磊哥口述（≤200 字，每一句可追到文件）</p>
+  <p class="cf__ph" data-ph="trace">迹 · 一条真实事件，待点名</p>
+  <div class="cf__seals" aria-label="印">
+    {seals.length > 0
+      ? seals.map((r) => (
+          <span class={`cf__seal cf__seal--${state(r)}`} title={`${r.seat} · ${r.servedModel ?? '未知模型'}`}>
+            {r.id}
+          </span>
+        ))
+      : <span class="cf__seal cf__seal--unknown" title="该跋无机器收据">无收据</span>}
+  </div>
+  <p class="cf__back">背面 · 绑定 {c.rules.length} 条规则（标题级，公开尺度待批）</p>
+</article>
+
+<style>
+  .cf {
+    inline-size: min(78vw, 34rem); flex: 0 0 auto;
+    display: grid; align-content: start; gap: .7rem;
+    padding: clamp(1.2rem, 2.4vw, 2rem) clamp(1.2rem, 2.6vw, 2.2rem);
+    border-inline-end: 1px solid #1c1f2618;
+    font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif;
+    color: #1c1f26;
+  }
+  .cf__k { margin: 0; font: 400 clamp(.66rem, .9vw, .76rem)/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .18em; color: #6b6357; }
+  .cf__t { margin: 0; font-weight: 400; font-size: clamp(1.25rem, 2.2vw, 1.8rem); line-height: 1.5; letter-spacing: .04em; }
+  .cf__cand { margin-inline-start: .6em; font: 400 .62em/1 ui-monospace, Menlo, monospace; letter-spacing: .12em; color: #9e2a2b; vertical-align: .35em; }
+  .cf__ph { margin: 0; color: #6b6357; font: 400 clamp(.82rem, 1.1vw, .95rem)/1.9 inherit; }
+  .cf__seals { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .3rem; }
+  .cf__seal {
+    display: inline-grid; place-items: center; inline-size: 2.3rem; aspect-ratio: 1;
+    font: 500 .56rem/1 ui-monospace, Menlo, monospace; letter-spacing: .05em; border-radius: 1px;
+    transform: rotate(var(--r, -0.8deg));
+  }
+  .cf__seal:nth-child(2n) { --r: .9deg; } .cf__seal:nth-child(3n) { --r: -1.3deg; }
+  .cf__seal--go { color: #9e2a2b; border: 1.5px solid #9e2a2b; background: #efe9dc; }
+  .cf__seal--nogo { color: #efe9dc; background: #9e2a2b; border: 1.5px solid #9e2a2b; }
+  .cf__seal--unknown { color: #1c1f2659; border: 1.5px solid #1c1f2626; box-shadow: inset 0 -6px 10px -8px #1c1f2633; inline-size: auto; padding: 0 .5rem; }
+  .cf__back { margin: 0; font: 400 clamp(.7rem, .95vw, .8rem)/1.6 ui-sans-serif, system-ui, sans-serif; color: #6b6357; letter-spacing: .06em; }
+  @media (max-width: 768px) { .cf { inline-size: auto; border-inline-end: 0; border-block-end: 1px solid #1c1f2618; } }
+</style>

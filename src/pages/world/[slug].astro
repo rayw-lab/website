@@ -14,6 +14,8 @@ import Yin from '../../components/city/halls/nexus/Yin.astro';
 import Flow from '../../components/city/halls/nexus/Flow.astro';
 import Seal from '../../components/city/halls/nexus/Seal.astro';
 import Trial from '../../components/city/halls/nexus/Trial.astro';
+import Scroll from '../../components/city/halls/nexus/Scroll.astro';
+import NexusEpilogue from '../../components/city/halls/nexus/Epilogue.astro';
 import ledger from '../../data/nexus-ledger.json';
 import hallsDoc from '../../data/world-halls.json';
 import cityMap from '../../data/cyber-city-buildings.json';
@@ -95,8 +97,10 @@ const jsonLd = breadcrumbJsonLd([
         </div>
         <Flow spanSeconds={16} />
       </section>
+      <Scroll />
       <section class="nx-seals"><Seal limit={24} /></section>
       <section class="nx-seals"><Trial /></section>
+      <NexusEpilogue />
     </>
   )}
 </WorldHallLayout>

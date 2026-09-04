@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "nexus-scenes/v1",
+  "_note": "手卷（S2–S6）滚动区间 SSOT。progress 由竖向滚动派生（ADR-7），横向平移只在桌面且非 reduced-motion 生效。",
+  "scroll": { "stripVh": 480, "desktopMinWidth": 769 },
+  "colophons": ["harness", "skill", "subagent", "models", "tips"],
+  "ranges": { "s2": [0, 0.2], "s3": [0.2, 0.4], "s4": [0.4, 0.6], "s5": [0.6, 0.8], "s6": [0.8, 1] }
+}

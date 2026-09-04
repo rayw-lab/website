@@ -282,3 +282,72 @@ test.describe('S3 试墨 · 干纸拒墨', () => {
     expect(dryLum - wet).toBeGreaterThan(40);
   });
 });
+
+// ── S2–S6 手卷：竖滚驱动横移的三态门（ADR-7）────────────────────────────────
+// 正控：桌面滚到区间末尾，progress→1 且 strip 负向平移到 -(stripWidth - viewport)；
+// 负控 A：375 视口不平移（纯竖滚）；负控 B：reduced-motion 不平移。
+// 少了负控，一条写漏的媒体查询会让手机端也横移而无人发现。
+test.describe('S2–S6 手卷', () => {
+  const HALL = '/world/agent-nexus/';
+  const readEnd = (page: import('@playwright/test').Page) =>
+    page.evaluate(() => {
+      const r = document.querySelector('[data-nexus-scroll]') as HTMLElement;
+      const s = r.querySelector('[data-strip]') as HTMLElement;
+      const st = r.querySelector('.scroll__sticky') as HTMLElement;
+      window.scrollTo(0, r.offsetTop + r.offsetHeight - innerHeight);
+      return new Promise<{ prog: number; tx: number; expect: number }>((res) =>
+        setTimeout(() => {
+          const m = new DOMMatrixReadOnly(getComputedStyle(s).transform === 'none' ? '' : getComputedStyle(s).transform);
+          res({ prog: Number(r.dataset.progress), tx: m.m41, expect: -(s.scrollWidth - st.clientWidth) });
+        }, 400),
+      );
+    });
+
+  test('正控：桌面滚到底，progress≈1 且 strip 平移到位', async ({ page }) => {
+    await page.goto(u(HALL));
+    const e = await readEnd(page);
+    expect(e.prog).toBeGreaterThan(0.9);
+    expect(e.expect).toBeLessThan(-200);                    // 确实有可平移的宽度
+    expect(Math.abs(e.tx - e.prog * e.expect)).toBeLessThan(8); // tx = p·dx
+  });
+
+  test('负控 A：375 视口纯竖滚，不平移', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto(u(HALL));
+    const e = await readEnd(page);
+    expect(e.tx).toBe(0);
+    expect(e.prog).toBe(0);
+  });
+
+  test('负控 B：reduced-motion 不平移，五跋走文档流', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    expect(await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
+    await page.goto(u(HALL));
+    const e = await readEnd(page);
+    expect(e.tx).toBe(0);
+    const pos = await page.locator('.scroll__sticky').evaluate((el) => getComputedStyle(el).position);
+    expect(pos).toBe('static');
+  });
+
+  test('五跋骨架：s2–s6 各一篇，绑定的 receipt 全在台账，正文明标待定稿', async ({ page }) => {
+    await page.goto(u(HALL));
+    const cs = await page.locator('[data-colophon]').evaluateAll((els) =>
+      els.map((e) => ({ scene: e.getAttribute('data-scene'), bind: e.getAttribute('data-bind') ?? '', status: e.getAttribute('data-status') })),
+    );
+    expect(cs.map((c) => c.scene)).toEqual(['s2', 's3', 's4', 's5', 's6']);
+    const rids = new Set((ledger.receipts as Array<{ id: string }>).map((r) => r.id));
+    for (const c of cs) {
+      expect(c.bind.length).toBeGreaterThan(0);
+      for (const b of c.bind.split(';').filter((x) => x.startsWith('receipt:'))) expect(rids.has(b.slice(8))).toBe(true);
+      expect(c.status).toBe('needs-leige'); // 正文待磊哥：机器面必须如实标注，不冒充定稿
+    }
+  });
+
+  test('收官：四出口 + 讲者简介复制钮', async ({ page }) => {
+    await page.goto(u(HALL));
+    const hrefs = await page.locator('[data-nexus-epilogue] .hall-exit').evaluateAll((as) => as.map((a) => a.getAttribute('href')));
+    expect(hrefs).toHaveLength(4);
+    expect(hrefs.some((h) => h?.includes('?poi=agent-nexus'))).toBe(true);
+    await expect(page.locator('[data-nexus-epilogue] [data-copy-target]')).toBeVisible();
+  });
+});

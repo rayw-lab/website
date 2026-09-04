@@ -1,0 +1,58 @@
+---
+/** S8 收官：一句收束 + 四出口 + 讲者简介一键复制（草案 §S8；出口按草案，简介复用 about 文案单源）。 */
+import ledger from '../../../../data/nexus-ledger.json';
+import { speakerBio } from '../../../../data/about-copy';
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const t = ledger.totals as Record<string, number>;
+const exits = [
+  { path: '/ai-lab/', label: '读相关文章' },
+  { path: '/lab/', label: '看可交互 Demo' },
+  { path: '/about/', label: '关于我' },
+] as const;
+---
+
+<section class="ep" data-scene="s8" data-nexus-epilogue data-bind="url:/ai-lab/;url:/lab/;url:/about/">
+  <p class="ep__line">{t.sessions} 次会话、{t.days} 天。纸干了，墨还在。</p>
+  <figure class="ep__bio">
+    <blockquote id="nx-speaker-bio">{speakerBio}</blockquote>
+    <figcaption>
+      <button type="button" class="ep__copy" data-copy-target="#nx-speaker-bio">一键复制讲者简介</button>
+      <span data-copy-done hidden aria-live="polite">已复制 ✓</span>
+    </figcaption>
+  </figure>
+  <div class="hall-exits">
+    {exits.map((ex, i) => (
+      <a class:list={['hall-exit', i === 0 ? 'hall-exit-primary' : 'hall-exit-secondary']} href={`${base}${ex.path}`}>{ex.label}</a>
+    ))}
+    <a class="hall-exit hall-exit-city" href={`${base}/?poi=agent-nexus`}>驾车回城</a>
+  </div>
+</section>
+
+<style>
+  .ep { display: grid; gap: 1.6rem; padding: clamp(3rem, 9vh, 6rem) clamp(1.5rem, 6vw, 6rem);
+    font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif; color: #1c1f26; }
+  .ep__line { margin: 0; font-size: clamp(1.3rem, 2.6vw, 2rem); letter-spacing: .06em; line-height: 1.7; }
+  .ep__bio { margin: 0; max-width: 46rem; display: grid; gap: .8rem; }
+  .ep__bio blockquote { margin: 0; padding-inline-start: 1rem; border-inline-start: 2px solid #9e2a2b;
+    font: 400 clamp(.86rem, 1.15vw, .98rem)/1.9 ui-sans-serif, system-ui, sans-serif; color: #4a4f5a; }
+  .ep__bio figcaption { display: flex; align-items: center; gap: .8rem; font: 400 .8rem/1.4 ui-sans-serif, system-ui, sans-serif; color: #6b6357; }
+  .ep__copy { min-height: 2.4rem; padding: .35rem .9rem; background: transparent; color: #1c1f26;
+    border: 1px solid #1c1f2633; border-radius: 1px; font: inherit; cursor: pointer; }
+  .ep__copy:hover { border-color: #9e2a2b; color: #9e2a2b; }
+</style>
+
+<script is:inline>
+  document.querySelectorAll('[data-nexus-epilogue] [data-copy-target]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = document.querySelector(btn.getAttribute('data-copy-target'));
+      if (!target) return;
+      var text = target.textContent.trim();
+      var done = function () {
+        var tip = btn.parentElement && btn.parentElement.querySelector('[data-copy-done]');
+        if (tip) { tip.hidden = false; setTimeout(function () { tip.hidden = true; }, 1500); }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done);
+      else { var r = document.createRange(); r.selectNodeContents(target); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); done(); }
+    });
+  });
+</script>
