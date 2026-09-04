@@ -1080,3 +1080,52 @@ xhsapi 端点故障期间改派 glm53flash 做反核，质量不打折，抓到�
 `docs/spec/assets/e2e-batch1/car_ready_default.png`（本轮 455807 → 455291 字节，
 **内容级 sha 不同，不是 stat-dirty**）。测试写进 `docs/` 而不是 `test-results/`，
 会让每次跑门都产生与本次改动无关的脏区。本轮跑完还原，不混进本战役的提交。
+
+## R25 · 我提交了一个构建不过的树（2026-09-04 09:4x）
+
+### R25-1 事故本身
+上一 tick 我把「文案表双向闭合」的源码改动 commit 了（`4775736`），**依据只有 `astro check` 0 errors**，
+当时全量 e2e 正占着 dist，我按自己刚立的「跑门中途不许重建」纪律没有 build。
+本 tick 起手第一件事就是补 build——**正控直接红**：
+
+```
+[CompilerError] Expected `:` but found `Identifier`
+  src/pages/world/[slug].astro:47:9
+```
+
+🔴 **`astro check` 不等于 `astro build`**。前者对这个文件报 0 errors，后者根本编译不过。
+判据：**「类型检查过了」不能替代「构建过了」**，而我上一 tick 正是拿前者当了后者。
+真正的纪律不是「不许 build」，是「**不许在没验证的情况下 commit**」——
+两者冲突时正解是**等门跑完再改再验再提交**，不是跳过验证先提交。
+
+### R25-2 三个连环真因（都只有 build 才抓得到）
+1. **上提声明却把表体留在原位**：`const HALL_COPY = {` 被移到上面，各厅条目仍在下面，
+   对象字面量在上面开、在下面闭，中间夹着一个函数声明。
+   🔴 脚本化替换的**命中断言只验"每一处都命中了"，不验"合起来还成立"**——
+   两处替换各自都命中，组合出来的却是坏结构。这是我一直在用的护栏的**已知盲区**，记下。
+2. **`getStaticPaths` 在独立作用域求值**：修好结构后报 `assertHallCopyClosed is not defined`。
+   Astro 把 `getStaticPaths()` 抽出单独求值，frontmatter 顶层的常量对它**不可见**，
+   只有 `import` 进来的东西可达。这条 `astro check` 同样零报错。
+   正解顺带变成更好的结构：文案表与断言抽成 `src/data/hall-copy.ts` 单源模块。
+3. **重复 import**：路由本就 import 过 ledger，我又加了一份 → `The symbol "ledger" has already been declared`。
+
+### R25-3 闭合断言的构建期自证（这次是真的接线了，不只是函数逻辑对）
+上一 tick 只验了判据函数本身（R24-2），那证明不了它在构建时被执行。本轮注入：
+
+| 用例 | rc | 构建期原话 |
+|---|---|---|
+| ① 正控：现状 | **0** | `25 page(s) built` |
+| ② 负控 A：文案表少 `agent-nexus` | **1** | `这些 slug 没有登记头部文案（见 HALL_COPY）：agent-nexus` |
+| ③ 负控 B：多孤儿键 `ghost-hall` | **1** | `HALL_COPY 有孤儿键（world-halls.json 里没有这些 slug）：ghost-hall` |
+| ④ 还原复跑 | **0** | `Complete!` |
+
+### R25-4 about 厅视频 scrub 的失败是并发抖动，不是回归
+合跑 33 条时 `about-hall.spec.ts:68` 失败（`currentTime` 8 秒内仍为 0）；
+**单独复跑 737ms 通过**。机理与 R20-5 抽屉那条同族：同 worker 串行队列里，
+墨迹厅的重型 WebGL 把视频解码饿住。
+另核过引擎本身没问题：`InkSurface` 的 `shouldRun = inView && !document.hidden`，
+离屏 canvas 会停转，同页三块 canvas 不会同时跑。**这条不改产品，登记为已知环境抖动。**
+
+### R25-5 本批门禁（全部本轮实跑）
+`astro build` rc=0（25 页）· `astro check` 0 errors · 发布安全门 rc=0 · 正确性门 rc=0
+· `check-links` rc=0 · `about-hall-gate` rc=0 · e2e 合跑 **32/33**（唯一失败见 R25-4，单独复跑通过）
