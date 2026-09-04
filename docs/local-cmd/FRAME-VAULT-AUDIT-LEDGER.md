@@ -102,3 +102,19 @@
 ### R3-4 环境光（磊哥 2026-09-05 凌晨问「立方体周边都是黑色的？」）
 - 之前舞台纯片库黑。本批在片元着色器加：放映机光锥（屏幕空间软亮区，左上打下）、地面 y=-0.92 暗平面（距离衰减 + 盒脚接触阴影 + 反射射线再打一次盒子的柔和倒影）、边缘暗角。仍是单 pass 单 draw，无额外纹理；真机 120 fps 未变 `[目测 HUD]`。截图 `shots/vault/01-idle.png`（新）。
 - 未做：浮尘粒子（草案 §3.1）——留到 W4 快门进馆一起做，避免常驻粒子抢主体。
+
+## R4 · W4 开工：快门 token + S1 盲评整改（2026-09-05）
+
+### R4-1 `film` token 四消费点落地（`bc0196c`）
+- `PoiArrival.ts`：`arrivalFx()` 认 `'film'`；`lingers()` 把「驻留到跨文档」从 ink 特判改成 ink|film；快门 CSS 注入（上下叶板 .34 s 合拢 + 85–91% 一格白闪 + 终态全黑；reduced-motion 淡入全黑）。
+- `index.astro` 回城幕布：`[data-return-fx='film']` 黑幕 + 金色进度条。`HallChrome.astro`：退场快门 380 ms。`VaultArriveHead.astro`：`from=city&poi=workflow-foundry` 首帧黑帘，Vault 进 idle 后 .12 s 让位。
+- 楼侧真机目击（`.tmp/vault-film.mjs`）：首帧 `html.vault-transit`；idle 后类卸；`sessionStorage[world-return-v1]` 写入 `{poi:"workflow-foundry"}`；返回链接 `?poi=workflow-foundry&from=hall`；点击后 `data-hall-leaving-fx=film`。城侧到达（E 进楼）未真机目击，交 W27 terra e2e / W5。
+
+### R4-2 kimi k3 盲评（一路，A 段只给分；`~/.codex/state/nexus-hall/out/W26-k3-blind.md`，附三张真机图 + 草案节选）
+- 分：A 6 / B 7 / C 4 / D 7 / E 8 = **32/50**。总评：夸「母题纯度——切片数、sha、门环全来自真实构建记录」；挑「主体小且暗；底栏时码 + 播放式标尺把它拽回剪辑台，像精致的 MRI 查看器」。
+- 采纳（全部事实型，当场改）：快捷键串收进 `?` 弹层（E「把 README 贴进展厅」）；HUD 只留 22 px 时码为主、帧号/切法降级；标尺改金属轨 + 刀片形刀锋（去播放器语义）；门环朱红边 + 「N 次人审退回坐在时间轴上」标签（B「环没有身份」）；机位 2.75→2.35、纸面对比 +12%、基础光 .72→.84（A「主体小且暗、正面发灰」）。截图 `shots/vault/13-ep4-after-k3.png`。
+- 磊哥令（同时段）：**k3 只开一路**——两份 k3 席位定义已改，记忆 `feedback-k3-single-lane`。
+- 不重审刷分；W6 盲评另派异源席。
+
+### R4-3 管线补全集状态
+- `frame-vault-build.mjs` 新产 `src/data/frame-vault/episodes.json`（7 集：EP2 F/85 分、EP3–5 P、EP6 A / EP7 S / EP8 D 无成片 → 线框），供 S2 陈列；glob 排除 `episodes`。

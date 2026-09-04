@@ -1,0 +1,150 @@
+{
+  "updated_at": "2026-09-03T21:00:00+08:00",
+  "locks": [
+    {
+      "letter": "D",
+      "name": "开发"
+    },
+    {
+      "letter": "S",
+      "name": "台本锁"
+    },
+    {
+      "letter": "A",
+      "name": "样片锁"
+    },
+    {
+      "letter": "P",
+      "name": "画面锁"
+    },
+    {
+      "letter": "M",
+      "name": "声音锁"
+    },
+    {
+      "letter": "F",
+      "name": "定稿"
+    }
+  ],
+  "episodes": [
+    {
+      "ep": "EP2",
+      "title": "复杂任务编排（r30f）",
+      "stage": "F",
+      "label": null,
+      "gates": {
+        "L0": "PASS",
+        "L1": "PASS",
+        "L2": "OBSERVED",
+        "L3": "HUMAN_PASS"
+      },
+      "has_video": true,
+      "sha8": "1034fc93",
+      "duration_s": 425.299674,
+      "next_lock": null,
+      "human_score": 85
+    },
+    {
+      "ep": "EP3",
+      "title": "长期记忆检索",
+      "stage": "P",
+      "label": "v2.17",
+      "gates": {
+        "L0": "PASS",
+        "L1": "PASS",
+        "L2": "OBSERVED",
+        "L3": "HUMAN_REJECT"
+      },
+      "has_video": true,
+      "sha8": "eda9f2b1",
+      "duration_s": 323.754687,
+      "next_lock": "P",
+      "human_score": null
+    },
+    {
+      "ep": "EP4",
+      "title": "多用户上下文管理",
+      "stage": "P",
+      "label": "v2.2",
+      "gates": {
+        "L0": "PASS",
+        "L1": "PASS",
+        "L2": "OBSERVED",
+        "L3": "HUMAN_REJECT"
+      },
+      "has_video": true,
+      "sha8": "b154e0d0",
+      "duration_s": 329.866667,
+      "next_lock": "A",
+      "human_score": null
+    },
+    {
+      "ep": "EP5",
+      "title": "能力包加载（LoRA）",
+      "stage": "P",
+      "label": "v1.9",
+      "gates": {
+        "L0": "PASS",
+        "L1": "PASS",
+        "L2": "OBSERVED",
+        "L3": "HUMAN_UNKNOWN"
+      },
+      "has_video": true,
+      "sha8": "43367bed",
+      "duration_s": 306.666667,
+      "next_lock": "A",
+      "human_score": null
+    },
+    {
+      "ep": "EP6",
+      "title": "多模态感知 / 可信世界状态（候选）",
+      "stage": "A",
+      "label": null,
+      "gates": {
+        "L0": null,
+        "L1": null,
+        "L2": null,
+        "L3": "HUMAN_UNKNOWN"
+      },
+      "has_video": false,
+      "sha8": null,
+      "duration_s": null,
+      "next_lock": "A",
+      "human_score": null
+    },
+    {
+      "ep": "EP7",
+      "title": "端云融合动态路由（候选）",
+      "stage": "S",
+      "label": null,
+      "gates": {
+        "L0": null,
+        "L1": null,
+        "L2": null,
+        "L3": "HUMAN_UNKNOWN"
+      },
+      "has_video": false,
+      "sha8": null,
+      "duration_s": null,
+      "next_lock": "A",
+      "human_score": null
+    },
+    {
+      "ep": "EP8",
+      "title": "主动智能 / 安全拒绝（候选）",
+      "stage": "D",
+      "label": null,
+      "gates": {
+        "L0": null,
+        "L1": null,
+        "L2": null,
+        "L3": "HUMAN_UNKNOWN"
+      },
+      "has_video": false,
+      "sha8": null,
+      "duration_s": null,
+      "next_lock": "S",
+      "human_score": null
+    }
+  ]
+}

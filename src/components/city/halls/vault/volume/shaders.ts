@@ -34,7 +34,8 @@ bool hitBox(vec3 ro, vec3 rd, out float t0, out float t1){
   return t1 > max(t0, 0.0);
 }
 vec3 uvw(vec3 p){ return (p + uHalf) / (2.0 * uHalf); }   // 0..1；z 即 t
-vec3 paper(vec3 u){ return texture(uVol, vec3(u.x, 1.0 - u.y, u.z)).rgb; }
+// 纸面：160×90 放大到屏幕会发糊，做一点对比与提亮（k3 盲评 A：正面发灰）
+vec3 paper(vec3 u){ vec3 c = texture(uVol, vec3(u.x, 1.0 - u.y, u.z)).rgb; return clamp((c - 0.5) * 1.12 + 0.5 + 0.03, 0.0, 1.0); }
 vec3 tape(float a, float t){
   // 活动投影：暗底 → 金；再叠一条当前时间细线
   vec3 c = mix(uBg * 1.6, uGold, smoothstep(0.02, 0.85, a));
@@ -68,7 +69,7 @@ bool shadeBox(vec3 ro, vec3 rd, out vec3 col, out float dist){
     else if (a.y > a.z)         { n = vec3(0.0, sign(c.y), 0.0); col = tape(texture(uXT, vec2(u.z, u.x)).r, u.z); }
     else                        { n = vec3(0.0, 0.0, sign(c.z)); col = paper(vec3(u.x, u.y, c.z > 0.0 ? 1.0 : 0.0)); }
   }
-  float l = 0.72 + 0.28 * max(0.0, dot(n, normalize(vec3(0.35, 0.85, 0.45))));
+  float l = 0.84 + 0.22 * max(0.0, dot(n, normalize(vec3(0.35, 0.85, 0.45))));
   col *= l; dist = te;
   return true;
 }

@@ -46,6 +46,16 @@ for (const ep of episodes) {
     rows.push({ ep: ep.ep, status: 'FAIL', note: String(err.message ?? err) });
   }
 }
+// 全集状态（含无成片的集：线框立方体，只有锁与门灯）—— 供 S2 陈列；同样零本地路径
+const allEpisodes = state.episodes.map((e) => ({
+  ep: e.ep, title: e.title ?? null, stage: e.stage ?? null, label: e.current_label ?? null,
+  gates: e.gates ?? null, has_video: Boolean(e.current_sha256), sha8: e.current_sha256 ? e.current_sha256.slice(0, 8) : null,
+  duration_s: e.duration_s ?? null, next_lock: e.next_lock ?? null, human_score: e.human_score ?? null,
+}));
+const epText = JSON.stringify({ updated_at: state.updated_at ?? null, locks: LOCKS, episodes: allEpisodes }, null, 2) + '\n';
+if (FORBIDDEN.test(epText)) { console.error('episodes.json 含本地路径'); process.exit(1); }
+mkdirSync(join(ROOT, 'src/data/frame-vault'), { recursive: true });
+writeFileSync(join(ROOT, 'src/data/frame-vault/episodes.json'), epText);
 console.table(rows);
 process.exit(failed ? 1 : 0);
 

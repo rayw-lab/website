@@ -132,6 +132,8 @@ export class Vault {
     }
     this.host.dataset.vaultRings = String(groups.length);
     this.host.dataset.vaultRejects = String(rings.length);
+    const label = this.host.querySelector<HTMLElement>('[data-vault-rejects-label]');
+    if (label) { label.hidden = rings.length === 0; setText(label, '[data-vault-rejects-n]', String(rings.length)); }
   }
 
   /** 片架切集：淡出 → 换帧体 → 淡入；URL 记 ep */

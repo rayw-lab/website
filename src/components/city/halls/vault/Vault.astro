@@ -16,6 +16,7 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const files = import.meta.glob<{ default: VaultManifest }>('../../../../data/frame-vault/*.json', { eager: true });
 const manifests = Object.entries(files)
   .map(([path, mod]) => ({ key: path.replace(/^.*\/(.+)\.json$/, '$1'), m: mod.default }))
+  .filter((x) => x.key !== 'episodes')
   .sort((a, b) => a.key.localeCompare(b.key));
 if (manifests.length === 0) throw new Error('帧库：src/data/frame-vault/ 下没有任何 manifest（先跑 scripts/frame-vault-build.mjs）');
 const wanted = Astro.props.ep ?? (manifests.find((x) => x.m.stage === 'F') ?? manifests[0]).key;
@@ -79,15 +80,21 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
   <div class="vault__card" data-vault-card hidden role="status"></div>
 
   <div class="vault__hud">
-    <span class="vault__mono vault__tc" data-vault-tc>00:00.000</span>
-    <span class="vault__mono" data-vault-frame>f0</span>
-    <span class="vault__mono" data-vault-tilt>正切</span>
-    <span class="vault__hint">拖动 旋转 · 滚轮 刮时 · ←→ 逐帧 · ⌥←→ 斜切 · 0 归正 · 双击 / Enter 抽帧成片</span>
+    <span class="vault__tc" data-vault-tc>00:00.000</span>
+    <span class="vault__sub"><span data-vault-frame>f0</span> · <span data-vault-tilt>正切</span></span>
+    <details class="vault__help">
+      <summary aria-label="操作说明">?</summary>
+      <dl>
+        <dt>拖动</dt><dd>旋转</dd><dt>滚轮</dt><dd>沿时间刮</dd><dt>← →</dt><dd>逐帧（⇧ 整秒）</dd>
+        <dt>⌥ ← →</dt><dd>把刀面拧斜 · 0 归正</dd><dt>双击 / Enter</dt><dd>抽帧成片</dd><dt>1–8</dt><dd>片架切集</dd>
+      </dl>
+    </details>
     <button class="vault__btn" type="button" data-vault-poster>留影</button>
   </div>
 
   <!-- 时间标尺：位置 = t/duration；门环 = 真实人审退回（fixtures/human-rejects.jsonl） -->
   <div class="vault__ruler" role="group" aria-label="时间标尺">
+    <span class="vault__rejects" data-vault-rejects-label hidden><i></i><b data-vault-rejects-n>0</b> 次人审退回坐在时间轴上 · 悬停看原话</span>
     <i class="vault__needle" aria-hidden="true"></i>
     <!-- 门环由控制器按当前集的 manifest.rings 渲染（切集时重建）；首屏 SSR 一份保证无 JS 也能看到 -->
     <div class="vault__rings" data-vault-rings>
@@ -122,7 +129,7 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
     position: relative; background: var(--bg); color: #cfd3dc;
     display: grid; grid-template-rows: auto auto auto; outline: none;
   }
-  .vault__stage { position: relative; height: clamp(420px, 64svh, 760px); }  /* 舞台 + HUD + 标尺必须在首屏内（页头 69px 之下）：W3 实证标尺被顶出视口后门环悬停不到 */
+  .vault__stage { position: relative; height: clamp(460px, 68svh, 800px); }  /* 舞台 + HUD + 标尺必须在首屏内（页头 69px 之下）：W3 实证标尺被顶出视口后门环悬停不到 */
   .vault__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
   .vault__canvas:active { cursor: grabbing; }
 
@@ -167,18 +174,32 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
   .vault__lock[data-stage='F'] { color: var(--gold); }
   .vault__mono { font: 12px/1.5 ui-monospace, "SF Mono", Menlo, monospace; color: var(--metal); letter-spacing: .04em; }
 
-  .vault__hud { display: flex; align-items: center; gap: 1.4rem; padding: .8rem clamp(1rem, 3vw, 2.5rem); border-top: 1px solid #ffffff12; }
-  .vault__tc { color: var(--paper); font-size: 15px; }
-  .vault__hint { font-size: .78rem; color: var(--metal); opacity: .7; margin-left: auto; }
+  .vault__hud { display: flex; align-items: baseline; gap: 1.2rem; padding: .7rem clamp(1rem, 3vw, 2.5rem) .2rem; }
+  .vault__tc { color: var(--paper); font: 500 22px/1 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+  .vault__sub { font: 12px/1 ui-monospace, Menlo, monospace; color: var(--metal); opacity: .55; letter-spacing: .06em; }
+  .vault__help { margin-left: auto; position: relative; }
+  .vault__help summary { list-style: none; cursor: pointer; width: 1.5rem; height: 1.5rem; display: grid; place-content: center; border: 1px solid #ffffff2a; border-radius: 50%; color: var(--metal); font: 12px/1 ui-monospace, Menlo, monospace; }
+  .vault__help summary::-webkit-details-marker { display: none; }
+  .vault__help[open] summary { border-color: var(--gold); color: var(--gold); }
+  .vault__help dl { position: absolute; right: 0; bottom: 2.1rem; z-index: 3; margin: 0; padding: .7rem .9rem; display: grid; grid-template-columns: auto 1fr; gap: .3rem .9rem; width: max-content; background: #0e1119; border: 1px solid #ffffff1f; box-shadow: 0 18px 40px #000a; font-size: .78rem; color: var(--paper); }
+  .vault__help dt { color: var(--gold); font-family: ui-monospace, Menlo, monospace; }
+  .vault__help dd { margin: 0; color: var(--metal); }
   .vault__btn { background: none; border: 1px solid var(--metal); color: var(--paper); padding: .35rem .9rem; border-radius: 999px; font-size: .8rem; letter-spacing: .1em; cursor: pointer; opacity: .55; transition: opacity .3s, border-color .3s; }
   .vault[data-vault-tilted='1'] .vault__btn { opacity: 1; border-color: var(--gold); color: var(--gold); }
 
-  .vault__ruler { position: relative; height: 3rem; margin: 0 clamp(1rem, 3vw, 2.5rem) 1.2rem; }
-  .vault__ruler::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: linear-gradient(90deg, #ffffff30, #ffffff60, #ffffff30); }
-  .vault__needle { position: absolute; top: calc(50% - 9px); left: calc(var(--vault-t, 0) * 100%); width: 1px; height: 18px; background: var(--paper); box-shadow: 0 0 6px var(--gold); }
+  /* 标尺 = 一根金属轨（细管 + 高光），不是播放器进度条：无填充、无圆头游标 */
+  .vault__ruler { position: relative; height: 3.4rem; margin: 0 clamp(1rem, 3vw, 2.5rem) 1rem; }
+  .vault__ruler::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1px; border-radius: 2px;
+    background: linear-gradient(180deg, #6b7280, #2a2f3a 55%, #454b57); box-shadow: 0 1px 0 #ffffff14, 0 -1px 0 #00000080; }
+  .vault__rejects { position: absolute; left: 0; top: -.35rem; font: 11px/1 ui-monospace, Menlo, monospace; color: var(--metal); letter-spacing: .06em; display: flex; align-items: center; gap: .4rem; }
+  .vault__rejects[hidden] { display: none; }
+  .vault__rejects i { width: 9px; height: 9px; border-radius: 50%; border: 2px solid #e0483a; box-sizing: border-box; }
+  .vault__rejects b { color: var(--paper); font-weight: 500; }
+  /* 刀锋位置：一片竖立的薄刀，不是游标 */
+  .vault__needle { position: absolute; top: calc(50% - 11px); left: calc(var(--vault-t, 0) * 100%); width: 2px; height: 22px; margin-left: -1px; background: linear-gradient(180deg, #fff, var(--paper) 60%, #b9b4a8); box-shadow: 0 0 8px #ffd27866; }
   .vault__ring {
     position: absolute; left: var(--x); top: 50%; width: 14px; height: 14px; transform: translate(-50%, -50%);
-    border-radius: 50%; border: 2px solid var(--metal); background: var(--bg); padding: 0; cursor: pointer;
+    border-radius: 50%; border: 2px solid #b8473d; background: var(--bg); padding: 0; cursor: pointer;
     box-shadow: inset 0 0 0 2px var(--bg), 0 0 0 1px #00000080; transition: border-color .2s, transform .2s;
   }
   .vault__ring:hover, .vault__ring:focus-visible, .vault__ring.is-hit { border-color: #e0483a; transform: translate(-50%, -50%) scale(1.35); outline: none; }
@@ -219,7 +240,7 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
     .vault[data-vault-state] .vault__shutter { animation: none; opacity: 0; }
   }
   @media (max-width: 768px) {
-    .vault__hint, .vault__btn { display: none; }
+    .vault__help, .vault__btn { display: none; }
     .vault__id { bottom: auto; top: 1rem; }
   }
 </style>

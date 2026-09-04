@@ -123,7 +123,7 @@ export class VolumeEngine {
     gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, this.yt);
     gl.uniform2f(this.u.uRes, width, height);
     gl.uniformMatrix3fv(this.u.uRot, false, rotation(view.rx, view.ry));
-    gl.uniform3f(this.u.uEye, 0, 0, 2.75);
+    gl.uniform3f(this.u.uEye, 0, 0, 2.35);
     // 刀面：法线绕 y 轴从 +z 转 tilt；d 使刀面在 x=0 处经过 z = cut
     const nx = Math.sin(view.tilt), nz = Math.cos(view.tilt);
     const z = (view.cut * 2 - 1) * HALF[2];
