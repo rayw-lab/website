@@ -1,11 +1,5 @@
-# ABOUT-HALL 启动提示词（≤300 字，磊哥进 loop/goal 模式时直接丢给执行者；`{LOOP}`/`{HOURS}` 临时填）
+# ABOUT-HALL 后续阶段启动提示词
 
-你是 website「第一栋楼 About Hall」长任务 loop 的指挥官，每 {LOOP} 一轮，连续跑 {HOURS} 小时。你只编排与复审，不写业务代码。
+About 馆本期已经 `DONE`，不要重跑 final-r2、重新生成已锁资产或重开 PR #234。先读 `ABOUT-HALL-INDEX.md` 的“剩余事项”单表和 `docs/handoffs/2026-09-04-about-hall-closeout.md`，再按新的用户目标另开阶段。
 
-唯一任务书：`docs/local-cmd/ABOUT-HALL-CHARTER-2026-09-02.md`，先完整读两遍，再读 `docs/local-cmd/ABOUT-HALL-INDEX.md` 顶部 CURRENT AUTHORITY、`ABOUT-HALL-WBS-01-HERO-ASSETS.md`、`ABOUT-HALL-TECH-ARCH.md`。远期目标：`/world/about-pavilion/` 炫技自我介绍页，访客 10 秒哇、60 秒能复述定位；面板分 = A/B/C/D/E 五维最小值，每轮先问 min 是谁。
-
-开工顺序：按 charter §3 从 `main` 切 `codex/about-hall-20260902` 独立 worktree → `pnpm install --frozen-lockfile` → 索引已在，推进 AH-G0/D1/D2 → 第一波 W1（S0-T/S0-H 出纸 → Grok 生成 → 独立审计 → 6s 视频）。
-
-席位：worker 三类直跑 py——`glm-5-3-flash@ark-plan`（开发、看图复核）、`gemini-3.7-flash`（调研/分镜/秘书/批评者）、Grok Build CLI（生图生视频/编码/调研）；**Grok 常态一路当董事会**，重大决策才咨询，裁决等于我的决定，落 ADR。不用 gemini-3.1-pro。每轮 1 路秘书反核写 LOOP-LOG；每 {SYNC} 合流 + push loop 分支 + 一路沉淀。依赖工具授权 worker 自装并登记。
-
-每波开工前先 Giants 调研；生成路与审计路分 lane；worker 自报不算、静态绿不冒充 live；文字不进 diffusion、六站不编年份、不用外部生图引擎。需要我本人的写 `NEEDS_LEIGE`（照片、人分、合入 main），其余自主决定。
+若只补真实 Safari：不改产品代码。先在 macOS Safari 核两段视频加载与拖动，再在真实 iPhone Safari 核静帧、文字、地轨、按钮、横向溢出与网络请求，证据回填后关闭该单项 `PARTIAL`。若补真实履历或个人素材，必须由磊哥提供一手事实；若做下一栋楼或城市提分，另建独立阶段和验收基线。本期的 S0 第三版、S6 第二版、偏瘦卡通化身、手机静帧、`world-arrival-v1`、`hallPath` 与竖版禁入契约均为已锁基线。

@@ -161,7 +161,7 @@ export function mountCity(game: Game, options: CityOptions = {}): City {
       `；[CC-E4] 霓虹视觉系统就位：Quality ${game.quality.level} 档` +
       `（bloom/湿地反射/剪影密度/窗格动画四联动，?quality=0|1|2 或 #debug 句柄切档）` +
       `；[CC-L1] 天空穹顶+地平线辉光 · 窗色三族纪律 · 街角隔离墩 ${streetProps.spots.length} 只（锥桶已撤场）` +
-      `；[CC-VIS-X3] hero 招牌叙事 v2：${buildingSigns.buildingIds.length} 栋三层体系` +
+      `；[CC-VIS-X3] 楼宇招牌叙事 v2：${buildingSigns.buildingIds.length} 栋三层体系` +
       `（楼顶主匾 + 楼身竖幅 ${buildingSigns.bannerCount} 幅 + 街层产品线灯箱 ${
         buildingSigns.panelFaceCount
       } 面，图集合并每栋 2 draw call）· 全息广告板 ${adBoards.spots.length} 块` +

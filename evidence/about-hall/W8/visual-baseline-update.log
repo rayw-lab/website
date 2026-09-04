@@ -1,0 +1,17 @@
+[WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+[WebServer] (node:21600) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] [WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+[WebServer] (node:21601) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:21651) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:21679) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+/Users/wanglei/studio-data-root/worktrees/website-about-hall/e2e/visual/__screenshots__/world-visual.spec.ts/visual-chromium/world-shell-static.png is re-generated, writing actual.
+  ✓  1 [visual-chromium] › e2e/visual/world-visual.spec.ts:53:3 › 科技城视觉/3D 冒烟取证（visual-chromium 单 worker 顺序执行） › VIS-01 @visual 壳静态基线：reduced-motion 拦截态整壳截图与入库基线一致 (1.9s)
+
+  1 passed (4.4s)

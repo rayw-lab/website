@@ -145,7 +145,9 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: `pnpm preview --host 127.0.0.1 --port ${PORT}`,
+    // Astro 7 在探测到 agent 环境时会自动转后台并让父进程退出，Playwright 因而报
+    // “webServer exited early”。该变量在 Astro CLI 中关闭自动探测，保留前台子进程。
+    command: `ASTRO_PREVIEW_BACKGROUND=1 pnpm preview --host 127.0.0.1 --port ${PORT}`,
     url: `${ORIGIN}${BASE_PATH}/`,
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,

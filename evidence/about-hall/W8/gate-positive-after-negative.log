@@ -1,0 +1,16 @@
+
+G-Hall 门（ADR-2 §7，about-hall-gate.mjs）
+ID          STATUS            DETAIL
+----------------------------------------------------------------------------------------
+G-Hall-1    PASS              dist/world/about-pavilion/index.html 存在；sitemap sitemap-0.xml；未知 slug 无产物（built=about-pavilion）
+G-Hall-2    PASS              扫描 4 个文件（HTML + 静态 JS），零 lab/world / initAllLabFacades / mountWorld（未用 _astro/world. 文件名）
+G-Hall-3    PASS              零 rapier / @dimforge / .wasm
+G-Hall-4    PASS              零 three/webgpu / WebGPURenderer / MeshStandardNodeMaterial
+G-Hall-5    PASS              零 <script> / preload 指向 public/models/** 或 hero-robot / concept-garage / autodrive
+G-Hall-6    PASS              额外 JS gzip 2167B ≤ 20KB 目标（Hall-S）
+G-Hall-7    PASS              1 条 hallPath 均对应 dist 页（deepLink 仍由 check-links 核）
+G-Hall-8    PASS              9 条媒体对账通过（sha256/字节/fps/无音轨/时长）；总载荷 3379813B ≤ 6.0MB
+G-Hall-9    PASS              9 个 data-scene 均有 data-bind，其中 URL 在 dist 可解析
+----------------------------------------------------------------------------------------
+FAIL 0 · WARN 0 · SKIPPED_NO_MEDIA 0 · 写出 evidence/about-hall/GATE.json
+✔ G-Hall-1..9 无 FAIL

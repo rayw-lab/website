@@ -6,7 +6,7 @@
 // 两档模式：
 //   --quick（默认）：e2e 只跑 visual-chromium 冒烟（--no-deps）；LHCI 只测 `/` 与
 //                    `/home/`（综合分①②所需）各 1 轮——单轮 Loop 常规档（~10min）。
-//   --full          ：e2e 全 project 链 + lighthouserc.json 全七 URL × 3 轮中位
+//   --full          ：e2e 全 project 链 + lighthouserc.json 全八 URL × 3 轮中位
 //                    （CI 同口径）——基线登记 / 审计复算档（~45-70min）。
 //
 // 退出码语义（Loop 编排契约）：测试失败 / LHCI 断言不达标 = 数据（压低综合分），
@@ -16,7 +16,7 @@
 // 服务器纪律：复用 127.0.0.1:4321（E2E_PORT 可覆盖）已有 preview；没有则自行拉起
 // 并在脚本退出后保持运行（后续轮 / 人工复查直接复用，不重复冷启）。
 import { spawn, spawnSync } from 'node:child_process';
-import { rmSync, existsSync } from 'node:fs';
+import { rmSync, existsSync, readFileSync } from 'node:fs';
 import { chromium } from '@playwright/test';
 
 // ---------- CLI ----------
@@ -94,7 +94,7 @@ if (!has('skip-e2e')) {
   const pwArgs = FULL
     ? ['exec', 'playwright', 'test']
     : ['exec', 'playwright', 'test', '--project=visual-chromium', '--no-deps'];
-  const code = run(FULL ? 'e2e 全量（五 project 链）' : 'e2e 冒烟（visual-chromium）', 'pnpm', pwArgs);
+  const code = run(FULL ? 'e2e 全量（七 project 链）' : 'e2e 冒烟（visual-chromium）', 'pnpm', pwArgs);
   stages.push(['e2e', code === 0 ? 'PASS' : `FAIL(exit ${code})——已计入综合分`]);
 } else stages.push(['e2e', 'SKIP']);
 
@@ -111,8 +111,12 @@ if (!has('skip-lhci')) {
     '--settings.chromeFlags=--headless=new --no-sandbox --enable-unsafe-swiftshader',
   ];
   if (!FULL) {
-    // quick 档只采综合分①②所需两 URL（--url 覆盖 rc 的七 URL 清单）
+    // quick 档只采综合分①②所需两 URL（--url 覆盖 rc 的八 URL 清单）
     collectArgs.push(`--url=${ORIGIN}${BASE}/`, `--url=${ORIGIN}${BASE}/home/`);
+  } else if (PORT !== 4321) {
+    // 隔离端口也必须覆盖全量 URL；否则 E2E_PORT 只改了 preview，LHCI 仍会误测 4321。
+    const configuredUrls = JSON.parse(readFileSync('lighthouserc.json', 'utf8')).ci.collect.url;
+    collectArgs.push(...configuredUrls.map((url) => `--url=${ORIGIN}${new URL(url).pathname}`));
   }
   if (LHCI_RUNS) collectArgs.push(`--numberOfRuns=${LHCI_RUNS}`);
   const code = run('LHCI collect', 'pnpm', collectArgs, { CHROME_PATH: chromePath });

@@ -1,0 +1,18 @@
+{
+  "job_id": "5cb226fb-6578-48c4-b76c-ccfaa981c053",
+  "pid": 36773,
+  "created_at": 1788456552.570851,
+  "cwd": "/Users/wanglei/studio-data-root/worktrees/website-about-hall",
+  "write": false,
+  "max_turns": 60,
+  "declared_output_files": [],
+  "created_files": [],
+  "seeded_empty_files": [],
+  "job_dir": "/Users/wanglei/.codex/state/grok-cli-codex/jobs/5cb226fb-6578-48c4-b76c-ccfaa981c053",
+  "exit_code": 0,
+  "timed_out": false,
+  "stop_reason": null,
+  "started_at": 1788456552.7022579,
+  "finished_at": 1788456973.0753012,
+  "status": "succeeded"
+}

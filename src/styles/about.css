@@ -46,6 +46,10 @@
   max-inline-size: 18ch;
 }
 
+.about-hero-term {
+  white-space: nowrap;
+}
+
 .about-hero .lede {
   grid-area: lede;
   margin: 0;

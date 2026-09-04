@@ -1,0 +1,31 @@
+[WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+[WebServer] (node:65609) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] [WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+[WebServer] (node:65611) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:65625) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 16 tests using 1 worker
+
+(node:65657) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › e2e/about-hall.spec.ts:10:3 › About Hall 到达条 › 无 query：200，H1 含「架桥」，到达条 hidden (487ms)
+  ✓   2 [desktop-chromium] › e2e/about-hall.spec.ts:20:3 › About Hall 到达条 › ?from=city&poi=about-pavilion：到达条可见且含「个人档案馆」与「返回科技城」 (256ms)
+  ✓   3 [desktop-chromium] › e2e/about-hall.spec.ts:31:3 › About Hall 到达条 › 有卡：world-arrival-v1 的 poi 匹配 → 到达条含「探索」与楼名 (262ms)
+  ✓   4 [desktop-chromium] › e2e/about-hall.spec.ts:59:3 › About Hall 到达条 › ?from=city&poi=not-a-building：到达条 hidden (279ms)
+  ✓   5 [desktop-chromium] › e2e/about-hall.spec.ts:68:3 › About Hall scrub（AH-W1h） › 桌面 Hero：readyState≥1 后指针移到右 3/4，currentTime > 1s (425ms)
+  ✓   6 [desktop-chromium] › e2e/about-hall.spec.ts:89:3 › About Hall scrub（AH-W1h） › 滚动到 S6 中段：transition video.currentTime 在 (3, 8) (541ms)
+  ✓   7 [desktop-chromium] › e2e/about-hall.spec.ts:122:3 › About Hall reduced-motion › prefers-reduced-motion：Hero/S6 video 不存在或 paused，且无运行中 animation (228ms)
+  ✓   8 [desktop-chromium] › e2e/about-hall.spec.ts:148:3 › About Hall reduced-motion › prefers-reduced-motion：无正在运行的 CSS animation (227ms)
+  ✓   9 [desktop-chromium] › e2e/about-hall.spec.ts:177:3 › About Hall 无 JS › 禁用 JS：首屏 H1 与 poster <img> 可见 (268ms)
+  ✓  10 [desktop-chromium] › e2e/about-hall.spec.ts:190:3 › About Hall 未知 slug › 未知 slug 404 (62ms)
+  ✓  11 [desktop-chromium] › e2e/about-hall.spec.ts:197:3 › About Hall 驾驶卡短句（AH-T1b / ADR-4 决策 B） › 完整快照写最高巡航；空快照保底探索 n/N (565ms)
+  ✓  12 [desktop-chromium] › e2e/about-hall.spec.ts:238:3 › About Hall 驾驶卡短句（AH-T1b / ADR-4 决策 B） › HALL-CHROME-DRIVE-CONEHITS：快照只有 coneHits:4 时到达条含碰倒锥桶 (246ms)
+  ✓  13 [desktop-chromium] › e2e/about-hall.spec.ts:262:3 › About Hall 地轨键盘（AH-F1） › HALL-RAIL-KEYBOARD-NAV：Tab 到第 2 节点 Enter → scrollY 增长且目标幕入视口 (766ms)
+  ✓  14 [desktop-chromium] › e2e/about-hall.spec.ts:304:3 › About Hall 移动 375（AH-F1） › HALL-MOBILE-375-NO-OVERFLOW：无横向溢出，Hero poster 可见且无 video 播放 (128ms)
+  ✓  15 [desktop-chromium] › e2e/about-hall.spec.ts:362:3 › AH-W3e 馆长契约 › 桌面非 RM：s1=gaze / s5=present / s6=yield（冻帧 + 降透明 + rAF 冷）/ s8=salute (1.3s)
+  ✓  16 [desktop-chromium] › e2e/about-hall.spec.ts:422:3 › AH-W3e 馆长契约 › reduced-motion：pose 属性仍在（静态 gaze）、无 animation、curatorFrames 不增长 (799ms)
+
+  16 passed (9.3s)

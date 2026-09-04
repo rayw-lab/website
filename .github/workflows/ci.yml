@@ -62,8 +62,8 @@ jobs:
       #    阈值与 URL 清单单源在仓库根 lighthouserc.json（本地 lhci autorun 与 CI 同源）：
       #    - 靶站：pnpm preview 伺服 dist/（base=/website，端口 4321，AGENTS.md 约定）；
       #      不用 LHCI 静态服务器——它按根路径伺服，会破坏 /website/ 前缀的绝对路径资产引用。
-      #    - 覆盖（CC-E7 日切后七 URL）：/（世界壳）+ /home/（宪法首页新址）+ /work/
-      #      + /work/multilingual-cockpit/（案例 A 内容页）+ /about/
+      #    - 覆盖八 URL：/（世界壳）+ /home/（宪法首页新址）+ /work/
+      #      + /work/multilingual-cockpit/（案例 A 内容页）+ /about/ + /world/about-pavilion/
       #      + /lab/car-configurator/ + /lab/tts-cockpit/，每 URL 3 轮取中位轮
       #      （原 MVP Gate 六 URL 基线见 docs/spec/lighthouse-mvp-gate-report.md）。
       #    - 断言（SRD §12.7.2 双口径）：`/` 世界壳分档——P ≥80 error / ≥90 warn，

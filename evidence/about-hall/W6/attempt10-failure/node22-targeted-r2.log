@@ -1,0 +1,12 @@
+[WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+
+Running 2 tests using 1 worker
+
+(node:49590) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [world-chromium] › e2e/cyber-city.spec.ts:287:3 › 科技城 @phase0 世界剧本（CC-E7 绿灯 · world-chromium 串行 project） › CITY-E2E-05 ?gl=1 回退：后端徽标 WebGL 2，变形仪式在回退腿同样可播，零未捕获异常 (2.0m)
+(node:51569) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [world-chromium] › e2e/world-spike.spec.ts:221:3 › world Spike 灰盒试验场 › WS-E2E-03 WASD 可驾驶：W 加速、空格刹停、R 复位、Shift boost、A 左转、提示消隐 (1.6m)
+
+  2 passed (3.7m)

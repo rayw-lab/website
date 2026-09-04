@@ -39,21 +39,21 @@ const SEL = {
   spikeStart: '[data-ws-start]',
 } as const;
 
-/** hero 楼数单源（buildings JSON lodProfile；BuildingSigns 只给 hero 挂三层） */
+/** 招牌楼集合单源：hero 楼 ∪ 已接展厅（hallPath）的楼。 */
 const cityMap = JSON.parse(
   readFileSync(new URL('../src/data/cyber-city-buildings.json', import.meta.url), 'utf8'),
-) as { buildings: { id: string; lodProfile?: string }[] };
-const HERO_COUNT = cityMap.buildings.filter((b) => b.lodProfile === 'hero').length;
+) as { buildings: { id: string; lodProfile?: string; hallPath?: string }[] };
+const SIGNAGE_COUNT = cityMap.buildings.filter((b) => b.lodProfile === 'hero' || Boolean(b.hallPath)).length;
 
 /** stagger 通道数 = hero 楼逐栋 + AdBoards 整组尾拍一支（SignageIgnition 装配合同） */
-const CHANNEL_COUNT = HERO_COUNT + 1;
+const CHANNEL_COUNT = SIGNAGE_COUNT + 1;
 
 /** 广告板块数（design-confirm §4.2 第三件「3-5 块」，AdBoards SPOTS 台账定值 4） */
 const AD_BOARD_COUNT = 4;
 
 /** mountCity 装配台账（src/lab/world/city/index.ts 一字不差的锚点片段） */
 const LEDGER_SIGNS_RE = new RegExp(
-  `\\[CC-VIS-X3\\] hero 招牌叙事 v2：${HERO_COUNT} 栋三层体系`,
+  `\\[CC-VIS-X3\\] 楼宇招牌叙事 v2：${SIGNAGE_COUNT} 栋三层体系`,
 );
 const LEDGER_ADBOARDS_RE = new RegExp(`全息广告板 ${AD_BOARD_COUNT} 块（静帧零配额，1 draw call）`);
 const LEDGER_STAGGER_ARMED = 'stagger 点亮=reveal 后 150ms 逐楼';
@@ -91,9 +91,9 @@ test.describe('招牌叙事 v2 验收（CC-VIS-X3；world-chromium 串行）', (
   //       完成台账行即自摘同帧证据——src/lab/world/city/SignageIgnition.ts）。
   // 信号链：mountCity 台账「stagger 点亮=reveal 后 150ms 逐楼」（武装证明）→
   //         world-reveal（Reveal 光柱开演）→ 全序 1.2 设计秒 →
-  //         「招牌 stagger 点亮完成：6 通道 × 150ms 间隔」（终态 + 自摘证明）。
+  //         「招牌 stagger 点亮完成：N 通道 × 150ms 间隔」（终态 + 自摘证明）。
   // ---------------------------------------------------------------------------
-  test('CITY-SIGN-01 首幕 stagger：装配台账武装 + 全序点亮完成自摘（6 通道 × 150ms）', async ({ page }) => {
+  test(`CITY-SIGN-01 首幕 stagger：装配台账武装 + 全序点亮完成自摘（${CHANNEL_COUNT} 通道 × 150ms）`, async ({ page }) => {
     const logs = collectConsole(page);
     await page.goto(PAGE_URL);
 
@@ -149,19 +149,23 @@ test.describe('招牌叙事 v2 验收（CC-VIS-X3；world-chromium 串行）', (
     const counts = await page.evaluate(() => {
       const game = (window as unknown as { __worldSpikeGame?: { scene: { traverse(cb: (o: { name: string }) => void): void } } }).__worldSpikeGame;
       if (!game) throw new Error('#debug 句柄缺席（__worldSpikeGame）——取证协议前提不成立');
-      const acc = { holo: 0, panels: 0, adBoards: 0 };
+      const acc = { holo: 0, panels: 0, adBoards: 0, aboutHolo: false, aboutPanels: false };
       game.scene.traverse((obj) => {
         if (obj.name.startsWith('city-sign-holo-')) acc.holo += 1;
         if (obj.name.startsWith('city-sign-panels-')) acc.panels += 1;
         if (obj.name === 'city-ad-boards') acc.adBoards += 1;
+        if (obj.name === 'city-sign-holo-about-pavilion') acc.aboutHolo = true;
+        if (obj.name === 'city-sign-panels-about-pavilion') acc.aboutPanels = true;
       });
       return acc;
     });
-    expect(counts.holo, `楼顶主匾全息板 = hero 楼数（${HERO_COUNT}）`).toBe(HERO_COUNT);
-    expect(counts.panels, `立面合并网格（灯箱+竖幅图集合一 draw）= hero 楼数（${HERO_COUNT}）`).toBe(
-      HERO_COUNT,
+    expect(counts.holo, `楼顶主匾全息板 = 招牌楼数（${SIGNAGE_COUNT}）`).toBe(SIGNAGE_COUNT);
+    expect(counts.panels, `立面合并网格（灯箱+竖幅图集合一 draw）= 招牌楼数（${SIGNAGE_COUNT}）`).toBe(
+      SIGNAGE_COUNT,
     );
     expect(counts.adBoards, '全息广告板合并网格恒 1（4 块合 1 draw call）').toBe(1);
+    expect(counts.aboutHolo, 'About 馆必须装配楼顶主匾').toBe(true);
+    expect(counts.aboutPanels, 'About 馆必须装配南/东立面招牌合并网格').toBe(true);
   });
 
   // ---------------------------------------------------------------------------

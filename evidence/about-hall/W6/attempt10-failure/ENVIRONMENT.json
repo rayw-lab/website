@@ -1,0 +1,74 @@
+{
+  "capturedAt": "2026-09-03T23:47:31.595174+08:00",
+  "head": "f942a223131ab3aaa954946ab17f88fb19fc8272",
+  "node": "v26.8.1",
+  "pnpm": "10.33.3",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "trackedSnapshotsBackedUp": [
+    {
+      "path": "docs/spec/assets/e2e-batch1/car_deeplink_graphite_abyss_stealth.png",
+      "bytes": 439719,
+      "sha256": "0ad31c0aaf26d66e1713be23cbf32a606de2b11d160bc5b50b9ad7ef7aa27630"
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/car_ready_default.png",
+      "bytes": 455683,
+      "sha256": "659288b9beb70a832f032561276b3b33be59fe1e99544b7c70543987254c232e"
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/home_desktop_dark.png",
+      "bytes": 199708,
+      "sha256": "7c2f59abbba8a2f950199433669a249cba966786d4a9e31734a6908bf3566602"
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/lab_index_cards.png",
+      "bytes": 340550,
+      "sha256": "c2190514619357b7413dc4a0add19fec39cf564d935ad85981685d16be42066c"
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/mobile_tts_ready_375.png",
+      "bytes": 226220,
+      "sha256": "0655115f185bea616a16d08ea73b129d60418b0ed39d70642ea7e0f19308b1de"
+    },
+    {
+      "path": "docs/spec/assets/e2e-batch1/tts_deeplink_ar_rtl_park.png",
+      "bytes": 152975,
+      "sha256": "4b16319c39b80436719df97da6c0fb581b647c38a08a1d590aa8c52d72f0af94"
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_after_reset.png",
+      "bytes": 350099,
+      "sha256": "1e79fe39ced4cb47703cbef39b3f196e36651cee40a8d1af562c8c4d7399b5ed"
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_cone_knocked.png",
+      "bytes": 318485,
+      "sha256": "54fbd2fd05ade7c790b5f03b1dd3d5579a9217b454b25861610d257c105fa72a"
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_drive_after_boost.png",
+      "bytes": 335643,
+      "sha256": "de5fecb768fb737f071c3e9d7aec4f3a2900fbee7b92953fe31efb0c6fa23c27"
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_mobile_joystick.png",
+      "bytes": 370747,
+      "sha256": "979aea2ca3852b4e19e45ff18932c997fd5bbbd43c3b42b3328453fc886d6a66"
+    },
+    {
+      "path": "docs/spec/assets/e2e-integration/world_remount_ready.png",
+      "bytes": 320641,
+      "sha256": "6363ea5189ef8c89c99fecc48edf417c45a59eeeb978540fb97cc2c341dbf15d"
+    },
+    {
+      "path": "evidence/about-hall/QE/qe-hold-q-limit.png",
+      "bytes": 691241,
+      "sha256": "9f6e7e0eb818b731797c59766a0468d270108746dfebbad843b245c4c9d970d1"
+    },
+    {
+      "path": "evidence/about-hall/QE/qe-release-recentered.png",
+      "bytes": 544280,
+      "sha256": "035d5e70d70dcfda586700d3840fced090e3f31b4d8d2b882045ad541c6d5456"
+    }
+  ]
+}
