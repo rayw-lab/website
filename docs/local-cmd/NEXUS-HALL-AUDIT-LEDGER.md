@@ -1210,3 +1210,31 @@ xhsapi 端点故障期间改派 glm53flash 做反核，质量不打折，抓到�
 未采纳：CSS 原生 `animation-timeline: view()`（0KB）——ADR-7 的 JS 驱动已在且要兼容 Safari，记为后续可替换项。
 **源码已改，构建与出图等全量 e2e 结束后做，不在跑门中途重建 dist。**
 `自看：手卷 · /tmp/nx-final-3.png · 留白（上下飘空、题跋趴成横卡）——本轮重排即为此。`
+
+## R29 · agy B 段验修 + 降级文案真因坐实 + 二次整改（2026-09-04 11:1x–11:4x）
+
+### R29-1 P0-2 真因：不是 WebGL，是 CSS（推翻 R28-1 的「更像 init-failed」）
+- 同截图流程读回：四次 2× 截图后到试墨，`data-trial-ready=1、fallback=null` 六个时点全绿，控制台无 context lost → 属性层从没降级过。
+- 一手：`Trial.astro` `.trial__fallback { display:grid }`（0,1,0）盖过 UA `[hidden]{display:none}`——降级文案**任何时候都显示**。属性绿、截图红，两轮「争用伪影」的归因是错的；R28-1 P0-2 行 SUPERSEDED-BY 本条。
+- 修：`.trial__fallback[hidden]{display:none}`；e2e 新增显隐 2×2（正控 computed 不可见；负控 `getContext('webgl2')` 打成 null 时可见且画布 `toBeHidden`）。首跑因 `[data-trial-fallback]` 同时命中 section 与 p 报 strict violation，改 `p[data-trial-fallback]` 后过。
+- 教训进 skill：`docs/skills/webgl-ink-frontend.md` 规则 41（author display 盖 [hidden]）——待写。
+
+### R29-2 agy B 段 11 条（`/tmp/agy-w8-verify.log`，receipt agy-rescue-20260904-111428-ad946b91）四态裁决
+| # | agy 判 | 亲核 | 处置 |
+|---|---|---|---|
+| P0-1 / P0-3 / P1-5 / P1-7 / P2-9 / P2-10 / P2-11 | 已修 | 与自看一致 | 关 |
+| P0-2 | 未修 | 属实，真因见 R29-1 | 已修 |
+| P1-4 | 部分（基线不可见） | **属实且不是太淡**：`::before` 绝对定位在 inline-flex 标签自身里，`left:6.5rem/right:1rem` 算成负宽——基线根本不存在 | 带子 `left:.9%; right:1rem` 横贯，基线做 flex 填充 `::after`；v4 实看六条线全在 |
+| P1-6 | 未修 | 属实：印阵约 60vh，下一幕必入同屏；agy 新①「墨流底部露题跋标题」同形状 | 同一处置：`.nx-seals` `min-block-size:100svh-header`、grid 居中（不劫持滚轮不 snap，ADR-7 不变） |
+| P2-8「Al Lab」 | 未修 | 全站导航字体的 I/l 同形，非本厅范围 | residual → NEEDS_LEIGE（全站级） |
+| 新② 卷首偏位 | — | **采样伪影**：我的截图取 p=0.45；p=0 时跋一完整在左（`/tmp/nx-v3-3a.png`） | 不改设计 |
+| 新③ 回城极右 | — | 属实，但不是 space-between，是 `hall.css:724` `margin-inline-start:auto` | 归零 + 左聚合 gap .75rem |
+| 手卷专项：只有天头无地界 | — | 属实——**是我裁掉的**：W4r 的画心 31rem 装不下 27rem 面 + 4.2rem 天地，两组数值互相顶牛 | 画心 36rem、面 27rem、天头 2.2/地脚 1.4；地界线在 `/tmp/nx-v3-3a.png` 可见 |
+| 手卷专项：接纸缝 0 命中 | — | 属实（#14/#1f 太淡） | 加浓到 #2e/#47 + 骑缝小印 12px 朱砂方 |
+| 手卷专项：章节刻度 | — | 已有 5rem 滑轨朱砂点，不叠第二套刻度 | 不采 |
+
+### R29-3 门与提交
+- `astro build --outDir dist-next` rc=0；预算门 9499/3772/0/15784 B 四行 PASS；本厅 e2e **23/23**（4322 隔离栈，两轮）；`d2c03ab`。
+- `dist-next/` 进 .gitignore。全量五项目 e2e（4321）仍在跑 87/131，未结束前不重建 `dist`。
+
+`自看：墨流 · /tmp/nx-v4-2.png · 六条基线都在，空带读作「量过了」；手卷 · /tmp/nx-v3-3a.png · 天地界闭合、骑缝印在，跋面下半仍偏空（正文待磊哥）；收官 · /tmp/nx-v4-6.png · 四出口一排。`

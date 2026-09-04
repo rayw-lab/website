@@ -151,3 +151,13 @@ agy 与 dots 同时 `Connection reset`，看似两个席各自坏了；`curl` �
 ## 40 · 门全绿 ≠ 构图成立：出图后自己先看一遍，再派审
 手卷首版 22/22 全绿，截图一看五跋浮在空纸上。**e2e 断言的是行为与数据，不是审美；
 每幕落地后先自己读一张图，再把图交给审计席，别把"自己没看"外包成"等审计说"。**
+
+## 41 · author 层的 `display:` 会盖掉 UA 的 `[hidden]`——属性绿、截图红
+`.fallback { display:grid }` 与元素上的 `hidden` 同时存在时，author 规则（0,1,0）赢过 UA 的 `[hidden]{display:none}`，
+降级文案**永远显示**。属性层（`data-ready=1`）与 e2e 全绿，只有截图看得见，连着两轮被归因成"资源争用伪影"。
+**给 hidden 元素定 display 的地方，同笔写 `.x[hidden]{display:none}`；显隐断言用 computed 可见性（`toBeHidden/toBeVisible`）不用属性。**
+归因反例：截图里出现某状态而探针说没有，先怀疑"这状态是不是根本没被隐藏"，再谈资源。
+
+## 42 · 绝对定位的装饰线宽度取决于它的包含块，不是你以为的画心
+`.band { position:absolute; display:inline-flex }` 里的 `::before { left:6.5rem; right:1rem }`：包含块只有标签那么宽，算出来负宽——线"不存在"，
+两轮审计都报"不可见"，加浓颜色无效。**装饰线先量 `getBoundingClientRect().width`，再谈透明度；让包含块横贯画心（`left/right` 同时给），线做 flex 填充项由布局给宽。**
