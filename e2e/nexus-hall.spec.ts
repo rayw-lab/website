@@ -144,3 +144,46 @@ test.describe('降级', () => {
     expect(loaded).toBe(true);
   });
 });
+
+// ── 正式路由 /world/agent-nexus/（NX-W5 接线）────────────────────────────────
+// 此前展厅只活在 /world-spike/ 下，进不了城。这一组断言的是「真的接进去了」，
+// 不是「组件能渲染」——后者 spike 页早就绿了，而绿了两天城里仍然没有这栋楼。
+test.describe('接线 · /world/agent-nexus/', () => {
+  const HALL = '/world/agent-nexus/';
+
+  test('200 · 楼壳就位 · 台账数字进 <title>/描述', async ({ page }) => {
+    const res = await page.goto(u(HALL));
+    expect(res?.status()).toBe(200);
+    // 展厅壳（data-hall）与到达条都必须在，否则只是「一个页面」不是「一间厅」
+    await expect(page.locator('[data-hall="agent-nexus"]')).toHaveCount(1);
+    await expect(page.locator('[data-hall-chrome]')).toHaveCount(1);
+    await expect(page).toHaveTitle(/墨迹 · Ink Ledger/);
+    // 描述里的数字必须与 ledger 相符（不写死，从数据读）
+    const desc = await page
+      .locator('meta[name="description"]')
+      .getAttribute('content');
+    expect(desc).toContain(String(ledger.totals.sessions));
+    expect(desc).toContain(String(ledger.totals.days));
+  });
+
+  test('三幕都在同一页上：两块 canvas + 印阵', async ({ page }) => {
+    await page.goto(u(HALL));
+    await expect(page.locator('[data-yin-canvas]')).toHaveCount(1);
+    await expect(page.locator('[data-flow-canvas]')).toHaveCount(1);
+    expect(await page.locator('[data-nexus-seals] .seal').count()).toBeGreaterThan(0);
+  });
+
+  // 🔴 主题 2×2。正控证明纸色生效，负控证明它没漏到别的厅去。
+  // 只做正控时，一条写漏的全局选择器会让 about 厅一起变成纸色而无人发现。
+  test('主题正控：本厅是纸色', async ({ page }) => {
+    await page.goto(u(HALL));
+    const bg = await page.locator('body').evaluate((e) => getComputedStyle(e).backgroundColor);
+    expect(bg).toBe('rgb(239, 233, 220)');
+  });
+
+  test('主题负控：about 厅必须仍是暗底（覆盖不许外漏）', async ({ page }) => {
+    await page.goto(u('/world/about-pavilion/'));
+    const bg = await page.locator('body').evaluate((e) => getComputedStyle(e).backgroundColor);
+    expect(bg).toBe('rgb(4, 16, 32)');
+  });
+});

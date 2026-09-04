@@ -869,3 +869,45 @@ agy 说墨流堆在左侧，我第一反应是「与我亲眼所见相反」—�
 · 海报 yin 14916 B / flow 22268 B（内容门 + 预算门均过）
 新增：竖排「不折行」判据换量纲——竖排下列宽 = line-height（实测 70px = 38 × 1.85），
 拿字号当分母会把正常单列误判成折行；并加了「确实处于竖排」的正控，否则该判据水平排版下恒真。
+
+## R21 · NX-W5 接线：展厅进城（2026-09-04 08:2x–08:4x）
+
+### R21-0 起手先补账：INDEX 断档
+tick 起手核 mtime：INDEX 停在 06:34 而流水已到 08:21，R18/R19/R20 三轮没回写票册；
+NX-W2 还写着「1067 会话 / 31 天」（现值 **3025 / 40**），在途 worker 表还挂着两单早已收稿的。
+**恢复 = 读账 + 核鲜 + 补账**，三步缺一就会拿着过期票册做决策。已补。
+
+### R21-1 接线四处（`/world-spike/` → `/world/agent-nexus/`）
+1. `src/data/world-halls.json` 登记 slug（这是路由白名单，`getStaticPaths` 据此生成页）。
+2. `src/data/cyber-city-buildings.json` 给 agent-nexus 补 `hallPath`——
+   `Areas.ts:187` 用 `hallPath ?? deepLink` 决定「城里按 E 进楼」去哪，
+   `check-links.mjs:310` 会核它在 dist 有对应页。**这一行才是「进楼」的实际接线**，
+   页面存在但没有这行，楼还是通向 `/ai-lab/`。
+3. `src/pages/world/[slug].astro` 加分支 + 每厅头部文案表，**fail-closed**：
+   新增 slug 忘配文案直接构建期抛错，而不是静默套用上一个厅的 `<title>`
+   （那样两个厅共用一个标题，SEO 与面包屑同时错且零报错）。
+4. `src/styles/hall.css` 加纸色厅例外。
+
+### R21-2 🔴 选择器特异度相同时，别把「写在后面」当依靠
+全站展厅是暗底 `html:has([data-hall])`，本厅要纸色。
+`:has([data-hall])` 与 `:has([data-hall='agent-nexus'])` **特异度完全相同**，
+只靠顺序取胜意味着任何人往下面追加一条通用规则就会静默翻车。
+改写成 `html:has([data-hall='agent-nexus']):has([data-hall])` 抬高特异度，顺序不再是唯一依靠。
+
+### R21-3 主题验收必须 2×2，只做正控会漏掉「外漏」
+正控：本厅 `body` 背景 = `rgb(239, 233, 220)`（纸）。
+负控：about 厅 `body` 背景 = `rgb(4, 16, 32)`（仍暗）。
+**只做正控时，一条写漏的全局选择器会让 about 厅一起变成纸色而无人发现**——
+两条都已写进 e2e，不留成一次性观测。
+
+### R21-4 顺手修掉一条红了很久的门
+`check-links` rc=1，4 条全在我前几波建的 spike 页：canonical 直接用 `Astro.site`
+（站点根），而项目页部署在 `/website` 下 → 指向 404。
+**这条从 spike 页建起就红着，之前没人跑到过这条子门**（聚合门的典型形态：
+汇报时列的是自己记得的那几个门）。已改为带 base，`check-links` rc=0。
+
+### R21-5 本批验收（LIVE_OBSERVED）
+`/world/agent-nexus/` 实开 200；`data-hall="agent-nexus"` 与到达条在位；
+两块 canvas + 24 枚印；`<title>`＝「墨迹 · Ink Ledger｜…」；描述里的 3025 / 40 从台账渲染。
+门：`astro check` 0 errors · `check-links` rc=0 · `about-hall-gate` rc=0（负控，无回归）
+· 发布安全门 rc=0 · 正确性门 rc=0 · **e2e 29/29**（墨迹 13 + about 16）· build 25 页 · sitemap 含新页。

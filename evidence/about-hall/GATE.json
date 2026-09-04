@@ -1,8 +1,8 @@
 {
   "schema": "about-hall-gate/v1",
   "ok": true,
-  "generatedAt": "2026-09-03T12:12:56.113Z",
-  "dist": "/Users/wanglei/studio-data-root/worktrees/website-about-hall/dist",
+  "generatedAt": "2026-09-04T00:27:24.925Z",
+  "dist": "/Users/wanglei/studio-data-root/worktrees/website-nexus-hall/dist",
   "notes": [
     "G-Hall-10 由 e2e/about-hall.spec.ts 承担，本脚本不判。",
     "G-Hall-2..5 扫描 HTML 与 <script src>/<link rel=modulepreload> 的**内容**；`_astro/world.` 文件名不是证据。"
@@ -11,14 +11,16 @@
     {
       "id": "G-Hall-1",
       "status": "PASS",
-      "detail": "dist/world/about-pavilion/index.html 存在；sitemap sitemap-0.xml；未知 slug 无产物（built=about-pavilion）",
+      "detail": "dist/world/about-pavilion/index.html 存在；sitemap sitemap-0.xml；未知 slug 无产物（built=about-pavilion,agent-nexus）",
       "evidence": {
         "exists": true,
         "registered": [
-          "about-pavilion"
+          "about-pavilion",
+          "agent-nexus"
         ],
         "built": [
-          "about-pavilion"
+          "about-pavilion",
+          "agent-nexus"
         ],
         "extra": [],
         "sitemap": [
@@ -98,9 +100,14 @@
     {
       "id": "G-Hall-7",
       "status": "PASS",
-      "detail": "1 条 hallPath 均对应 dist 页（deepLink 仍由 check-links 核）",
+      "detail": "2 条 hallPath 均对应 dist 页（deepLink 仍由 check-links 核）",
       "evidence": {
         "rows": [
+          {
+            "id": "agent-nexus",
+            "hallPath": "/world/agent-nexus/",
+            "ok": true
+          },
           {
             "id": "about-pavilion",
             "hallPath": "/world/about-pavilion/",

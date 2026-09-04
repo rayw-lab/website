@@ -5,7 +5,9 @@
  * /world-spike/ 既定纪律：noindex,follow + canonical → `/` + 剔出 sitemap。
  */
 import Flow from '../../components/city/halls/nexus/Flow.astro';
-const site = Astro.site?.href ?? '/';
+// 🔴 canonical 必须带 base。`Astro.site` 是站点根（.../），项目页部署在 `/website` 下，
+// 直接拿它当 canonical 会指向 404 —— check-links 的 base 前缀判据会红（本轮才第一次跑到）。
+const site = new URL(`${import.meta.env.BASE_URL.replace(/\/+$/, '')}/`, Astro.site).href;
 const count = Number(Astro.url.searchParams.get('n') ?? '0') || undefined;
 ---
 

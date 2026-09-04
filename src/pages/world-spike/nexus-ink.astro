@@ -6,7 +6,9 @@
  * 验收三件：① 一滴墨洇开并分离出紫晕 ② 鼠标可试画 ③ 干纸区域拒墨
  * URL 参数：?demo=yin&t=8 → 确定性跑到第 8 秒停帧（构建期截海报用）
  */
-const site = Astro.site?.href ?? '/';
+// 🔴 canonical 必须带 base。`Astro.site` 是站点根（.../），项目页部署在 `/website` 下，
+// 直接拿它当 canonical 会指向 404 —— check-links 的 base 前缀判据会红（本轮才第一次跑到）。
+const site = new URL(`${import.meta.env.BASE_URL.replace(/\/+$/, '')}/`, Astro.site).href;
 
 import ledger from '../../data/nexus-ledger.json';
 // 只取渲染需要的字段（600 条 × 7 字段 ≈ 20KB）。这是 world-spike 工程页，
