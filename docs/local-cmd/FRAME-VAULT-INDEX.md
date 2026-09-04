@@ -3,7 +3,7 @@
 > 本文是第三栋楼唯一 ACTIVE TODO。冲突时：**live Git / 隔离栈 / 日志 > 本文 > 任何旧看板**。
 > 目标：`/world/frame-vault/`「帧库 · Frame Vault」——把视频当成可切开的时间固体，科普磊哥的 AI 视频自动化闭环。
 > 设计 SSOT = `FRAME-VAULT-DRAFT-2026-09-04.md`；施工 SSOT = `FRAME-VAULT-CHARTER-2026-09-04.md`。
-> 更新 2026-09-04 22:40 · 分支 **未开**（计划 `codex/frame-vault-20260904`，base `codex/nexus-hall-20260903@3e0680f`）· 建筑 `workflow-foundry` · 分支 `codex/frame-vault-20260904`（自 `0f1cdd0`）· 一二楼已合入 main `51fa87d`（PR #238）· 状态：**W5 GATE_PASS，W6 盲评待派（异源席，非 k3）**
+> 更新 2026-09-04 22:40 · 分支 **未开**（计划 `codex/frame-vault-20260904`，base `codex/nexus-hall-20260903@3e0680f`）· 建筑 `workflow-foundry` · 分支 `codex/frame-vault-20260904`（自 `0f1cdd0`）· 一二楼已合入 main `51fa87d`（PR #238）· 状态：**W6 LIVE_OBSERVED；等全仓 e2e 回归绿后开 PR 合入 main**
 
 ## 状态机
 `PLANNED → RESEARCHED → BUILT → AUDITED → GATE_PASS → LIVE_OBSERVED`（只有 LIVE_OBSERVED 作验收）
@@ -21,7 +21,7 @@
 | FV-W3 | W3 | 抽帧成片 + 翻面 + 门环 + 爆炸 + 片架 | 执行方 | 同上 | W2 | 四交互 Live | **BUILT**（R3-2：抽帧成片/全屏/下载、片架、门环真机目击；翻面缺时间对齐源、爆炸并入 W4） |
 | FV-W4 | W4 | 片库布局 + 快门 + S2/S3 + `film` token | 执行方 | 同上 + 热点文件 | W3 | 全程 Live | **BUILT**（R4：film 四消费点、环境光、S2 矩阵/金字塔/日志/dogfood、E 爆炸、S3 三出口；浮尘未做；城侧到达未真机目击） |
 | FV-W5 | W5 | 接线 + e2e + 五门 | 执行方 + terra + sonnet | 热点文件 + `e2e/` | W4 | 200 + 进楼 + 回城 | **GATE_PASS**（R5：e2e 6/6 + 回城 5/5；六门全绿；astro check 0 错；chunk 8.4 KB gzip；海报；城→楼快门真机目击） |
-| FV-W6 | W6 | 盲评 + 修 + LIVE_OBSERVED | xhsapi + 执行方 | — | W5 | 面板分 | PLANNED |
+| FV-W6 | W6 | 盲评 + 修 + LIVE_OBSERVED | seed（异源）+ 执行方 | — | W5 | 面板分 | **LIVE_OBSERVED**（R6：seed 39/50 三条整改落地；隔离栈真 GPU 一镜到底 城→E→楼四交互→回城 car_ready，零 pageerror） |
 
 ## NEEDS_LEIGE
 七条已全拍（R1-1），无待拍项。

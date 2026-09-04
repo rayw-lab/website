@@ -147,3 +147,7 @@
 - 总评：夸「时间固体概念落地完成度高，视觉/交互/生产链路统一在同一母题」；挑「首屏缺轻量引导、集数锁状态 P/F 语义模糊、时码大字分散注意」。
 - 采纳（事实型，当场改）：片架格子字母后补锁名（`P 画面锁`）；一次性引导条（idle 1.2 s 浮出、首次输入或 7 s 收、sessionStorage 只出一次，移动端不出）；时码 22→18 px。真机复核 nudge 出现→滚轮后消失 `[实测]`。
 - 不采纳：无。
+
+### R6-2 LIVE_OBSERVED：隔离栈（本 worktree dist，127.0.0.1:4324）真 GPU 全程一镜（`.tmp/live-walk.mjs`，截图 `shots/vault/walk/1–6`）
+- +3.6 s 城 ready（`?poi=workflow-foundry` 深链）→ +8.1 s 按 E 挂快门 → +8.5 s 跨文档落地 `?from=city&poi=workflow-foundry` → +8.9 s 帧库 idle → 刮时 + 斜切（cut .67 / tilt .24，phase tilted）→ 键 3 切 EP4（19 枚环）→ 点环 → Enter 抽帧成片（video 111.3 s 播放中）→ Esc → E 拆开（exploded）→ S3「回城」出口 → `?poi=workflow-foundry&from=hall` → +27.5 s car_ready，车在泊位 (18,−150)、yaw −3.14（车头朝街西向，`exitHeading` 缺省 = heading+180）、third 视角。
+- 全程零 pageerror；三段快门母题 + 回城续驶接上。
