@@ -42,6 +42,12 @@
     var el = document.querySelector('[data-nx-arrive]');
     if (!el) { setTimeout(done, 400); return; }
     document.body.appendChild(el); el.hidden = false; root.classList.add('nx-transit--dom');
+    // 毛刺幅度按视口等比缩：46+13 是按 1440 宽调的（占屏 4.1%），原样套到 375 宽会占 15.7%，
+    // 边缘从纤维毛刺变成大锯齿（agy W12 P1-b 属实）。缩后两端占屏比一致。
+    var k = Math.min(1, innerWidth / 1440);
+    var dm = document.querySelectorAll('#nx-arrive-edge feDisplacementMap');
+    if (dm[0]) dm[0].setAttribute('scale', String(Math.max(14, Math.round(46 * k))));
+    if (dm[1]) dm[1].setAttribute('scale', String(Math.max(4, Math.round(13 * k))));
     // 🔴 变量写 el 的 inline style，不写 <html>：`.nx-arrive` 类规则里的兜底声明属于**元素自身**，
     // 会压过从 html 继承的值（v15 实证：mask 的纵向半径一直卡在 170vmax，横向却已按 ratio 算出来，
     // 于是「看着在动其实没动」）。inline style 优先于自身类规则，这是唯一稳的写入面。
@@ -56,7 +62,11 @@
       if (rc.width > 0 && rc.height > 0) {
         el.style.setProperty('--nx-cx', ((rc.left + dx * rc.width) / innerWidth * 100).toFixed(2) + 'vw');
         el.style.setProperty('--nx-cy', ((rc.top + dy * rc.height) / innerHeight * 100).toFixed(2) + 'vh');
-        // 桌面实测：canvas 1.6 → 墨团 1.48，系数 .925
+        // 比例跟画布走**有实测依据**：桌面 canvas 1.6 → 真墨团 1.524；移动 canvas 0.562 →
+        // 真墨团 0.587——那滴墨在竖屏下本来就是竖椭圆（引擎按归一化坐标渲染，墨形随画布拉伸）。
+        // 遮罩要接的是它，不是国画常识里的圆，所以不锁成固定比例（agy W12 C-1 据此驳回）。
+        // 🔴 residual：墨滴随屏幕比例变形本身是引擎坐标映射问题（该按短边等比），改它会波及
+        // 墨流/试墨所有幕、需整套重做视觉验收，不在本轮擦尾范围。
         el.style.setProperty('--nx-ratio', (rc.width / rc.height * 0.925).toFixed(3));
       }
     }
