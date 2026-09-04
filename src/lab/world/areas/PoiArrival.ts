@@ -16,6 +16,7 @@
 //   shot-apply {id}        前奏起帧（world-poi 之后同交互调用内，seq 序稳定）；
 //   shot-interrupt {by:'drive'}  驾驶意图释放 shot（前奏中断与定帧后接管同一接线点）。
 // 动画配额：事件驱动一次性 tween，不占 CITY-03 循环动画配额（design 纪律 5）。
+import * as THREE from 'three';
 import type { Game } from '../core/Game';
 import type { CyberCityMap } from '../city/CityMap';
 import type { ViewShotPose } from '../view/View';
@@ -33,6 +34,9 @@ const HOLD_OVERLAY_VAR = '--poi-hold-neon';
 const HOLD_OVERLAY_STYLE_ID = 'world-poi-hold-style';
 /** [NX-W7] 墨吞形态类名（buildings JSON arrivalFx:'ink' 的楼）；墨幕在 finish 后**不卸**，带过跨文档跳转 */
 const HOLD_INK_CLASS = 'world-poi-hold-ink';
+/** 墨团起点 CSS 变量（楼的世界坐标经当前相机投影而来；写死 vw/vh 会在定帧换机位后指向空处） */
+const INK_ORIGIN_X = '--poi-ink-x';
+const INK_ORIGIN_Y = '--poi-ink-y';
 /** navigate 发出后墨幕最长驻留（墙钟 ms）：route abort / console 型 POI 下页面存续，到点卸类还世界 */
 const INK_LINGER_MS = 1500;
 
@@ -71,6 +75,24 @@ export class PoiArrival {
   /** hold 脉冲起墙钟（performance.now）；0 = 未挂。卸类走墙钟 400ms，不跟 HOLD_DURATION 游戏秒 */
   private overlayStartedAt = 0;
   private inkLingerTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /**
+   * 楼底中心 → 屏幕百分比。用 View 的实时相机做投影，所以定帧机位一变，起笔点跟着变。
+   * 返回值已夹到 [4,96]，避免墨团整个落到画外看不见起势。
+   */
+  private projectBuildingFoot(buildingId: string): { x: number; y: number } {
+    const fallback = { x: 50, y: 72 };
+    const building = this.map.buildings.find((entry) => entry.id === buildingId);
+    const camera = this.game.view?.camera;
+    if (!building || !camera) return fallback;
+    const v = new THREE.Vector3(building.position.x, building.footprint.h * 0.06, building.position.z);
+    v.project(camera);
+    if (!Number.isFinite(v.x) || !Number.isFinite(v.y) || v.z > 1) return fallback;
+    return {
+      x: Math.min(96, Math.max(4, (v.x * 0.5 + 0.5) * 100)),
+      y: Math.min(96, Math.max(4, (-v.y * 0.5 + 0.5) * 100)),
+    };
+  }
 
   /** 当前前奏楼的转场形态（buildings JSON 单源；无楼/无字段 = 霓虹脉冲） */
   private arrivalFx(): 'ink' | null {
@@ -268,6 +290,12 @@ export class PoiArrival {
     root.style.setProperty(HOLD_OVERLAY_VAR, neon);
     if (fx === 'ink') {
       // 墨幕不走 400ms 墙钟自卸（overlayStartedAt 留 0）：驻留到 finish/interrupt 决定
+      // 🔴 起笔要有着力点：定帧机位把车位推出画外后，写死的 (36vw,66vh) 只是一片没有特征的立面暗部
+      //（agy W11 P0-2 实证），墨团成了「凭空生墨」。改为把楼底中心的世界坐标用**当前相机**投到屏幕，
+      // 墨从楼脚下涌出。投影失败（无相机/在背后）时回落到画面中下，不阻断转场。
+      const origin = this.projectBuildingFoot(id);
+      root.style.setProperty(INK_ORIGIN_X, `${origin.x.toFixed(2)}%`);
+      root.style.setProperty(INK_ORIGIN_Y, `${origin.y.toFixed(2)}%`);
       root.classList.add(HOLD_INK_CLASS);
       // 取证面走 DOM 不走 session.log（观测规格白名单外的 type 会被丢弃并 warn；不为一个转场扩规格）
       root.dataset.poiArrivalFx = 'ink';
@@ -303,6 +331,8 @@ export class PoiArrival {
     const root = document.documentElement;
     root.classList.remove(HOLD_OVERLAY_CLASS);
     root.classList.remove(HOLD_INK_CLASS);
+    root.style.removeProperty(INK_ORIGIN_X);
+    root.style.removeProperty(INK_ORIGIN_Y);
     delete root.dataset.poiArrivalFx;
     root.style.removeProperty(HOLD_OVERLAY_VAR);
   }
@@ -329,8 +359,15 @@ export class PoiArrival {
       //   ① 画布 .12s 褪成墨拓（灰度+高对比+压暗：霓虹成飞白、窗格成拓痕）；
       //   ② ::before 三层径向墨团自车位（约 36vw,66vh）沿车头方向偏右上放大吞屏（.38s，先慢后快）；
       //   ③ ::after 全墨在最后 30% 补满（保证任何视口比例都无缝隙）。类在 finish 后不卸，墨幕带过跳转。
-      `html.${HOLD_INK_CLASS} [data-world-canvas]{filter:grayscale(1) contrast(2.4) brightness(.7);transition:filter .12s ease-out}` +
-      `html.${HOLD_INK_CLASS}::before{content:"";position:fixed;left:36vw;top:66vh;width:60vmax;height:60vmax;margin:-30vmax 0 0 -30vmax;` +
+      // 🔴 拓片是「墨黑如漆、字口泛白」的高反差，不是均匀压暗的灰蒙版（agy W11 P0-3：首版
+      //   grayscale+contrast2.4+brightness.7 在夜景上只是把画面调暗，读作显示器供电不足）。
+      //   改为先提亮再高对比：亮部（霓虹/窗格）推到近白成飞白，暗部塌进焦墨，纯合成器层不做 SVG
+      //   卷积（对 WebGL canvas 上 Sobel 会强制 CPU 读回，与 0.4s 定帧的帧率预算冲突）。
+      `html.${HOLD_INK_CLASS} [data-world-canvas]{filter:grayscale(1) brightness(1.7) contrast(5.2) brightness(.86);transition:filter .12s ease-out}` +
+      // 前奏是电影级视界：驾驶 HUD / 键位提示同帧淡出（agy W11 P2；#debug 面板属探针伪影不在此列）
+      `html.${HOLD_INK_CLASS} .hud,html.${HOLD_INK_CLASS} .hint,html.${HOLD_INK_CLASS} .quest,` +
+      `html.${HOLD_INK_CLASS} .explore-chip{opacity:0;transition:opacity .12s ease-out;pointer-events:none}` +
+      `html.${HOLD_INK_CLASS}::before{content:"";position:fixed;left:var(${INK_ORIGIN_X},36vw);top:var(${INK_ORIGIN_Y},66vh);width:60vmax;height:60vmax;margin:-30vmax 0 0 -30vmax;` +
       `z-index:41;pointer-events:none;will-change:transform;` +
       `background:radial-gradient(closest-side at 50% 50%,#1c1f26 0 56%,transparent 100%),` +
       `radial-gradient(closest-side at 64% 36%,#1c1f26 0 46%,transparent 100%),` +

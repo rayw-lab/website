@@ -5,6 +5,7 @@
 import WorldHallLayout from '../../layouts/WorldHallLayout.astro';
 import HallChrome from '../../components/city/HallChrome.astro';
 import Arrive from '../../components/city/halls/nexus/Arrive.astro';
+import ArriveHead from '../../components/city/halls/nexus/ArriveHead.astro';
 import Hero from '../../components/city/halls/about/Hero.astro';
 import Curator from '../../components/city/halls/about/Curator.astro';
 import Stations from '../../components/city/halls/about/Stations.astro';
@@ -72,6 +73,7 @@ const jsonLd = breadcrumbJsonLd([
   neonColor={building.neonColor}
   jsonLd={jsonLd}
 >
+  {hall.slug === 'agent-nexus' && <Fragment slot="head"><ArriveHead /></Fragment>}
   <HallChrome slot="ritual" buildingId={hall.buildingId} />
   {hall.slug === 'about-pavilion' && (
     <>

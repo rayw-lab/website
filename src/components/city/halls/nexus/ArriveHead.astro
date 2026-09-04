@@ -1,0 +1,31 @@
+---
+// [NX-W7] 墨幕的**首帧**部分：必须在 <head> 里执行。
+// 🔴 病灶实证（v11 探针）：墨幕原本连同 <div> 放在 .hall-main 中部，HTML 流式解析到那里之前
+// 顶栏已经绘制，t=45ms 截图读到 `--nx-r: undefined` + 整屏纸色 —— 跨文档接驳的白闪期墨幕缺席，
+// 「以墨充帘」根本没发生。改为 head 内联脚本抢在首绘之前给 <html> 挂类，CSS 同在 head，
+// 于是第一帧就是满屏墨，与城侧墨幕同色接上。
+---
+<script is:inline>
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search);
+      if (p.get('from') === 'city' && p.get('poi') === 'agent-nexus') {
+        document.documentElement.classList.add('nx-transit');
+      }
+    } catch (e) { /* 参数解析失败 = 不做转场，正常进厅 */ }
+  })();
+</script>
+<style is:global>
+  /* 满屏墨幕：t=0 时遮罩半径是 170vmax（铺满），由 body 脚本逐帧收到 S0 落点。
+     mask 用绝对长度定位（视口坐标），落点 (36vw, 46.8vh) 与宽高比 1.45 来自 S0 真墨像素实测。 */
+  html.nx-transit::before {
+    content: ''; position: fixed; inset: 0; z-index: 99; pointer-events: none; background: #1c1f26;
+    --nx-r: 170vmax;
+    -webkit-mask-image: radial-gradient(ellipse calc(var(--nx-r) * 1.45) var(--nx-r) at 36vw 46.8vh, #000 0 99%, transparent 100%);
+    mask-image: radial-gradient(ellipse calc(var(--nx-r) * 1.45) var(--nx-r) at 36vw 46.8vh, #000 0 99%, transparent 100%);
+  }
+  /* defs 解析到之后才挂滤镜：首帧满屏墨看不见边，不必为它阻塞首绘 */
+  html.nx-transit.nx-transit--edge::before { filter: url(#nx-arrive-edge); }
+  html.nx-transit--fade::before { -webkit-mask-image: none; mask-image: none; filter: none; transition: opacity .3s ease-out; }
+  html.nx-transit--fade.nx-transit--out::before { opacity: 0; }
+</style>

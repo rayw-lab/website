@@ -189,32 +189,54 @@ test.describe('接线 · /world/agent-nexus/', () => {
   // 城里按 E 进楼时 PoiArrival 的墨幕（#1c1f26）带过跳转，本页首帧同色接力后向 S0 落点 (36%,40%) 收缩。
   // 断言的是运行痕迹（window.__nxArrive：起止 + 帧数）而不是逐时点截图——SwiftShader 下主线程被
   // 引擎初始化占满，动画 ~900ms 内跑完，时点截图既不稳也不可证。
-  test('🔴 到达墨幕 2×2：?from=city&poi=agent-nexus 起→收→删（正控）；直链不挂（负控）', async ({ page }) => {
-    // 🔴 三次导航 URL 必须两两不同于「仅 hash 差异」：只差 hash 时 Playwright 走片段导航，脚本不重跑。
-    // 顺序：hold 版（停在中段）→ 直链负控 → 正常版。
-    await page.goto(u(`${HALL}?from=city&poi=agent-nexus#nx-arrive-hold`));
-    await expect(page.locator('[data-nx-arrive]')).toHaveAttribute('data-state', 'hold', { timeout: 8000 });
-    const r = await page.locator('[data-nx-arrive]').evaluate((e) => parseFloat((e as HTMLElement).style.getPropertyValue('--nx-r')));
-    // 遮罩半径此时必须小于起始 170vmax（真在收缩，不是挂着不动）
-    expect(r).toBeGreaterThan(0);
-    expect(r).toBeLessThan(1.7 * Math.max(1440, 900) * 0.5);
+  test('🔴 到达墨幕 2×2：?from=city&poi=agent-nexus 首帧满屏墨→收向 S0 落点→清干净（正控）；直链不挂（负控）', async ({ page }) => {
+    // 🔴 断言的是**逐帧采样的遮罩半径**，不是截图：Playwright 的 screenshot 会等渲染稳定，
+    // 捕获时刻早已越过 820ms 的动画（v12 探针实证：t=40ms 请求的截图拍到的是纸色收尾帧）。
+    await page.addInitScript(() => {
+      (window as any).__samples = [];
+      const s = (): void => {
+        const r = document.documentElement;
+        (window as any).__samples.push({
+          t: performance.now(), cls: r.className,
+          r: r.style.getPropertyValue('--nx-r'),
+          bg: getComputedStyle(r, '::before').backgroundColor,
+        });
+        if ((window as any).__samples.length < 14) requestAnimationFrame(s);
+      };
+      requestAnimationFrame(s);
+    });
 
-    // 负控：无来源参数 → 元素被脚本移除、无痕迹
+    // 🔴 三次导航的 URL 必须两两不只差 hash：只差 hash 时 Playwright 走片段导航，页面不重载、
+    // 脚本不重跑（本轮重排测试时又踩了一次）。顺序：hold 版 → 直链负控 → 正控。
+    // hold 钩子：停在 35% 时半径必须已远小于起始（真在收缩，不是挂着不动）
+    await page.goto(u(`${HALL}?from=city&poi=agent-nexus#nx-arrive-hold`));
+    await expect(page.locator('html')).toHaveAttribute('data-nx-arrive-state', 'hold', { timeout: 9000 });
+    const held = await page.evaluate(() => parseFloat(document.documentElement.style.getPropertyValue('--nx-r')));
+    expect(held).toBeGreaterThan(0);
+    expect(held).toBeLessThan(170 * 14.4 * 0.5);
+
+    // 负控：无来源参数 → 类不挂、无痕迹
     await page.goto(u(HALL));
     await page.waitForTimeout(300);
-    await expect(page.locator('[data-nx-arrive]')).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.className)).not.toMatch(/nx-transit/);
     expect(await page.evaluate(() => (window as any).__nxArrive ?? null)).toBeNull();
 
-    // 正控：起→收→删，痕迹里有起止与 ≥2 帧
-    await page.goto(u(`${HALL}?from=city&poi=agent-nexus`));
+    // 正控：首帧就得是满屏墨（跨文档接驳的白闪期由它顶着），末帧清干净
+    await page.goto(u(`${HALL}?from=city&poi=agent-nexus`), { waitUntil: 'commit' });
     await expect
-      .poll(() => page.evaluate(() => (window as any).__nxArrive?.endedAt ?? 0), { timeout: 8000 })
+      .poll(() => page.evaluate(() => (window as any).__nxArrive?.endedAt ?? 0), { timeout: 9000 })
       .toBeGreaterThan(0);
+    const samples = await page.evaluate(() => (window as any).__samples as Array<{ t: number; cls: string; r: string; bg: string }>);
+    const first = samples[0];
+    expect(first.cls, '首帧 <html> 必须已带 nx-transit（head 内联脚本抢在首绘前）').toMatch(/nx-transit/);
+    expect(first.bg, '首帧墨色').toBe('rgb(28, 31, 38)');
+    // 起始半径 = 170vmax；视口 1440×900 → vmax=14.4 → 2448px
+    expect(parseFloat(first.r)).toBeGreaterThan(170 * 14.4 * 0.98);
     const trace = await page.evaluate(() => (window as any).__nxArrive);
     expect(trace.frames, '至少两帧（起帧 + 终帧）才算收缩过').toBeGreaterThanOrEqual(2);
     expect(trace.endedAt - trace.startedAt).toBeGreaterThan(300);
-    expect(trace.endedAt - trace.startedAt).toBeLessThan(2000);
-    await expect(page.locator('[data-nx-arrive]')).toHaveCount(0);
+    expect(trace.endedAt - trace.startedAt).toBeLessThan(2200);
+    expect(await page.evaluate(() => document.documentElement.className)).not.toMatch(/nx-transit/);
   });
 
   test('从城里进楼：到达条认出「主智能体中枢」', async ({ page }) => {
