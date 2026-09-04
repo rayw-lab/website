@@ -34,3 +34,26 @@
 - 三流派：WebGL2 `TEXTURE_2D_ARRAY` 单 draw（Autr/slitscan-webgl，`MAX_ARRAY_TEXTURE_LAYERS` 硬截断）/ three.js 每帧一个面片 + clippingPlanes（ras0q/slitscan3d，draw call 随帧数线性，>100 帧悬崖）/ Canvas 2D CPU 切片（positlabs/temporalis，主存 OOM）。
 - 裁决：与 spike 选择一致——**采纳** `sampler3D`/array 单 draw 路线（我们已实测 1943 层 3D 纹理 120 fps，超过其 256 帧 ring buffer 场景）；**采纳** `requestVideoFrameCallback` 进 W3 抽帧成片的视频↔t 对齐；**采纳**运行时读 `MAX_3D_TEXTURE_SIZE` 硬截断（草案 §7 已有，其提到部分移动端下限 256 层，与我的 `[推断]` 一致，仍待查 spec）；**驳回**多面片堆叠与 CPU 切片；其「迁到 three.js Data3DTexture + TSL」建议不采纳（草案 §6 已定不引 three.js，理由：一个盒子不值 150 KB+）。
 - 其 file:line 锚点（`index.html:174/111/66` 等）**未逐条亲核**，待进程结束后补核并在 R1 记结果；结论层已可用，锚点层 `[单源未审]`。
+
+## R1 · 磊哥裁决 + W20 收稿终核 + 合流令（2026-09-04 晚）
+
+### R1-1 磊哥裁决（原话：「七条全部同意 / 成片视频托管 github 可以公开啊 / 都能公开 / 可以并入 / 楼名先听你的 / 我同意合流的」）
+| 草案 §9 | 裁决 | 落地 |
+|---|---|---|
+| 1 视频托管 | GitHub 公开 | 四集重编码 720p（目标 ≤25 MB/集）入 `public/video/frame-vault/<ep>.mp4`；原片 sha 仍写 manifest 作身份，重编码文件另记 sha |
+| 2 工作剪公开 | 可以 | EP3/4/5 帧体 + 视频均展示，标「工作剪 vX.Y · 未过 F 锁」 |
+| 3 台本公开 | 可以 | 翻面读稿显示全文 |
+| 4 人审原话 | 可以 | 门环原文展示 |
+| 5 楼名 | 「先听你的」 | 厅「帧库 · Frame Vault」，建筑中文名「帧库 · 视频闭环车间」，id `workflow-foundry` 不变 |
+| 6 tagline | 同意 ⭐ | 「视频不是文件，是一次构建。切开它。」 |
+| 7 scout-r0 | 「可以并入」 | 改为：S2 末尾加一段 scout-r0 闭环指向卡（不搬迁其流水线，只并入叙事） |
+| go | 「/loop 20m 全力推进…施工以及合流」 | 视为 go：开分支进 W1；一二楼合流授权 |
+编排：「主要难点包括审美相关你亲自实施，其他安排多路 glm53flash 或 agy 协助」→ 引擎/切面/海报/布局/材质 = 执行方；管线脚本初稿 = glm（W23）；编码调研 = agy（W22）。
+
+### R1-2 W20 agy 终稿收稿（进程已结束，产物 5.6 KB，含「明确没证的」3 条）
+- 锚点亲核：`Autr/slitscan-webgl/index.html` :174 `bindTexture(TEXTURE_2D_ARRAY…)`、:111 `int lookupA = (int(xy.x)+idx) % NUM_FRAMES`、:66 `MAX_ARRAY_TEXTURE_LAYERS` —— **3/3 命中** `[实测 sed -n]`。`ras0q/slitscan3d SlitScanGroup.tsx` :24/:75 —— 两处**不命中**（漂移，本仓 clone 版本行号不同），结论层（每帧一 texture + clippingPlanes）未逐行核，按 `[单源]` 收；该路线本就 DROP，不影响决策。
+- 其「明确没证的」第 3 条（斜切后的音频如何重组）：本楼设计规避——斜切只出静态海报，音频只在「抽帧成片」的线性播放里出现。
+
+### R1-3 合流序
+- about-hall 已由 PR #234 合入 main（2026-09-03T21:08Z）；nexus 分支领先 origin/main 83 个 commit、落后 0，`git merge-tree` 干净（tree `7ceddf79`）。
+- 合流前跑聚合门（`~/.codex/state/nexus-hall/w21-gate.sh`：astro build + nexus-ledger-gate + nexus-hall-gate + about-hall-gate + check-links），绿后 push 分支 + PR + merge；hall 3 worktree 从合流后的 main 开。

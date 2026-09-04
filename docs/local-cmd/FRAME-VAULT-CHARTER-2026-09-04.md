@@ -26,8 +26,8 @@ seat-template: docs/local-cmd/NEXUS-HALL-CHARTER-2026-09-04.md（席位/写根/�
 | 5 | 内容 | 文案/正文后补；本期锁技术栈、体系、产品设计、交互设计 |
 | 6 | 编排 | 允许 clone 巨人肩膀作锚点参考（2026-09-04 「允许 clone 巨人肩膀 作为锚点参考哦」）；每波一路 agy 调研（沿第二楼裁决 7）；xhsapi 秘书/反核常态 |
 
-## 0.2 待拍（NEEDS_LEIGE，见草案 §9；未拍前按 ⭐ 默认施工，拍后改动记 ADR）
-视频托管 / 工作剪是否公开 / 台本是否公开 / 人审原话是否公开 / 楼名 / tagline / scout-r0。
+## 0.2 已拍（2026-09-04 晚，流水 R1-1）
+七条全部同意：视频 GitHub 公开托管（重编码入仓）/ 工作剪、台本、人审原话均公开 / 楼名「帧库 · Frame Vault」/ tagline ⭐ / scout-r0 以指向卡并入 S2。「go」已给（/loop 令）。
 
 # 1. 尺子（面板分 = min，人分磊哥独有）
 
@@ -79,7 +79,7 @@ seat-template: docs/local-cmd/NEXUS-HALL-CHARTER-2026-09-04.md（席位/写根/�
 
 - 每波末：build + gates rc 链式 → commit（不 push）→ 台账/流水/LESSONS 三处回写。
 - 停门：连续 3 轮某维最低分不变且无新一手实证 → 该维停施工上抛；A 维 ≤4（「播放器加特效」判定）→ 立即停，回草案改载体不改参数。
-- 磊哥说「go」前：只有 W0 两票（文档 + spike）；**不开分支、不写业务代码**。
+- 「go」已给（R1-1）：合流一二楼后从 main 开 `codex/frame-vault-20260904`。
 
 # 6. 硬禁区
 
@@ -94,7 +94,7 @@ seat-template: docs/local-cmd/NEXUS-HALL-CHARTER-2026-09-04.md（席位/写根/�
 
 | # | 议题 | 触发 |
 |---|---|---|
-| ADR-FV-1 | 视频托管方案（外部对象存储 vs 仓内重编码） | 磊哥答 §0.2 后若仍两可 |
+| ADR-FV-1 | ~~视频托管方案~~ 已拍：仓内重编码（R1-1） | 关闭 |
 | ADR-FV-2 | 图集编码（WebP vs AVIF vs PNG 无损） | W1 实测后 |
 | ADR-FV-3 | WebGPU 后端是否进主线 | W5 后 |
 

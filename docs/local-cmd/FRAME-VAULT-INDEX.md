@@ -3,7 +3,7 @@
 > 本文是第三栋楼唯一 ACTIVE TODO。冲突时：**live Git / 隔离栈 / 日志 > 本文 > 任何旧看板**。
 > 目标：`/world/frame-vault/`「帧库 · Frame Vault」——把视频当成可切开的时间固体，科普磊哥的 AI 视频自动化闭环。
 > 设计 SSOT = `FRAME-VAULT-DRAFT-2026-09-04.md`；施工 SSOT = `FRAME-VAULT-CHARTER-2026-09-04.md`。
-> 更新 2026-09-04 22:40 · 分支 **未开**（计划 `codex/frame-vault-20260904`，base `codex/nexus-hall-20260903@3e0680f`）· 建筑 `workflow-foundry` · 状态：**等磊哥「go」**
+> 更新 2026-09-04 22:40 · 分支 **未开**（计划 `codex/frame-vault-20260904`，base `codex/nexus-hall-20260903@3e0680f`）· 建筑 `workflow-foundry` · 状态：**go 已给（R1-1）；等一二楼合流后开分支**
 
 ## 状态机
 `PLANNED → RESEARCHED → BUILT → AUDITED → GATE_PASS → LIVE_OBSERVED`（只有 LIVE_OBSERVED 作验收）
@@ -23,8 +23,8 @@
 | FV-W5 | W5 | 接线 + e2e + 五门 | 执行方 | 热点文件 + `e2e/` | W4 | 200 + 进楼 + 回城 | PLANNED |
 | FV-W6 | W6 | 盲评 + 修 + LIVE_OBSERVED | xhsapi + 执行方 | — | W5 | 面板分 | PLANNED |
 
-## NEEDS_LEIGE（未拍按 ⭐ 施工）
-草案 §9 七条 + 「go」。
+## NEEDS_LEIGE
+七条已全拍（R1-1），无待拍项。
 
 ## 残余
 - WebP 图集体积/画质未测（W1）；非 Apple GPU 的 3D 纹理上限与上传耗时未测；`texImage3D` 计时需 fence 复测。
