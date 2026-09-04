@@ -32,7 +32,7 @@ const exits = [
   /* 顶部留足一屏的呼吸：上一幕的定/清小印不该在收官首屏露半截（agy 盲审 P0：截图伪影，但节奏问题属实） */
   /* 「墨还在」要真的还在：开篇那一滴（构建期海报）低调压在收官右侧，椭圆遮罩去掉海报的纸边（agy W9 P0-4 部分采纳）。 */
   .ep { position: relative; isolation: isolate; }
-  .ep::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .32;
+  .ep::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .55;  /* .32 在 2× 图上几乎看不见（v7 自看），「墨还在」得看得见 */
     /* 🔴 海报是整幕 S0 的停帧，右侧带竖排题款与款印。只要那一滴：墨团在海报 x≈0.35，
        把它定位到本幕 76% 处，海报右缘（题款）因此落在视口外；遮罩收成墨团大小的椭圆。 */
     --nx-pw: min(76vw, 1100px);
