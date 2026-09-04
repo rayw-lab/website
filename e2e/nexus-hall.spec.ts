@@ -215,3 +215,70 @@ test.describe('接线 · /world/agent-nexus/', () => {
     expect(bg).toBe('rgb(4, 16, 32)');
   });
 });
+
+// ── S3 试墨：干纸拒墨的**行为门**（不是参数读回门）─────────────────────────
+// 这一幕的立论是「湿纸受墨、干纸拒墨」。验它只能验画面：
+// 参数读回正确 ≠ 管线接通（uMobHi 实证过一次读回对而管线没接上）。
+// 结构是 2×2：正控证明"落墨这个动作确实会让画面变黑"，
+// 负控证明"同一个动作落在干纸上不会"。少了正控，一个根本没画上的 bug
+// 会伪装成"拒墨成功"；少了负控，干纸门失效也看不出来。
+test.describe('S3 试墨 · 干纸拒墨', () => {
+  const HALL = '/world/agent-nexus/';
+
+  test('干纸区看得见，且键盘可达', async ({ page }) => {
+    await page.goto(u(HALL));
+    await expect(page.locator('[data-nexus-trial]')).toHaveCount(1);
+    await expect(page.locator('.trial__dry')).toBeVisible();
+    await expect(page.locator('.trial__dry')).toContainText('纸已干');
+    const canvas = page.locator('[data-trial-canvas]');
+    await expect(canvas).toHaveAttribute('tabindex', '0');
+    await canvas.focus();
+    await expect(page.locator('[data-trial-caret]')).toBeVisible();
+    await canvas.press(' ');
+    await expect(page.locator('[data-trial-live]')).not.toBeEmpty();
+  });
+
+  test('🔴 2×2 行为门：湿处落墨画面变黑（正控），干处不变（负控）', async ({ page }) => {
+    await page.goto(u(HALL));
+    const root = page.locator('[data-nexus-trial]');
+    await expect(root).toHaveAttribute('data-trial-ready', '1');
+
+    // 直接驱动引擎 API：按它真实被消费的方式验，而不是模拟一串 pointer 事件去猜。
+    const sample = async (x: number, y: number) =>
+      page.evaluate(
+        ([px, py]) => {
+          const s = (window as any).__nexusTrial;
+          const c = document.querySelector('[data-trial-canvas]') as HTMLCanvasElement;
+          // 落墨 → 推进若干步让墨真的洇开 → 读回该点亮度
+          s.ink.setBrush(px, py, 0.05);
+          s.ink.splatWater(px, py, 0.055, 0.5, [0, 0]);
+          s.ink.splatInk(px, py, 0.02, [0.4, 0.4, 0.4]);
+          s.ink.setBrush(0, 0, -1);
+          s.seek(0.6, 1 / 60);
+          const o = document.createElement('canvas');
+          o.width = c.width;
+          o.height = c.height;
+          const g = o.getContext('2d')!;
+          g.drawImage(c, 0, 0);
+          const sx = Math.round(px * c.width);
+          const sy = Math.round((1 - py) * c.height);
+          const d = g.getImageData(Math.max(0, sx - 4), Math.max(0, sy - 4), 9, 9).data;
+          let lum = 0;
+          for (let i = 0; i < d.length; i += 4) lum += d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+          return lum / (d.length / 4);
+        },
+        [x, y],
+      );
+
+    const dry = await page.evaluate(() => (window as any).__nexusTrialDry);
+    // 正控：湿处（远离干纸圈）
+    const wet = await sample(0.22, 0.5);
+    // 负控：干纸圈心
+    const dryLum = await sample(dry.x, dry.y);
+
+    // 纸色亮度约 230；落上墨应显著变暗。
+    expect(wet).toBeLessThan(170);          // 正控：动作确实有效
+    expect(dryLum).toBeGreaterThan(200);    // 负控：同一动作在干纸上被拒
+    expect(dryLum - wet).toBeGreaterThan(40);
+  });
+});

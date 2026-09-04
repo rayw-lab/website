@@ -1,0 +1,219 @@
+---
+/**
+ * S3 试墨 —— 把「湿纸受墨、干纸拒墨」变成访客亲手可验的一件事。
+ *
+ * 为什么要有这一幕（草案 §2.4 / charter W4）：整个展厅的隐喻是
+ * **湿度即权限**——纸湿的地方墨才洇得开，纸干的地方落笔即止。
+ * 光在正文里说没用，访客得自己画一笔撞上去才信。
+ *
+ * 既定纪律（charter 决策 5）：**不提供保存 PNG**。
+ *
+ * 实现基于 W1 交互 spike（`world-spike/nexus-ink.astro`）的试画代码整体移植，
+ * 不重写：那段已经在真实设备上调过（笔尖附近多给水、抬笔要复位 brush，
+ * 少一步就会拖出一条不收口的墨带）。
+ */
+interface Props {
+  /** 干纸区（引擎坐标，y 为下原点）。默认落在右侧，给左侧留出足够的可画区。 */
+  dry?: { x: number; y: number; radius: number };
+}
+const { dry = { x: 0.72, y: 0.5, radius: 0.17 } } = Astro.props;
+---
+
+<section class="trial" data-nexus-trial>
+  <div class="trial__head">
+    <h2 class="trial__t">试墨 · 湿纸受墨，干纸拒墨</h2>
+    <p class="trial__d">
+      在纸上画一笔。左边是湿的，墨会自己走；右边圈出来的地方纸已经干了，落笔即止——
+      展厅里所有「谁能在哪里落墨」的规则，都是这一条。
+    </p>
+  </div>
+
+  <div class="trial__stage">
+    <canvas
+      data-trial-canvas
+      class="trial__canvas"
+      tabindex="0"
+      role="application"
+      aria-label="试墨区：用指针拖动落墨；键盘用方向键移动笔尖，空格或回车落墨"
+    ></canvas>
+    <!-- 干纸区必须**看得见**，否则「拒墨」看起来像 bug 不像规则。
+         位置由同一份 dry 常量渲染，不另写一份坐标。 -->
+    <div
+      class="trial__dry"
+      aria-hidden="true"
+      style={`left:${dry.x * 100}%; bottom:${dry.y * 100}%; width:${dry.radius * 200}%; aspect-ratio:1`}
+    >
+      <span>纸已干</span>
+    </div>
+    <div class="trial__caret" data-trial-caret aria-hidden="true" hidden></div>
+    <p class="trial__fallback" data-trial-fallback hidden>
+      这一幕需要 WebGL2。它想说的是：纸湿的地方墨会洇开，纸干的地方落笔即止。
+    </p>
+  </div>
+
+  <div class="trial__bar">
+    <button type="button" data-trial-fix class="trial__b">定</button>
+    <button type="button" data-trial-clear class="trial__b">清</button>
+    <p class="trial__live" data-trial-live role="status" aria-live="polite"></p>
+  </div>
+</section>
+
+<style>
+  .trial { display: grid; gap: 1.1rem; }
+  .trial__t {
+    margin: 0; font-weight: 400; letter-spacing: .05em;
+    font-size: clamp(1.05rem, 2vw, 1.5rem);
+    font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif;
+  }
+  .trial__d {
+    margin: .5rem 0 0; max-width: 46rem; color: #4a4f5a;
+    font: 400 clamp(.8rem, 1.15vw, .92rem)/1.9 ui-sans-serif, system-ui, sans-serif;
+  }
+  .trial__stage { position: relative; width: 100%; aspect-ratio: 16 / 7; }
+  .trial__canvas {
+    display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair;
+    outline-offset: 3px;
+  }
+  .trial__canvas:focus-visible { outline: 2px solid #9e2a2b; }
+  /* 干纸区：虚线在这里是**对的**——它表示"这块纸没有水"，不是 UI 占位。
+     与印章那处的 dashed 不同，那处是拿网页惯用语冒充金石。 */
+  .trial__dry {
+    position: absolute; transform: translate(-50%, 50%);
+    border: 1px dashed #1c1f2633; border-radius: 50%;
+    display: grid; place-items: end center; padding-bottom: .5rem;
+    pointer-events: none;
+  }
+  .trial__dry span {
+    font: 400 clamp(.6rem, .8vw, .7rem)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .18em; color: #1c1f2659;
+  }
+  .trial__caret {
+    position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px;
+    border: 1.5px solid #9e2a2b; border-radius: 50%; pointer-events: none;
+  }
+  .trial__fallback { position: absolute; inset: 0; display: grid; place-items: center;
+    margin: 0; padding: 1rem; text-align: center; color: #4a4f5a; }
+  .trial__bar { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+  .trial__b {
+    min-width: 3.2rem; min-height: 2.4rem; padding: .35rem .9rem;
+    background: transparent; color: #1c1f26; border: 1px solid #1c1f2633; border-radius: 1px;
+    font-family: "Songti SC", "STSong", "Source Han Serif SC", serif; font-size: 1rem;
+    cursor: pointer;
+  }
+  .trial__b:hover { border-color: #9e2a2b; color: #9e2a2b; }
+  .trial__live {
+    margin: 0; color: #4a4f5a; min-height: 1.4em;
+    font: 400 clamp(.72rem, 1vw, .82rem)/1.4 ui-sans-serif, system-ui, sans-serif;
+  }
+</style>
+
+<script define:vars={{ dry }}>
+  // 干纸区常量从 frontmatter 单向流下来：同一份坐标喂给 setDryMask、
+  // 喂给可见的圈、也喂给键盘落墨的播报。三处同源，不各写一份。
+  window.__nexusTrialDry = dry;
+</script>
+
+<script>
+  import { InkSurface } from './ink/InkSurface';
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-nexus-trial]')) {
+    const canvas = root.querySelector<HTMLCanvasElement>('[data-trial-canvas]');
+    const live = root.querySelector<HTMLElement>('[data-trial-live]');
+    const caret = root.querySelector<HTMLElement>('[data-trial-caret]');
+    const dry = (window as any).__nexusTrialDry as { x: number; y: number; radius: number };
+    if (!canvas || !live || !caret || !dry) continue;
+
+    const say = (s: string) => { live.textContent = s; };
+    // 干纸判定与 setDryMask 用同一份常量算，播报不会跟画面说两套话。
+    const isDry = (x: number, y: number) =>
+      Math.hypot(x - dry.x, y - dry.y) < dry.radius * 0.92;
+
+    const surface = InkSurface.mount(canvas, {
+      // 🔴 行为门要读像素：干纸拒墨这条判据必须验**画面**，
+      // 不能只验参数读回（uMobHi 已实证过一次"读回正确但管线没接通"）。
+      preserveDrawingBuffer: true,
+      mobile: window.matchMedia('(max-width: 768px)').matches,
+      onFallback: (reason) => {
+        canvas.style.display = 'none';
+        const fb = root.querySelector<HTMLElement>('[data-trial-fallback]');
+        if (fb) fb.hidden = false;
+        root.dataset.trialFallback = reason;
+      },
+    });
+    if (!surface) continue;
+
+    surface.ink.setDryMask([dry]);
+    root.dataset.trialReady = '1';
+    // 行为门出口：探针直接驱动引擎 API，按它真实被消费的方式验，
+    // 而不是模拟一串 pointer 事件去猜。
+    (window as any).__nexusTrial = surface;
+
+    const put = (x: number, y: number, vx = 0, vy = 0) => {
+      surface.ink.setBrush(x, y, 0.05);
+      surface.ink.splatWater(x, y, 0.055, 0.5, [vx, vy]);
+      surface.ink.splatInk(x, y, 0.02, [0.4, 0.4, 0.4]);
+      surface.poke();
+    };
+
+    // ── 指针（整体移植自 W1 spike，含抬笔复位 brush 这一步）
+    let drawing = false;
+    const at = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect();
+      return { x: (e.clientX - r.left) / r.width, y: 1 - (e.clientY - r.top) / r.height };
+    };
+    const draw = (e: PointerEvent) => {
+      const { x, y } = at(e);
+      put(x, y, e.movementX * 4, -e.movementY * 4);
+    };
+    canvas.addEventListener('pointerdown', (e) => {
+      drawing = true;
+      canvas.setPointerCapture(e.pointerId);
+      draw(e);
+      const { x, y } = at(e);
+      say(isDry(x, y) ? '这里纸是干的，墨没有洇开。' : '墨在洇。');
+    });
+    canvas.addEventListener('pointermove', (e) => drawing && draw(e));
+    const stop = () => { drawing = false; surface.ink.setBrush(0, 0, -1); };
+    canvas.addEventListener('pointerup', stop);
+    canvas.addEventListener('pointercancel', stop);
+
+    // ── 键盘（charter 验收明写「键盘可达」）
+    let cx = 0.3;
+    let cy = 0.5;
+    const showCaret = () => {
+      caret.hidden = false;
+      caret.style.left = `${cx * 100}%`;
+      caret.style.top = `${(1 - cy) * 100}%`;
+    };
+    canvas.addEventListener('focus', () => { showCaret(); say('方向键移动笔尖，空格落墨。'); });
+    canvas.addEventListener('blur', () => { caret.hidden = true; });
+    canvas.addEventListener('keydown', (e) => {
+      const step = e.shiftKey ? 0.01 : 0.04;
+      if (e.key === 'ArrowLeft') cx = Math.max(0, cx - step);
+      else if (e.key === 'ArrowRight') cx = Math.min(1, cx + step);
+      else if (e.key === 'ArrowUp') cy = Math.min(1, cy + step);
+      else if (e.key === 'ArrowDown') cy = Math.max(0, cy - step);
+      else if (e.key === ' ' || e.key === 'Enter') {
+        put(cx, cy);
+        surface.ink.setBrush(0, 0, -1);
+        say(isDry(cx, cy) ? '这里纸是干的，墨没有洇开。' : '墨在洇。');
+      } else return;
+      e.preventDefault();
+      showCaret();
+    });
+
+    root.querySelector('[data-trial-fix]')?.addEventListener('click', () => {
+      surface.ink.fix(1);
+      surface.poke();
+      say('已定：这一笔不再走了。');
+    });
+    root.querySelector('[data-trial-clear]')?.addEventListener('click', () => {
+      // 核过 `InkEngine.clear()`：它只清 velocity/pressure/wet/ink/fixedLayer 五个场，
+      // **不动 dryMask**——所以这里不需要重设干纸区。
+      // （初稿我按"clear 会重建场"补了一次 setDryMask，那是没核过的想当然。）
+      surface.ink.clear();
+      surface.poke();
+      say('已清。');
+    });
+  }
+</script>
