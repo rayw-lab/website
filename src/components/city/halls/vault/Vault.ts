@@ -12,7 +12,8 @@ export interface VaultManifest {
   sha256: string; duration_s: number; frames: number | null; fps_src: number;
   volume: { w: number; h: number; n: number; fps: number; atlas: string[]; proj: { xt: string; yt: string } };
   rings: { id: string; time_s: number; frame: number; defect_class: string; quote: string; fixed_in: string; status: string }[];
-  video: { src: string; sha256?: string; bytes?: number };
+  reviews: { id: string; date: string; verdict: string; category: string; timecode: string | null }[];
+  video: { src: string; sha256: string; bytes: number };
 }
 
 type Phase = 'loading' | 'idle' | 'blade' | 'tilted' | 'poster' | 'pulled' | 'exploded' | 'unsupported';
