@@ -127,10 +127,17 @@ const pyramid = [
     <b>scout-r0 · 自动化视频闭环</b>
     <span>同一套锁与门，跑在另一条产线上 →</span>
   </a>
+
+  <!-- S3 收官：三个出口（回城走 film 快门；下一栋；把片子带走） -->
+  <nav class="loop__exits" aria-label="出口">
+    <a class="loop__exit" href={`${base}/?poi=workflow-foundry&from=hall`} data-vault-exit="city"><span class="loop__kicker">出口 · 回城</span><b>快门合上，回到车里</b><span>接着开去下一栋</span></a>
+    <a class="loop__exit" href={`${base}/world/agent-nexus/`} data-vault-exit="next"><span class="loop__kicker">出口 · 隔壁</span><b>墨迹 · Ink Ledger</b><span>另一种物证：会话即笔迹</span></a>
+    <div class="loop__exit" data-vault-exit="take"><span class="loop__kicker">出口 · 带走</span><b>把片子带走</b><span class="loop__dl">{manifests.map((m) => <a href={m.video.src} download>{m.ep}{m.stage === 'F' ? '' : ` ${m.label ?? ''}`}</a>)}</span></div>
+  </nav>
 </section>
 
 <style is:global>
-  .loop { --bg: #05070d; --paper: #ece9e1; --gold: #ffd278; --metal: #9aa3ad; --red: #e0483a;
+  .loop { --bg: #05070d; --paper: #ece9e1; --gold: #ffd278; --metal: #9aa3ad; --red: #e0483a; scroll-margin-top: 76px;
     background: var(--bg); color: var(--paper); padding: clamp(3rem, 8vh, 6rem) clamp(1rem, 3vw, 2.5rem) clamp(4rem, 10vh, 7rem); }
   .loop__head { max-width: 62rem; margin-bottom: 2.6rem; }
   .loop__kicker { margin: 0 0 .5rem; font: 11px/1 ui-monospace, Menlo, monospace; letter-spacing: .2em; color: var(--gold); }
@@ -194,6 +201,14 @@ const pyramid = [
   .loop__pointer:hover { border-color: var(--gold); }
   .loop__pointer b { font: 500 1rem/1.3 "Songti SC", "Source Han Serif SC", serif; }
   .loop__pointer > span:last-child { color: var(--metal); font-size: .85rem; }
+  .loop__exits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 3rem; }
+  .loop__exit { display: grid; gap: .3rem; padding: 1.2rem 1.3rem; border: 1px solid #ffffff14; background: #080b12; color: var(--paper); text-decoration: none; transition: border-color .2s, transform .2s; }
+  a.loop__exit:hover { border-color: var(--gold); transform: translateY(-2px); }
+  .loop__exit b { font: 500 1.05rem/1.3 "Songti SC", "Source Han Serif SC", serif; }
+  .loop__exit > span:last-child { color: var(--metal); font-size: .85rem; }
+  .loop__dl { display: flex; gap: .8rem; flex-wrap: wrap; }
+  .loop__dl a { color: var(--gold); font: 12px/1.6 ui-monospace, Menlo, monospace; text-decoration: none; border-bottom: 1px dotted #ffd27866; }
+  @media (max-width: 960px) { .loop__exits { grid-template-columns: 1fr; } }
 
   /* 爆炸过场：E 之后立方体分层落下来 —— 各集行从上方带层间距滑入（reduced-motion 直达） */
   .loop.is-exploded [data-vault-slab] { animation: loop-slab .7s cubic-bezier(.2,.7,.2,1) both; }

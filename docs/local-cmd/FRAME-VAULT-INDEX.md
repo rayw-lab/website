@@ -19,7 +19,7 @@
 | FV-W1 | W1 | 管线 + 门 + 四集 manifest | 执行方 | `scripts/`、`public/demo/frame-vault/`、`src/data/frame-vault/`、`evidence/frame-vault/` | go | 四集过门 | **GATE_PASS**（R2-4：四集全通，门 4/0，selftest 3/3；预算改 10 MB） |
 | FV-W2 | W2 | VolumeEngine + 刀锋 + 斜切 + 海报 | 执行方 | `halls/vault/` | W1 | 海报可下载、URL 确定性 | **BUILT**（R2-4：引擎/控制器/首屏真机目击，刀锋与斜切成立；海报下载与 URL 复现未验；e2e 未写） |
 | FV-W3 | W3 | 抽帧成片 + 翻面 + 门环 + 爆炸 + 片架 | 执行方 | 同上 | W2 | 四交互 Live | **BUILT**（R3-2：抽帧成片/全屏/下载、片架、门环真机目击；翻面缺时间对齐源、爆炸并入 W4） |
-| FV-W4 | W4 | 片库布局 + 快门 + S2/S3 + `film` token | 执行方 | 同上 + 热点文件 | W3 | 全程 Live | PLANNED |
+| FV-W4 | W4 | 片库布局 + 快门 + S2/S3 + `film` token | 执行方 | 同上 + 热点文件 | W3 | 全程 Live | **BUILT**（R4：film 四消费点、环境光、S2 矩阵/金字塔/日志/dogfood、E 爆炸、S3 三出口；浮尘未做；城侧到达未真机目击） |
 | FV-W5 | W5 | 接线 + e2e + 五门 | 执行方 | 热点文件 + `e2e/` | W4 | 200 + 进楼 + 回城 | PLANNED |
 | FV-W6 | W6 | 盲评 + 修 + LIVE_OBSERVED | xhsapi + 执行方 | — | W5 | 面板分 | PLANNED |
 
