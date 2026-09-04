@@ -40,6 +40,7 @@
 | W6-xhsapi-crosscheck | xhsapi | 2026-09-04 07:38 | `out/W6-xhsapi-crosscheck.md` | receipt | **已收稿并裁决**（3 采纳 / 1 驳回，R20-4） |
 | W5r-agy-wiring | agy flash | 2026-09-04 08:23 | `out/W5r-agy-wiring.md` | receipt | **已收稿并亲核**（R21-6/7） |
 | W7-agy-blind-A / W8-agy-verify-B | agy flash | 2026-09-04 10:5x / 11:14 | `out/W7-agy-blind-A.md`、`/tmp/agy-w8-verify.log`（receipt agy-rescue-20260904-111428-ad946b91） | receipt rc=0 | **已收稿并裁决**（R28-1 / R29-2）；下一单=定稿后盲审 C 段（只给分不给修单） |
+| W9-agy-blind-C / W9-glm-crosscheck | agy flash / glm53flash | 2026-09-04 11:5x | `out/W9-agy-blind-C.md`、`out/W9-glm-crosscheck.md` | receipt | **在跑**（R29-4） |
 | W7-glm-crosscheck | glm53flash | 2026-09-04 | `out/W7-glm-crosscheck.md` | APIDIRECT_RECEIPT | **已收稿并裁决**（R28-2） |
 
 ## 热点文件持有表（单 writer）

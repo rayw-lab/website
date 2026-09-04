@@ -1238,3 +1238,9 @@ xhsapi 端点故障期间改派 glm53flash 做反核，质量不打折，抓到�
 - `dist-next/` 进 .gitignore。全量五项目 e2e（4321）仍在跑 87/131，未结束前不重建 `dist`。
 
 `自看：墨流 · /tmp/nx-v4-2.png · 六条基线都在，空带读作「量过了」；手卷 · /tmp/nx-v3-3a.png · 天地界闭合、骑缝印在，跋面下半仍偏空（正文待磊哥）；收官 · /tmp/nx-v4-6.png · 四出口一排。`
+
+### R29-4 派发（11:5x）
+- **W9-agy-blind-C**：七张 v5 图（`~/.codex/state/nexus-hall/shots/v5/`，dist-next @ `d2c03ab`）盲评，brief 与 W7 同款（只给分 + 缺陷登记，不预列本版改了什么），锚 7.8。产物 `out/W9-agy-blind-C.md`。
+- **W9-glm-crosscheck**：glm53flash 附台账 + 五个组件源码，逐条三态反核 R29-1/R29-2 的 load-bearing 断言；e2e/预算数字明令「不可核」不背书。产物 `out/W9-glm-crosscheck.md`。
+- 全量五项目 e2e（4321）仍在跑，未结束前不重建 `dist`；等待器 `bv9e3i5we`。
+`自看：试墨 · shots/v5/5-trial.png · 一笔洇开、边缘毛化、干圈无墨，这是本厅最像"物理"的一帧；开篇 · 1-yin.png · 无。`
