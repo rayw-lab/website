@@ -1129,3 +1129,30 @@ xhsapi 端点故障期间改派 glm53flash 做反核，质量不打折，抓到�
 ### R25-5 本批门禁（全部本轮实跑）
 `astro build` rc=0（25 页）· `astro check` 0 errors · 发布安全门 rc=0 · 正确性门 rc=0
 · `check-links` rc=0 · `about-hall-gate` rc=0 · e2e 合跑 **32/33**（唯一失败见 R25-4，单独复跑通过）
+
+## R26 · Grok 放下（磊哥拍板）+ 三席探活与 agy 代理开关（2026-09-04 10:1x–10:3x）
+
+### R26-1 三席探活（一条命令并行）
+| 席 | 结果 | 定性 |
+|---|---|---|
+| grok（Grok Build CLI） | rc=0，`modelUsage` 回读 `grok-4.6-build` | 可用 |
+| agy | `read tcp …->172.217.116.4:443: connection reset` | 直连境外被重置，非凭据问题 |
+| xhsapi（dots） | 三次 `Connection reset by peer` | 端点连代理也不通（rc=35），本轮 BLOCKED |
+
+双路实测（直连 vs 32266 代理）：googleapis / dots / google 三站**直连全部 rc=35**，走代理 Google 通（generate_204 → 204）。
+定谳：本机「直连境外可用」这个前提当前失效；wrapper 硬剥代理是症结。
+**修复**：`agy_rescue_cli.py` 加 `AGY_ALLOW_PROXY=1` 逃生门（镜像 `api_direct` 的 `APIDIRECT_ALLOW_PROXY`），
+默认行为不变；负控（不带开关）仍 RST、正控（带开关）回 `OK`。秘书/反核继续由 glm53flash 顶（ark-plan 国内端点通畅）。
+
+### R26-2 Grok 数据源：查清了、接进去了、然后按磊哥的话放下
+票册里「grok 不写 receipt 无从归约」是拿「找不到 receipt」冒充「没有数据」——
+`~/.grok/sessions` 有 48,503 文件 / 8.7 GB，窗口内 1,958 份 `events.jsonl`。
+接入 reducer 后：入账 854 会话、明细 178、23/41 天有落点、席位 6、双门绿、自测桩正负控过；
+但**连跑两次 sha 不同，幂等破了**（改前幂等）。
+磊哥裁决：**不管 Grok，聚焦主线。** 已整体回退（四席台账 3025/5/40，双门 rc=0），
+补丁存档 `docs/local-cmd/proposals/grok-seat-reducer.patch`（250 行）供日后接续，NEEDS_LEIGE 行改为「已查清可接、幂等待修、磊哥令暂不做」。
+判据：**指挥官说停就停，把能带走的证据带走**——差一步就闭合也不例外，主线优先级由他定。
+
+### R26-3 我踩的两个坑（记下不再犯）
+1. zsh 未引号变量不分词：`$ARGS` 整串被 reducer 当一个未知参数拒掉，而我一度误以为台账已重生成。规则里明写过，改用数组 `"${A[@]}"`。
+2. 磊哥两次追问「为什么专注 grok」——我在一条支线上钻得比主线深。**收到追问就是信号，先答再动。**
