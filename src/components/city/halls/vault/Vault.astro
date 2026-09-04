@@ -86,10 +86,11 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
       <summary aria-label="操作说明">?</summary>
       <dl>
         <dt>拖动</dt><dd>旋转</dd><dt>滚轮</dt><dd>沿时间刮</dd><dt>← →</dt><dd>逐帧（⇧ 整秒）</dd>
-        <dt>⌥ ← →</dt><dd>把刀面拧斜 · 0 归正</dd><dt>双击 / Enter</dt><dd>抽帧成片</dd><dt>1–8</dt><dd>片架切集</dd>
+        <dt>⌥ ← →</dt><dd>把刀面拧斜 · 0 归正</dd><dt>双击 / Enter</dt><dd>抽帧成片</dd><dt>1–8</dt><dd>片架切集</dd><dt>E</dt><dd>拆开：看它怎么造出来的</dd>
       </dl>
     </details>
     <button class="vault__btn" type="button" data-vault-poster>留影</button>
+    <button class="vault__btn vault__btn--ghost" type="button" data-vault-explode title="E">拆开</button>
   </div>
 
   <!-- 时间标尺：位置 = t/duration；门环 = 真实人审退回（fixtures/human-rejects.jsonl） -->
@@ -185,7 +186,9 @@ const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · 
   .vault__help dt { color: var(--gold); font-family: ui-monospace, Menlo, monospace; }
   .vault__help dd { margin: 0; color: var(--metal); }
   .vault__btn { background: none; border: 1px solid var(--metal); color: var(--paper); padding: .35rem .9rem; border-radius: 999px; font-size: .8rem; letter-spacing: .1em; cursor: pointer; opacity: .55; transition: opacity .3s, border-color .3s; }
-  .vault[data-vault-tilted='1'] .vault__btn { opacity: 1; border-color: var(--gold); color: var(--gold); }
+  .vault[data-vault-tilted='1'] .vault__btn:not(.vault__btn--ghost) { opacity: 1; border-color: var(--gold); color: var(--gold); }
+  .vault__btn--ghost { opacity: .75; }
+  .vault[data-vault-state='exploded'] .vault__canvas { opacity: .35; transition: opacity .6s; }
 
   /* 标尺 = 一根金属轨（细管 + 高光），不是播放器进度条：无填充、无圆头游标 */
   .vault__ruler { position: relative; height: 3.4rem; margin: 0 clamp(1rem, 3vw, 2.5rem) 1rem; }

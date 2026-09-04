@@ -15,7 +15,7 @@ export interface VaultManifest {
   video: { src: string; sha256?: string; bytes?: number };
 }
 
-type Phase = 'loading' | 'idle' | 'blade' | 'tilted' | 'poster' | 'pulled' | 'unsupported';
+type Phase = 'loading' | 'idle' | 'blade' | 'tilted' | 'poster' | 'pulled' | 'exploded' | 'unsupported';
 
 const REDUCED = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const DPR_CAP = 2;
@@ -179,6 +179,7 @@ export class Vault {
         else this.blade(this.target.cut + dir * step);
       }
       if (e.key === '0') this.tilt(0);
+      if (e.key === 'e' || e.key === 'E') { e.preventDefault(); this.explode(this.phase !== 'exploded'); }
       if (e.key === 'Enter' && this.phase !== 'pulled') { e.preventDefault(); void this.pull(); }
       if (e.key === 'Escape' && this.phase === 'pulled' && !document.fullscreenElement) this.unpull();
       if ((e.key === 'f' || e.key === 'F') && this.phase === 'pulled') { e.preventDefault(); void this.fullscreen(); }
@@ -202,6 +203,7 @@ export class Vault {
       } else video.addEventListener('timeupdate', follow);
     }
     this.host.querySelector('[data-vault-poster]')?.addEventListener('click', () => void this.poster());
+    this.host.querySelector('[data-vault-explode]')?.addEventListener('click', () => this.explode(this.phase !== 'exploded'));
     const slots = Array.from(this.host.querySelectorAll<HTMLElement>('[data-vault-slot]'));
     slots.forEach((s) => s.addEventListener('click', () => void this.switchEp(s)));
     document.addEventListener('keydown', (e) => {
@@ -242,6 +244,25 @@ export class Vault {
       if (document.fullscreenElement) { await document.exitFullscreen(); this.host.focus({ preventScroll: true }); }
       else await fig.requestFullscreen();
     } catch { /* 浏览器拒绝全屏（iframe/策略）→ 保持内嵌播放 */ }
+  }
+
+  // ---------- 爆炸分层（S1 → S2 过场） ----------
+  /** E：立方体退到远处并压暗，S2 各集的锁行按层滑入；再按 E / 回到顶部还原 */
+  private explode(on: boolean): void {
+    const loop = document.querySelector<HTMLElement>('[data-vault-loop]');
+    if (on) {
+      this.unpull();
+      this.setPhase('exploded');
+      this.target.rx = 0.9; this.target.ry = this.target.ry - 0.6; this.target.cutOn = false;
+      loop?.classList.add('is-exploded');
+      loop?.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+    } else {
+      this.setPhase('idle');
+      this.target.rx = 0.32; this.target.ry = -0.55; this.target.cutOn = true;
+      loop?.classList.remove('is-exploded');
+      this.host.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+    }
+    this.requestFrame();
   }
 
   private unpull(): void {
