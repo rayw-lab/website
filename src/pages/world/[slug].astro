@@ -18,6 +18,9 @@ import Seal from '../../components/city/halls/nexus/Seal.astro';
 import Trial from '../../components/city/halls/nexus/Trial.astro';
 import Scroll from '../../components/city/halls/nexus/Scroll.astro';
 import NexusEpilogue from '../../components/city/halls/nexus/Epilogue.astro';
+import Vault from '../../components/city/halls/vault/Vault.astro';
+import VaultArriveHead from '../../components/city/halls/vault/VaultArriveHead.astro';
+import VaultLoop from '../../components/city/halls/vault/Loop.astro';
 import ledger from '../../data/nexus-ledger.json';
 import hallsDoc from '../../data/world-halls.json';
 import cityMap from '../../data/cyber-city-buildings.json';
@@ -76,6 +79,7 @@ const jsonLd = breadcrumbJsonLd([
   jsonLd={jsonLd}
 >
   {hall.slug === 'agent-nexus' && <Fragment slot="head"><ArriveHead /></Fragment>}
+  {hall.slug === 'frame-vault' && <Fragment slot="head"><VaultArriveHead /></Fragment>}
   <HallChrome slot="ritual" buildingId={hall.buildingId} />
   {hall.slug === 'about-pavilion' && (
     <>
@@ -85,6 +89,12 @@ const jsonLd = breadcrumbJsonLd([
       <Transition />
       <Crystal />
       <Epilogue />
+    </>
+  )}
+  {hall.slug === 'frame-vault' && (
+    <>
+      <Vault />
+      <VaultLoop />
     </>
   )}
   {hall.slug === 'agent-nexus' && (

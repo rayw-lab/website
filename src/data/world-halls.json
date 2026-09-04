@@ -11,6 +11,12 @@
       "buildingId": "agent-nexus",
       "trick": "ink",
       "scenes": []
+    },
+    {
+      "slug": "frame-vault",
+      "buildingId": "workflow-foundry",
+      "trick": "volume",
+      "scenes": []
     }
   ]
 }

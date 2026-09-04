@@ -121,6 +121,38 @@
         ]
       }
     },
+    "poi_showcase-workflow-foundry": {
+      "mode": "poi",
+      "status": "proposal",
+      "anchor": {
+        "type": "building",
+        "buildingId": "workflow-foundry"
+      },
+      "spherical": {
+        "phiDeg": 75,
+        "thetaDeg": -76,
+        "radius": 110
+      },
+      "lookAtHeight": 9,
+      "lateral": 14,
+      "notes": "FV-W4 帧库进楼前奏机位：楼 (48,−150) 48×32×28，泊车圈 (18,−150) heading 90（车头朝东对楼西立面）。about 厅机位（θ=76 东南）沿南北轴镜像到西南 θ=−76，lateral 取反 +14 让楼偏左、右侧留夜空给快门叶板；radius 110 因楼宽 48。gates 由 tools/camera/audit-shot-ndc.mjs 把门。",
+      "projectionAudit": {
+        "buildings": [
+          "workflow-foundry"
+        ],
+        "gates": [
+          {
+            "building": "workflow-foundry",
+            "type": "maxAbsNdcX",
+            "limit": 0.85
+          },
+          {
+            "building": "workflow-foundry",
+            "type": "inFrame"
+          }
+        ]
+      }
+    },
     "corridor_neon-boulevard-east": {
       "mode": "poi",
       "status": "current-snapshot",

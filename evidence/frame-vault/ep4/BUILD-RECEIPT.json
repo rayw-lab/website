@@ -1,0 +1,67 @@
+{
+  "ep": "EP4",
+  "input_sha256": "b154e0d0940edfb549573e16edee2ff2554c749cb4baefaaaacdba606df607df",
+  "fps": 6,
+  "n": 1979,
+  "atlas_count": 8,
+  "products": [
+    {
+      "name": "atlas-0.webp",
+      "bytes": 627010,
+      "sha256": "b7d3a8d2e2d48a24fb8f41cf09066991052dc240a25eef8e095f323b828c7da8"
+    },
+    {
+      "name": "atlas-1.webp",
+      "bytes": 797466,
+      "sha256": "f027860db456975ba50f95ab490d78c5cfbf7164a915808d30f7e89760e3b50b"
+    },
+    {
+      "name": "atlas-2.webp",
+      "bytes": 136974,
+      "sha256": "8d568ebb084f95162732cfe0316bb112089eba0d7586dd71ff863957028482dd"
+    },
+    {
+      "name": "atlas-3.webp",
+      "bytes": 176360,
+      "sha256": "ed36e44fd55f22324498278910489223480aecf658ec2706a4d43ab16ecad84e"
+    },
+    {
+      "name": "atlas-4.webp",
+      "bytes": 247958,
+      "sha256": "4d2aef96e43f01fcd440ef042ecb1485966c818630520251d8bdef6d6cd6d5be"
+    },
+    {
+      "name": "atlas-5.webp",
+      "bytes": 192220,
+      "sha256": "248bda55528c9128dcaf51f51b1614ed828ce00e5ebb7f5589650840069f2a69"
+    },
+    {
+      "name": "atlas-6.webp",
+      "bytes": 163156,
+      "sha256": "5a38e0699af7b6616012418ee9976d9b977638726fcfb819520bbd49b111182d"
+    },
+    {
+      "name": "atlas-7.webp",
+      "bytes": 421066,
+      "sha256": "47f3966700cbd4e2b8790ace9fd2b866d717474b7f7f5ed023770bb1da150dba"
+    },
+    {
+      "name": "proj-xt.png",
+      "bytes": 78490,
+      "sha256": "4b046eb85aaaaeac57d0c47c37a0f68d65748617eafeb09c581161f08c8c2b58"
+    },
+    {
+      "name": "proj-yt.png",
+      "bytes": 46746,
+      "sha256": "bfc9e66daae9948563935cf6f863e4c174e36c2475714ecbfba0934774082474"
+    }
+  ],
+  "atlas_bytes_total": 2762210,
+  "video": {
+    "bytes": 8720005,
+    "sha256": "86e1f39556fa44e03ede0aa7f62af8e2d888eaa7be3904f52b7b5c0a3d0784de"
+  },
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "cwebp": "1.6.0",
+  "built_at": "2026-09-04T16:33:46.377Z"
+}

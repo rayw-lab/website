@@ -1,0 +1,1238 @@
+{
+  "ep": "EP4",
+  "title": "多用户上下文管理",
+  "stage": "P",
+  "label": "v2.2",
+  "gates": {
+    "L0": "PASS",
+    "L1": "PASS",
+    "L2": "OBSERVED",
+    "L3": "HUMAN_REJECT"
+  },
+  "sha256": "b154e0d0940edfb549573e16edee2ff2554c749cb4baefaaaacdba606df607df",
+  "bytes": 20742156,
+  "duration_s": 329.866667,
+  "frames": 9896,
+  "fps_src": 29.99999996968472,
+  "volume": {
+    "w": 160,
+    "h": 90,
+    "n": 1979,
+    "fps": 6,
+    "atlas": [
+      "atlas-0.webp",
+      "atlas-1.webp",
+      "atlas-2.webp",
+      "atlas-3.webp",
+      "atlas-4.webp",
+      "atlas-5.webp",
+      "atlas-6.webp",
+      "atlas-7.webp"
+    ],
+    "proj": {
+      "xt": "proj-xt.png",
+      "yt": "proj-yt.png"
+    }
+  },
+  "rings": [
+    {
+      "id": "FX-001",
+      "time_s": 130,
+      "frame": 3900,
+      "defect_class": "hard_cut_to_blank",
+      "quote": "2:10秒那一帧突然消失了",
+      "fixed_in": "v2.0+",
+      "status": "LOCATABLE",
+      "region": null
+    },
+    {
+      "id": "FX-002",
+      "time_s": 141,
+      "frame": 4230,
+      "defect_class": "occlusion_text_overlap",
+      "quote": "屏幕右侧有遮挡",
+      "fixed_in": "v2.0+",
+      "status": "LOCATABLE",
+      "region": "right"
+    },
+    {
+      "id": "FX-003",
+      "time_s": 150,
+      "frame": 4500,
+      "defect_class": "occlusion_text_overlap",
+      "quote": "屏幕右上角有遮挡",
+      "fixed_in": "v2.0+",
+      "status": "LOCATABLE",
+      "region": "top-right"
+    },
+    {
+      "id": "FX-004",
+      "time_s": 5,
+      "frame": 150,
+      "defect_class": "intro_missing",
+      "quote": "完整10s片头不见了",
+      "fixed_in": "v2.2",
+      "status": "LOCATABLE",
+      "region": "full"
+    },
+    {
+      "id": "FX-005",
+      "time_s": 110,
+      "frame": 3300,
+      "defect_class": "narration_visual_mismatch",
+      "quote": "你说如图所示 图片就是简单的2个框",
+      "fixed_in": "v2.1",
+      "status": "LOCATABLE",
+      "region": "full"
+    },
+    {
+      "id": "FX-006",
+      "time_s": 120,
+      "frame": 3600,
+      "defect_class": "sparse_board_during_narration",
+      "quote": "1:58-2:04是空画面",
+      "fixed_in": "v2.1",
+      "status": "LOCATABLE",
+      "region": "full"
+    },
+    {
+      "id": "FX-007",
+      "time_s": 15,
+      "frame": 450,
+      "defect_class": "old_burned_subtitle_leak",
+      "quote": "所有字幕并没有覆盖原来的字幕 黄框还漏了点",
+      "fixed_in": "v2.2",
+      "status": "LOCATABLE",
+      "region": "y550-720"
+    },
+    {
+      "id": "FX-008",
+      "time_s": 189,
+      "frame": 5670,
+      "defect_class": "object_vanishes_mid_cue",
+      "quote": "3:09上面一个动画下来 结果没有了",
+      "fixed_in": "v2.1",
+      "status": "LOCATABLE",
+      "region": "full"
+    },
+    {
+      "id": "FX-009",
+      "time_s": 229,
+      "frame": 6870,
+      "defect_class": "blank_frame",
+      "quote": "3:49也是空白的",
+      "fixed_in": "v2.1",
+      "status": "LOCATABLE",
+      "region": "full"
+    },
+    {
+      "id": "FX-010",
+      "time_s": 234,
+      "frame": 7020,
+      "defect_class": "half_title",
+      "quote": "3:54的标题为啥不一次性写完，就一半的字",
+      "fixed_in": "v2.1",
+      "status": "LOCATABLE",
+      "region": "top"
+    },
+    {
+      "id": "FX-011",
+      "time_s": 240,
+      "frame": 7200,
+      "defect_class": "blank_frame+half_title",
+      "quote": "4:00的比如 画面又空白了？？？标题又一半？？标题到4:12秒才完整",
+      "fixed_in": "v2.1",
+      "status": "LOCATABLE",
+      "region": "full"
+    },
+    {
+      "id": "FX-012",
+      "time_s": 270,
+      "frame": 8100,
+      "defect_class": "blank_frame",
+      "quote": "每次这种画面为啥都要空白一秒？4:30s也是",
+      "fixed_in": "v2.1",
+      "status": "LOCATABLE",
+      "region": "full"
+    },
+    {
+      "id": "FX-013",
+      "time_s": 285,
+      "frame": 8550,
+      "defect_class": "half_title",
+      "quote": "4:45也是 字就一半 画要一次性画完啊",
+      "fixed_in": "v2.1",
+      "status": "LOCATABLE",
+      "region": "top"
+    },
+    {
+      "id": "FX-014",
+      "time_s": 291,
+      "frame": 8730,
+      "defect_class": "blank_frame",
+      "quote": "4:51也是空白画面大概0.5秒",
+      "fixed_in": "v2.1",
+      "status": "LOCATABLE",
+      "region": "full"
+    },
+    {
+      "id": "FX-015",
+      "time_s": 2,
+      "frame": 60,
+      "defect_class": "sfx_percussive_hit",
+      "quote": "片尾片头都有个锤子声音 吓死人了",
+      "fixed_in": "v2.1",
+      "status": "LOCATABLE",
+      "region": "audio"
+    },
+    {
+      "id": "FX-016",
+      "time_s": 5,
+      "frame": 150,
+      "defect_class": "intro_silent",
+      "quote": "ep4没声音？前10s没声音？",
+      "fixed_in": "v2.2",
+      "status": "LOCATABLE",
+      "region": "audio"
+    },
+    {
+      "id": "FX-017",
+      "time_s": 15,
+      "frame": 450,
+      "defect_class": "old_burned_subtitle_leak",
+      "quote": "为什么我黄框这里还有文字没有完全显示啊",
+      "fixed_in": "v2.2",
+      "status": "LOCATABLE",
+      "region": "y550-590"
+    },
+    {
+      "id": "FX-018",
+      "time_s": 317.97,
+      "frame": 9539,
+      "defect_class": "mask_residue_first_outro_frame",
+      "quote": "AGY 首轮唯一 P2：片尾第一帧底部残留暖纸遮罩 33ms",
+      "fixed_in": "v2.1 rebuild",
+      "status": "LOCATABLE",
+      "region": "y550-720"
+    },
+    {
+      "id": "FX-019",
+      "time_s": 40,
+      "frame": 1200,
+      "defect_class": "board_text_clipped_by_subtitle_band",
+      "quote": "40s还是有类似红色的没显示完全，分支独立参数不串线几个字看不到",
+      "fixed_in": "v2.3",
+      "status": "LOCATABLE",
+      "region": "y526-630"
+    },
+    {
+      "id": "FX-020",
+      "time_s": 144,
+      "frame": 4320,
+      "defect_class": "board_text_clipped_by_subtitle_band",
+      "quote": "类似问题全程都有，贯穿全程（2:24 为下一步生成预留 token）",
+      "fixed_in": "v2.3",
+      "status": "LOCATABLE",
+      "region": "y526-630"
+    },
+    {
+      "id": "FX-021",
+      "time_s": 19.43,
+      "frame": 583,
+      "defect_class": "label_crosses_body_in_motion",
+      "quote": "主要不要有遮挡哦",
+      "fixed_in": "r3",
+      "status": "LOCATABLE",
+      "region": "center"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "HR-001",
+      "date": "2026-08-29",
+      "verdict": "ACCEPT",
+      "category": "voice",
+      "timecode": null
+    },
+    {
+      "id": "HR-002",
+      "date": "2026-08-30",
+      "verdict": "REJECT",
+      "category": "case",
+      "timecode": "0:00-0:10"
+    },
+    {
+      "id": "HR-003",
+      "date": "2026-08-30",
+      "verdict": "REVISE",
+      "category": "case",
+      "timecode": null
+    },
+    {
+      "id": "HR-004",
+      "date": "2026-08-30",
+      "verdict": "REJECT",
+      "category": "audio",
+      "timecode": "0:00-0:10, 0:48-0:49"
+    },
+    {
+      "id": "HR-005",
+      "date": "2026-08-30",
+      "verdict": "REJECT",
+      "category": "subtitle",
+      "timecode": null
+    },
+    {
+      "id": "HR-007",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "transition",
+      "timecode": "2:09-2:10"
+    },
+    {
+      "id": "HR-008",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "occlusion",
+      "timecode": "2:21"
+    },
+    {
+      "id": "HR-009",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "occlusion",
+      "timecode": "2:30"
+    },
+    {
+      "id": "HR-010",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "music",
+      "timecode": "full"
+    },
+    {
+      "id": "HR-011",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "narration",
+      "timecode": "2:49, 2:57, 3:04, 3:21"
+    },
+    {
+      "id": "HR-012",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "style",
+      "timecode": null
+    },
+    {
+      "id": "HR-013",
+      "date": "2026-09-01",
+      "verdict": "DECIDE",
+      "category": "style",
+      "timecode": null
+    },
+    {
+      "id": "HR-014",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "intro",
+      "timecode": "0:00-0:10"
+    },
+    {
+      "id": "HR-015",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "narration-visual",
+      "timecode": "1:50"
+    },
+    {
+      "id": "HR-016",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "blank-frame / av-sync",
+      "timecode": "1:58-2:14"
+    },
+    {
+      "id": "HR-017",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "subtitle",
+      "timecode": "full"
+    },
+    {
+      "id": "HR-018",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "blank-frame",
+      "timecode": "3:09, 3:49, 4:00, 4:30, 4:51"
+    },
+    {
+      "id": "HR-019",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "half-title",
+      "timecode": "3:54, 4:00-4:12, 4:45"
+    },
+    {
+      "id": "HR-020",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "sfx",
+      "timecode": "intro, outro"
+    },
+    {
+      "id": "HR-021",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "av-sync / mechanism",
+      "timecode": "full"
+    },
+    {
+      "id": "HR-022",
+      "date": "2026-09-01",
+      "verdict": "REQUIRE",
+      "category": "toolchain",
+      "timecode": null
+    },
+    {
+      "id": "HR-023",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "intro-audio",
+      "timecode": "0:00-0:10"
+    },
+    {
+      "id": "HR-024",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "occlusion",
+      "timecode": "~0:15"
+    },
+    {
+      "id": "HR-025",
+      "date": "2026-09-01",
+      "verdict": "REJECT",
+      "category": "process",
+      "timecode": "full"
+    },
+    {
+      "id": "HR-028",
+      "date": "2026-09-02",
+      "verdict": "REJECT",
+      "category": "occlusion",
+      "timecode": "0:40, full"
+    },
+    {
+      "id": "HR-031",
+      "date": "2026-09-03",
+      "verdict": "REJECT",
+      "category": "occlusion",
+      "timecode": "C205-C209"
+    }
+  ],
+  "locks": [
+    {
+      "letter": "D",
+      "name": "开发"
+    },
+    {
+      "letter": "S",
+      "name": "台本锁"
+    },
+    {
+      "letter": "A",
+      "name": "样片锁"
+    },
+    {
+      "letter": "P",
+      "name": "画面锁"
+    },
+    {
+      "letter": "M",
+      "name": "声音锁"
+    },
+    {
+      "letter": "F",
+      "name": "定稿"
+    }
+  ],
+  "script": {
+    "source": "asr",
+    "model": "mlx-community/whisper-large-v3-turbo",
+    "segments": 153,
+    "cues": [
+      {
+        "start": 9.96,
+        "end": 11.08,
+        "text": "做仓里的对话"
+      },
+      {
+        "start": 11.08,
+        "end": 12.6,
+        "text": "常常由多个座位"
+      },
+      {
+        "start": 12.6,
+        "end": 14,
+        "text": "多个话题交叉组成"
+      },
+      {
+        "start": 14.7,
+        "end": 15.94,
+        "text": "可以先把context"
+      },
+      {
+        "start": 15.94,
+        "end": 18.16,
+        "text": "想成一本容量有限的本子"
+      },
+      {
+        "start": 19.02,
+        "end": 19.42,
+        "text": "Master"
+      },
+      {
+        "start": 19.42,
+        "end": 20.12,
+        "text": "Agent"
+      },
+      {
+        "start": 20.12,
+        "end": 21.78,
+        "text": "要分清谁在说"
+      },
+      {
+        "start": 21.78,
+        "end": 22.62,
+        "text": "要做什么"
+      },
+      {
+        "start": 22.62,
+        "end": 24.44,
+        "text": "还要维护当前任务状态"
+      },
+      {
+        "start": 24.94,
+        "end": 25.6,
+        "text": "这一集"
+      },
+      {
+        "start": 25.6,
+        "end": 26.86,
+        "text": "我们从一句话"
+      },
+      {
+        "start": 26.86,
+        "end": 28.06,
+        "text": "多意图开始"
+      },
+      {
+        "start": 28.06,
+        "end": 29.82,
+        "text": "看清context"
+      },
+      {
+        "start": 29.82,
+        "end": 31.6,
+        "text": "怎样管理这些信息"
+      },
+      {
+        "start": 35.46,
+        "end": 37.06,
+        "text": "先看一句话多意图"
+      },
+      {
+        "start": 37.9,
+        "end": 39.06,
+        "text": "比如用户说"
+      },
+      {
+        "start": 39.06,
+        "end": 41.36,
+        "text": "带孩子去上周那家川菜馆"
+      },
+      {
+        "start": 41.36,
+        "end": 43.08,
+        "text": "空调调到24度"
+      },
+      {
+        "start": 43.08,
+        "end": 44.78,
+        "text": "再给后排放动画片"
+      },
+      {
+        "start": 45.5,
+        "end": 46.16,
+        "text": "导航"
+      },
+      {
+        "start": 46.16,
+        "end": 46.94,
+        "text": "空调"
+      },
+      {
+        "start": 46.94,
+        "end": 47.5,
+        "text": "娱乐"
+      },
+      {
+        "start": 47.5,
+        "end": 48.34,
+        "text": "三个意图"
+      },
+      {
+        "start": 48.34,
+        "end": 49.74,
+        "text": "藏在同一句话里"
+      },
+      {
+        "start": 50.34,
+        "end": 52.52,
+        "text": "系统先识别说话人和座位"
+      },
+      {
+        "start": 52.52,
+        "end": 54,
+        "text": "再拆成独立任务"
+      },
+      {
+        "start": 54.7,
+        "end": 55.16,
+        "text": "地点"
+      },
+      {
+        "start": 55.16,
+        "end": 55.74,
+        "text": "温度"
+      },
+      {
+        "start": 55.74,
+        "end": 56.5,
+        "text": "播放位置"
+      },
+      {
+        "start": 56.5,
+        "end": 57.92,
+        "text": "分别进入任务状态"
+      },
+      {
+        "start": 57.92,
+        "end": 59.34,
+        "text": "参数不能串现"
+      },
+      {
+        "start": 60.28,
+        "end": 60.64,
+        "text": "下面"
+      },
+      {
+        "start": 60.64,
+        "end": 62.62,
+        "text": "看一段家庭座舱实拍"
+      },
+      {
+        "start": 62.62,
+        "end": 63.8,
+        "text": "主驾找餐厅"
+      },
+      {
+        "start": 63.8,
+        "end": 65.66,
+        "text": "后排提出娱乐请求"
+      },
+      {
+        "start": 66.72,
+        "end": 67.26,
+        "text": "小琪"
+      },
+      {
+        "start": 67.26,
+        "end": 67.96,
+        "text": "我们饿了"
+      },
+      {
+        "start": 67.96,
+        "end": 68.82,
+        "text": "去附近的餐厅"
+      },
+      {
+        "start": 68.82,
+        "end": 69.36,
+        "text": "好嘞"
+      },
+      {
+        "start": 69.36,
+        "end": 71.1,
+        "text": "这就为你导航附近的餐厅"
+      },
+      {
+        "start": 71.1,
+        "end": 72.36,
+        "text": "我要看数码宝贝"
+      },
+      {
+        "start": 72.36,
+        "end": 73.86,
+        "text": "以为您在后排电视"
+      },
+      {
+        "start": 73.86,
+        "end": 74.96,
+        "text": "打开数码宝贝"
+      },
+      {
+        "start": 76.72,
+        "end": 77.72,
+        "text": "两路请求"
+      },
+      {
+        "start": 77.72,
+        "end": 78.9,
+        "text": "来自不同座位"
+      },
+      {
+        "start": 78.9,
+        "end": 81.28,
+        "text": "系统分别维护各自的context"
+      },
+      {
+        "start": 83.08,
+        "end": 84.54,
+        "text": "主驾在说第二家时"
+      },
+      {
+        "start": 84.54,
+        "end": 87.08,
+        "text": "这个纸袋仍然落在餐厅候选"
+      },
+      {
+        "start": 87.08,
+        "end": 88.58,
+        "text": "不会跳到动画片列表"
+      },
+      {
+        "start": 89.24,
+        "end": 91.18,
+        "text": "一句话里的任务拆开以后"
+      },
+      {
+        "start": 91.18,
+        "end": 92.76,
+        "text": "还要解决另一个限制"
+      },
+      {
+        "start": 92.76,
+        "end": 95.74,
+        "text": "模型一次能看到的信息是有限的"
+      },
+      {
+        "start": 95.74,
+        "end": 99.12,
+        "text": "这里需要引入context上下文窗口"
+      },
+      {
+        "start": 103.12,
+        "end": 106.6,
+        "text": "下面把context上下文窗口分层讲清楚"
+      },
+      {
+        "start": 106.6,
+        "end": 109.76,
+        "text": "我们把窗口总容量记作bmax"
+      },
+      {
+        "start": 109.76,
+        "end": 112.86,
+        "text": "把当前已经占用的容量记作beused"
+      },
+      {
+        "start": 112.86,
+        "end": 115.12,
+        "text": "一次推理能看到多少内容"
+      },
+      {
+        "start": 115.12,
+        "end": 116.46,
+        "text": "取决于这个窗口"
+      },
+      {
+        "start": 117.04,
+        "end": 118.04,
+        "text": "如图所示"
+      },
+      {
+        "start": 118.04,
+        "end": 120.76,
+        "text": "beud等于系统提示词"
+      },
+      {
+        "start": 120.76,
+        "end": 121.86,
+        "text": "工具定义"
+      },
+      {
+        "start": 121.86,
+        "end": 122.84,
+        "text": "当前对话"
+      },
+      {
+        "start": 122.84,
+        "end": 125.26,
+        "text": "检索结果四部分占用之和"
+      },
+      {
+        "start": 125.26,
+        "end": 127.68,
+        "text": "它们共同消耗有限的token预算"
+      },
+      {
+        "start": 127.68,
+        "end": 130.86,
+        "text": "同时还要为下一步生成预留be reserve"
+      },
+      {
+        "start": 132.7,
+        "end": 134.74,
+        "text": "系统提示词规定角色"
+      },
+      {
+        "start": 134.74,
+        "end": 136.66,
+        "text": "行为边界和安全要求"
+      },
+      {
+        "start": 137.52,
+        "end": 139.98,
+        "text": "工具定义列出可用接口"
+      },
+      {
+        "start": 139.98,
+        "end": 142.2,
+        "text": "还会说明需要哪些参数"
+      },
+      {
+        "start": 142.94,
+        "end": 144.12,
+        "text": "当前对话记录"
+      },
+      {
+        "start": 144.12,
+        "end": 145.36,
+        "text": "用户刚刚说了什么"
+      },
+      {
+        "start": 145.36,
+        "end": 146.32,
+        "text": "任务状态"
+      },
+      {
+        "start": 146.32,
+        "end": 148.06,
+        "text": "记录系统已经执行到哪一步"
+      },
+      {
+        "start": 148.9,
+        "end": 150.9,
+        "text": "检索结果补充长期记忆"
+      },
+      {
+        "start": 150.9,
+        "end": 152.72,
+        "text": "车辆状态和外部信息"
+      },
+      {
+        "start": 152.72,
+        "end": 154.36,
+        "text": "进入当前窗口以后"
+      },
+      {
+        "start": 154.36,
+        "end": 156.14,
+        "text": "模型这一轮才能使用"
+      },
+      {
+        "start": 157.04,
+        "end": 159.68,
+        "text": "这四部分进入同一个上下文空间"
+      },
+      {
+        "start": 159.68,
+        "end": 161.24,
+        "text": "任何一部分增加"
+      },
+      {
+        "start": 161.24,
+        "end": 163.26,
+        "text": "都会继续消耗剩余预算"
+      },
+      {
+        "start": 164.98,
+        "end": 167.24,
+        "text": "系统提示词和工具定义"
+      },
+      {
+        "start": 167.24,
+        "end": 168.7,
+        "text": "是相对固定的开销"
+      },
+      {
+        "start": 168.7,
+        "end": 170.24,
+        "text": "对话持续增长"
+      },
+      {
+        "start": 170.24,
+        "end": 172.68,
+        "text": "检索结果按任务临时加入"
+      },
+      {
+        "start": 174.98,
+        "end": 178.08,
+        "text": "所以标称窗口并不全留给聊天"
+      },
+      {
+        "start": 178.08,
+        "end": 180.7,
+        "text": "还要给下一步生成预留token"
+      },
+      {
+        "start": 182.86,
+        "end": 185.42,
+        "text": "外部记忆重新进入context的前"
+      },
+      {
+        "start": 185.42,
+        "end": 187.98,
+        "text": "还要检查来源时效和授权"
+      },
+      {
+        "start": 187.98,
+        "end": 190.18,
+        "text": "避免旧状态覆盖新设置"
+      },
+      {
+        "start": 192.38,
+        "end": 194.52,
+        "text": "当这些内容逐渐占满窗口"
+      },
+      {
+        "start": 194.52,
+        "end": 196.9,
+        "text": "系统就要重新整理当前context"
+      },
+      {
+        "start": 196.9,
+        "end": 199.24,
+        "text": "这一步对应context的压缩机制"
+      },
+      {
+        "start": 203.42,
+        "end": 205.42,
+        "text": "压缩要释放token预算"
+      },
+      {
+        "start": 205.42,
+        "end": 207.82,
+        "text": "也要保留当前任务需要的信息"
+      },
+      {
+        "start": 208.66,
+        "end": 210.94,
+        "text": "系统判断内容的相关性和时效"
+      },
+      {
+        "start": 210.94,
+        "end": 212.28,
+        "text": "再决定保留原文"
+      },
+      {
+        "start": 212.28,
+        "end": 213.28,
+        "text": "压缩为摘要"
+      },
+      {
+        "start": 213.28,
+        "end": 215.36,
+        "text": "还是移出当前窗口"
+      },
+      {
+        "start": 216.68,
+        "end": 218.24,
+        "text": "正在执行的对话"
+      },
+      {
+        "start": 218.24,
+        "end": 220.54,
+        "text": "参数和约束保留原文"
+      },
+      {
+        "start": 220.54,
+        "end": 222.82,
+        "text": "避免关键细节在处理中丢失"
+      },
+      {
+        "start": 223.7,
+        "end": 225.8,
+        "text": "后续可能用到的历史内容"
+      },
+      {
+        "start": 225.8,
+        "end": 228.36,
+        "text": "可以压成短摘要或一句话语料"
+      },
+      {
+        "start": 229,
+        "end": 230.16,
+        "text": "压缩后的一句话"
+      },
+      {
+        "start": 230.16,
+        "end": 231.4,
+        "text": "只作为预料参考"
+      },
+      {
+        "start": 231.4,
+        "end": 232.58,
+        "text": "不直接作为指令"
+      },
+      {
+        "start": 235.16,
+        "end": 238.16,
+        "text": "失效 重复或相关性低的内容"
+      },
+      {
+        "start": 238.16,
+        "end": 239.8,
+        "text": "退出当前contact"
+      },
+      {
+        "start": 239.8,
+        "end": 242.4,
+        "text": "原始记录可以放进外部存储"
+      },
+      {
+        "start": 243.14,
+        "end": 245.02,
+        "text": "窗口接近预算上限时"
+      },
+      {
+        "start": 245.02,
+        "end": 245.94,
+        "text": "可以触发压缩"
+      },
+      {
+        "start": 245.94,
+        "end": 247.5,
+        "text": "也可以按轮次整理"
+      },
+      {
+        "start": 247.5,
+        "end": 249.02,
+        "text": "不必等到完全站满"
+      },
+      {
+        "start": 249.84,
+        "end": 251.06,
+        "text": "压缩释放了空间"
+      },
+      {
+        "start": 251.06,
+        "end": 253.34,
+        "text": "但刚才暂停的任务还没有结束"
+      },
+      {
+        "start": 253.34,
+        "end": 255.36,
+        "text": "系统还需要恢复任务状态"
+      },
+      {
+        "start": 255.36,
+        "end": 257.46,
+        "text": "把执行进度接回原来的位置"
+      },
+      {
+        "start": 261.74,
+        "end": 263.66,
+        "text": "比如主架正在选择餐厅"
+      },
+      {
+        "start": 263.66,
+        "end": 265.66,
+        "text": "临时插入一个开窗请求"
+      },
+      {
+        "start": 265.66,
+        "end": 267.36,
+        "text": "原任务需要先暂停"
+      },
+      {
+        "start": 268.12,
+        "end": 269.9,
+        "text": "系统保存任务状态快照"
+      },
+      {
+        "start": 269.9,
+        "end": 271.16,
+        "text": "记录执行阶段"
+      },
+      {
+        "start": 271.16,
+        "end": 271.92,
+        "text": "已有参数"
+      },
+      {
+        "start": 271.92,
+        "end": 273.68,
+        "text": "等待条件和关联绘画"
+      },
+      {
+        "start": 275.44,
+        "end": 276.66,
+        "text": "开窗任务处理完"
+      },
+      {
+        "start": 276.66,
+        "end": 277.72,
+        "text": "Master Agent"
+      },
+      {
+        "start": 277.72,
+        "end": 278.74,
+        "text": "读取快照"
+      },
+      {
+        "start": 278.74,
+        "end": 280.92,
+        "text": "把原任务恢复到中段位置"
+      },
+      {
+        "start": 281.72,
+        "end": 283.42,
+        "text": "完成的步骤不再重复"
+      },
+      {
+        "start": 283.42,
+        "end": 285.48,
+        "text": "空着的槽位继续补齐"
+      },
+      {
+        "start": 285.48,
+        "end": 287.58,
+        "text": "用户不用从头描述"
+      },
+      {
+        "start": 289.86,
+        "end": 291.7,
+        "text": "绘画历史还要按用户"
+      },
+      {
+        "start": 291.7,
+        "end": 293.92,
+        "text": "座位和车辆作用域管理"
+      },
+      {
+        "start": 293.92,
+        "end": 295.64,
+        "text": "避免不同乘客的任务"
+      },
+      {
+        "start": 295.64,
+        "end": 296.48,
+        "text": "互相串联"
+      },
+      {
+        "start": 297.22,
+        "end": 299.1,
+        "text": "系统推断出的个人偏好"
+      },
+      {
+        "start": 299.1,
+        "end": 300.44,
+        "text": "只进入参考层"
+      },
+      {
+        "start": 300.44,
+        "end": 301.64,
+        "text": "不能越过权限"
+      },
+      {
+        "start": 301.64,
+        "end": 302.66,
+        "text": "直接触发车控"
+      },
+      {
+        "start": 303.42,
+        "end": 305.02,
+        "text": "用户撤回授权后"
+      },
+      {
+        "start": 305.02,
+        "end": 307.62,
+        "text": "相关记忆从可用context中"
+      },
+      {
+        "start": 307.62,
+        "end": 308.12,
+        "text": "移除"
+      },
+      {
+        "start": 308.12,
+        "end": 308.96,
+        "text": "不再召回"
+      },
+      {
+        "start": 311.06,
+        "end": 311.64,
+        "text": "到这里"
+      },
+      {
+        "start": 311.64,
+        "end": 312.56,
+        "text": "四个环节"
+      },
+      {
+        "start": 312.56,
+        "end": 315.24,
+        "text": "结成了一套完整的上下文管理流程"
+      },
+      {
+        "start": 315.94,
+        "end": 316.48,
+        "text": "下一集"
+      },
+      {
+        "start": 316.48,
+        "end": 317.5,
+        "text": "我们继续看"
+      },
+      {
+        "start": 317.5,
+        "end": 321,
+        "text": "Laura如何加载到基础模型的运行时实例中"
+      },
+      {
+        "start": 321,
+        "end": 321.82,
+        "text": "下集见"
+      },
+      {
+        "start": 321.82,
+        "end": 322.22,
+        "text": "下集见"
+      },
+      {
+        "start": 322.22,
+        "end": 329.8,
+        "text": "请不吝点赞 订阅 转发 打赏支持明镜与点点栏目"
+      }
+    ]
+  },
+  "script_pack": null,
+  "video": {
+    "src": "https://github.com/rayw-lab/website/releases/download/frame-vault-media-v1/ep4.mp4",
+    "sha256": "86e1f39556fa44e03ede0aa7f62af8e2d888eaa7be3904f52b7b5c0a3d0784de",
+    "bytes": 8720005
+  },
+  "built_at": "2026-09-04T16:33:46.377Z"
+}

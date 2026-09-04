@@ -26,6 +26,10 @@ const nxRange = ledger.range as { from: string; to: string };
  */
 export const HALL_COPY: Record<string, HallCopy> = {
   'about-pavilion': { title: '在技术与落地之间架桥', description: HALL_SUBTITLE },
+  'frame-vault': {
+    title: '帧库 · Frame Vault',
+    description: '视频不是文件，是一次构建。把几分钟的科普视频当成可切开的时间固体：逐帧刮、斜切出海报、抽帧成片、门环记着每一次人审退回。',
+  },
   'agent-nexus': {
     title: '墨迹 · Ink Ledger',
     description:
