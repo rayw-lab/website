@@ -79,6 +79,7 @@ export class VolumeEngine {
     const stride = Math.max(1, Math.ceil(spec.n / this.maxDepth));
     const n = Math.ceil(spec.n / stride);
     this.n = n;
+    this.unload();                                   // 切集：先放掉上一集的三张纹理
     this.vol = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_3D, this.vol);
     gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
@@ -142,10 +143,15 @@ export class VolumeEngine {
     return new Promise((res) => c.toBlob((b) => { c.width = w0; c.height = h0; res(b); }, 'image/png'));
   }
 
-  dispose(): void {
+  unload(): void {
     const { gl } = this;
     for (const t of [this.vol, this.xt, this.yt]) if (t) gl.deleteTexture(t);
-    gl.deleteProgram(this.prog);
+    this.vol = this.xt = this.yt = null;
+  }
+
+  dispose(): void {
+    this.unload();
+    this.gl.deleteProgram(this.prog);
   }
 }
 

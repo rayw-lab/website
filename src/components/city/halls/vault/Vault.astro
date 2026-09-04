@@ -26,6 +26,8 @@ const manifestUrl = `${base}/demo/frame-vault/${cur.key}/manifest.json`;
 const rings = m.rings.filter((r) => r.status === 'LOCATABLE' && r.time_s <= m.duration_s);
 const mmss = (t: number): string => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 const stageName: Record<string, string> = { D: '开发', S: '台本锁', A: '样片锁', P: '画面锁', M: '声音锁', F: '定稿' };
+const lockText = (x: VaultManifest): string => `${stageName[x.stage] ?? x.stage}${x.label ? ` · ${x.label}` : ''}${x.stage !== 'F' ? ' · 工作剪' : ''}`;
+const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · ${x.volume.n} slices @ ${x.volume.fps} fps · sha ${x.sha256.slice(0, 8)}`;
 ---
 
 <section class="vault" data-vault data-vault-state="loading" data-vault-ep={m.ep} tabindex="0" aria-label={`帧库 · ${m.ep} ${m.title}`}>
@@ -38,16 +40,43 @@ const stageName: Record<string, string> = { D: '开发', S: '台本锁', A: '样
     <!-- 抽帧成片：切面抽出来变成真 <video>，从当前时刻续播；角标 = 视频文件 sha 前 8 位（manifest 绑定） -->
     <figure class="vault__pull" data-vault-pull>
       <video data-vault-video playsinline preload="metadata" aria-label={`${m.ep} 成片`}></video>
-      <figcaption class="vault__mono">{m.stage === 'F' ? '成片' : `工作剪 ${m.label ?? ''}`} · sha {m.video.sha256.slice(0, 8)} · 单击 / Esc 放回</figcaption>
+      <figcaption class="vault__mono">
+        <span data-vault-pull-cap>{m.stage === 'F' ? '成片' : `工作剪 ${m.label ?? ''}`} · sha {m.video.sha256.slice(0, 8)}</span>
+        <span class="vault__pull-act">
+          <button type="button" class="vault__link" data-vault-fullscreen title="全屏（F）">全屏</button>
+          <a class="vault__link" data-vault-download href={m.video.src} download>下载 mp4</a>
+          <span>单击 / Esc 放回</span>
+        </span>
+      </figcaption>
     </figure>
   </div>
 
   <header class="vault__id" aria-live="polite">
-    <span class="vault__ep">{m.ep}</span>
-    <span class="vault__title">{m.title}</span>
-    <span class="vault__lock" data-stage={m.stage}>{stageName[m.stage] ?? m.stage}{m.label ? ` · ${m.label}` : ''}{m.stage !== 'F' ? ' · 工作剪' : ''}</span>
-    <span class="vault__mono">{m.duration_s.toFixed(2)} s · {m.volume.n} slices @ {m.volume.fps} fps · sha {m.sha256.slice(0, 8)}</span>
+    <span class="vault__ep" data-vault-ep-label>{m.ep}</span>
+    <span class="vault__title" data-vault-title>{m.title}</span>
+    <span class="vault__lock" data-vault-lock data-stage={m.stage}>{lockText(m)}</span>
+    <span class="vault__mono" data-vault-meta>{metaText(m)}</span>
   </header>
+
+  <!-- 片架：每集一格；实心 = 有成片/工作剪帧体，锁字母 = 当前阶段。键 1–8 同效 -->
+  <nav class="vault__rail" data-vault-rail aria-label="片架">
+    {manifests.map((x, i) => (
+      <button
+        class="vault__slot"
+        type="button"
+        data-vault-slot
+        data-key={x.key}
+        data-manifest={`${base}/demo/frame-vault/${x.key}/manifest.json`}
+        data-stage={x.m.stage}
+        aria-pressed={x.key === cur.key ? 'true' : 'false'}
+        title={`${x.m.ep} · ${x.m.title} · ${stageName[x.m.stage] ?? x.m.stage}`}
+      >
+        <b>{i + 1}</b><span>{x.m.ep}</span><i>{x.m.stage}</i>
+      </button>
+    ))}
+  </nav>
+  <!-- 门环悬停卡：人审原话 + 缺陷类 + 修复版本（磊哥 R1-1：原话可公开） -->
+  <div class="vault__card" data-vault-card hidden role="status"></div>
 
   <div class="vault__hud">
     <span class="vault__mono vault__tc" data-vault-tc>00:00.000</span>
@@ -60,19 +89,14 @@ const stageName: Record<string, string> = { D: '开发', S: '台本锁', A: '样
   <!-- 时间标尺：位置 = t/duration；门环 = 真实人审退回（fixtures/human-rejects.jsonl） -->
   <div class="vault__ruler" role="group" aria-label="时间标尺">
     <i class="vault__needle" aria-hidden="true"></i>
-    {rings.map((r) => (
-      <button
-        class="vault__ring"
-        type="button"
-        data-vault-ring
-        data-t={(r.time_s / m.duration_s).toFixed(4)}
-        style={`--x:${((r.time_s / m.duration_s) * 100).toFixed(2)}%`}
-        title={`${mmss(r.time_s)} · ${r.defect_class} · ${r.quote}${r.fixed_in ? ` · 修于 ${r.fixed_in}` : ''}`}
-        aria-label={`人审退回 ${r.id}：${mmss(r.time_s)} ${r.quote}`}
-      ></button>
-    ))}
+    <!-- 门环由控制器按当前集的 manifest.rings 渲染（切集时重建）；首屏 SSR 一份保证无 JS 也能看到 -->
+    <div class="vault__rings" data-vault-rings>
+      {rings.map((r) => (
+        <button class="vault__ring" type="button" data-vault-ring data-t={(r.time_s / m.duration_s).toFixed(4)} style={`--x:${((r.time_s / m.duration_s) * 100).toFixed(2)}%`} aria-label={`人审退回 ${r.id}：${mmss(r.time_s)} ${r.quote}`}></button>
+      ))}
+    </div>
     <span class="vault__mono vault__ruler-l">0:00</span>
-    <span class="vault__mono vault__ruler-r">{mmss(m.duration_s)}</span>
+    <span class="vault__mono vault__ruler-r" data-vault-dur>{mmss(m.duration_s)}</span>
   </div>
 </section>
 
@@ -91,13 +115,14 @@ const stageName: Record<string, string> = { D: '开发', S: '台本锁', A: '样
   if (h) { h.dataset.manifest = manifestUrl; h.dataset.base = base; }
 </script>
 
-<style>
+<style is:global>
+  /* is:global：门环与卡片内容由控制器动态创建，scoped 样式作用不到（W3 实证：环宽 0）；类名全带 vault__ 前缀，hall.css 无同名 */
   .vault {
     --bg: #05070d; --paper: #ece9e1; --gold: #ffd278; --metal: #9aa3ad; --ink: #1c1f26;
-    position: relative; min-height: 100svh; background: var(--bg); color: #cfd3dc;
-    display: grid; grid-template-rows: 1fr auto auto; outline: none;
+    position: relative; background: var(--bg); color: #cfd3dc;
+    display: grid; grid-template-rows: auto auto auto; outline: none;
   }
-  .vault__stage { position: relative; min-height: 70svh; }
+  .vault__stage { position: relative; height: clamp(420px, 64svh, 760px); }  /* 舞台 + HUD + 标尺必须在首屏内（页头 69px 之下）：W3 实证标尺被顶出视口后门环悬停不到 */
   .vault__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
   .vault__canvas:active { cursor: grabbing; }
 
@@ -121,7 +146,13 @@ const stageName: Record<string, string> = { D: '开发', S: '台本锁', A: '样
     box-shadow: 6px 6px 0 #2a2d36, 12px 12px 0 #15171d, 0 30px 80px #000c;
   }
   .vault__pull video { width: 100%; height: 100%; display: block; background: #000; cursor: pointer; }
-  .vault__pull figcaption { position: absolute; right: 0; bottom: -1.7rem; }
+  .vault__pull figcaption { position: absolute; left: 0; right: 0; bottom: -1.8rem; display: flex; justify-content: space-between; gap: 1rem; }
+  .vault__pull-act { display: flex; gap: 1rem; }
+  .vault__link { background: none; border: 0; padding: 0; color: var(--gold); font: inherit; cursor: pointer; text-decoration: none; }
+  .vault__link:hover { text-decoration: underline; }
+  .vault__pull:fullscreen { width: 100vw; height: 100vh; aspect-ratio: auto; transform: none; left: 0; top: 0; box-shadow: none; background: #000; }
+  .vault__pull:fullscreen video { object-fit: contain; }
+  .vault__pull:fullscreen figcaption { bottom: .6rem; left: 1rem; right: 1rem; }
   .vault[data-vault-state='pulled'] .vault__pull { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
   .vault[data-vault-state='pulled'] .vault__canvas { opacity: .32; transition: opacity .4s; }
   .vault__unsupported { display: none; position: absolute; inset: 0; margin: 0; place-content: center; text-align: center; color: var(--paper); }
@@ -129,7 +160,7 @@ const stageName: Record<string, string> = { D: '开发', S: '台本锁', A: '样
   .vault[data-vault-state='unsupported'] .vault__canvas,
   .vault[data-vault-state='unsupported'] .vault__shutter { display: none; }
 
-  .vault__id { position: absolute; left: clamp(1rem, 3vw, 2.5rem); bottom: calc(16svh + 3.2rem); display: grid; gap: .25rem; pointer-events: none; }
+  .vault__id { position: absolute; left: clamp(1rem, 3vw, 2.5rem); bottom: 1.2rem; display: grid; gap: .25rem; pointer-events: none; }
   .vault__ep { font: 600 clamp(1.4rem, 3vw, 2.4rem)/1 "Songti SC", "Source Han Serif SC", serif; color: var(--paper); letter-spacing: .04em; }
   .vault__title { font-size: clamp(.95rem, 1.4vw, 1.15rem); color: var(--paper); opacity: .85; }
   .vault__lock { font-size: .8rem; letter-spacing: .12em; color: var(--metal); }
@@ -150,8 +181,38 @@ const stageName: Record<string, string> = { D: '开发', S: '台本锁', A: '样
     border-radius: 50%; border: 2px solid var(--metal); background: var(--bg); padding: 0; cursor: pointer;
     box-shadow: inset 0 0 0 2px var(--bg), 0 0 0 1px #00000080; transition: border-color .2s, transform .2s;
   }
-  .vault__ring:hover, .vault__ring:focus-visible { border-color: #e0483a; transform: translate(-50%, -50%) scale(1.35); outline: none; }
+  .vault__ring:hover, .vault__ring:focus-visible, .vault__ring.is-hit { border-color: #e0483a; transform: translate(-50%, -50%) scale(1.35); outline: none; }
+  .vault__ring.is-hit { box-shadow: 0 0 0 6px #e0483a33; }
+  .vault__ring[data-count='2'] { border-width: 3px; width: 16px; height: 16px; }
+  .vault__ring[data-count='3'], .vault__ring[data-count='4'] { border-width: 4px; width: 18px; height: 18px; }
+  .vault__card q + small + q { margin-top: .5rem; display: block; }
   .vault__ruler-l, .vault__ruler-r { position: absolute; top: calc(50% + 10px); }
+  .vault__rings { position: absolute; inset: 0; }
+  .vault[data-vault-state='pulled'] .vault__id { opacity: 0; transition: opacity .3s; }
+
+  /* 片架：右侧竖排小格，当前集金边 */
+  .vault__rail { position: absolute; right: clamp(1rem, 3vw, 2.5rem); top: 50%; transform: translateY(-50%); display: grid; gap: .45rem; }
+  .vault__slot {
+    display: grid; grid-template-columns: 1.1rem 1fr auto; align-items: center; gap: .5rem; width: 7.2rem;
+    padding: .35rem .55rem; background: #0b0e16; border: 1px solid #ffffff1a; color: var(--metal); cursor: pointer;
+    font: 12px/1.2 ui-monospace, Menlo, monospace; letter-spacing: .06em; text-align: left; transition: border-color .2s, color .2s;
+  }
+  .vault__slot b { font-weight: 500; opacity: .5; }
+  .vault__slot i { font-style: normal; color: var(--gold); opacity: .7; }
+  .vault__slot[data-stage='F'] i { opacity: 1; }
+  .vault__slot:hover { border-color: #ffffff55; color: var(--paper); }
+  .vault__slot[aria-pressed='true'] { border-color: var(--gold); color: var(--paper); }
+  .vault__slot[aria-pressed='true'] span::after { content: ' ▸'; color: var(--gold); }
+
+  /* 门环卡片：跟随环的 x，压在标尺上方 */
+  .vault__card {
+    position: absolute; left: var(--x, 50%); bottom: 4.6rem; transform: translateX(-50%); max-width: 26rem; z-index: 2;
+    background: #0e1119; border: 1px solid #e0483a99; border-left: 3px solid #e0483a; padding: .6rem .8rem; color: var(--paper);
+    font-size: .82rem; line-height: 1.5; box-shadow: 0 18px 40px #000a; pointer-events: none;
+  }
+  .vault__card q { quotes: '「' '」'; color: #fff; }
+  .vault__card small { display: block; color: var(--metal); font: 11px/1.6 ui-monospace, Menlo, monospace; margin-top: .25rem; }
+
   .vault__ruler-r { right: 0; }
 
   @media (prefers-reduced-motion: reduce) {
