@@ -151,3 +151,7 @@
 ### R6-2 LIVE_OBSERVED：隔离栈（本 worktree dist，127.0.0.1:4324）真 GPU 全程一镜（`.tmp/live-walk.mjs`，截图 `shots/vault/walk/1–6`）
 - +3.6 s 城 ready（`?poi=workflow-foundry` 深链）→ +8.1 s 按 E 挂快门 → +8.5 s 跨文档落地 `?from=city&poi=workflow-foundry` → +8.9 s 帧库 idle → 刮时 + 斜切（cut .67 / tilt .24，phase tilted）→ 键 3 切 EP4（19 枚环）→ 点环 → Enter 抽帧成片（video 111.3 s 播放中）→ Esc → E 拆开（exploded）→ S3「回城」出口 → `?poi=workflow-foundry&from=hall` → +27.5 s car_ready，车在泊位 (18,−150)、yaw −3.14（车头朝街西向，`exitHeading` 缺省 = heading+180）、third 视角。
 - 全程零 pageerror；三段快门母题 + 回城续驶接上。
+
+### R6-3 回城幕布冷路径滞留第二次观察 + 墙钟兜底
+- 一镜到底落地城侧 +1.5 s 截图仍全黑（`walk/6-city-back.png`），而独立探针（`.tmp/return-timeline.mjs workflow-foundry`）+779 ms 即 `hidden`——与 NEXUS R40-2 同形状，同一现象两次。
+- 修：`src/lab/world/index.ts` 收幕加 2.5 s 墙钟兜底（未收完则卸监听、相机复位、`--return-k` 0、`data-return-done`）。帧正常时无副作用（t≥1 已卸）。**未复现路径下无法证明兜底触发**，只保证黑屏上限 2.5 s。

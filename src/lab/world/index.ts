@@ -295,6 +295,16 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
       game.view.ritualCam.dollyIn = 1;
       // 让 car_ready 那一帧先画出来（车、HUD 淡入起拍），下一拍才开始收墨
       game.ticker.wait(1, () => game.ticker.events.on('tick', recedeTick));
+      // 墙钟兜底（FV R6-3：冷路径下 car_ready 后主线程被 WebGPU 编译占住、渲染帧迟迟不来，
+      // 幕布按设计等真实帧，访客却坐在全黑后面——观察两次）。2.5 s 内帧没把幕收完就强制让位，
+      // 相机复位、监听卸掉；帧正常时 t≥1 早已卸，此处零副作用。
+      window.setTimeout(() => {
+        if (returnVeil && returnVeil.dataset.returnDone === '1') return;
+        game.ticker.events.off('tick', recedeTick);
+        game.view.ritualCam.dollyIn = 0;
+        if (returnVeil) { returnVeil.style.setProperty('--return-k', '0'); returnVeil.dataset.returnDone = '1'; }
+        console.info('[world] 回城幕布墙钟兜底：2.5 s 内渲染帧未收完，强制让位');
+      }, 2500);
     });
   }
 
