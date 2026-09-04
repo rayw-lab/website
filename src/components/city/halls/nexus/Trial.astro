@@ -92,7 +92,7 @@ const { dry = { x: 0.72, y: 0.5, radius: 0.17 } } = Astro.props;
   }
   .trial__dry span {
     font: 400 clamp(.6rem, .8vw, .7rem)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-    letter-spacing: .18em; color: #9e2a2bb3;
+    letter-spacing: .18em; color: #9e2a2b;
   }
   .trial__caret {
     position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px;
@@ -103,7 +103,8 @@ const { dry = { x: 0.72, y: 0.5, radius: 0.17 } } = Astro.props;
   /* 🔴 author 的 display:grid 会盖过 UA 的 [hidden]{display:none}——首版降级文案在 WebGL 正常时也一直露着，
      截图里反复出现被误判成「资源争用伪影」。hidden 必须在 author 层再声明一次。 */
   .trial__fallback[hidden] { display: none; }
-  .trial__bar { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+  /* 操作提示进画布左下（seed D P1-3：画布下方是视觉盲区），纸上写字不另开一行 */
+  .trial__bar { position: absolute; left: 1.4rem; bottom: 1.1rem; display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; pointer-events: none; }
   .trial__b {
     min-width: 3.2rem; min-height: 2.4rem; padding: .35rem .9rem;
     background: transparent; color: #1c1f26; border: 1px solid #1c1f2633; border-radius: 1px;

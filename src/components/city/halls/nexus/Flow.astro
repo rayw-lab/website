@@ -108,6 +108,8 @@ const alt =
 
 <style>
   .nexus-flow { margin: 0; position: relative; width: 100%; aspect-ratio: 16 / 9; }
+  /* 宽屏一幕一屏：16:9 画布比 100svh 幕高还高，时间锚点被推到视口外（seed D P1-1）。横向手卷本就是长条。 */
+  @media (min-aspect-ratio: 3/2) { .nexus-flow { aspect-ratio: 2 / 1; } }
   .nexus-flow canvas, .nexus-flow__poster { display: block; width: 100%; height: 100%; object-fit: cover; }
   .nexus-flow__poster[hidden] { display: none; }
   .nexus-flow__fallback { padding: 1rem; color: #d8d4cc; }

@@ -145,6 +145,10 @@ const tally = {
   .seals__grid li:nth-child(3n) .seal { transform: rotate(-.9deg); }
   .seals__grid li:nth-child(4n) .seal { transform: rotate(1.1deg) scale(.965); }
   .seals__grid li:nth-child(5n) .seal { transform: rotate(-.5deg) scale(1.03); }
+  /* 手工感：尺寸 ±5%、位移 ±3px 的确定性抖动（seed D P2-4），nth-child 决定，刷新不变 */
+  .seals__grid li:nth-child(7n+2) .seal { transform: rotate(.6deg) scale(.95) translate(2px, -3px); }
+  .seals__grid li:nth-child(7n+5) .seal { transform: rotate(-1.3deg) scale(1.05) translate(-3px, 2px); }
+  .seals__grid li:nth-child(11n+3) .seal { transform: rotate(.3deg) scale(.97) translate(3px, 3px); }
   .seal:hover, .seal:focus-visible { transform: translateY(-2px) rotate(0deg) !important; }
   /* 选中态用双层印边，不用浏览器默认 focus ring 那种黑框 */
   .seal[data-current] {

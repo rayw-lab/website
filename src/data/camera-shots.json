@@ -89,6 +89,22 @@
         ]
       }
     },
+    "poi_showcase-agent-nexus": {
+      "mode": "poi",
+      "status": "proposal",
+      "anchor": { "type": "building", "buildingId": "agent-nexus" },
+      "spherical": { "phiDeg": 70, "thetaDeg": 45, "radius": 170 },
+      "lookAtHeight": 50,
+      "lateral": -16,
+      "notes": "NX-W7 进楼前奏机位：楼 (−52,−52) 40×40×96，泊车圈 (−28,−28) 朝向 315°（车头对楼东南角）。机位沿东南对角线 θ=45° 退到 170 远、φ=70，lookAtHeight 50 把 96 高塔身整楼纳入；lateral −16 让塔偏右、左侧留夜空给转场墨团起笔。数值由 tools/camera/audit-shot-ndc.mjs 枚举 (radius×lookAtHeight×phi) 取首个双门全过解：ndc.x ∈ [−0.127, 0.457]，八角点 8/8 入帧；首版 φ66/lah38 塔顶三角出画（y 1.008–1.121）。",
+      "projectionAudit": {
+        "buildings": ["agent-nexus"],
+        "gates": [
+          { "building": "agent-nexus", "type": "maxAbsNdcX", "limit": 0.85 },
+          { "building": "agent-nexus", "type": "inFrame" }
+        ]
+      }
+    },
     "poi_showcase-about-pavilion": {
       "mode": "poi",
       "status": "proposal",

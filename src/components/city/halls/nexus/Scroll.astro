@@ -47,6 +47,12 @@ const { stripVh } = scenes.scroll;
   /* 标题下不打横线：一条 100vw 的线会把长卷的空间连续性切断（W4r 改法 3）；
      画心自己的天头边线就是这一幕唯一的横向界线。 */
   .scroll__head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding-bottom: .2rem; }
+  /* 可横展提示（seed D P1-2）：画心右缘一枚极淡「→ 横展」，滚过卷首即隐 */
+  .scroll__sticky::after { content: '→ 横展'; position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%);
+    font: 400 .66rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .18em; color: #9e2a2b99; pointer-events: none;
+    opacity: 1; transition: opacity .4s; }
+  .scroll:not([data-progress='0']):not([data-progress='0.000']) .scroll__sticky::after { opacity: 0; }
+  @media (max-width: 768px), (prefers-reduced-motion: reduce) { .scroll__sticky::after { content: none; } }
   .scroll__rail { display: inline-block; position: relative; inline-size: 5rem; block-size: 1px; background: #1c1f2633; vertical-align: middle; margin: 0 .6rem; }
   .scroll__rail i { position: absolute; top: -1px; left: 0; inline-size: 3px; block-size: 3px; background: #9e2a2b; transform: translateX(var(--x, 0px)); }
   .scroll__t { margin: 0; font-weight: 400; letter-spacing: .05em; font-size: clamp(1.05rem, 2vw, 1.5rem);
