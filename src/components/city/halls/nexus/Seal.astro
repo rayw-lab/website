@@ -1,0 +1,206 @@
+---
+/**
+ * 印 —— 整幅单色画里唯一的颜色（草案 §1.3 已定设计，不重评）。
+ *
+ * 三态严格对应机器收据，**不做美化也不做兜底**：
+ *   朱文（朱砂 #9e2a2b）= identity_ok true  → GO
+ *   🔴 印色曾用站点强调色楼紫 #a855f7：在水墨语境里一排紫色细线方框读作
+ *   前端组件库的 Badge 列表，与金石印章毫无关系（agy 视觉审判为全稿质感最崩处，采纳）。
+ *   白文（白字红底 · 朱砂 #b8321a）= identity_ok false → NO_GO（红灯比绿灯亮）
+ *   灰印                              = identity_ok null  → 该通道无机器收据
+ * 🔴 三态铁律：缺失就是灰印，**禁止推断为 GO**。印文只放机器字段，不放形容词。
+ * 方形 + 等宽字，不引篆书字体（避 kitsch，也避字体体积）。
+ */
+import ledger from '../../../../data/nexus-ledger.json';
+
+interface Props {
+  /** 展示多少枚 */
+  limit?: number;
+}
+const { limit = 24 } = Astro.props;
+
+interface Receipt {
+  id: string; seat: string; servedModel: string | null;
+  identityOk: boolean | null; exitCode: number | null; sha256: string | null;
+}
+const all = (ledger.receipts ?? []) as Receipt[];
+/** 语义缩写：已知模型给固定印文；未知的按「字母头 + 数字」切整词，最多 9 位且不切在词中间。 */
+const SEAL_ABBR: Record<string, string> = {
+  gemini38f: 'gemini·f', glm53flash: 'glm·flash', dots3noteprev: 'dots·3', dots3note: 'dots·3',
+  apidirect: 'api·dir', deepseekv4flash: 'ds·flash', deepseekv4pro: 'ds·pro', minimaxm3: 'minimax',
+};
+const shortSeal = (s: string): string => {
+  if (SEAL_ABBR[s]) return SEAL_ABBR[s];
+  const m = /^([a-z]+)(\d*)/.exec(s);
+  const head = m ? m[1] + (m[2] ? '·' + m[2].slice(0, 2) : '') : s;
+  return head.length <= 9 ? head : (m ? m[1].slice(0, 9) : s.slice(0, 9));
+};
+// 🔴 跨席位交错取样：receipts 按 mtime 排序，直接 slice 会让前 24 枚**全来自同一席**
+// （实测印文去重后只剩一个 `gemini38f`）。印阵要体现「与多智能体共事」，
+// 不能是同一席的 24 连拍。灰印/白文这类稀有态也要保证被取到。
+const byState = (r: Receipt) => (r.identityOk === true ? 'go' : r.identityOk === false ? 'nogo' : 'unknown');
+const groups = new Map<string, Receipt[]>();
+for (const r of all) {
+  const k = `${r.seat}|${byState(r)}`;
+  if (!groups.has(k)) groups.set(k, []);
+  groups.get(k)!.push(r);
+}
+const picked: Receipt[] = [];
+const keys = [...groups.keys()].sort();
+for (let round = 0; picked.length < limit && round < 200; round++) {
+  let moved = false;
+  for (const k of keys) {
+    const g = groups.get(k)!;
+    if (round < g.length && picked.length < limit) { picked.push(g[round]); moved = true; }
+  }
+  if (!moved) break;
+}
+const seals = picked.map((r) => {
+  const state = r.identityOk === true ? 'go' : r.identityOk === false ? 'nogo' : 'unknown';
+  // 模型短名：去括注、去空格点划、小写后截断。
+  // 直接截 `Gemini 3.8 Flash (High)` 会得到「3.8 Flash」——二十几枚印看着像同一枚，
+  // 分辨全靠第二行的 sha，等于白占一行。压成 `gemini38f` 才有辨识度。
+  const model = (r.servedModel ?? '')
+    .replace(/\s*\(.*\)$/, '')
+    .replace(/[\s._-]/g, '')
+    .toLowerCase();
+  return {
+    id: r.id,
+    state,
+    // 🔴 印文禁硬裁：`slice(0,9)` 把 glm53flash 裁成 glm53flas、api-direct 裁成 api-direc，
+    // 现代字符串截断的毛边直接破坏印章的严谨感（agy 盲审 P1，属实）。按语义缩写，永远保留整词。
+    line1: shortSeal(model || r.seat),
+    line2: r.sha256 ? r.sha256.slice(0, 7) : '—',
+    // 抽屉里的字段摘录：全部是机器字段，一个形容词都没有
+    fields: [
+      ['seat', r.seat],
+      ['served_model', r.servedModel ?? 'null'],
+      ['identity_ok', String(r.identityOk)],
+      ['exit_code', r.exitCode === null || r.exitCode === undefined ? 'null' : String(r.exitCode)],
+      ['sha256', r.sha256 ? `${r.sha256.slice(0, 16)}…` : 'null'],
+    ] as Array<[string, string]>,
+  };
+});
+const tally = {
+  go: all.filter((r) => r.identityOk === true).length,
+  nogo: all.filter((r) => r.identityOk === false).length,
+  unknown: all.filter((r) => r.identityOk !== true && r.identityOk !== false).length,
+};
+---
+
+<section class="seals" data-nexus-seals>
+  <div class="seals__head">
+    <h3 class="seals__t">印 · 收据即印</h3>
+    <p class="seals__n">
+      朱文 <b>{tally.go}</b> · 白文 <b>{tally.nogo}</b> · 灰印 <b>{tally.unknown}</b>
+      <span class="seals__of">此处陈列 <b>{seals.length}</b> / {all.length}</span>
+      <span class="seals__hint">（灰印 = 该通道无机器收据，不是失败）</span>
+    </p>
+  </div>
+
+  <ul class="seals__grid">
+    {seals.map((s) => (
+      <li>
+        <button class="seal" data-state={s.state} data-seal={s.id} type="button"
+                data-fields={JSON.stringify(s.fields)}
+                aria-label={`收据 ${s.id}，${s.state === 'go' ? '身份已验' : s.state === 'nogo' ? '身份未通过' : '无机器收据'}`}>
+          <span class="seal__l1">{s.line1}</span>
+          <span class="seal__l2">{s.line2}</span>
+        </button>
+      </li>
+    ))}
+  </ul>
+
+  <!-- 抽屉：全网格共享一个。放在每枚印下面会被 4.6rem 的格宽挤成逐字竖排。 -->
+  <dl class="drawer" data-drawer hidden></dl>
+</section>
+
+<style>
+  .seals { padding: clamp(2rem,6vh,4rem) 0; }
+  .seals__head { display: flex; align-items: baseline; justify-content: space-between;
+                 gap: 1.2rem; flex-wrap: wrap; border-bottom: 1px solid #1c1f2622; padding-bottom: .8rem; }
+  .seals__t { margin: 0; font-size: clamp(1rem,1.9vw,1.4rem); font-weight: 400; letter-spacing: .05em; }
+  .seals__n { margin: 0; font: 400 clamp(.72rem,1.1vw,.82rem)/1.7 ui-monospace, SFMono-Regular, Menlo, monospace;
+              letter-spacing: .06em; opacity: .7; }
+  .seals__n b { font-weight: 600; opacity: 1; }
+  .seals__hint { opacity: .6; }
+  /* 展示的是子集就要说清是子集：图例写 75、画面只有 24 枚而不加交代，是诚实性问题 */
+  .seals__of { opacity: .8; margin-left: .6em; }
+
+  .seals__grid { list-style: none; margin: 1.4rem 0 0; padding: 0;
+                 display: grid; grid-template-columns: repeat(12, 1fr); gap: .9rem; }
+  /* 24 枚锁 12×2 满阵，不再 14+10 缺角（agy W9 P0-3 部分采纳：阵列与灰印） */
+  @media (max-width: 1100px) { .seals__grid { grid-template-columns: repeat(8, 1fr); } }
+  @media (max-width: 640px) { .seals__grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .seal {
+    inline-size: 100%; aspect-ratio: 1; padding: 0; cursor: pointer;
+    display: grid; align-content: center; gap: .15rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .58rem; line-height: 1.25; letter-spacing: .02em;
+    border-radius: 1px; transition: transform .18s ease, box-shadow .18s ease;
+  }
+  /* 钤印有偶然性：等宽等高等角度的方块是 AI 出 UI 的默认 badge grid，不是印谱。
+     微旋转与尺寸差破掉绝对对齐（k3 视觉审点名的第一处 AI 味）。 */
+  .seals__grid li:nth-child(3n) .seal { transform: rotate(-.9deg); }
+  .seals__grid li:nth-child(4n) .seal { transform: rotate(1.1deg) scale(.965); }
+  .seals__grid li:nth-child(5n) .seal { transform: rotate(-.5deg) scale(1.03); }
+  /* 手工感：尺寸 ±5%、位移 ±3px 的确定性抖动（seed D P2-4），nth-child 决定，刷新不变 */
+  .seals__grid li:nth-child(7n+2) .seal { transform: rotate(.6deg) scale(.95) translate(2px, -3px); }
+  .seals__grid li:nth-child(7n+5) .seal { transform: rotate(-1.3deg) scale(1.05) translate(-3px, 2px); }
+  .seals__grid li:nth-child(11n+3) .seal { transform: rotate(.3deg) scale(.97) translate(3px, 3px); }
+  .seal:hover, .seal:focus-visible { transform: translateY(-2px) rotate(0deg) !important; }
+  /* 选中态用双层印边，不用浏览器默认 focus ring 那种黑框 */
+  .seal[data-current] {
+    box-shadow: 0 0 0 2px #efe9dc, 0 0 0 4px #9e2a2b;
+  }
+  .seal__l2 { opacity: .78; }
+
+  /* 朱文：红字白底（此处红=楼紫，承接城市楼色） */
+  .seal[data-state='go'] { color: #9e2a2b; background: #efe9dc; border: 1.5px solid #9e2a2b; }
+  /* 白文：白字红底 —— 红灯比绿灯亮，失败要更显眼 */
+  .seal[data-state='nogo'] { color: #f6efe6; background: #b8321a; border: 1.5px solid #b8321a; }
+  /* 灰印：无机器收据，既不算过也不算败 */
+  /* 🔴 灰印不用 dashed。网页虚线是「未激活/占位」的前端惯用语，
+     一眼就是脚手架产物；这里要的是「干拓残印」——极淡的实线加不匀的透明度，
+     像印泥不足只拓下一半（agy 指认 dashed 是最出卖 AI 默认产出的细节，采纳）。 */
+  .seal[data-state='unknown'] {
+    color: #1c1f2659; background: transparent; border: 1.5px solid #1c1f2626;
+    box-shadow: inset 0 -6px 10px -8px #1c1f2633, inset 3px 0 8px -7px #1c1f2626;
+  }
+
+  /* 🔴 [hidden] 的 UA 样式是 display:none，但它比 .drawer{display:grid} 更不具体，
+     于是被覆盖、所有抽屉全部展开。给 hidden 补一条同等具体度的规则。 */
+  .drawer[hidden] { display: none; }
+  .drawer {
+    margin: 1.1rem 0 0; padding: .8rem 1rem; background: #1c1f2608; border-left: 2px solid #9e2a2b;
+    font: 400 .68rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+    display: grid; grid-template-columns: max-content 1fr; gap: .25rem 1.2rem;
+  }
+  .drawer dt { opacity: .55; }
+  .drawer dd { margin: 0; overflow-wrap: anywhere; }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-nexus-seals]')) {
+    root.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-seal]');
+      if (!btn) return;
+      const d = root.querySelector<HTMLElement>('[data-drawer]');
+      if (!d) return;
+      const same = root.dataset.open === btn.dataset.seal;
+      if (same) { d.hidden = true; delete root.dataset.open; return; }
+      const fields = JSON.parse(btn.dataset.fields || '[]') as Array<[string, string]>;
+      d.replaceChildren(...fields.flatMap(([k, v]) => {
+        const dt = document.createElement('dt'); dt.textContent = k;
+        const dd = document.createElement('dd'); dd.textContent = v;
+        return [dt, dd];
+      }));
+      d.hidden = false;
+      root.dataset.open = btn.dataset.seal ?? '';
+      // 选中态：让读者知道抽屉里是哪一枚
+      for (const s of root.querySelectorAll<HTMLElement>('[data-seal]')) s.removeAttribute('data-current');
+      btn.setAttribute('data-current', '');
+    });
+  }
+</script>

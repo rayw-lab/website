@@ -1,0 +1,100 @@
+---
+/**
+ * S2–S6 手卷：桌面由**竖向滚动 progress** 驱动横向平移（ADR-7），
+ * 移动端纯竖滚，reduced-motion 下不平移、五跋走常规文档流。
+ * 🔴 禁 `wheel + preventDefault`（TECH-ARCH §3）：唯一输入是页面滚动，
+ * 这里只读 rect，从不拦截事件。刷新落在中段按当前滚动恢复（首帧即算一次）。
+ */
+import scenes from '../../../../data/nexus-hall-scenes.json';
+import { COLOPHONS } from '../../../../data/nexus-colophons';
+import Colophon from './Colophon.astro';
+const { stripVh } = scenes.scroll;
+---
+
+<section class="scroll" data-nexus-scroll data-progress="0" style={`--strip-vh:${stripVh}`}>
+  <div class="scroll__sticky">
+    <div class="scroll__head">
+      <h2 class="scroll__t">题跋 · 五则</h2>
+      <!-- 展卷指示：不是下载进度条。章节刻度 + 一根 5rem 滑轨上的朱砂小点（agy W4r 改法 4） -->
+      <p class="scroll__n" aria-hidden="true">
+        <span data-scroll-chapter>卷首</span>
+        <span class="scroll__rail"><i data-scroll-dot></i></span>
+        <span>卷尾</span>
+      </p>
+    </div>
+    <div class="scroll__strip" data-strip>
+      {COLOPHONS.map((c) => <Colophon c={c} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .scroll { position: relative; block-size: calc(var(--strip-vh) * 1vh); }
+  .scroll__sticky {
+    position: sticky; top: var(--hall-header-stack, 0px);
+    /* 画心高度收到 31rem（agy W4r 诊断：46rem 时内容只占 260px，上下各飘 230px，
+       题跋退化成浮在空中的文字片断）。 */
+    /* 🔴 尺寸自洽（glm W9 反核复算）：标题行 ≤3 + 间距 .6 + 题跋面 27 + 天头 2.2 + 地脚 1.4 = 34.2rem，
+       画心封顶 36rem；矮屏（<720px 高）由 Colophon 的 max-height 媒体查询放开面高，否则 overflow:hidden 会再裁掉地脚线。
+       首版按 W4r 的 31rem + 27rem 面配，地脚线被裁掉——两组数值互相顶牛，自看出图才发现。 */
+    block-size: min(calc(100svh - var(--hall-header-stack, 0px)), 36rem);
+    overflow: hidden; display: grid; grid-template-rows: auto 1fr; gap: .6rem;
+    padding: clamp(1rem, 3vh, 1.6rem) clamp(1.5rem, 6vw, 6rem) 0;
+    /* 卷轴两端淡出：平移中的上一则题跋从左缘退出时不再被硬切成半个字（agy 盲审 P0，属实） */
+    mask-image: linear-gradient(to right, transparent, #000 4rem, #000 calc(100% - 4rem), transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 4rem, #000 calc(100% - 4rem), transparent);
+  }
+  /* 标题下不打横线：一条 100vw 的线会把长卷的空间连续性切断（W4r 改法 3）；
+     画心自己的天头边线就是这一幕唯一的横向界线。 */
+  .scroll__head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding-bottom: .2rem; }
+  /* 可横展提示（seed D P1-2）：画心右缘一枚极淡「→ 横展」，滚过卷首即隐 */
+  .scroll__sticky::after { content: '→ 横展'; position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%);
+    font: 400 .66rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .18em; color: #9e2a2b99; pointer-events: none;
+    opacity: 1; transition: opacity .4s; }
+  .scroll:not([data-progress='0']):not([data-progress='0.000']) .scroll__sticky::after { opacity: 0; }
+  @media (max-width: 768px), (prefers-reduced-motion: reduce) { .scroll__sticky::after { content: none; } }
+  .scroll__rail { display: inline-block; position: relative; inline-size: 5rem; block-size: 1px; background: #1c1f2633; vertical-align: middle; margin: 0 .6rem; }
+  .scroll__rail i { position: absolute; top: -1px; left: 0; inline-size: 3px; block-size: 3px; background: #9e2a2b; transform: translateX(var(--x, 0px)); }
+  .scroll__t { margin: 0; font-weight: 400; letter-spacing: .05em; font-size: clamp(1.05rem, 2vw, 1.5rem);
+    font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif; }
+  .scroll__n { margin: 0; letter-spacing: .12em; opacity: .62; font: 400 clamp(.72rem, 1.1vw, .84rem)/1.7 ui-sans-serif, system-ui, sans-serif; }
+  /* 画心：天大地下（天头 2.6rem : 地脚 1.6rem ≈ 1.6:1），上下两条宣纸界线；跋间用 4rem 留白断句 */
+  .scroll__strip { display: flex; align-items: stretch; align-self: center; inline-size: max-content; will-change: transform;
+    gap: 4rem; padding: 2.2rem 1rem 1.4rem; border-block: 1px solid #1c1f2629; }
+  /* 移动端与 reduced-motion：不平移，五跋走文档流（ADR-7） */
+  @media (max-width: 768px), (prefers-reduced-motion: reduce) {
+    .scroll { block-size: auto; }
+    .scroll__sticky { position: static; block-size: auto; overflow: visible; mask-image: none; -webkit-mask-image: none; }
+    .scroll__strip { display: grid; inline-size: auto; transform: none !important; gap: 2.5rem; padding-inline: 0; }
+  }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-nexus-scroll]')) {
+    const strip = root.querySelector<HTMLElement>('[data-strip]');
+    const chapter = root.querySelector<HTMLElement>('[data-scroll-chapter]');
+    const dot = root.querySelector<HTMLElement>('[data-scroll-dot]');
+    const CH = ['卷首', '跋一', '跋二', '跋三', '跋四', '跋五', '卷尾'];
+    const sticky = root.querySelector<HTMLElement>('.scroll__sticky');
+    if (!strip || !sticky) continue;
+    const active = () =>
+      window.matchMedia('(min-width: 769px)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let raf = 0;
+    const paint = () => {
+      raf = 0;
+      if (!active()) { strip.style.transform = ''; root.dataset.progress = '0'; if (dot) dot.style.setProperty('--x', '0px'); return; }
+      const rect = root.getBoundingClientRect();
+      const travel = root.offsetHeight - sticky.offsetHeight;
+      const p = travel > 0 ? Math.min(1, Math.max(0, -rect.top / travel)) : 0;
+      const dx = Math.max(0, strip.scrollWidth - sticky.clientWidth);
+      strip.style.transform = `translateX(${(-p * dx).toFixed(1)}px)`;
+      root.dataset.progress = p.toFixed(3);
+      if (chapter) chapter.textContent = CH[Math.min(CH.length - 1, Math.round(p * (CH.length - 1)))];
+      if (dot) dot.style.setProperty('--x', `${(p * (5 * 16 - 3)).toFixed(1)}px`);
+    };
+    const ask = () => { if (!raf) raf = requestAnimationFrame(paint); };
+    addEventListener('scroll', ask, { passive: true });
+    addEventListener('resize', ask, { passive: true });
+    paint(); // 刷新落在中段：首帧按当前滚动恢复
+  }
+</script>

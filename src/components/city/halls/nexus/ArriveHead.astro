@@ -1,0 +1,31 @@
+---
+// [NX-W7] 墨幕的**首帧**部分：必须在 <head> 里执行。
+// 🔴 病灶实证（v11 探针）：墨幕原本连同 <div> 放在 .hall-main 中部，HTML 流式解析到那里之前
+// 顶栏已经绘制，t=45ms 截图读到 `--nx-r: undefined` + 整屏纸色 —— 跨文档接驳的白闪期墨幕缺席，
+// 「以墨充帘」根本没发生。改为 head 内联脚本抢在首绘之前给 <html> 挂类，CSS 同在 head，
+// 于是第一帧就是满屏墨，与城侧墨幕同色接上。
+---
+<script is:inline>
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search);
+      if (p.get('from') === 'city' && p.get('poi') === 'agent-nexus') {
+        document.documentElement.classList.add('nx-transit');
+      }
+    } catch (e) { /* 参数解析失败 = 不做转场，正常进厅 */ }
+  })();
+</script>
+<style is:global>
+  /* 首帧墨帘：**纯色满屏，不带 mask 也不带 filter**。它只负责顶住跨文档接驳的白闪期，
+     0 计算、首绘即在。收缩动画由 Arrive 的两层 DOM 接管（见下方 --dom 类）。
+     🔴 不要在这里加 mask+filter：CSS 里 filter 先于 mask 作用，同一元素上位移的是**未被遮罩的
+     纯色矩形**，等于没位移，边仍是几何椭圆（v10 已实证一次，v14 移动端又复发一次）。 */
+  html.nx-transit::before {
+    content: ''; position: fixed; inset: 0; z-index: 99; pointer-events: none; background: #1c1f26;
+  }
+  /* Arrive 的两层 DOM 就位后，首帧墨帘让位（同色，交接无闪） */
+  html.nx-transit--dom::before { display: none; }
+  /* reduced-motion：不接管 DOM、不做收缩，首帧墨帘自己淡出即可 */
+  html.nx-transit--fade::before { transition: opacity .3s ease-out; }
+  html.nx-transit--out::before { opacity: 0; }
+</style>

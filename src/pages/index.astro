@@ -64,6 +64,12 @@ const buildings = cityMap.buildings.map((b) => ({
 // [CC-L2 A7] 挂载后 mini 楼宇快览：5 栋 hero 楼（lodProfile=hero 单源筛选，
 // 与 streaming.spawnHd 五钉同集）——cover 淡出后世界内常驻的「楼即产品线」DOM 面
 const heroTowers = buildings.filter((b) => b.hero);
+
+// [NX-W17 回城协议] 回城幕布小表：id → { fx, zh, en }（buildings JSON 单源；arrivalFx 缺席 = 'fade'）。
+// 同时是 head 脚本的 poi 合法性白名单——sessionStorage 里的陌生 id 一律不续驶。
+const returnMap = Object.fromEntries(
+  cityMap.buildings.map((b) => [b.id, { fx: b.arrivalFx ?? 'fade', zh: b.title.zh, en: b.title.en }]),
+);
 ---
 
 <!doctype html>
@@ -94,6 +100,42 @@ const heroTowers = buildings.filter((b) => b.hero);
     <meta property="og:image:width" content="1280" />
     <meta property="og:image:height" content="720" />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLdAll)} />
+    <!-- [NX-W17 回城协议] 回城幕布的**首帧**部分（ArriveHead 同纪律：必须在 <head> 执行，抢在首绘前给
+         <html> 挂类，否则跨文档接驳的白闪期幕布缺席、poster 先闪一下）。判定两路：
+         ① URL ?poi=<id>&from=hall（HallChrome「返回科技城」链接）
+         ② 无显式场景参数 + sessionStorage[world-return-v1]（浏览器后退/手势返回兜底，body 脚本读后即清）
+         fx 由 buildings JSON arrivalFx 构建期内联（12 项小表），楼侧零代码接入。 -->
+    <script is:inline define:vars={{ returnMap }}>
+      (function () {
+        try {
+          var p = new URLSearchParams(location.search);
+          var poi = null;
+          if (p.get('from') === 'hall' && p.get('poi')) {
+            poi = p.get('poi');
+          } else if (!p.has('ritual') && !p.has('poi') && !p.has('city') && !p.has('robot')) {
+            var raw = sessionStorage.getItem('world-return-v1');
+            if (raw) {
+              var snap = JSON.parse(raw);
+              if (snap && typeof snap.poi === 'string') poi = snap.poi;
+            }
+          }
+          if (!poi || !Object.prototype.hasOwnProperty.call(returnMap, poi)) return;
+          var root = document.documentElement;
+          root.classList.add('world-return');
+          root.dataset.returnPoi = poi;
+          root.dataset.returnFx = returnMap[poi].fx || 'fade';
+          root.dataset.returnLabel = returnMap[poi].zh + ' · ' + returnMap[poi].en;
+        } catch (e) { /* 判定失败 = 正常首幕 */ }
+      })();
+    </script>
+    <style is:global>
+      /* 首帧幕布：纯色满屏，0 计算首绘即在；body 内 [data-world-return] 就位后让位（同色无闪） */
+      html.world-return::before {
+        content: ''; position: fixed; inset: 0; z-index: 99; pointer-events: none; background: #05070d;
+      }
+      html.world-return[data-return-fx='ink']::before { background: #1c1f26; }
+      html.world-return--dom::before { display: none; }
+    </style>
   </head>
   <body>
     <!-- 跳过出口：DOM 首个可聚焦元素，第 0 秒可点（CITY-02 / Persona 2 猎头 30 秒路径） -->
@@ -231,6 +273,15 @@ const heroTowers = buildings.filter((b) => b.hero);
           </nav>
         </div>
       </div>
+    <!-- [NX-W17 回城协议] 回城幕布「墨退霓虹」：从展厅回城时首帧即满屏（head 脚本挂 html.world-return），
+         替代首访封面；车就位（host[data-world-state=car_ready]）后墨从车位收拢成一滴散去——
+         正是进站「墨吞霓虹」的逆播。fx=ink 走墨拓色 + 三层墨团；其余楼 'fade' 走城市底色淡出。
+         拦截态（save-data/reduced-motion/webgl）与 mount 失败：幕布让位，封面按钮/错误照常。 -->
+    <div class="return" data-world-return aria-hidden="true">
+      <p class="return-line mono"><span data-world-return-from></span> → CYBER CITY</p>
+      <p class="return-sub">引擎待命 · 正在回到街上</p>
+      <div class="return-progress"><i data-world-return-bar></i></div>
+    </div>
     </div>
 
     <!-- ESC 菜单（SRD §12.7.8 出口④ / PRD CITY-09②，A4 硬条件 M11）：Escape 开合的
@@ -262,7 +313,10 @@ const heroTowers = buildings.filter((b) => b.hero);
    *  robot=1 机器人演示 · ritual=1 首幕全流程 · quality=0|1|2 画质档（M9，
    *  引擎侧 Quality 不再兜底 location.search）· poi=<id> 楼宇深链（id=buildings JSON slug）·
    *  shot=<id> 镜头预设深链（CC-CAM-VIEW，仅与 poi 组合生效；id 白名单 = camera-shots.json 注册表） */
-  const PARAM_ALLOWLIST = ['gl', 'vehicle', 'city', 'robot', 'ritual', 'quality', 'poi', 'shot'] as const;
+  const PARAM_ALLOWLIST = ['gl', 'vehicle', 'city', 'robot', 'ritual', 'quality', 'poi', 'shot', 'from'] as const;
+  /** [NX-W17 回城协议] 续驶记忆键（HallChrome 合法到达时写，此处读后即清——浏览器后退/手势
+   *  返回不带 from=hall 的兜底；与 world-arrival-v1（城→厅）方向相反） */
+  const RETURN_KEY = 'world-return-v1';
 
   /** 自动挂载静置一拍（ms）：load 后给「秒点跳过」的访客让路——跳过路径
    *  全程零 world 字节（SRD §12.7.8 出口①，CITY-E2E-02 断言口径） */
@@ -288,7 +342,30 @@ const heroTowers = buildings.filter((b) => b.hero);
     // 默认剧本 = 首幕变形仪式（终裁 D4）：显式场景参数（poi 深链 / city / robot
     // 灰盒验证参数）或显式 ritual 时让位，不叠加
     if (!params.has('ritual') && !params.has('poi') && !params.has('city') && !params.has('robot')) {
-      params.set('ritual', '1');
+      // [NX-W17] head 内联脚本已按 sessionStorage 判定过续驶（html[data-return-poi]）：
+      // 无显式场景参数时据此接上，一次性消费
+      const remembered = document.documentElement.dataset.returnPoi;
+      if (remembered) {
+        params.set('poi', remembered);
+        params.set('from', 'hall');
+      } else {
+        params.set('ritual', '1');
+      }
+    }
+    try {
+      sessionStorage.removeItem(RETURN_KEY);
+    } catch {
+      /* 无 storage = 无记忆可清 */
+    }
+    /** [NX-W17] 续驶：幕布接管封面、免 viewport 门、免 1.8s 让路拍 */
+    const resume = params.get('from') === 'hall' && params.has('poi');
+    const returnBar = host.querySelector<HTMLElement>('[data-world-return-bar]');
+    if (resume) {
+      document.documentElement.classList.add('world-return--dom');
+      const fromEl = host.querySelector<HTMLElement>('[data-world-return-from]');
+      if (fromEl) fromEl.textContent = document.documentElement.dataset.returnLabel ?? '';
+    } else {
+      document.documentElement.classList.remove('world-return');
     }
 
     const setState = (s: string) => {
@@ -308,9 +385,9 @@ const heroTowers = buildings.filter((b) => b.hero);
           mode: 'full',
           params,
           onProgress: (loaded, total) => {
-            if (progressBar) {
-              progressBar.style.width = `${Math.round(4 + (loaded / Math.max(total, 1)) * 96)}%`;
-            }
+            const pct = `${Math.round(4 + (loaded / Math.max(total, 1)) * 96)}%`;
+            if (progressBar) progressBar.style.width = pct;
+            if (returnBar) returnBar.style.width = pct;
           },
           onBackend: (backend) => {
             if (backendEl) backendEl.textContent = backend === 'webgpu' ? 'WebGPU' : 'WebGL 2';
@@ -329,7 +406,9 @@ const heroTowers = buildings.filter((b) => b.hero);
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) return 'reduced-motion';
       const conn = (navigator as { connection?: { saveData?: boolean } }).connection;
       if (conn?.saveData) return 'save-data';
-      if (window.innerWidth < 768) return 'viewport';
+      // [NX-W17] 续驶免 viewport 门：本机已付过 3D 成本且已选 3D，回城不再点第二次
+      //（save-data / reduced-motion / webgl 三门不免——那是设备与偏好，不是首访礼节）
+      if (window.innerWidth < 768 && !resume) return 'viewport';
       if (!('gpu' in navigator)) {
         const probe = document.createElement('canvas');
         if (!probe.getContext('webgl2')) return 'webgl';
@@ -357,7 +436,8 @@ const heroTowers = buildings.filter((b) => b.hero);
         if (noteEl && BLOCK_NOTES[reason]) noteEl.textContent = BLOCK_NOTES[reason];
         return;
       }
-      window.setTimeout(() => void mount(), AUTO_MOUNT_DELAY);
+      // [NX-W17] 续驶不留 1.8s 让路拍——从楼里出来的人已经选择进城
+      window.setTimeout(() => void mount(), resume ? 0 : AUTO_MOUNT_DELAY);
     };
     if (document.readyState === 'complete') evaluate();
     else window.addEventListener('load', evaluate, { once: true });
@@ -746,6 +826,108 @@ const heroTowers = buildings.filter((b) => b.hero);
       max-width: calc(100% - 1.6rem);
       font-size: 0.78rem;
     }
+  }
+
+  /* ---------- [NX-W17 回城协议] 回城幕布「墨退霓虹」 ---------- */
+  /* 只在 html.world-return 下显示（head 脚本首绘前判定）；替代首访封面。
+     拦截态（save-data/reduced-motion/webgl）与 mount 失败：幕布让位，封面按钮/错误行照常。 */
+  .return {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    display: none;
+    place-content: center;
+    gap: 0.35rem;
+    padding: 1.2rem;
+    text-align: center;
+    color: #eafffb;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  html.world-return .return {
+    display: grid;
+  }
+  html.world-return .cover {
+    display: none;
+  }
+  html.world-return .world[data-blocked] .cover,
+  html.world-return .world[data-state='error'] .cover {
+    display: grid;
+  }
+  html.world-return .world[data-blocked] .return,
+  html.world-return .world[data-state='error'] .return {
+    display: none;
+  }
+  /* 墨团：进站 bloom（PoiArrival ::before 三层 radial）同构，锚在车位（第三人称车在画面中下） */
+  .return::before {
+    content: '';
+    position: absolute;
+    /* 落点：加载期取画面中下（第三人称车位），收拢期由 world/index.ts 每帧写车身投影 --return-x/y */
+    left: var(--return-x, 50%);
+    top: var(--return-y, 58%);
+    z-index: -1;
+    width: 100vmax;
+    height: 100vmax;
+    margin: -50vmax 0 0 -50vmax;
+    border-radius: 50%;
+    background:
+      radial-gradient(closest-side at 50% 50%, #05070d 0 56%, transparent 100%),
+      radial-gradient(closest-side at 64% 36%, #05070d 0 46%, transparent 100%),
+      radial-gradient(closest-side at 38% 64%, #05070d 0 38%, transparent 100%);
+    /* 收拢进度由 world/index.ts 随游戏 ticker 逐帧写 --return-k（1→0）：帧真正画出来才推进。
+       🔴 不用 CSS 动画：SwiftShader/低端机上 car_ready 后主线程被 shader 编译占住 1s+，
+       CSS 时钟照走、渲染没跟上，整段收拢在没画出来的时间里跑完（自看实证：观测到即已结束） */
+    transform: scale(calc(6.5 * var(--return-k, 1)));
+    transform-origin: 50% 50%;
+    will-change: transform;
+  }
+  .return[data-return-done] {
+    visibility: hidden;
+  }
+  html[data-return-fx='ink'] .return::before {
+    background:
+      radial-gradient(closest-side at 50% 50%, #1c1f26 0 56%, transparent 100%),
+      radial-gradient(closest-side at 64% 36%, #1c1f26 0 46%, transparent 100%),
+      radial-gradient(closest-side at 38% 64%, #1c1f26 0 38%, transparent 100%);
+  }
+  html[data-return-fx='ink'] .return {
+    color: #efe9dc;
+  }
+  .return-line {
+    margin: 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    opacity: 0.85;
+  }
+  .return-sub {
+    margin: 0;
+    font-size: 0.95rem;
+    opacity: 0.7;
+  }
+  .return-progress {
+    width: min(240px, 60vw);
+    height: 2px;
+    margin: 0.7rem auto 0;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.14);
+    overflow: hidden;
+  }
+  .return-progress i {
+    display: block;
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-cyan), #bdfff4);
+    transition: width 0.25s ease;
+  }
+  html[data-return-fx='ink'] .return-progress i {
+    background: #efe9dc;
+  }
+  /* 车就位（Reveal 镜像 data-world-state=car_ready）：文字先退 .25s；墨团 0.9 设计秒收拢成一滴
+     （easeIn：先挂住再猛吸）——进站「墨吞霓虹」的逆播，进度见上 --return-k；收完 data-return-done 让位 */
+  .world[data-world-state='car_ready'] .return > *,
+  .world[data-world-state='driving'] .return > * {
+    opacity: 0;
+    transition: opacity 0.25s ease;
   }
 
   /* ---------- 静态壳覆盖层（poster + 速览 + 楼宇快览） ---------- */

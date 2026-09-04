@@ -25,9 +25,13 @@
 //             「零字节」合同收窄为非城市路径；零漂移合同不变：无 ?shot= 且无进站
 //             交互时 View.applyShot 零调用（robot_idle 主帧与 main 逐字节一致——
 //             poster/VIS-03 合同）。
+//   from=hall [NX-W17 回城协议] 仅与 ?poi= 组合：从展厅回城 = 续驶（跳过机器人仪式，
+//             车形态直出 parkingBay、车头朝街 exitHeading ?? heading+180、filters driving、
+//             目标线以 world-explore-v1 做种子）；打 lifecycle/world-resume{poi}。
 //
 // CC-A2 M5：ritual 模式下 autoReveal=false，mount 不得 await 'revealed'（否则死锁）；
 // 输入放行由 TransformSystem 在 car_ready 帧 intro→driving 热切，ready = 首幕剧本已接管。
+import * as THREE from 'three';
 import type { LabInstance, LabMountOptions } from '../contracts';
 import type { Areas } from './areas';
 import type { City } from './city';
@@ -99,6 +103,11 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
   const ritualRequested = opts.params.get('ritual') === '1';
   // CC-E9：?poi= 深链 slug（buildings JSON id）——存在即隐含挂城
   const poiSlug = opts.params.get('poi');
+  // [NX-W17 回城协议] ?poi=<id>&from=hall：从展厅回城 = 续驶——跳过机器人仪式，直接以车形态
+  // 出生在该楼 parkingBay、车头朝街、filters driving（V/Q/E/H 全放行）、目标线以探索持久集
+  // 做种子。只与 ?poi= 组合生效；显式 ?ritual=1 优先（首幕剧本不让位）。无 from=hall 的
+  // 外部深链行为不变（wandering 灰盒腿）。
+  const resumeRequested = poiSlug !== null && !ritualRequested && opts.params.get('from') === 'hall';
   // CC-CAM-VIEW：?shot= 镜头预设 id（camera-shots.json 注册表白名单，仅与 ?poi= 组合生效）
   const shotId = opts.params.get('shot');
   // M9（CC-E7 转正）：?quality=0|1|2 显式档位，非法值忽略、走 UA 分档
@@ -122,7 +131,7 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
     vehicle: opts.params.get('vehicle') === 'kinematic' ? 'kinematic' : 'physics',
     quality,
     cameraFraming: cityScene ? 'city' : 'greybox',
-    autoReveal: !ritualRequested,
+    autoReveal: !(ritualRequested || resumeRequested),
     onProgress: opts.onProgress,
     onBackend: opts.onBackend,
   });
@@ -191,8 +200,106 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
     opts.host.querySelector('[data-ws-hint]')?.setAttribute('data-dismissed', 'true');
   }
 
-  // CC-E3：?city=1（ritual 已含城市则跳过）；CC-E9：?poi= 深链隐含挂城
-  if ((opts.params.get('city') === '1' || poiSlug !== null) && !ritualRequested) {
+  // ————— [NX-W17 回城协议] 续驶（?poi=&from=hall）：城市 + 车形态直出，仪式整跳 —————
+  // 复用 ritual 管线（TransformSystem/Reveal/QuestLine deferred）而不是给灰盒腿打补丁：
+  // idle-nudge、自动降档、键位卡、data-drive-view、目标线激活全部走既有消费方。
+  // 机器人 GLB 仍加载（TransformSystem/Reveal 契约不动；真实动线里刚从城里来，HTTP 已缓存），
+  // 只是不 reveal、不进场景。招牌直出终态（无 world-reveal 事件可等）。
+  if (resumeRequested) {
+    if (game.visualVehicle) game.visualVehicle.root.visible = false;
+
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const [{ mountCity }, robotModule, { TransformSystem: TransformSystemClass }, { Reveal: RevealClass }] =
+      await Promise.all([
+        import('./city'),
+        import('./city/HeroRobot'),
+        import('./player/TransformSystem'),
+        import('./world/Reveal'),
+      ]);
+    city = mountCity(game);
+
+    // 锚点 = 目标楼 parkingBay，朝向 = exitHeading ?? heading+180（朝街）；无效 slug 退回
+    // 世界出生点（Areas 同时会告警）——与 Areas.applyDeepLink('street') 同一换算式
+    const building = city.map.buildings.find((item) => item.id === poiSlug) ?? null;
+    const { exitHeadingOf } = await import('./areas/Areas');
+    const anchor = building
+      ? { x: building.parkingBay.x, z: building.parkingBay.z }
+      : { x: city.map.world.spawn.position.x, z: city.map.world.spawn.position.z };
+    const headingDeg = building ? exitHeadingOf(building.parkingBay) : city.map.world.spawn.heading;
+    const rotationY = Math.PI / 2 - (headingDeg * Math.PI) / 180;
+
+    const gltf = await robotModule.loadHeroRobotGltf(game.resourcesLoader);
+    heroRobot = new robotModule.HeroRobot({
+      gltf,
+      position: anchor,
+      headingY: Math.PI * 0.25,
+      targetHeight: 9,
+      reducedMotion,
+    });
+    // 不 add 进场景：续驶不需要机器人出镜（inner 本就 reveal() 前不可见，双保险）
+
+    transformSystem = new TransformSystemClass(game, {
+      robot: heroRobot,
+      anchor,
+      rotationY,
+      reducedMotion,
+    });
+    reveal = new RevealClass(game, {
+      host: opts.host,
+      stage,
+      robot: heroRobot,
+      transformSystem,
+      reducedMotion,
+      resume: true,
+    });
+    opts.host.querySelector('[data-ws-hint]')?.setAttribute('data-dismissed', 'true');
+
+    // 就位：等 shader 编译几拍（Game 坑④同节奏）再瞬切 car_ready；随后 0.9 设计秒同一条 tick 驱动两件事：
+    //   · 壳幕布「墨退霓虹」收拢（[data-world-return] 的 --return-k 1→0，easeIn 先挂住再猛吸）——
+    //     🔴 用 ticker 不用 CSS 动画：car_ready 后主线程可能被 shader 编译占住，CSS 时钟照走而帧没画，
+    //     整段收拢会在没人看见的时间里跑完（SwiftShader 自看实证）；ticker 推进 = 帧真正画出来才推进
+    //   · 相机「收拢」（ritualCam.dollyIn 1→0，与变形落地段同通道同曲线）= 画面亮起时镜头正在收到车后
+    // reduced-motion：幕布直接让位、相机不动
+    const resumeSystem = transformSystem;
+    const returnVeil = opts.host.querySelector<HTMLElement>('[data-world-return]');
+    game.ticker.wait(3, () => {
+      resumeSystem.resumeAsCar();
+      game.session.log('world-resume', { poi: poiSlug });
+      console.info(`[world] 回城续驶：${poiSlug} 车形态就位（车头 ${headingDeg}°，filters driving）`);
+      if (reducedMotion) {
+        if (returnVeil) returnVeil.dataset.returnDone = '1';
+        return;
+      }
+      const RECEDE_S = 0.9;
+      let clock = 0;
+      const anchorNdc = new THREE.Vector3();
+      const recedeTick = (): void => {
+        clock += game.ticker.delta;
+        const t = Math.min(clock / RECEDE_S, 1);
+        game.view.ritualCam.dollyIn = Math.pow(1 - t, 3);
+        // 墨滴落点 = 车身屏幕投影（每帧随相机收拢重算；进站 bloom 的 projectBuildingFoot 同法）
+        if (returnVeil) {
+          const p = game.player.position;
+          anchorNdc.set(p.x, p.y + 0.6, p.z).project(game.view.camera);
+          returnVeil.style.setProperty('--return-x', `${((anchorNdc.x + 1) * 50).toFixed(2)}%`);
+          returnVeil.style.setProperty('--return-y', `${((1 - anchorNdc.y) * 50).toFixed(2)}%`);
+        }
+        // 墨团可见半径 = 0.56·50vmax·6.5k：k=0.4 起（scale 2.6，任何视口仍满覆盖）→ 0，easeInQuad
+        // 让边缘在 t≈0.5 起从四角退入、末段猛吸成一滴——全程都在画出来的帧里
+        if (returnVeil) returnVeil.style.setProperty('--return-k', String(0.4 * (1 - t * t)));
+        if (t >= 1) {
+          if (returnVeil) returnVeil.dataset.returnDone = '1';
+          game.ticker.events.off('tick', recedeTick);
+        }
+      };
+      game.view.ritualCam.dollyIn = 1;
+      // 让 car_ready 那一帧先画出来（车、HUD 淡入起拍），下一拍才开始收墨
+      game.ticker.wait(1, () => game.ticker.events.on('tick', recedeTick));
+    });
+  }
+
+  // CC-E3：?city=1（ritual 已含城市则跳过）；CC-E9：?poi= 深链隐含挂城（续驶已挂则跳过）
+  if ((opts.params.get('city') === '1' || poiSlug !== null) && !ritualRequested && !resumeRequested) {
     const { mountCity } = await import('./city');
     city = mountCity(game);
   }
@@ -257,8 +364,11 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
     const { mountAreas } = await import('./areas');
     areas = mountAreas(game, city.map, {
       deepLinkPoi: ritualRequested ? null : poiSlug,
-      // [CC-FXN-C5] ritual 腿目标线激活推迟到 car_ready（poster 恒等，QuestLine 头注）
-      deferQuestUntilCarReady: ritualRequested,
+      // [CC-FXN-C5] ritual 腿目标线激活推迟到 car_ready（poster 恒等，QuestLine 头注）；
+      // [NX-W17] 续驶同样推迟（resumeAsCar → finish → world-transform 激活），朝街出生 + 探索种子
+      deferQuestUntilCarReady: ritualRequested || resumeRequested,
+      deepLinkFacing: resumeRequested ? 'street' : 'door',
+      seedQuestFromExplore: resumeRequested,
     });
   }
 
@@ -510,8 +620,8 @@ export default async function mount(opts: LabMountOptions): Promise<WorldSpikeIn
     }
   }
 
-  // M5：ritual 模式跳过 await revealed（TransformSystem 自行 intro→driving）
-  if (!ritualRequested && !game.revealed) {
+  // M5：ritual/续驶模式跳过 await revealed（TransformSystem 自行 intro→driving）
+  if (!ritualRequested && !resumeRequested && !game.revealed) {
     await new Promise<void>((resolve) => game.events.on('revealed', resolve));
   }
 

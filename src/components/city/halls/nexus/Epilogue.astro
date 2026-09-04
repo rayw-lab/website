@@ -1,0 +1,87 @@
+---
+/** S8 收官：一句收束 + 四出口 + 讲者简介一键复制（草案 §S8；出口按草案，简介复用 about 文案单源）。 */
+import ledger from '../../../../data/nexus-ledger.json';
+import { speakerBio } from '../../../../data/about-copy';
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const t = ledger.totals as Record<string, number>;
+const exits = [
+  { path: '/ai-lab/', label: '读相关文章' },
+  { path: '/lab/', label: '看可交互 Demo' },
+  { path: '/about/', label: '关于我' },
+] as const;
+---
+
+<section class="ep" data-scene="s8" data-nexus-epilogue data-bind="url:/ai-lab/;url:/lab/;url:/about/" style={`--nx-poster:url(${base}/posters/nexus-yin.webp)`}>
+  <p class="ep__line">{t.sessions} 次会话、{t.days} 天。纸干了，墨还在。</p>
+  <figure class="ep__bio">
+    <blockquote id="nx-speaker-bio">{speakerBio}</blockquote>
+    <figcaption>
+      <button type="button" class="ep__copy" data-copy-target="#nx-speaker-bio">一键复制讲者简介</button>
+      <span data-copy-done hidden aria-live="polite">已复制 ✓</span>
+    </figcaption>
+  </figure>
+  <div class="hall-exits">
+    {exits.map((ex, i) => (
+      <a class:list={['hall-exit', i === 0 ? 'hall-exit-primary' : 'hall-exit-secondary']} href={`${base}${ex.path}`}>{ex.label}</a>
+    ))}
+    <a class="hall-exit hall-exit-city" href={`${base}/?poi=agent-nexus`}>驾车回城</a>
+  </div>
+</section>
+
+<style>
+  /* 顶部留足一屏的呼吸：上一幕的定/清小印不该在收官首屏露半截（agy 盲审 P0：截图伪影，但节奏问题属实） */
+  /* 「墨还在」要真的还在：开篇那一滴（构建期海报）低调压在收官右侧，椭圆遮罩去掉海报的纸边（agy W9 P0-4 部分采纳）。 */
+  .ep { position: relative; isolation: isolate; }
+  .ep::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .55;  /* .32 在 2× 图上几乎看不见（v7 自看），「墨还在」得看得见 */
+    /* 🔴 海报是整幕 S0 的停帧，右侧带竖排题款与款印。只要那一滴：墨团在海报 x≈0.35，
+       把它定位到本幕 76% 处，海报右缘（题款）因此落在视口外；遮罩收成墨团大小的椭圆。 */
+    --nx-pw: min(76vw, 1100px);
+    background: var(--nx-poster) no-repeat left calc(76% - .35 * var(--nx-pw)) center / var(--nx-pw) auto;
+    -webkit-mask-image: radial-gradient(ellipse 13% 30% at 76% 49%, #000 45%, transparent 100%);
+    mask-image: radial-gradient(ellipse 13% 30% at 76% 49%, #000 45%, transparent 100%); }
+  @media (prefers-reduced-motion: no-preference) { .ep::before { transition: opacity .6s; } }
+  .ep { display: grid; gap: 1.6rem; padding: clamp(5rem, 16vh, 10rem) clamp(1.5rem, 6vw, 6rem) clamp(3rem, 9vh, 6rem);
+    min-block-size: 60svh; align-content: center;
+    font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif; color: #1c1f26; }
+  .ep__line { margin: 0; font-size: clamp(1.3rem, 2.6vw, 2rem); letter-spacing: .06em; line-height: 1.7; }
+  .ep__bio { margin: 0; max-width: 46rem; display: grid; gap: .8rem; }
+  .ep__bio blockquote { margin: 0; padding-inline-start: 1rem; border-inline-start: 2px solid #9e2a2b;
+    font: 400 clamp(.86rem, 1.15vw, .98rem)/1.9 ui-sans-serif, system-ui, sans-serif; color: #4a4f5a; }
+  .ep__bio figcaption { display: flex; align-items: center; gap: .8rem; font: 400 .8rem/1.4 ui-sans-serif, system-ui, sans-serif; color: #6b6357; }
+  /* 复制钮不做灰底矩形，做行内文字链：前置一枚 .55em 朱砂小方作印标（agy W9 P2-11 采纳） */
+  .ep__copy::before { content: ''; display: inline-block; inline-size: .55em; block-size: .55em; margin-inline-end: .5em;
+    border: 1px solid #9e2a2b; vertical-align: .1em; }
+  .ep__copy { min-height: 2.4rem; padding: .35rem 0; background: transparent; color: #1c1f26; border: 0 !important;
+    border-block-end: 1px solid #1c1f2633 !important; font-family: "Songti SC", "Noto Serif CJK SC", serif; letter-spacing: .08em;
+    border: 1px solid #1c1f2633; border-radius: 1px; font: inherit; cursor: pointer; }
+  .ep__copy:hover { border-color: #9e2a2b; color: #9e2a2b; }
+  /* 全站其它元素都是直角细线，唯独出口沿用了 about 厅的圆角实心胶囊——风格突变（agy 盲审 P1，属实）。
+     统一为 1px 直角描边：主出口朱砂线、次出口墨线、回城朱砂线，悬停反色，像印信不像按钮。 */
+  /* 出口左聚合：space-between 把「驾车回城」甩到极右、中间断 40vw（agy W8 新③） */
+  .ep :global(.hall-exits) { justify-content: flex-start !important; gap: .75rem !important; }
+  .ep :global(.hall-exit-city) { margin-inline-start: 0 !important; }  /* 全站壳给回城 margin-inline-start:auto，不是 space-between */
+  .ep :global(.hall-exit) { border-radius: 1px !important; background: transparent !important; box-shadow: none !important;
+    border: 1px solid #1c1f2666 !important; color: #1c1f26 !important;
+    font-family: "Songti SC", "STSong", "Source Han Serif SC", serif !important; letter-spacing: .06em; }
+  /* 行动阶梯只有一级红：主出口朱砂，其余含回城一律墨线（agy W9 P2-12：两个红说不清主次） */
+  .ep :global(.hall-exit-primary) { border-color: #9e2a2b !important; color: #9e2a2b !important; }
+  .ep :global(.hall-exit-city) { border-color: #1c1f2680 !important; color: #1c1f26 !important; }
+  .ep :global(.hall-exit:hover) { background: #1c1f26 !important; color: #efe9dc !important; border-color: #1c1f26 !important; }
+  .ep :global(.hall-exit-primary:hover), .ep :global(.hall-exit-city:hover) { background: #9e2a2b !important; border-color: #9e2a2b !important; color: #efe9dc !important; }
+</style>
+
+<script is:inline>
+  document.querySelectorAll('[data-nexus-epilogue] [data-copy-target]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = document.querySelector(btn.getAttribute('data-copy-target'));
+      if (!target) return;
+      var text = target.textContent.trim();
+      var done = function () {
+        var tip = btn.parentElement && btn.parentElement.querySelector('[data-copy-done]');
+        if (tip) { tip.hidden = false; setTimeout(function () { tip.hidden = true; }, 1500); }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done);
+      else { var r = document.createRange(); r.selectNodeContents(target); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); s.removeAllRanges(); done(); }
+    });
+  });
+</script>

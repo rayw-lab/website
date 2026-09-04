@@ -81,6 +81,12 @@ export interface RevealOptions {
   robot: HeroRobot;
   transformSystem: TransformSystem;
   reducedMotion?: boolean;
+  /**
+   * [NX-W17 回城协议] true = 续驶：不开演首幕（机器人不显、不打 world-reveal / robot-idle、
+   * 不起机器人 tick），状态由 TransformSystem.resumeAsCar() 直接推到 car_ready——
+   * applyState 同一路径接管 data-world-state / 键位卡 / data-drive-view。
+   */
+  resume?: boolean;
 }
 
 export class Reveal {
@@ -143,7 +149,7 @@ export class Reveal {
     this.statusText = this.touch ? STATUS_TEXT_TOUCH : STATUS_TEXT;
 
     this.setDom(options.stage);
-    this.startRobotTick();
+    if (!options.resume) this.startRobotTick();
 
     // 状态镜像 + 演出编排跟随状态机
     this.unsubscribeState = this.transformSystem.onStateChange((state) => {
@@ -166,6 +172,8 @@ export class Reveal {
     this.game.inputs.events.on('hintToggle', this.hintToggleHandler);
 
     // 首幕开演：等 shader 编译落地几拍（Game 坑④节奏，E5 同款）再起光柱
+    // [NX-W17] 续驶不开演：car_ready 由 resumeAsCar() 推，本段整跳
+    if (options.resume) return;
     this.game.ticker.wait(6, () => {
       if (this.disposed) return;
       this.robot.reveal();

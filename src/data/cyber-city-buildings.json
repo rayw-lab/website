@@ -117,6 +117,8 @@
       "footprint": { "w": 40, "d": 40, "h": 96 },
       "neonColor": "#a855f7",
       "deepLink": "/ai-lab/",
+      "hallPath": "/world/agent-nexus/",
+      "arrivalFx": "ink",
       "deepLinkStatus": "fallback",
       "priority": "P0",
       "unlockPhase": 0,
