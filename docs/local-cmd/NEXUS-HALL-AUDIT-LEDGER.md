@@ -937,3 +937,15 @@ X 本身也是 claim**；这条恰好是能一句话验证的规范事实，不�
 `astro check` 0 errors · `check-links` rc=0 · `about-hall-gate` rc=0（负控无回归）
 · 发布安全门 rc=0 · 正确性门 rc=0 · **e2e 15/15**（墨迹本册；与 about 合跑 29/29）
 · build 25 页 · sitemap 含 `/world/agent-nexus/`。
+
+### R21-9 ADR 扩包留痕 + 一次「查过才知道不用改」
+- ADR-2 明写「**本 ADR 只给 `about-pavilion` 加 `hallPath`，其它楼的 B 名单不在本包**」——
+  我这次给 agent-nexus 加了，属于**对该契约的扩用**。不留痕的话，下一个人读 ADR-2
+  会以为城里只有一栋楼能进厅。已补 `ADR-9-nexus-hall-city-entry.md`（含四步接线清单
+  与每步漏做的具体症状，以及本轮全部实测验收表）。
+- agy 建议同步 `docs/spec/SRD.md` 路由表。**核过之后判定不需要改**：
+  SRD §12.7.1 的 `/world/{slug}/` 条目是 slug 无关的，白名单本身就指向 `world-halls.json`。
+  判据：**「要不要同步具名清单」得先确认那份清单真的是具名的**——
+  这次它不是，改了反而把一条通用条款写死成两个特例。
+- 新的具名清单是 `[slug].astro` 里的 `HALL_COPY`：新增 slug 必须同步它，
+  漏了会在构建期报错（故意的，见 ADR-9 决策 2）。
