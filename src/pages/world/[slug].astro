@@ -28,8 +28,37 @@ interface HallEntry {
   scenes: unknown[];
 }
 
+// 墨迹展厅的副题从台账派生，正文一个数字都不手写（与组件同一条纪律）。
+const nx = ledger.totals as Record<string, number>;
+const nxRange = ledger.range as { from: string; to: string };
+
+// 🔴 每个展厅的头部文案必须显式登记，缺了**构建期就炸**：
+// 原代码的标题写死为 about 文案，照原样静默兜底会让新厅顶着
+// 「在技术与落地之间架桥」上线且零报错——正是「沉默的垃圾桶」形态。
+const HALL_COPY: Record<string, { title: string; description: string }> = {
+
+/**
+ * 文案表与票册的**双向**闭合。
+ * 🔴 只挡「有 slug 无文案」是单向的：反过来「文案表里有一个谁也不认识的键」
+ * （改名后留下的孤儿、或提前写好的下一个厅）会一直静默待着，
+ * 直到某天有人以为它已经接线了。异源反核（glm）点名了这一侧，补上。
+ * 两个方向都在构建期抛错，不留运行期惊喜。
+ */
+function assertHallCopyClosed(slugs: readonly string[]): void {
+  const missing = slugs.filter((s) => !(s in HALL_COPY));
+  if (missing.length > 0) {
+    throw new Error(`world/[slug]：这些 slug 没有登记头部文案（见 HALL_COPY）：${missing.join(', ')}`);
+  }
+  const orphan = Object.keys(HALL_COPY).filter((k) => !slugs.includes(k));
+  if (orphan.length > 0) {
+    throw new Error(`world/[slug]：HALL_COPY 有孤儿键（world-halls.json 里没有这些 slug）：${orphan.join(', ')}`);
+  }
+}
+
 export function getStaticPaths() {
-  return (hallsDoc.halls as HallEntry[]).map((hall) => {
+  const halls = hallsDoc.halls as HallEntry[];
+  assertHallCopyClosed(halls.map((h) => h.slug));
+  return halls.map((hall) => {
     const building = cityMap.buildings.find((b) => b.id === hall.buildingId);
     if (!building) {
       throw new Error(
@@ -47,15 +76,7 @@ interface Props {
 
 const { hall, building } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
-
-// 墨迹展厅的副题从台账派生，正文一个数字都不手写（与组件同一条纪律）。
-const nx = ledger.totals as Record<string, number>;
-const nxRange = ledger.range as { from: string; to: string };
-
-// 🔴 每个展厅的头部文案必须显式登记：新增 slug 忘配文案时**构建期就炸**，
-// 而不是静默套用上一个展厅的标题（那样两个厅会共用一个 <title>，SEO 与
-// 面包屑同时错，且没有任何报错——正是「沉默的垃圾桶」形态）。
-const HALL_COPY: Record<string, { title: string; description: string }> = {
+const copy = HALL_COPY[hall.slug]!;   // 存在性已由 assertHallCopyClosed() 在构建期担保
   'about-pavilion': { title: '在技术与落地之间架桥', description: HALL_SUBTITLE },
   'agent-nexus': {
     title: '墨迹 · Ink Ledger',
@@ -64,10 +85,6 @@ const HALL_COPY: Record<string, { title: string; description: string }> = {
       `按机器台账渲染成水墨（${nxRange.from} — ${nxRange.to}）。`,
   },
 };
-const copy = HALL_COPY[hall.slug];
-if (!copy) {
-  throw new Error(`world/[slug]：slug「${hall.slug}」没有登记头部文案（见 HALL_COPY）`);
-}
 const title = `${copy.title}${TITLE_SUFFIX}`;
 const description = copy.description;
 const homeUrl = new URL(`${base}/`, Astro.site).href;
