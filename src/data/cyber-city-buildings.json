@@ -118,6 +118,7 @@
       "neonColor": "#a855f7",
       "deepLink": "/ai-lab/",
       "hallPath": "/world/agent-nexus/",
+      "arrivalFx": "ink",
       "deepLinkStatus": "fallback",
       "priority": "P0",
       "unlockPhase": 0,

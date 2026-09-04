@@ -185,6 +185,38 @@ test.describe('接线 · /world/agent-nexus/', () => {
   // 城→厅链路：楼宇 hallPath 只是数据，真正要验的是「从城里带着 poi 进来，
   // 到达条认得这栋楼」。只断言 [data-hall-chrome] 存在证明不了这件事——
   // 它在任何厅都存在，认错楼也照样存在。
+  // ── NX-W7 到达墨幕 2×2 ───────────────────────────────────────────────────
+  // 城里按 E 进楼时 PoiArrival 的墨幕（#1c1f26）带过跳转，本页首帧同色接力后向 S0 落点 (36%,40%) 收缩。
+  // 断言的是运行痕迹（window.__nxArrive：起止 + 帧数）而不是逐时点截图——SwiftShader 下主线程被
+  // 引擎初始化占满，动画 ~900ms 内跑完，时点截图既不稳也不可证。
+  test('🔴 到达墨幕 2×2：?from=city&poi=agent-nexus 起→收→删（正控）；直链不挂（负控）', async ({ page }) => {
+    // 🔴 三次导航 URL 必须两两不同于「仅 hash 差异」：只差 hash 时 Playwright 走片段导航，脚本不重跑。
+    // 顺序：hold 版（停在中段）→ 直链负控 → 正常版。
+    await page.goto(u(`${HALL}?from=city&poi=agent-nexus#nx-arrive-hold`));
+    await expect(page.locator('[data-nx-arrive]')).toHaveAttribute('data-state', 'hold', { timeout: 8000 });
+    const r = await page.locator('[data-nx-arrive]').evaluate((e) => parseFloat((e as HTMLElement).style.getPropertyValue('--nx-r')));
+    // 遮罩半径此时必须小于起始 170vmax（真在收缩，不是挂着不动）
+    expect(r).toBeGreaterThan(0);
+    expect(r).toBeLessThan(1.7 * Math.max(1440, 900) * 0.5);
+
+    // 负控：无来源参数 → 元素被脚本移除、无痕迹
+    await page.goto(u(HALL));
+    await page.waitForTimeout(300);
+    await expect(page.locator('[data-nx-arrive]')).toHaveCount(0);
+    expect(await page.evaluate(() => (window as any).__nxArrive ?? null)).toBeNull();
+
+    // 正控：起→收→删，痕迹里有起止与 ≥2 帧
+    await page.goto(u(`${HALL}?from=city&poi=agent-nexus`));
+    await expect
+      .poll(() => page.evaluate(() => (window as any).__nxArrive?.endedAt ?? 0), { timeout: 8000 })
+      .toBeGreaterThan(0);
+    const trace = await page.evaluate(() => (window as any).__nxArrive);
+    expect(trace.frames, '至少两帧（起帧 + 终帧）才算收缩过').toBeGreaterThanOrEqual(2);
+    expect(trace.endedAt - trace.startedAt).toBeGreaterThan(300);
+    expect(trace.endedAt - trace.startedAt).toBeLessThan(2000);
+    await expect(page.locator('[data-nx-arrive]')).toHaveCount(0);
+  });
+
   test('从城里进楼：到达条认出「主智能体中枢」', async ({ page }) => {
     await page.goto(u(`${HALL}?from=city&poi=agent-nexus`));
     const chrome = page.locator('[data-hall-chrome]');

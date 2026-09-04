@@ -4,6 +4,7 @@
 // slug 白名单 = src/data/world-halls.json；未知 slug 不生成。
 import WorldHallLayout from '../../layouts/WorldHallLayout.astro';
 import HallChrome from '../../components/city/HallChrome.astro';
+import Arrive from '../../components/city/halls/nexus/Arrive.astro';
 import Hero from '../../components/city/halls/about/Hero.astro';
 import Curator from '../../components/city/halls/about/Curator.astro';
 import Stations from '../../components/city/halls/about/Stations.astro';
@@ -84,6 +85,7 @@ const jsonLd = breadcrumbJsonLd([
   )}
   {hall.slug === 'agent-nexus' && (
     <>
+      <Arrive />
       <Yin />
       <section class="nx-band">
         <div class="nx-band__head">

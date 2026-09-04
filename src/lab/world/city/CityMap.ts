@@ -98,6 +98,11 @@ export interface Building {
    * 有则城里 E 键走展厅，否则走 deepLink；DOM 快览 / 页头页脚 / 正文 CTA / noscript 仍用 deepLink（ADR-2）。
    */
   hallPath?: string;
+  /**
+   * [NX-W7] 进站前奏 hold 段的转场形态：'ink' = 墨吞霓虹（画布褪成墨拓 + 墨团自车位吞屏，
+   * 墨幕带过跨文档跳转，展厅侧 Arrive 反向收缩接力）。缺省 = 楼色霓虹边缘脉冲（ADR-4 决策 B）。
+   */
+  arrivalFx?: 'ink';
   /** fallback = 目标专页未上线暂落上级索引，上线后只改 JSON 两字段 */
   deepLinkStatus: 'live' | 'fallback';
   priority: 'P0' | 'P1' | 'P2';
