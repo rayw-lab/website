@@ -112,13 +112,17 @@ const cases = [
         label="Live Demos"
         title="可交互的能力证据"
         id="live-demos-title"
-        lede="不是录屏，是能上手的东西——三个在浏览器里实时运行的 Demo，包括一座可驾驶的 3D 智能座舱科技城。"
+        lede="在浏览器里体验 3D 智能座舱科技城、车辆配置器、TTS 座舱与全球多语种地球仪。"
       />
       <LabBento>
         <LabCardCar />
         <LabCardTts />
         <LabCardWorldSpike />
       </LabBento>
+      <p class="atlas-entry">
+        <a href={`${base}/atlas/`}>打开全球多语种地球仪 →</a>
+        <span>探索语言与混说、集团销量、AI 合规和完整研究资料。</span>
+      </p>
     </div>
   </section>
 
@@ -159,6 +163,17 @@ const cases = [
   .grid-3 {
     display: grid;
     gap: var(--grid-gutter);
+  }
+  .atlas-entry {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1.25rem;
+    margin-top: 1.5rem;
+  }
+  .atlas-entry span {
+    color: var(--muted);
+    font-size: 0.875rem;
   }
 
   @media (min-width: 640px) {
