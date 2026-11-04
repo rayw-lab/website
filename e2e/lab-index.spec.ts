@@ -7,10 +7,11 @@ import { u, shot, expectImageLoaded } from './helpers';
 const LIVE_MODULES = [
   { slug: 'tts-cockpit', code: 'RA-01', vtName: 'demo-cockpit' },
   { slug: 'car-configurator', code: 'RB-01', vtName: 'demo-car' },
+  { slug: 'cost-estimator', code: 'RC-01', vtName: 'demo-cost-estimator' },
 ];
 
 test.describe('Lab 索引页', () => {
-  test('LAB-E2E-01 manifest 卡片：2 个 live 模块、LIVE 徽标、预算与技术要点行', async ({ page }) => {
+  test('LAB-E2E-01 manifest 卡片：全部 live 模块、LIVE 徽标、预算与技术要点行', async ({ page }) => {
     const res = await page.goto(u('/lab/'));
     expect(res?.status()).toBe(200);
 

@@ -40,6 +40,24 @@
     "relatedArticles": []
   },
   {
+    "slug": "cost-estimator",
+    "code": "RC-01",
+    "title": "多语种座舱大模型 · 成本粗估",
+    "description": "选包、车型、区域、语种与奇瑞货架智能体，看 NRE 与 LIC 成本粗估，算式可展开，可下载带公式的 Excel。成本粗估，不是报价。",
+    "status": "live",
+    "kind": "data-viz",
+    "entry": "modules/cost-estimator/index.ts",
+    "poster": "posters/cost-estimator-poster.webp",
+    "budgetClass": "S",
+    "budget": { "lazyJsKbGzip": 45, "assetsMb": 0.3 },
+    "capabilities": { "webgpu": "unused", "webgl2": "unused", "audio": false, "pointerFine": false },
+    "deepLinkParams": ["p", "t", "c", "r", "x", "a", "o", "h", "v", "ar", "dc", "pm", "ss", "ver"],
+    "viewTransitionName": "demo-cost-estimator",
+    "techChips": ["四个货架", "九个区域", "算式可展开", "Excel 活公式"],
+    "relatedWork": [],
+    "relatedArticles": []
+  },
+  {
     "slug": "world",
     "code": "RW-01",
     "title": "智能座舱科技城",

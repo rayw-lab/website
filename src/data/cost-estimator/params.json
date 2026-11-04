@@ -1,0 +1,6365 @@
+{
+  "version": "2026-11-04",
+  "capNames": {
+    "p2-nearby": "二期·周边推荐智能体",
+    "p2-reminder": "二期·提醒智能体",
+    "p2-services": "二期·生态服务智能体",
+    "p2-companion": "二期·行程伴侣智能体",
+    "p2-planner": "二期·行程规划智能体",
+    "p2-sports": "二期·体育智能体",
+    "p2-image": "二期·AI生图智能体",
+    "p1-core": "一期·中枢智能体",
+    "p1-chat": "一期·基础智能体",
+    "p1-nav": "一期·导航智能体",
+    "p1-carbook": "一期·安全用车智能体",
+    "p1-control": "一期·车控智能体",
+    "p1-music": "一期·音乐智能体",
+    "p1-news": "一期·AI新闻智能体",
+    "p1-image": "一期·AI生图智能体",
+    "p1-sports": "一期·体育智能体",
+    "voice-control": "基础语音·基础语控",
+    "voice-visible": "基础语音·屏内可见即可说",
+    "voice-switch": "基础语音·多语言自然免切"
+  },
+  "rates": {
+    "research": 4.41,
+    "researchShare": 0.2,
+    "product": 3,
+    "productShare": 0.25,
+    "delivery": 3,
+    "voiceLangFirst": 55,
+    "voiceLangReuse": 15,
+    "perMarketPm": 10.73
+  },
+  "lic": {
+    "voiceOnline": 68,
+    "voiceOffline": 40,
+    "activeRate": 0.45,
+    "dailyCalls": 15,
+    "baseActive": 0.35,
+    "baseCalls": 5
+  },
+  "regions": {
+    "eu": {
+      "name": "欧盟",
+      "langs": [
+        "de",
+        "fr",
+        "it",
+        "pt",
+        "en",
+        "sl",
+        "no",
+        "da",
+        "pl",
+        "nl",
+        "sv",
+        "es"
+      ],
+      "sourcePerCar": 779.44,
+      "serverPerCar": null,
+      "notes": [
+        "待补：区域服务器扩容及三年车队；信源为历史整包参考，不随智能体删减。非实时采购价；不含基础语音与token"
+      ],
+      "pkgHint": [
+        "c3-euanz",
+        "c15-eu"
+      ]
+    },
+    "anz": {
+      "name": "澳新",
+      "langs": [
+        "en"
+      ],
+      "sourcePerCar": null,
+      "serverPerCar": null,
+      "notes": [
+        "待补：区域服务器扩容及三年车队；信源为历史整包参考，不随智能体删减。待补：同口径信源单价"
+      ],
+      "pkgHint": [
+        "c3-euanz",
+        "c15-eu"
+      ]
+    },
+    "ru": {
+      "name": "俄罗斯",
+      "langs": [
+        "ru",
+        "en"
+      ],
+      "sourcePerCar": null,
+      "serverPerCar": null,
+      "notes": [
+        "待补：区域服务器扩容及三年车队；信源为历史整包参考，不随智能体删减。待补：同口径信源单价"
+      ],
+      "pkgHint": [
+        "c15-ru"
+      ]
+    },
+    "sea": {
+      "name": "东盟",
+      "langs": [
+        "th",
+        "en",
+        "id",
+        "ms",
+        "yue",
+        "zh"
+      ],
+      "sourcePerCar": 244.13,
+      "serverPerCar": null,
+      "notes": [
+        "待补：区域服务器扩容及三年车队；信源为历史整包参考，不随智能体删减。非实时采购价；不含基础语音与token"
+      ],
+      "pkgHint": [
+        "c3-sea"
+      ]
+    },
+    "me": {
+      "name": "中东",
+      "langs": [
+        "ar",
+        "en"
+      ],
+      "sourcePerCar": null,
+      "serverPerCar": null,
+      "notes": [
+        "待补：区域服务器扩容及三年车队；信源为历史整包参考，不随智能体删减。待补：同口径信源单价"
+      ],
+      "pkgHint": []
+    },
+    "za": {
+      "name": "南非",
+      "langs": [
+        "en"
+      ],
+      "sourcePerCar": null,
+      "serverPerCar": null,
+      "notes": [
+        "待补：区域服务器扩容及三年车队；信源为历史整包参考，不随智能体删减。待补：同口径信源单价"
+      ],
+      "pkgHint": []
+    },
+    "latam": {
+      "name": "中南美",
+      "langs": [
+        "esmx",
+        "ptbr",
+        "en"
+      ],
+      "sourcePerCar": null,
+      "serverPerCar": null,
+      "notes": [
+        "待补：区域服务器扩容及三年车队；信源为历史整包参考，不随智能体删减。待补：同口径信源单价"
+      ],
+      "pkgHint": []
+    },
+    "ca": {
+      "name": "中亚",
+      "langs": [
+        "kk",
+        "uz",
+        "en"
+      ],
+      "sourcePerCar": null,
+      "serverPerCar": null,
+      "notes": [
+        "待补：区域服务器扩容及三年车队；信源为历史整包参考，不随智能体删减。待补：同口径信源单价"
+      ],
+      "pkgHint": []
+    },
+    "eul": {
+      "name": "类欧盟",
+      "langs": [
+        "tr",
+        "he",
+        "fa",
+        "en"
+      ],
+      "sourcePerCar": null,
+      "serverPerCar": null,
+      "notes": [
+        "待补：区域服务器扩容及三年车队；信源为历史整包参考，不随智能体删减。待补：同口径信源单价"
+      ],
+      "pkgHint": []
+    }
+  },
+  "langs": {
+    "en": {
+      "name": "英语",
+      "family": "日耳曼",
+      "verified": true,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 1,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "de": {
+      "name": "德语",
+      "family": "日耳曼",
+      "verified": true,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 1,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "fr": {
+      "name": "法语",
+      "family": "罗曼",
+      "verified": true,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 1,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "pl": {
+      "name": "波兰语",
+      "family": "斯拉夫",
+      "verified": true,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 1,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "nl": {
+      "name": "荷兰语",
+      "family": "日耳曼",
+      "verified": true,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "sv": {
+      "name": "瑞典语",
+      "family": "日耳曼",
+      "verified": true,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "it": {
+      "name": "意大利语",
+      "family": "罗曼",
+      "verified": true,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "es": {
+      "name": "西班牙语",
+      "family": "罗曼",
+      "verified": true,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "pt": {
+      "name": "欧洲葡语",
+      "family": "罗曼",
+      "verified": true,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "sl": {
+      "name": "斯洛文尼亚语",
+      "family": "斯拉夫",
+      "verified": true,
+      "voiceDone": false,
+      "variantOf": null,
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：可落地，6个月；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "no": {
+      "name": "挪威语",
+      "family": "日耳曼",
+      "verified": false,
+      "voiceDone": false,
+      "variantOf": null,
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：可落地，10个月；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "da": {
+      "name": "丹麦语",
+      "family": "日耳曼",
+      "verified": false,
+      "voiceDone": false,
+      "variantOf": null,
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：可落地，10个月；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "ru": {
+      "name": "俄语",
+      "family": "斯拉夫",
+      "verified": true,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 1,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "th": {
+      "name": "泰语",
+      "family": "侗台",
+      "verified": false,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 1,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "id": {
+      "name": "印尼语",
+      "family": "南岛",
+      "verified": false,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 1,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "ms": {
+      "name": "马来语",
+      "family": "南岛",
+      "verified": false,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "yue": {
+      "name": "粤语",
+      "family": "汉语",
+      "verified": false,
+      "voiceDone": false,
+      "variantOf": null,
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：可落地，6个月；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "zh": {
+      "name": "中文",
+      "family": "汉语",
+      "verified": false,
+      "voiceDone": false,
+      "variantOf": null,
+      "anchorRank": 1,
+      "notes": [
+        "基础语音草稿判断：可落地，6个月；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "ar": {
+      "name": "阿拉伯语",
+      "family": "闪米特",
+      "verified": false,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 1,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "kk": {
+      "name": "哈萨克语",
+      "family": "突厥",
+      "verified": false,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "uz": {
+      "name": "乌兹别克语",
+      "family": "突厥",
+      "verified": false,
+      "voiceDone": false,
+      "variantOf": null,
+      "anchorRank": 3,
+      "notes": [
+        "基础语音草稿判断：可落地，12个月；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "tr": {
+      "name": "土耳其语",
+      "family": "突厥",
+      "verified": false,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 1,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "he": {
+      "name": "希伯来语",
+      "family": "闪米特",
+      "verified": false,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "fa": {
+      "name": "波斯语",
+      "family": "伊朗",
+      "verified": false,
+      "voiceDone": true,
+      "variantOf": null,
+      "anchorRank": 1,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "esmx": {
+      "name": "墨西哥西语",
+      "family": "罗曼",
+      "verified": false,
+      "voiceDone": true,
+      "variantOf": "es",
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    },
+    "ptbr": {
+      "name": "巴西葡语",
+      "family": "罗曼",
+      "verified": false,
+      "voiceDone": true,
+      "variantOf": "pt",
+      "anchorRank": 2,
+      "notes": [
+        "基础语音草稿判断：奇瑞已落地；不由已验证倒推。语系用于语种首发权重；横展仍取显式权重。"
+      ]
+    }
+  },
+  "weights": {
+    "eu": {
+      "en": 1,
+      "de": 1,
+      "nl": 0.5,
+      "sv": 0.5,
+      "fr": 1,
+      "it": 0.5,
+      "es": 0.5,
+      "pt": 0.5,
+      "pl": 1,
+      "sl": 0.5
+    },
+    "ru": {
+      "ru": 1,
+      "en": 0.5
+    }
+  },
+  "cars": [
+    {
+      "id": "T13C",
+      "name": "T13C",
+      "delivered": [
+        {
+          "region": "eu",
+          "caps": [
+            "p1-core",
+            "p1-chat",
+            "p1-nav",
+            "p1-carbook",
+            "p1-control",
+            "p1-music",
+            "p1-news",
+            "p1-image",
+            "p1-sports"
+          ],
+          "langs": [
+            "en",
+            "de",
+            "nl",
+            "sv",
+            "fr",
+            "it",
+            "es",
+            "pt",
+            "pl",
+            "sl"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T22FL",
+      "name": "T22FL",
+      "delivered": [
+        {
+          "region": "ru",
+          "caps": [
+            "p1-core",
+            "p1-chat",
+            "p1-nav",
+            "p1-carbook",
+            "p1-control",
+            "p1-music",
+            "p1-news"
+          ],
+          "langs": [
+            "ru",
+            "en"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T18FL4",
+      "name": "T18FL4",
+      "delivered": []
+    },
+    {
+      "id": "T1ED",
+      "name": "T1ED",
+      "delivered": []
+    },
+    {
+      "id": "T1QT",
+      "name": "T1QT",
+      "delivered": []
+    },
+    {
+      "id": "EHV",
+      "name": "EHV",
+      "delivered": []
+    },
+    {
+      "id": "E0S",
+      "name": "E0S",
+      "delivered": []
+    },
+    {
+      "id": "E0Z",
+      "name": "E0Z",
+      "delivered": []
+    },
+    {
+      "id": "E0V",
+      "name": "E0V",
+      "delivered": []
+    },
+    {
+      "id": "EHU",
+      "name": "EHU",
+      "delivered": []
+    }
+  ],
+  "packages": {
+    "c3-euanz": {
+      "name": "欧盟澳新包",
+      "tiers": true,
+      "layers": [
+        "基础语音",
+        "端模 AI",
+        "云端 AI"
+      ],
+      "agents": [
+        {
+          "id": "voice-control",
+          "name": "基础语控智能体",
+          "layer": "基础语音",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "voice-control"
+          ],
+          "isVoice": true,
+          "first": {
+            "research": 0.54,
+            "product": 0.42,
+            "delivery": 0.24,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": 0.23,
+            "perMarket": 0.2727272727272727,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "—；；具体域依赖客户开放原子接口",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B3:P3",
+            "ext_matrix_data.py / L16",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_基础语控智能体.md / SOR§4 智能体 Agent/Skill 业务需求；SOR§4 嵌入电子表格",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B42:P42",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G6:L13；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G6:L13；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G6:L13；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 0.23,
+              "perMarket": 0.2727272727272727,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 0.23,
+              "perMarket": 0.2727272727272727,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 0.23,
+              "perMarket": 0.2727272727272727,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "voice-visible",
+          "name": "多模态识别智能体-[舱内]屏内可见即可说",
+          "layer": "基础语音",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "部分承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "voice-visible"
+          ],
+          "isVoice": true,
+          "first": {
+            "research": 0.36,
+            "product": 0.28,
+            "delivery": 0.16,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": 0.15,
+            "perMarket": 0.2272727272727273,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "不承接客户 UI 自动理解平台；；页面 / 控件信息需客户提供",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B4:P4",
+            "ext_matrix_data.py / L18",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多模态识别智能体-[舱内]屏内可见即可说.md / PRD§6.2.8 核心目标；PRD§6.2.8.2 基础设置功能",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B43:P43",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G14:L22；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G14:L22；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G14:L22；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 0.15,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 0.15,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 0.11,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "voice-switch",
+          "name": "多语言自然免切智能体",
+          "layer": "基础语音",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "voice-switch"
+          ],
+          "isVoice": true,
+          "first": {
+            "research": 0.45,
+            "product": 0.35,
+            "delivery": 0.2,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": 0.18,
+            "perMarket": 0.2272727272727273,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "不承诺 SOR 要求的全语种自动识别 / 自由免切模式；Lite：纯云档无端侧大模型 / AIBOX：九方言组合包(1.5B)；云端免切模型预计 Q4 成熟；端侧 1.5B 免切仅 MAX / PRO；—",
+            "能力承接草稿；源表冲突，见存疑清单",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "冲突按10-12填写表裁定：🟢 承接；早先结论{\"MAX\":\"待评估\",\"PRO\":\"待评估\",\"Lite\":\"待评估\"}；备注当前阶段技术不可达；AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!D22:G22"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B5:P5",
+            "ext_matrix_data.py / L20",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多语言自然免切智能体.md / SOR§4.1；SOR§4.1 / SOR§3.2",
+            "AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!C22:G22",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B44:P44",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G23:L31；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G23:L31；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G23:L31；LIC与取值说明!B3（22天/人月）",
+            "AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!D22:G22"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 0.18,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 0.18,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 0.1318181818181818,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "edge-core",
+          "name": "端侧 AI Model 大模型基座&中枢能力需求规格说明书",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "部分承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 33.5,
+            "product": 20,
+            "delivery": 6.8,
+            "direct": 60,
+            "preShared": false
+          },
+          "ext": {
+            "base": 11.42,
+            "perMarket": 0.2727272727272727,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "—；PRO：端侧大模型-4B（8255·8538 不建议）；大模型上下文改写（8255·8538 不建议）；Lite：纯云档无端侧大模型 / AIBOX：端侧大模型-2B、端侧大模型-4B、大模型上下文改写；PRO 仅 2B 经 AIBOX 承载，无 4B 与端侧中枢；多模态 7B 为规划，登记偏离；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B6:P6",
+            "ext_matrix_data.py / L24",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_端侧 AI Model 大模型基座&中枢能力需求规格说明书.md / SOR§4.1 座舱 AI Model 系统集成整体架构；SOR§4.2 端侧 AI Model Foundation 基座整体功能清单",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B28:P28",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B34:P34",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G32:L42；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G32:L42；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 11.42,
+              "perMarket": 0.2727272727272727,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 11.42,
+              "perMarket": 0.2727272727272727,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "perception",
+          "name": "多模态感知框架服务（AI业务中间件）",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "AIBOX 承载",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 13,
+            "product": 11.5,
+            "delivery": 4.3,
+            "direct": 20,
+            "preShared": false
+          },
+          "ext": {
+            "base": 5.45,
+            "perMarket": 0.3636363636363636,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "—；Lite：纯云档无端侧大模型 / AIBOX：端侧大模型-2B；PRO：2B 能否覆盖该场景待实测（货架判可选建议，非实测）；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B7:P7",
+            "ext_matrix_data.py / L29",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多模态感知框架服务（AI业务中间件）.md / SOR§4 智能体业务需求概述；PRD§五 需求范围（核心平台能力层）",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B27:P27",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G43:L52；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G43:L52；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 5.45,
+              "perMarket": 0.3636363636363636,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 5.45,
+              "perMarket": 0.3636363636363636,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "care",
+          "name": "多模态识别智能体-[舱内]乘员关怀",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "AIBOX 承载",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 7.800000000000001,
+            "product": 10.1,
+            "delivery": 2.1,
+            "direct": 16.3,
+            "preShared": false
+          },
+          "ext": {
+            "base": 3.78,
+            "perMarket": 0.3181818181818182,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "不承诺 VLM 开放视觉理解；Lite：纯云档无端侧大模型 / AIBOX：舱内识别-多模态主动关怀；PRO：2B 能否覆盖该场景待实测（货架判可选建议，非实测）；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B8:P8",
+            "ext_matrix_data.py / L32",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多模态识别智能体-[舱内]乘员关怀.md / SOR§4 架构树-前置条件 / PRD§6.2.3.4；PRD§6.2.3.3 基础设置功能",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B22:P22",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G53:L62；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G53:L62；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 3.78,
+              "perMarket": 0.3181818181818182,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 3.78,
+              "perMarket": 0.3181818181818182,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "child",
+          "name": "多模态识别智能体-[舱内]儿童陪伴",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "AIBOX 承载",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 8.1,
+            "product": 2,
+            "delivery": 1.7,
+            "direct": 16.2,
+            "preShared": false
+          },
+          "ext": {
+            "base": 2.23,
+            "perMarket": 0.3636363636363636,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "不提供开放式视觉推理；Lite：纯云档无端侧大模型 / AIBOX：舱内识别-儿童陪伴场景；PRO：2B 能否覆盖该场景待实测（货架判可选建议，非实测）；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B9:P9",
+            "ext_matrix_data.py / L34",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多模态识别智能体-[舱内]儿童陪伴.md / SOR§4 嵌入电子表格；SOR§4 架构树-前置条件 / PRD§6.2.2.4",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B23:P23",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G63:L71；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G63:L71；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 2.23,
+              "perMarket": 0.3636363636363636,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 2.23,
+              "perMarket": 0.3636363636363636,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "pet",
+          "name": "多模态识别智能体-[舱内]宠物守护",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "AIBOX 承载",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 7,
+            "product": 4,
+            "delivery": 1.7,
+            "direct": 12,
+            "preShared": false
+          },
+          "ext": {
+            "base": 2.4,
+            "perMarket": 0.2272727272727273,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "—；Lite：纯云档无端侧大模型 / AIBOX：舱内识别-宠物伴驾；PRO：2B 能否覆盖该场景待实测（货架判可选建议，非实测）；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B10:P10",
+            "ext_matrix_data.py / L36",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多模态识别智能体-[舱内]宠物守护.md / SOR§4 架构树-前置条件 / PRD§6.2.5.4；PRD§6.2.5.3 基础设置功能",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B30:P30",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G72:L80；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G72:L80；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 2.4,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 2.4,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "lost",
+          "name": "多模态识别智能体-[舱内]物品遗留与预测",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "AIBOX 承载",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 2.1,
+            "product": 2.9,
+            "delivery": 1.7,
+            "direct": 8.1,
+            "preShared": false
+          },
+          "ext": {
+            "base": 1.27,
+            "perMarket": 0.2272727272727273,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "不支持任意物体 VLM 通识理解；Lite：纯云档无端侧大模型 / AIBOX：遗留物品交互闭环、无感便捷置物；PRO：2B 能否覆盖该场景待实测（货架判可选建议，非实测）；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B11:P11",
+            "ext_matrix_data.py / L38",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多模态识别智能体-[舱内]物品遗留与预测.md / SOR§4 嵌入电子表格；PRD§6.2.4 / PRD§五 需求范围 / PRD§4.5",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B24:P24",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G81:L89；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G81:L89；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.27,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 1.27,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "rage",
+          "name": "多模态识别智能体-[舱内]路怒安抚",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "不承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 6.5,
+            "product": 4,
+            "delivery": 1.7,
+            "direct": 10,
+            "preShared": false
+          },
+          "ext": {
+            "base": 2.31,
+            "perMarket": 0.3636363636363636,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "—；Lite：纯云档无端侧大模型 / AIBOX：危险行为交互闭环；PRO：2B 能否覆盖该场景待实测（货架判可选建议，非实测）；货架无「路怒」专行，按危险行为交互闭环近似映射；情绪推断类功能须按 AI Act 评估；—",
+            "能力承接草稿；源表冲突，见存疑清单",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "冲突按10-12填写表裁定：🔴 不承接；早先结论{\"MAX\":\"待评估\",\"PRO\":\"待评估\",\"Lite\":\"不承接\"}；备注模型尺寸限制，效果不可达；AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!D34:G34"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B12:P12",
+            "ext_matrix_data.py / L41",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多模态识别智能体-[舱内]路怒安抚.md / SOR§4 产品功能信息架构；SOR§4 嵌入电子表格",
+            "AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!C34:G34",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B31:P31",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G90:L100；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G90:L100；LIC与取值说明!B3（22天/人月）",
+            "AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!D34:G34"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 2.31,
+              "perMarket": 0.3636363636363636,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 2.31,
+              "perMarket": 0.3636363636363636,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "inside",
+          "name": "多模态识别智能体-[舱内]车内通识",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 12,
+            "product": 6.8,
+            "delivery": 2.6,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": 4.04,
+            "perMarket": 0.2727272727272727,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "—；PRO：多模态开放闲聊（8255·8538 不建议）；Lite：纯云档无端侧大模型 / AIBOX：多模态开放闲聊；端侧 VLM 开放视觉问答，对应货架多模态开放闲聊（需 4B）；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B13:P13",
+            "ext_matrix_data.py / L44",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多模态识别智能体-[舱内]车内通识.md / SOR§4 产品功能信息架构 / PRD§6.2.13.4 意图理解；SOR§4 产品功能信息架构 / PRD§6.2.13.4 异常处理",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B29:P29",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G101:L110；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 4.04,
+              "perMarket": 0.2727272727272727,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "sentry",
+          "name": "多模态识别智能体-[舱外]AI增强哨兵",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "AIBOX 承载",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 3.6,
+            "product": 3.7,
+            "delivery": 2,
+            "direct": 6.1,
+            "preShared": false
+          },
+          "ext": {
+            "base": 1.76,
+            "perMarket": 0.2272727272727273,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "不接 VLM 多帧开放理解、视频总结；Lite：纯云档无端侧大模型 / AIBOX：哨兵增强模式；PRO：2B 能否覆盖该场景待实测（货架判可选建议，非实测）；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B14:P14",
+            "ext_matrix_data.py / L47",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多模态识别智能体-[舱外]AI增强哨兵.md / PRD§6.1.4.3 基础设置功能 / PRD§6.4 HMI交互；PRD§6.1.4.3 基础设置功能",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B26:P26",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G111:L119；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G111:L119；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.76,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 1.76,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "findcar",
+          "name": "多模态识别智能体-[舱外]AI记忆寻车",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "不承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 5,
+            "product": 4,
+            "delivery": 1.7,
+            "direct": 8,
+            "preShared": false
+          },
+          "ext": {
+            "base": 2.03,
+            "perMarket": 0.3181818181818182,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "—；Lite：纯云档无端侧大模型 / AIBOX：停车区域楼层车位号识别；PRO：2B 能否覆盖该场景待实测（货架判可选建议，非实测）；—",
+            "能力承接草稿；源表冲突，见存疑清单",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "冲突按10-12填写表裁定：🔴 不承接；早先结论{\"MAX\":\"待评估\",\"PRO\":\"待评估\",\"Lite\":\"不承接\"}；备注模型尺寸限制，效果不可达；AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!D28:G28"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B15:P15",
+            "ext_matrix_data.py / L49",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多模态识别智能体-[舱外]AI记忆寻车.md / PRD§6.1.3.3 基础设置功能；PRD§6.1.3.4 AI寻车功能触发",
+            "AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!C28:G28",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B33:P33",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G120:L128；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G120:L128；LIC与取值说明!B3（22天/人月）",
+            "AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!D28:G28"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 2.03,
+              "perMarket": 0.3181818181818182,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 2.03,
+              "perMarket": 0.3181818181818182,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "greet",
+          "name": "多模态识别智能体-[舱外]车外迎宾",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "AIBOX 承载",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 1.7,
+            "product": 2.9,
+            "delivery": 1.6,
+            "direct": 6.1,
+            "preShared": false
+          },
+          "ext": {
+            "base": 1.18,
+            "perMarket": 0.2272727272727273,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "不承接车外开放视觉通识；Lite：纯云档无端侧大模型 / AIBOX：车外障碍物感知预警；PRO：2B 能否覆盖该场景待实测（货架判可选建议，非实测）；货架无「迎宾」专行，按车外感知类近似映射；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B16:P16",
+            "ext_matrix_data.py / L51",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多模态识别智能体-[舱外]车外迎宾.md / SOR§4 架构树-前置条件 / PRD§6.1.2.7；SOR§4 架构树-前置条件 / PRD§6.1.2.3 / PRD§6.1.2.4",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B25:P25",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G129:L138；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G129:L138；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.18,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 1.18,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "outside",
+          "name": "多模态识别智能体-[舱外]车外通识",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 10,
+            "product": 5.5,
+            "delivery": 2.2,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": 3.34,
+            "perMarket": 0.3636363636363636,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "—；PRO：多模态开放闲聊（8255·8538 不建议）；Lite：纯云档无端侧大模型 / AIBOX：多模态开放闲聊；端侧 VLM 车外场景问答，对应货架多模态开放闲聊（需 4B）；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B17:P17",
+            "ext_matrix_data.py / L54",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_多模态识别智能体-[舱外]车外通识.md / PRD§6.1.1.3 功能说明 + SOR§4 产品功能信息架构；PRD§5 需求范围（2026/6/30交付范围）",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B32:P32",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G139:L147；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 3.34,
+              "perMarket": 0.3636363636363636,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "cloud-core",
+          "name": "云端 AI Model 大模型接入&云端中枢能力需求规格说明书",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "部分承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "p1-core"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 42,
+            "product": 16.8,
+            "delivery": 9.5,
+            "direct": 64,
+            "preShared": false
+          },
+          "ext": {
+            "base": 4.100000000000001,
+            "perMarket": 0.4545454545454545,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "不按 Carmind3.0 重建 AIOS / Agent Runtime / ToolHub / Context 平台；不承接客户自定义 MaaS / Model Hub 平台建设；不负责客户端侧 Runtime、端侧模型管理和 ToolHub；不是 Carmind3.0 MasterAgent 平台共建；Lite：意图理解与分发（8155 暂不建议 / 8676 未判）；复杂任务规划与执行（8155 未判 / 8676 未判）；云端架构 / 模型接入为共用底座，车型延展不重做，不单列人月；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B18:P18",
+            "ext_matrix_data.py / L58",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_云端 AI Model 大模型接入&云端中枢能力需求规格说明书.md / SOR§4.1 座舱 AI Model 系统集成整体架构；SOR§4.1 架构图 OXd1bgR98omb7mxTBTbcMhrBnMb.png",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B4:P4",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B5:P5",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B6:P6",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B7:P7",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G148:L158；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G148:L158；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G148:L158；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 4.100000000000001,
+              "perMarket": 0.4545454545454545,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 4.100000000000001,
+              "perMarket": 0.4545454545454545,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 4.100000000000001,
+              "perMarket": 0.4545454545454545,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "chat",
+          "name": "云端AI联网搜&闲聊",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-chat"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 1,
+            "product": 9.1,
+            "delivery": 4.1,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": 3.2,
+            "perMarket": 0.4545454545454545,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 12
+          },
+          "notes": [
+            "—；；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B19:P19",
+            "ext_matrix_data.py / L64",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_云端AI联网搜&闲聊.md / SOR§4 嵌入电子表格（img01.png）；PRD§6.1 落域",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B9:P9",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G159:L168；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G159:L168；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G159:L168；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 3.2,
+              "perMarket": 0.4545454545454545,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 3.2,
+              "perMarket": 0.4545454545454545,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 3.2,
+              "perMarket": 0.4545454545454545,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "dialogue",
+          "name": "AI对话交互&VPA交互+Carmind小奇同学应用",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "部分承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "p1-chat"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 12.25,
+            "delivery": 4.35,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": 4,
+            "perMarket": 0.3181818181818182,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 12
+          },
+          "notes": [
+            "—；；人设与形象素材由客户提供",
+            "候选部分复用一期基础智能体的闲聊/上下文；VPA、形象与Carmind小奇应用增量未核，不能把周边推荐的人月类比认作同一能力",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B20:P20",
+            "ext_matrix_data.py / L66",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_AI对话交互&VPA交互+Carmind小奇同学应用.md / SOR§4 Carmind App应用 产品功能信息架构；SOR§4 AI 智能对话交互 产品功能信息架构",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B8:P8",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G169:L179；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G169:L179；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G169:L179；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 4,
+              "perMarket": 0.3181818181818182,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 4,
+              "perMarket": 0.3181818181818182,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 4,
+              "perMarket": 0.3181818181818182,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "guide",
+          "name": "AI向导（LBS+POI介绍）",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-nearby",
+            "p1-nav"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 12.25,
+            "delivery": 4.35,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": 4,
+            "perMarket": 0.5,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "—；货架周边推荐有三档（10 / 20 / 40）；此处按最低档「美食+景点」参照；—",
+            "融合：二期周边推荐 + 一期导航；融合增量首发人月未核",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B21:P21",
+            "01-已拍决策.md / 判定第2条（本次已拍映射）",
+            "ext_matrix_data.py / L69",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_AI向导（LBS+POI介绍）.md / SOR§4.1 核心能力表（东盟版补）；SOR§4.1 智能体核心能力",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B12:P12",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G180:L189；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G180:L189；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G180:L189；LIC与取值说明!B3（22天/人月）",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 4,
+              "perMarket": 0.5,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 4,
+              "perMarket": 0.5,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 4,
+              "perMarket": 0.5,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "news",
+          "name": "AI新闻助手智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-news"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 5.75,
+            "delivery": 2.25,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": 2.8,
+            "perMarket": 0.4090909090909091,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0.5
+          },
+          "notes": [
+            "—；；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B22:P22",
+            "ext_matrix_data.py / L72",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_AI新闻助手智能体.md / PRD§落域；SOR§4 产品功能信息架构",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B13:P13",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G190:L200；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G190:L200；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G190:L200；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 2.8,
+              "perMarket": 0.4090909090909091,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 2.8,
+              "perMarket": 0.4090909090909091,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 2.8,
+              "perMarket": 0.4090909090909091,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "life",
+          "name": "AI生活助理智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "不承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [
+            "p2-services",
+            "p2-nearby"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 12.25,
+            "delivery": 4.35,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": 4,
+            "perMarket": 0.5,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "—；；O2O 履约、支付、账号体系依赖三方",
+            "候选融合：生态服务 + 周边推荐；仅覆盖部分生活服务，点单/快递/违章/机票闭环与微信扩展能力未核，融合增量未核",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "冲突按10-12填写表裁定：🔴 不承接；早先结论{\"MAX\":\"待评估\",\"PRO\":\"待评估\",\"Lite\":\"待评估\"}；备注依赖信源；AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!D15:G15"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B23:P23",
+            "ext_matrix_data.py / L74",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_AI生活助理智能体.md / SOR§3 项目时间节点；SOR§3.2 项目范围 & 目标市场",
+            "AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!C15:G15",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B14:P14",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G201:L211；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G201:L211；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G201:L211；LIC与取值说明!B3（22天/人月）",
+            "AI生活助理.json / Q-LIFE-01、Q-LIFE-02（已生成摘录，原SOR引用周边推荐PRD）",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）",
+            "AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!D15:G15"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 4,
+              "perMarket": 0.5,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 4,
+              "perMarket": 0.5,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 4,
+              "perMarket": 0.5,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "sports",
+          "name": "AI体育智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "p1-sports"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 6.25,
+            "delivery": 2.25,
+            "direct": 20.69,
+            "preShared": false
+          },
+          "ext": {
+            "base": 2.5,
+            "perMarket": 0.3636363636363636,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 6
+          },
+          "notes": [
+            "—；Lite：赛事智能体+沉浸观赛模式（8155 不建议 / 8676 不建议）；货架该行含「沉浸观赛模式」，8155 / 8676 判不建议；SOR 范围（赛程 / 比分 / 问答 / 播报）为纯云，沉浸观赛不含；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B24:P24",
+            "ext_matrix_data.py / L76",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_AI体育智能体.md / PRD§4.1 语音播报 / PRD§2 区域&语言要求；PRD§2 区域&语言要求 / SOR§4.1",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B15:P15",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G212:L221；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G212:L221；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G212:L221；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 2.5,
+              "perMarket": 0.3636363636363636,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 2.5,
+              "perMarket": 0.3636363636363636,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 2.5,
+              "perMarket": 0.3636363636363636,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "image",
+          "name": "AI创作生图智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-image"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4,
+            "product": 5.85,
+            "delivery": 2.95,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": 2.7,
+            "perMarket": 0.2272727272727273,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 3
+          },
+          "notes": [
+            "—；；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B25:P25",
+            "ext_matrix_data.py / L79",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_AI创作生图智能体.md / SOR§3 项目时间节点；SOR§3 项目范围&目标市场",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B10:P10",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G222:L232；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G222:L232；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G222:L232；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 2.7,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 2.7,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 2.7,
+              "perMarket": 0.2272727272727273,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "scene",
+          "name": "一句话场景卡片智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "部分承接",
+            "Lite": "部分承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 12.25,
+            "delivery": 24.1,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": 7.73,
+            "perMarket": 0.2727272727272727,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "不承接客户场景平台底座；CarmindAPP 部分语种无关；人月按比例推算偏高，建议研发复核；—",
+            "无已核一期/二期对应；独立首发或待评估，不能以成本类比替代能力映射",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B26:P26",
+            "ext_matrix_data.py / L81",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_一句话场景卡片智能体.md / SOR§4 功能信息架构 / PRD§意图识别；PRD§落域",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B16:P16",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G233:L243；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G233:L243；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G233:L243；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 7.73,
+              "perMarket": 0.2727272727272727,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 7.73,
+              "perMarket": 0.2727272727272727,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 7.73,
+              "perMarket": 0.2727272727272727,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "nav",
+          "name": "导航&通勤无忧智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "p1-nav",
+            "p2-planner",
+            "p2-companion"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2,
+            "product": 14.25,
+            "delivery": 4.35,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": 3,
+            "perMarket": 0.5454545454545454,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "—；Lite：模糊语义导航（8155 未判 / 8676 未判）；导航执行、地图能力归客户 / 图商",
+            "候选融合：一期导航 + 二期行程规划 + 二期行程伴侣；各组成能力边界和融合增量未核；旧成本行只按导航估算",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B27:P27",
+            "ext_matrix_data.py / L83",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_导航&通勤无忧智能体.md / SOR§4.1 导航&通勤无忧 智能体核心能力；SOR§4.1 核心能力矩阵（表格）",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B17:P17",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G244:L253；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G244:L253；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G244:L253；LIC与取值说明!B3（22天/人月）",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 3,
+              "perMarket": 0.5454545454545454,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 3,
+              "perMarket": 0.5454545454545454,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 3,
+              "perMarket": 0.5454545454545454,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "carbook",
+          "name": "安全用车智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-carbook"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 12.25,
+            "delivery": 4.35,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": 3,
+            "perMarket": 0.4545454545454545,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0
+          },
+          "notes": [
+            "—；；车书与知识库原始材料由客户提供",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B28:P28",
+            "ext_matrix_data.py / L85",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_安全用车智能体.md / SOR§4 产品功能信息架构；PRD§落域",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B18:P18",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G254:L264；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G254:L264；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G254:L264；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 3,
+              "perMarket": 0.4545454545454545,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 3,
+              "perMarket": 0.4545454545454545,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 3,
+              "perMarket": 0.4545454545454545,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "control",
+          "name": "车控智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "部分承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "p1-control"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2,
+            "product": 6.25,
+            "delivery": 6.550000000000001,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": 2.8,
+            "perMarket": 0.4545454545454545,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0
+          },
+          "notes": [
+            "不承接控制器、车控 Runtime、客户 ToolHub；Lite：纯云档无端侧大模型 / AIBOX：多模态指代车控；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B29:P29",
+            "ext_matrix_data.py / L87",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_车控智能体.md / SOR§4.1 车控智能体核心能力；SOR§4.1 车控智能体核心能力 / SOR§4.2.1",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B19:P19",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G265:L275；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G265:L275；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G265:L275；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 2.8,
+              "perMarket": 0.4545454545454545,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 2.8,
+              "perMarket": 0.4545454545454545,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 2.48,
+              "perMarket": 0.4545454545454545,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "music",
+          "name": "音乐智能体 (秒识影音)",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "部分承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "p1-music"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2,
+            "product": 12.25,
+            "delivery": 4.35,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": 2.4,
+            "perMarket": 0.3181818181818182,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 5
+          },
+          "notes": [
+            "听歌识曲暂不具备；；—",
+            "能力承接草稿",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B30:P30",
+            "ext_matrix_data.py / L90",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_音乐智能体 (秒识影音).md / SOR§4.1 音乐&影视类智能体核心能力；SOR§4.3.1 交互模式总体说明",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B11:P11",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G276:L286；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G276:L286；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G276:L286；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 2.4,
+              "perMarket": 0.3181818181818182,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 2.4,
+              "perMarket": 0.3181818181818182,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 2.4,
+              "perMarket": 0.3181818181818182,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "tsp",
+          "name": "AI类数据统计埋点in奇瑞运营平台TSP",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 3,
+            "product": 14.5,
+            "delivery": 5.8,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": 4.41,
+            "perMarket": 0.2727272727272727,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "无已核一期/二期对应；独立首发或待评估，不能以成本类比替代能力映射",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B31:P31",
+            "ext_matrix_data.py / L92",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_AI类数据统计埋点in奇瑞运营平台TSP.md / SOR§3 项目时间节点；SOR§3.2 目标市场&语种",
+            "奇瑞国际EHV欧盟成本评估表-2026-09-03.xlsx / ③工作量拆解!B20:P20",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G287:L295；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G287:L295；LIC与取值说明!B3（22天/人月）",
+            "EHV欧盟澳新-智能体横展二级任务与人天.xlsx / 二级任务人天!G287:L295；LIC与取值说明!B3（22天/人月）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 4.41,
+              "perMarket": 0.2727272727272727,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": 4.41,
+              "perMarket": 0.2727272727272727,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": 4.41,
+              "perMarket": 0.2727272727272727,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "hmi",
+          "name": "生成式HMI",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": null,
+            "product": null,
+            "delivery": null,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "—；SOR 以客户侧 HMI 需求为主；EHV 成本表无此行，整体未报价；—",
+            "无已核一期/二期对应；独立首发或待评估，不能以成本类比替代能力映射",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "冲突按10-12填写表裁定：🟢 承接；早先结论{\"MAX\":\"待评估\",\"PRO\":\"待评估\",\"Lite\":\"待评估\"}；备注None；AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!D12:G12"
+          ],
+          "src": [
+            "奇瑞Carmind3延展车型-智能体适配与职能成本表-2026-10-08.xlsx / ③智能体适配矩阵!B32:P32",
+            "ext_matrix_data.py / L94",
+            "Carmind平台化_项目_股份_EHV欧盟&澳新_技术任务书SOR_生成式HMI.md / SOR§3 项目时间节点；SOR§3.2 项目范围 & 目标市场",
+            "AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!D12:G12"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        }
+      ]
+    },
+    "c3-sea": {
+      "name": "东盟包",
+      "tiers": true,
+      "layers": [
+        "基础语音",
+        "端模 AI",
+        "云端 AI"
+      ],
+      "agents": [
+        {
+          "id": "voice-control",
+          "name": "基础语控智能体",
+          "layer": "基础语音",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "voice-control"
+          ],
+          "isVoice": true,
+          "first": {
+            "research": 0.54,
+            "product": 0.42,
+            "delivery": 0.24,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "基础语控：车控、导航、媒体、通讯等基础 L1 语音能力；具体域依赖客户开放原子接口",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_基础语控智能体.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B38:E38",
+            "ext_matrix_data.py / L16",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B33:P33"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "voice-visible",
+          "name": "多模态识别智能体-[舱内]屏内可见即可说",
+          "layer": "基础语音",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "部分承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "voice-visible"
+          ],
+          "isVoice": true,
+          "first": {
+            "research": 0.36,
+            "product": 0.28,
+            "delivery": 0.16,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "屏内可见即可说：基于讯飞已有 VUI/HMI 语音能力接入；不承接客户 UI 自动理解平台；页面/控件信息需客户提供",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_多模态识别智能体-[舱内]屏内可见即可说.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B39:E39",
+            "ext_matrix_data.py / L18",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B34:P34"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "voice-switch",
+          "name": "多语言自然免切智能体",
+          "layer": "基础语音",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "voice-switch"
+          ],
+          "isVoice": true,
+          "first": {
+            "research": 0.45,
+            "product": 0.35,
+            "delivery": 0.2,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "多语言自然免切：云端免切模型预计Q4成熟；不承诺 SOR 要求的全语种自动识别/自由免切模式",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用",
+            "冲突按10-12填写表裁定：🟢 承接；早先结论{\"MAX\":\"待评估\",\"PRO\":\"待评估\",\"Lite\":\"待评估\"}；备注当前阶段技术不可达；AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!D22:G22"
+          ],
+          "src": [
+            "端侧_多语言自然免切智能体.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B42:E42",
+            "ext_matrix_data.py / L20",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B35:P35"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "edge-core",
+          "name": "端侧AIModel大模型基座需求规格说明书",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "不承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": null,
+            "product": null,
+            "delivery": null,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "端侧基座工程：—；不承接 VLM 基模、模型底座、异构模型调度等平台工程；端侧类人记忆：—；不建设客户定义的端侧 Memory Engine",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "东盟整包不承接，三档均不承接"
+          ],
+          "src": [
+            "端侧_端侧AIModel大模型基座需求规格说明书.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B20:E20",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B31:E31",
+            "ext_matrix_data.py / L24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "perception",
+          "name": "多模态感知框架服务（AI业务中间件）",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "不承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": null,
+            "product": null,
+            "delivery": null,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "多模态感知框架：—；不建设端侧多模态感知框架、VLM Runtime、统一视觉基座",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "东盟整包不承接，三档均不承接"
+          ],
+          "src": [
+            "云端_多模态感知框架服务（AI业务中间件）.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B19:E19",
+            "ext_matrix_data.py / L29"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "care",
+          "name": "多模态识别智能体-[舱内]乘员关怀",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "AIBOX 承载",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 7.800000000000001,
+            "product": 10.1,
+            "delivery": 2.1,
+            "direct": 16.3,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "乘员关怀：基于 DMS/OMS 视觉小模型结构化结果 + 场景智能体；不承诺 VLM 开放视觉理解",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "端侧_多模态识别智能体-[舱内]乘员关怀.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B22:E22",
+            "ext_matrix_data.py / L32",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B21:P21"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "child",
+          "name": "多模态识别智能体-[舱内]儿童陪伴",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "AIBOX 承载",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 8.1,
+            "product": 2,
+            "delivery": 1.7,
+            "direct": 16.2,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "儿童陪伴：儿童存在、位置、部分行为状态识别 + 场景逻辑；不提供开放式视觉推理",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "端侧_多模态识别智能体-[舱内]儿童陪伴.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B23:E23",
+            "ext_matrix_data.py / L34",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B22:P22"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "pet",
+          "name": "多模态识别智能体-[舱内]宠物守护",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "不承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": null,
+            "product": null,
+            "delivery": null,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "宠物守护：—；宠物复杂姿态依赖基模及后训练能力",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "东盟整包不承接，三档均不承接"
+          ],
+          "src": [
+            "端侧_多模态识别智能体-[舱内]宠物守护.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B27:E27",
+            "ext_matrix_data.py / L36"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "lost",
+          "name": "多模态识别智能体-[舱内]物品遗留与预测",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "AIBOX 承载",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 2.1,
+            "product": 2.9,
+            "delivery": 1.7,
+            "direct": 8.1,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "物品遗留与预测：目标检测 / 变化检测等小模型 + 上下车事件 + 提醒闭环；不支持任意物体 VLM 通识理解",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "端侧_多模态识别智能体-[舱内]物品遗留与预测.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B24:E24",
+            "ext_matrix_data.py / L38",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B23:P23"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "rage",
+          "name": "多模态识别智能体-[舱内]路怒安抚",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "不承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": null,
+            "product": null,
+            "delivery": null,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "路怒安抚：—；不承接依赖 VLM/情绪视觉基模的复杂场景理解",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "东盟整包不承接，三档均不承接"
+          ],
+          "src": [
+            "端侧_多模态识别智能体-[舱内]路怒安抚.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B28:E28",
+            "ext_matrix_data.py / L41"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "inside",
+          "name": "多模态识别智能体-[舱内]车内通识",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "不承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": null,
+            "product": null,
+            "delivery": null,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "车内通识：—；不提供基于 VLM 的开放式人物/行为/物体/场景视觉问答",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "东盟整包不承接，三档均不承接"
+          ],
+          "src": [
+            "端侧_多模态识别智能体-[舱内]车内通识.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B21:E21",
+            "ext_matrix_data.py / L44"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "sentry",
+          "name": "多模态识别智能体-[舱外]AI增强哨兵",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "AIBOX 承载",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 3.6,
+            "product": 3.7,
+            "delivery": 2,
+            "direct": 6.1,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "AI 增强哨兵：人员靠近、停留、部分异常事件等小模型 + 规则 + Agent；不接 VLM 多帧开放理解、视频总结、任意事件语义分析",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "端侧_多模态识别智能体-[舱外]AI增强哨兵.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B26:E26",
+            "ext_matrix_data.py / L47",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B25:P25"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "findcar",
+          "name": "多模态识别智能体-[舱外]AI记忆寻车",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "不承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": null,
+            "product": null,
+            "delivery": null,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "AI记忆寻车：—；不承接基于视觉 VLM 的停车环境语义记忆",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "东盟整包不承接，三档均不承接"
+          ],
+          "src": [
+            "端侧_多模态识别智能体-[舱外]AI记忆寻车.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B30:E30",
+            "ext_matrix_data.py / L49"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "greet",
+          "name": "多模态识别智能体-[舱外]车外迎宾",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "AIBOX 承载",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 1.7,
+            "product": 2.9,
+            "delivery": 1.6,
+            "direct": 6.1,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "车外迎宾：人员检测、人脸/身份、距离/位置等视觉小模型触发迎宾；不承接车外开放视觉通识",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "端侧_多模态识别智能体-[舱外]车外迎宾.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B25:E25",
+            "ext_matrix_data.py / L51",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B24:P24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "outside",
+          "name": "多模态识别智能体-[舱外]车外通识",
+          "layer": "端模 AI",
+          "coverage": {
+            "MAX": "不承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": null,
+            "product": null,
+            "delivery": null,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "车外通识：—；不提供开放式车外物体、车型、建筑、场景识别问答",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "东盟整包不承接，三档均不承接"
+          ],
+          "src": [
+            "端侧_多模态识别智能体-[舱外]车外通识.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B29:E29",
+            "ext_matrix_data.py / L54"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "cloud-core",
+          "name": "云端AIModel大模型接入需求规格说明书",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "部分承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "p1-core"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 42,
+            "product": 16.8,
+            "delivery": 9.5,
+            "direct": 64,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "云端架构：提供讯飞现有星火国际座舱2.0架构的中枢大模型产品架构及项目接入方案；不按 Carmind3.0 重建 AIOS / Agent Runtime / ToolHub / Context 平台；模型接入：在讯飞现有云中枢中接入项目所需 LLM/多模态模型服务；不承接客户自定义 MaaS / Model Hub 平台建设；端云协同：完成讯飞云服务与车端语助、端状态、业务接口的端云通信；不负责客户端侧 Runtime、端侧模型管理和 ToolHub；云端中枢智能体：基于讯飞现有 MasterAgent / 中枢大模型进行意图理解、任务规划、工具调用；不是 Carmind3.0 MasterAgent 平台共建",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_云端AIModel大模型接入需求规格说明书.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B2:E2",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B3:E3",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B4:E4",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B5:E5",
+            "ext_matrix_data.py / L58",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B4:P4",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B5:P5",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B6:P6",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B7:P7"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "chat",
+          "name": "云端AI联网搜&闲聊",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-chat"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 1,
+            "product": 9.1,
+            "delivery": 4.1,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 12
+          },
+          "notes": [
+            "云端联网搜索 & 闲聊：MA 调用联网搜索 Tool，实现搜索、问答、闲聊；",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_云端AI联网搜&闲聊.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B7:E7",
+            "ext_matrix_data.py / L64",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B9:P9"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "dialogue",
+          "name": "AI对话交互&VPA交互+Carmind小奇同学应用",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "部分承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "p1-chat"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 12.25,
+            "delivery": 4.35,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 12
+          },
+          "notes": [
+            "AI 对话交互 & VPA：云端大模型回复、人设、角色化交互、VPA；",
+            "候选部分复用一期基础智能体的闲聊/上下文；VPA、形象与Carmind小奇应用增量未核，不能把周边推荐的人月类比认作同一能力",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_AI对话交互&VPA交互+Carmind小奇同学应用.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B6:E6",
+            "ext_matrix_data.py / L66",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B8:P8"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "guide",
+          "name": "AI向导（LBS+POI介绍）",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-nearby",
+            "p1-nav"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 12.25,
+            "delivery": 4.35,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "AI 向导（LBS+POI）：POI 搜索、推荐、地点理解、导航编排；地图数据和导航执行依赖客户/图商接口",
+            "融合：二期周边推荐 + 一期导航；融合增量首发人月未核；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_AI向导（LBS+POI介绍）.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B10:E10",
+            "01-已拍决策.md / 判定第2条（本次已拍映射）",
+            "ext_matrix_data.py / L69",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B12:P12",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "news",
+          "name": "AI新闻助手智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-news"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 5.75,
+            "delivery": 2.25,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0.5
+          },
+          "notes": [
+            "AI 新闻助手：新闻搜索、摘要、问答；新闻版权/当地内容源需单独确认",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_AI新闻助手智能体.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B11:E11",
+            "ext_matrix_data.py / L72",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B13:P13"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "life",
+          "name": "AI生活助理智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "不承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [
+            "p2-services",
+            "p2-nearby"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 12.25,
+            "delivery": 4.35,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "AI 生活助理：本地生活搜索、推荐以及接口允许情况下的服务闭环；O2O履约、支付、账号体系依赖三方",
+            "候选融合：生态服务 + 周边推荐；仅覆盖部分生活服务，点单/快递/违章/机票闭环与微信扩展能力未核，融合增量未核",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用",
+            "冲突按10-12填写表裁定：🔴 不承接；早先结论{\"MAX\":\"待评估\",\"PRO\":\"待评估\",\"Lite\":\"待评估\"}；备注依赖信源；AI大模型SoC端&AI云&基础语音-延展车型Workitem逻辑明细-MAX填写版-2026-10-12.xlsx / Sheet1!D15:G15"
+          ],
+          "src": [
+            "云端_AI生活助理智能体.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B12:E12",
+            "ext_matrix_data.py / L74",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B14:P14",
+            "AI生活助理.json / Q-LIFE-01、Q-LIFE-02（已生成摘录，原SOR引用周边推荐PRD）",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "sports",
+          "name": "AI体育智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "p1-sports"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 6.25,
+            "delivery": 2.25,
+            "direct": 20.69,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 6
+          },
+          "notes": [
+            "AI 体育：体育资讯、比分、赛程、赛事问答；体育版权及实时数据源单独确认",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_AI体育智能体.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B13:E13",
+            "ext_matrix_data.py / L76",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B15:P15"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "image",
+          "name": "AI创作生图智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-image"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4,
+            "product": 5.85,
+            "delivery": 2.95,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 3
+          },
+          "notes": [
+            "AI 创作生图：作为云端 Tool / Agent 接入文生图能力；",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_AI创作生图智能体.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B8:E8",
+            "ext_matrix_data.py / L79",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B10:P10"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "scene",
+          "name": "一句话场景卡片智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "部分承接",
+            "Lite": "部分承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 12.25,
+            "delivery": 24.1,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "一句话场景卡片：云中枢理解用户意图，输出结构化场景参数/卡片指令；不承接客户场景平台底座",
+            "无已核一期/二期对应；独立首发或待评估，不能以成本类比替代能力映射；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_一句话场景卡片智能体.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B14:E14",
+            "ext_matrix_data.py / L81",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B16:P16"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "nav",
+          "name": "导航&通勤无忧智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "p1-nav",
+            "p2-planner",
+            "p2-companion"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2,
+            "product": 14.25,
+            "delivery": 4.35,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "导航&通勤无忧：中枢 + 地图 Tool 完成路线、通勤、模糊条件检索等；导航执行、地图能力归客户/图商",
+            "候选融合：一期导航 + 二期行程规划 + 二期行程伴侣；各组成能力边界和融合增量未核；旧成本行只按导航估算",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_导航&通勤无忧智能体.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B15:E15",
+            "ext_matrix_data.py / L83",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B17:P17",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "carbook",
+          "name": "安全用车智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-carbook"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.5,
+            "product": 12.25,
+            "delivery": 4.35,
+            "direct": 3,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0
+          },
+          "notes": [
+            "安全用车：车书问答、用车知识、安全建议、Tool 调用；",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_安全用车智能体.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B16:E16",
+            "ext_matrix_data.py / L85",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B18:P18"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "control",
+          "name": "车控智能体",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "部分承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "p1-control"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2,
+            "product": 6.25,
+            "delivery": 6.550000000000001,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0
+          },
+          "notes": [
+            "车控智能体：中枢理解 → FC/Tool → 调用客户开放的原子车控接口；不承接控制器、车控 Runtime、客户 ToolHub",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_车控智能体.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B17:E17",
+            "ext_matrix_data.py / L87",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B19:P19"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "music",
+          "name": "音乐智能体(秒识影音)",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "部分承接",
+            "PRO": "部分承接",
+            "Lite": "部分承接"
+          },
+          "caps": [
+            "p1-music"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2,
+            "product": 12.25,
+            "delivery": 4.35,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 5
+          },
+          "notes": [
+            "音乐 / 影音搜索：模糊搜歌、内容理解、播放控制由中枢调用音乐/影音/搜索接口；听歌识曲暂不具备",
+            "能力承接草稿；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "档位沿用欧盟澳新同名智能体；10-12冲突裁定一并沿用"
+          ],
+          "src": [
+            "云端_音乐智能体(秒识影音).md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B9:E9",
+            "ext_matrix_data.py / L90",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:B11、B13:B19、A23:A24",
+            "奇瑞国际EHV东盟成本评估表-对齐新特性表-2026-09-01.xlsx / ③工作量拆解!B11:P11"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "tsp",
+          "name": "AI类数据统计埋点in奇瑞运营平台TSP",
+          "layer": "云端 AI",
+          "coverage": {
+            "MAX": "不承接",
+            "PRO": "不承接",
+            "Lite": "不承接"
+          },
+          "caps": [],
+          "isVoice": false,
+          "first": {
+            "research": null,
+            "product": null,
+            "delivery": null,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "AI 数据埋点 / TSP运营平台：—；TSP后台、运营平台、车辆运营、数据经营均不承接",
+            "无已核一期/二期对应；独立首发或待评估，不能以成本类比替代能力映射；对应关系供本包审定，不以欧盟澳新档位结论填东盟档位",
+            "海外路试不含；历史评估不代表实测或批准报价",
+            "东盟整包不承接，三档均不承接"
+          ],
+          "src": [
+            "云端_AI类数据统计埋点in奇瑞运营平台TSP.md / L1（源名）；SOR§4–§6（需求/性能）",
+            "奇瑞国际ehv东盟成本评估表.xlsx / Sheet4!B18:E18",
+            "ext_matrix_data.py / L92"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        }
+      ]
+    },
+    "c15-eu": {
+      "name": "Carmind1.5 欧盟版",
+      "tiers": false,
+      "layers": [
+        "一期",
+        "二期",
+        "基础语音"
+      ],
+      "agents": [
+        {
+          "id": "p1-core",
+          "name": "中枢智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-core"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 8.25,
+            "product": 5.1,
+            "delivery": 10,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 3.828,
+            "perMarket": 0,
+            "perLang": 0.38,
+            "systemSwitch": 1.298
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B3:K3、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ②欧盟首发逐职能拆解!F14",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H3、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 3.828,
+              "perMarket": 0,
+              "perLang": 0.38,
+              "systemSwitch": 1.298
+            },
+            "PRO": {
+              "base": 3.828,
+              "perMarket": 0,
+              "perLang": 0.38,
+              "systemSwitch": 1.298
+            },
+            "Lite": {
+              "base": 3.828,
+              "perMarket": 0,
+              "perLang": 0.38,
+              "systemSwitch": 1.298
+            }
+          }
+        },
+        {
+          "id": "p1-chat",
+          "name": "基础智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-chat"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2.53,
+            "product": 1.98,
+            "delivery": 5.4,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 1.55,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.3999999999999999
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 12
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B4:K4、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ②欧盟首发逐职能拆解!F98",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H4、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.55,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.3999999999999999
+            },
+            "PRO": {
+              "base": 1.55,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.3999999999999999
+            },
+            "Lite": {
+              "base": 1.55,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.3999999999999999
+            }
+          }
+        },
+        {
+          "id": "p1-nav",
+          "name": "导航智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-nav"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.24,
+            "product": 2.66,
+            "delivery": 6.9,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 1.93,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.4000000000000001
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 5
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B5:K5、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ②欧盟首发逐职能拆解!F86",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H5、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "PRO": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "Lite": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            }
+          }
+        },
+        {
+          "id": "p1-carbook",
+          "name": "安全用车智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-carbook"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 3.48,
+            "product": 2.21,
+            "delivery": 5.4,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 2.74,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.1500000000000004
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B6:K6、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ②欧盟首发逐职能拆解!F26",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H6、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 2.74,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.1500000000000004
+            },
+            "PRO": {
+              "base": 2.74,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.1500000000000004
+            },
+            "Lite": {
+              "base": 2.74,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.1500000000000004
+            }
+          }
+        },
+        {
+          "id": "p1-control",
+          "name": "车控智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-control"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.24,
+            "product": 2.66,
+            "delivery": 6.300000000000001,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 3.12,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.3999999999999999
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B7:K7、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ②欧盟首发逐职能拆解!F110",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H7、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 3.12,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.3999999999999999
+            },
+            "PRO": {
+              "base": 3.12,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.3999999999999999
+            },
+            "Lite": {
+              "base": 3.12,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.3999999999999999
+            }
+          }
+        },
+        {
+          "id": "p1-music",
+          "name": "音乐智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-music"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.48,
+            "product": 2.89,
+            "delivery": 6.9,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 1.93,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.4000000000000001
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 5
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B8:K8、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ②欧盟首发逐职能拆解!F74",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H8、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "PRO": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "Lite": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            }
+          }
+        },
+        {
+          "id": "p1-news",
+          "name": "AI新闻智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-news"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.11,
+            "product": 2.43,
+            "delivery": 6.300000000000001,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 1.205,
+            "perMarket": 0,
+            "perLang": 0.325,
+            "systemSwitch": 0.1499999999999999
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0.5
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B9:K9、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ②欧盟首发逐职能拆解!F50",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H9、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.205,
+              "perMarket": 0,
+              "perLang": 0.325,
+              "systemSwitch": 0.1499999999999999
+            },
+            "PRO": {
+              "base": 1.205,
+              "perMarket": 0,
+              "perLang": 0.325,
+              "systemSwitch": 0.1499999999999999
+            },
+            "Lite": {
+              "base": 1.205,
+              "perMarket": 0,
+              "perLang": 0.325,
+              "systemSwitch": 0.1499999999999999
+            }
+          }
+        },
+        {
+          "id": "p1-image",
+          "name": "AI生图智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-image"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.21,
+            "product": 2.53,
+            "delivery": 6.300000000000001,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 1.23,
+            "perMarket": 0,
+            "perLang": 0.15,
+            "systemSwitch": 0.1500000000000001
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 3
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B10:K10、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ②欧盟首发逐职能拆解!F38",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H10、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.23,
+              "perMarket": 0,
+              "perLang": 0.15,
+              "systemSwitch": 0.1500000000000001
+            },
+            "PRO": {
+              "base": 1.23,
+              "perMarket": 0,
+              "perLang": 0.15,
+              "systemSwitch": 0.1500000000000001
+            },
+            "Lite": {
+              "base": 1.23,
+              "perMarket": 0,
+              "perLang": 0.15,
+              "systemSwitch": 0.1500000000000001
+            }
+          }
+        },
+        {
+          "id": "p1-sports",
+          "name": "体育智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-sports"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 3.98,
+            "product": 2.43,
+            "delivery": 6.300000000000001,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 1.205,
+            "perMarket": 0,
+            "perLang": 0.325,
+            "systemSwitch": 0.1499999999999999
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 6
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B11:K11、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ②欧盟首发逐职能拆解!F62",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H11、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.205,
+              "perMarket": 0,
+              "perLang": 0.325,
+              "systemSwitch": 0.1499999999999999
+            },
+            "PRO": {
+              "base": 1.205,
+              "perMarket": 0,
+              "perLang": 0.325,
+              "systemSwitch": 0.1499999999999999
+            },
+            "Lite": {
+              "base": 1.205,
+              "perMarket": 0,
+              "perLang": 0.325,
+              "systemSwitch": 0.1499999999999999
+            }
+          }
+        },
+        {
+          "id": "p2-nearby",
+          "name": "周边推荐智能体",
+          "layer": "二期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-nearby"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 19.25,
+            "product": 14.8,
+            "delivery": 8.3,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": 1.93,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.4000000000000001
+          },
+          "lic": {
+            "mode": "bottomUp",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:J3、A18:A21",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!C3:G3",
+            "欧盟二期五智能体成本表-NRE与LIC-20261027.xlsx / 成本汇总!A21:B21",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "PRO": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "Lite": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            }
+          }
+        },
+        {
+          "id": "p2-reminder",
+          "name": "提醒智能体",
+          "layer": "二期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-reminder"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 19.75,
+            "product": 17.4,
+            "delivery": 8.3,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": 2.74,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.1500000000000004
+          },
+          "lic": {
+            "mode": "bottomUp",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B4:J4、A18:A21",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!C4:G4",
+            "欧盟二期五智能体成本表-NRE与LIC-20261027.xlsx / 成本汇总!A20:B20",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 2.74,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.1500000000000004
+            },
+            "PRO": {
+              "base": 2.74,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.1500000000000004
+            },
+            "Lite": {
+              "base": 2.74,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.1500000000000004
+            }
+          }
+        },
+        {
+          "id": "p2-services",
+          "name": "生态服务智能体",
+          "layer": "二期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-services"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 19.75,
+            "product": 15.3,
+            "delivery": 8.3,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": 1.93,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.4000000000000001
+          },
+          "lic": {
+            "mode": "bottomUp",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B5:J5、A18:A21",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!C5:G5",
+            "欧盟二期五智能体成本表-NRE与LIC-20261027.xlsx / 成本汇总!A24:B24",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "PRO": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "Lite": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            }
+          }
+        },
+        {
+          "id": "p2-companion",
+          "name": "行程伴侣智能体",
+          "layer": "二期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-companion"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 25,
+            "product": 17.3,
+            "delivery": 8.3,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": 1.93,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.4000000000000001
+          },
+          "lic": {
+            "mode": "bottomUp",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B6:J6、A18:A21",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!C6:G6",
+            "欧盟二期五智能体成本表-NRE与LIC-20261027.xlsx / 成本汇总!A22:B22",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "PRO": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "Lite": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            }
+          }
+        },
+        {
+          "id": "p2-planner",
+          "name": "行程规划智能体",
+          "layer": "二期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-planner"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 19.25,
+            "product": 14.8,
+            "delivery": 8.3,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": 1.93,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.4000000000000001
+          },
+          "lic": {
+            "mode": "bottomUp",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B7:J7、A18:A21",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!C7:G7",
+            "欧盟二期五智能体成本表-NRE与LIC-20261027.xlsx / 成本汇总!A23:B23",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "PRO": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "Lite": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            }
+          }
+        },
+        {
+          "id": "voice",
+          "name": "基础语音",
+          "layer": "基础语音",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [],
+          "isVoice": true,
+          "first": {
+            "research": 0,
+            "product": 0,
+            "delivery": 0,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": 0,
+            "perMarket": 0,
+            "perLang": 0,
+            "systemSwitch": 0
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0
+          },
+          "notes": [
+            "只计55/15语种费与68/40 LIC；无额外人月，避免重复"
+          ],
+          "src": [
+            "seed_master.py:L275"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 0,
+              "perMarket": 0,
+              "perLang": 0,
+              "systemSwitch": 0
+            },
+            "PRO": {
+              "base": 0,
+              "perMarket": 0,
+              "perLang": 0,
+              "systemSwitch": 0
+            },
+            "Lite": {
+              "base": 0,
+              "perMarket": 0,
+              "perLang": 0,
+              "systemSwitch": 0
+            }
+          }
+        }
+      ]
+    },
+    "c15-ru": {
+      "name": "Carmind1.5 俄罗斯版",
+      "tiers": false,
+      "layers": [
+        "一期",
+        "二期",
+        "基础语音"
+      ],
+      "agents": [
+        {
+          "id": "p1-core",
+          "name": "中枢智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-core"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 6.67,
+            "product": 3.85,
+            "delivery": 6.2,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 3.828,
+            "perMarket": 0,
+            "perLang": 0.38,
+            "systemSwitch": 1.298
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B13:K13、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ③俄罗斯首发逐职能拆解!F14",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H13、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 3.828,
+              "perMarket": 0,
+              "perLang": 0.38,
+              "systemSwitch": 1.298
+            },
+            "PRO": {
+              "base": 3.828,
+              "perMarket": 0,
+              "perLang": 0.38,
+              "systemSwitch": 1.298
+            },
+            "Lite": {
+              "base": 3.828,
+              "perMarket": 0,
+              "perLang": 0.38,
+              "systemSwitch": 1.298
+            }
+          }
+        },
+        {
+          "id": "p1-chat",
+          "name": "基础智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-chat"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2.2,
+            "product": 1.65,
+            "delivery": 3.99,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 1.55,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.3999999999999999
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 32
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B14:K14、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ③俄罗斯首发逐职能拆解!F74",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H14、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.55,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.3999999999999999
+            },
+            "PRO": {
+              "base": 1.55,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.3999999999999999
+            },
+            "Lite": {
+              "base": 1.55,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.3999999999999999
+            }
+          }
+        },
+        {
+          "id": "p1-nav",
+          "name": "导航智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-nav"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2.51,
+            "product": 1.47,
+            "delivery": 3.11,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 1.93,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.4000000000000001
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 3
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B15:K15、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ③俄罗斯首发逐职能拆解!F62",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H15、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "PRO": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "Lite": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            }
+          }
+        },
+        {
+          "id": "p1-carbook",
+          "name": "安全用车智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-carbook"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 1.49,
+            "product": 0.84,
+            "delivery": 1.5,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 2.74,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.1500000000000004
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B16:K16、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ③俄罗斯首发逐职能拆解!F26",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H16、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 2.74,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.1500000000000004
+            },
+            "PRO": {
+              "base": 2.74,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.1500000000000004
+            },
+            "Lite": {
+              "base": 2.74,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.1500000000000004
+            }
+          }
+        },
+        {
+          "id": "p1-control",
+          "name": "车控智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-control"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 1.36,
+            "product": 0.74,
+            "delivery": 1.13,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 3.12,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.3999999999999999
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B17:K17、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ③俄罗斯首发逐职能拆解!F86",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H17、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 3.12,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.3999999999999999
+            },
+            "PRO": {
+              "base": 3.12,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.3999999999999999
+            },
+            "Lite": {
+              "base": 3.12,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.3999999999999999
+            }
+          }
+        },
+        {
+          "id": "p1-music",
+          "name": "音乐智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-music"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 1.98,
+            "product": 1.16,
+            "delivery": 2.07,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 1.93,
+            "perMarket": 0,
+            "perLang": 0.34,
+            "systemSwitch": 0.4000000000000001
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 5
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B18:K18、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ③俄罗斯首发逐职能拆解!F50",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H18、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "PRO": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            },
+            "Lite": {
+              "base": 1.93,
+              "perMarket": 0,
+              "perLang": 0.34,
+              "systemSwitch": 0.4000000000000001
+            }
+          }
+        },
+        {
+          "id": "p1-news",
+          "name": "AI新闻智能体",
+          "layer": "一期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p1-news"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2.5,
+            "product": 1.34,
+            "delivery": 2.65,
+            "direct": null,
+            "preShared": true
+          },
+          "ext": {
+            "base": 1.205,
+            "perMarket": 0,
+            "perLang": 0.325,
+            "systemSwitch": 0.1499999999999999
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "沿用已交付一期能力；车书=安全用车",
+            "沿用已交付一期能力；车书=安全用车",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B19:K19、A23:A24",
+            "奇瑞国际大模型一期-欧盟俄罗斯成本拆解-2026-09-06.xlsx / ③俄罗斯首发逐职能拆解!F38",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!H19、A23:A24"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 1.205,
+              "perMarket": 0,
+              "perLang": 0.325,
+              "systemSwitch": 0.1499999999999999
+            },
+            "PRO": {
+              "base": 1.205,
+              "perMarket": 0,
+              "perLang": 0.325,
+              "systemSwitch": 0.1499999999999999
+            },
+            "Lite": {
+              "base": 1.205,
+              "perMarket": 0,
+              "perLang": 0.325,
+              "systemSwitch": 0.1499999999999999
+            }
+          }
+        },
+        {
+          "id": "p2-nearby",
+          "name": "周边推荐智能体",
+          "layer": "二期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-nearby"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2.75,
+            "product": 11.8,
+            "delivery": 5.3,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B9:J9、A18:A21",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!C9:G9",
+            "奇瑞国际大模型二期-欧盟俄罗斯成本报价评估表-2026-08-26-12语种.xlsx / ①成本与报价总览!B10:G10",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "p2-reminder",
+          "name": "提醒智能体",
+          "layer": "二期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-reminder"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 3.25,
+            "product": 14.4,
+            "delivery": 5.3,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B10:J10、A18:A21",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!C10:G10",
+            "奇瑞国际大模型二期-欧盟俄罗斯成本报价评估表-2026-08-26-12语种.xlsx / ①成本与报价总览!B14:G14",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "p2-services",
+          "name": "生态服务智能体",
+          "layer": "二期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-services"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 3.25,
+            "product": 12.3,
+            "delivery": 5.3,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B11:J11、A18:A21",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!C11:G11",
+            "奇瑞国际大模型二期-欧盟俄罗斯成本报价评估表-2026-08-26-12语种.xlsx / ①成本与报价总览!B13:G13",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "p2-companion",
+          "name": "行程伴侣智能体",
+          "layer": "二期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-companion"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4,
+            "product": 14.3,
+            "delivery": 5.3,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B12:J12、A18:A21",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!C12:G12",
+            "奇瑞国际大模型二期-欧盟俄罗斯成本报价评估表-2026-08-26-12语种.xlsx / ①成本与报价总览!B12:G12",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "p2-planner",
+          "name": "行程规划智能体",
+          "layer": "二期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-planner"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2.75,
+            "product": 11.8,
+            "delivery": 5.3,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B13:J13、A18:A21",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!C13:G13",
+            "奇瑞国际大模型二期-欧盟俄罗斯成本报价评估表-2026-08-26-12语种.xlsx / ①成本与报价总览!B11:G11",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "p2-sports",
+          "name": "体育智能体",
+          "layer": "二期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-sports"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 2.75,
+            "product": 11.8,
+            "delivery": 5.3,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展；俄罗斯二期项在欧盟一期已有，俄罗斯交付仍未核",
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展；俄罗斯二期项在欧盟一期已有，俄罗斯交付仍未核",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B14:J14、A18:A21",
+            "奇瑞国际大模型二期-欧盟俄罗斯成本报价评估表-2026-08-26-12语种.xlsx / ①成本与报价总览!L15",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B10:B11、A24",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!C14:G14",
+            "奇瑞国际大模型二期-欧盟俄罗斯成本报价评估表-2026-08-26-12语种.xlsx / ①成本与报价总览!B15:G15",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "p2-image",
+          "name": "AI生图智能体",
+          "layer": "二期",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [
+            "p2-image"
+          ],
+          "isVoice": false,
+          "first": {
+            "research": 4.25,
+            "product": 12.9,
+            "delivery": 5.8,
+            "direct": null,
+            "preShared": false
+          },
+          "ext": {
+            "base": null,
+            "perMarket": null,
+            "perLang": null,
+            "systemSwitch": null
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": null
+          },
+          "notes": [
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展；俄罗斯二期项在欧盟一期已有，俄罗斯交付仍未核",
+            "二期范围已核，逐项量产交付未核，不能因车型已交付自动判横展；俄罗斯二期项在欧盟一期已有，俄罗斯交付仍未核",
+            "海外路试不含；历史评估不代表实测或批准报价"
+          ],
+          "src": [
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B15:J15、A18:A21",
+            "奇瑞国际大模型二期-欧盟俄罗斯成本报价评估表-2026-08-26-12语种.xlsx / ①成本与报价总览!L16",
+            "奇瑞国际大模型一期-T18FL4横展工作量拆解-2026-09-10.xlsx / ①汇总!B10:B11、A24",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!C15:G15",
+            "奇瑞国际大模型二期-欧盟俄罗斯成本报价评估表-2026-08-26-12语种.xlsx / ①成本与报价总览!B16:G16",
+            "奇瑞国际大模型二期-欧盟俄罗斯首发工作量拆解-对外版-2026-09-11.xlsx / ①汇总!B3:B7、B9:B15（能力名/范围，不证明交付）"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "PRO": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            },
+            "Lite": {
+              "base": null,
+              "perMarket": null,
+              "perLang": null,
+              "systemSwitch": null
+            }
+          }
+        },
+        {
+          "id": "voice",
+          "name": "基础语音",
+          "layer": "基础语音",
+          "coverage": {
+            "MAX": "承接",
+            "PRO": "承接",
+            "Lite": "承接"
+          },
+          "caps": [],
+          "isVoice": true,
+          "first": {
+            "research": 0,
+            "product": 0,
+            "delivery": 0,
+            "direct": 0,
+            "preShared": false
+          },
+          "ext": {
+            "base": 0,
+            "perMarket": 0,
+            "perLang": 0,
+            "systemSwitch": 0
+          },
+          "lic": {
+            "mode": "scaled",
+            "tokenPerCar": null,
+            "scaledBase": 0
+          },
+          "notes": [
+            "只计55/15语种费与68/40 LIC；无额外人月，避免重复"
+          ],
+          "src": [
+            "seed_master.py:L275"
+          ],
+          "extByTier": {
+            "MAX": {
+              "base": 0,
+              "perMarket": 0,
+              "perLang": 0,
+              "systemSwitch": 0
+            },
+            "PRO": {
+              "base": 0,
+              "perMarket": 0,
+              "perLang": 0,
+              "systemSwitch": 0
+            },
+            "Lite": {
+              "base": 0,
+              "perMarket": 0,
+              "perLang": 0,
+              "systemSwitch": 0
+            }
+          }
+        }
+      ]
+    }
+  },
+  "langFirst": {
+    "p1-core": {
+      "overall": 176,
+      "research": null,
+      "src": "待补：扩展语种整体成本中的研究院份额，禁止整体金额冒充研究院投入"
+    },
+    "p1-chat": {
+      "overall": 15,
+      "research": null,
+      "src": "待补：扩展语种整体成本中的研究院份额，禁止整体金额冒充研究院投入"
+    },
+    "p1-control": {
+      "overall": 30,
+      "research": null,
+      "src": "待补：扩展语种整体成本中的研究院份额，禁止整体金额冒充研究院投入"
+    },
+    "p1-carbook": {
+      "overall": 80,
+      "research": null,
+      "src": "待补：扩展语种整体成本中的研究院份额，禁止整体金额冒充研究院投入"
+    },
+    "p1-music": {
+      "overall": 32,
+      "research": null,
+      "src": "待补：扩展语种整体成本中的研究院份额，禁止整体金额冒充研究院投入"
+    },
+    "p1-nav": {
+      "overall": 32,
+      "research": null,
+      "src": "待补：扩展语种整体成本中的研究院份额，禁止整体金额冒充研究院投入"
+    },
+    "p1-image": {
+      "overall": 21,
+      "research": null,
+      "src": "待补：扩展语种整体成本中的研究院份额，禁止整体金额冒充研究院投入"
+    },
+    "p1-news": {
+      "overall": 24,
+      "research": null,
+      "src": "待补：扩展语种整体成本中的研究院份额，禁止整体金额冒充研究院投入"
+    },
+    "p1-sports": {
+      "overall": 24,
+      "research": null,
+      "src": "待补：扩展语种整体成本中的研究院份额，禁止整体金额冒充研究院投入"
+    }
+  },
+  "researchPools": []
+}

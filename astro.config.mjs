@@ -49,6 +49,10 @@ export default defineConfig({
                 if (chunkInfo.moduleIds?.some((id) => WORLD_CHUNK_RE.test(id))) {
                   return '_astro/world.[hash].js';
                 }
+                // cost-estimator 模块的懒加载 chunk 带 slug 前缀，audit-budget G-G 按 slug 实测预算
+                if (chunkInfo.moduleIds?.some((id) => /src\/(?:lab\/modules|data)\/cost-estimator\//.test(id))) {
+                  return `_astro/cost-estimator-${chunkInfo.name.replace(/[^\w.\-/]/g, '_')}.[hash].js`;
+                }
                 // 非 world chunk 按 Astro 默认命名（cleanChunkName 等价实现）
                 return `_astro/${chunkInfo.name.replace(/[^\w.\-/]/g, '_')}.[hash].js`;
               },

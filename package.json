@@ -9,6 +9,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "test:cost": "node --test tests/cost-estimator/",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",

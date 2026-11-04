@@ -174,12 +174,15 @@ export function initLabFacade(host: FacadeHost): LabFacadeHandle | null {
 
   // ---- 自动挂载四项检查（§12.4）；显式点击不经过本函数 ----
   const armAutoMount = () => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // data-viz 模块是轻量工具（无重资产、动效自带三档降级）：减弱动效 / 省流量不拦截自动挂载，
+    // 由模块自身在 reduced-motion 下关闭动效（cost-estimator 设计文档 §6）。
+    const lightweightTool = module.kind === 'data-viz';
+    if (!lightweightTool && matchMedia('(prefers-reduced-motion: reduce)').matches) {
       host.dataset.blocked = 'reduced-motion';
       return;
     }
     const connection = (navigator as { connection?: { saveData?: boolean } }).connection;
-    if (connection?.saveData === true) {
+    if (!lightweightTool && connection?.saveData === true) {
       host.dataset.blocked = 'save-data';
       return;
     }
