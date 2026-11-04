@@ -9,6 +9,7 @@
 import BaseLayout from './BaseLayout.astro';
 import type { LabModule } from '../lab/contracts';
 import { breadcrumbJsonLd } from '../data/jsonld';
+import type { HeaderLink } from '../components/header-link';
 
 interface Props {
   module: LabModule;
@@ -18,9 +19,22 @@ interface Props {
   bodyClass?: string;
   /** 「跳过演示」锚点（默认页脚说明区 #lab-notes；页面可指向自己的说明章节） */
   skipHref?: string;
+  /** 工具模式：开门见山，不渲染页眉 / 30 秒结论 / 页脚回链 / 站点页脚，只留顶栏与舞台 */
+  bare?: boolean;
+  /** 替换顶栏右侧导航（工具页的快捷入口） */
+  headerLinks?: HeaderLink[];
+  headerNavCaption?: string;
 }
 
-const { module, theme = 'dark', bodyClass, skipHref = '#lab-notes' } = Astro.props;
+const {
+  module,
+  theme = 'dark',
+  bodyClass,
+  skipHref = '#lab-notes',
+  bare = false,
+  headerLinks,
+  headerNavCaption,
+} = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const title = `${module.title}｜LAB ${module.code}｜王磊`;
 const statusLabel = { live: 'LIVE', wip: 'WIP', archived: 'ARCHIVED' }[module.status];
@@ -33,11 +47,23 @@ const jsonLd = breadcrumbJsonLd([
 ]);
 ---
 
-<BaseLayout title={title} description={module.description} jsonLd={jsonLd} trackScroll>
+<BaseLayout
+  title={title}
+  description={module.description}
+  jsonLd={jsonLd}
+  trackScroll
+  headerLinks={headerLinks}
+  headerNavLabel={headerLinks ? `${module.title} 快捷入口` : undefined}
+  headerNavCaption={headerNavCaption}
+  headerToggle={!bare}
+  footer={!bare}
+>
   <Fragment slot="head"><slot name="head" /></Fragment>
 
   <div class:list={['lab-scope', `lab-theme-${theme}`, bodyClass]}>
-    <div class="lab-page">
+    <div class:list={['lab-page', bare && 'lab-page-bare']}>
+      {bare && <h1 class="visually-hidden">{module.title}</h1>}
+      {!bare && (
       <header class="lab-masthead">
         <nav class="lab-crumb lab-mono" aria-label="面包屑">
           <a href={`${base}/`}>首页</a>
@@ -57,10 +83,11 @@ const jsonLd = breadcrumbJsonLd([
         </ul>
         <slot name="masthead-extra" />
       </header>
+      )}
 
       <!-- LAB-05：30 秒结论区（零交互可读）+ 跳过出口 -->
       {
-        Astro.slots.has('conclusion') && (
+        !bare && Astro.slots.has('conclusion') && (
           <section class="lab-tldr" aria-labelledby="lab-tldr-heading">
             <div class="lab-tldr-bar">
               <h2 class="lab-tldr-heading" id="lab-tldr-heading">
@@ -91,10 +118,12 @@ const jsonLd = breadcrumbJsonLd([
         <slot />
       </div>
 
-      <footer class="lab-foot" id="lab-notes">
-        <slot name="footer" />
-        <p class="lab-back"><a href={`${base}/`}>← 返回首页</a> · <a href={`${base}/lab/`}>Lab 索引</a></p>
-      </footer>
+      {!bare && (
+        <footer class="lab-foot" id="lab-notes">
+          <slot name="footer" />
+          <p class="lab-back"><a href={`${base}/`}>← 返回首页</a> · <a href={`${base}/lab/`}>Lab 索引</a></p>
+        </footer>
+      )}
     </div>
   </div>
 </BaseLayout>
@@ -348,6 +377,13 @@ const jsonLd = breadcrumbJsonLd([
 
   .lab-main {
     margin-top: 1.4rem;
+  }
+  .lab-page-bare {
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+  }
+  .lab-page-bare .lab-main {
+    margin-top: 0;
   }
 
   /* ---------- 页脚 ---------- */

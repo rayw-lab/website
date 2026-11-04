@@ -1,30 +1,34 @@
 ---
-// LAB RC-01 · 多语种座舱大模型成本粗估 —— 薄壳页。
-// 组装：LabLayout（manifest 页眉，paper 主题）+ LabStage（统一 facade）。
-// 计算、状态、界面全部在 src/lab/modules/cost-estimator/，本页零业务逻辑。
+// LAB RC-01 · 多语种座舱大模型成本粗估 —— 薄壳页（工具模式：开门见山，只留顶栏与舞台）。
+// 顶栏右侧 = 成本项目快捷入口 + 使用说明（shortcuts.ts / guide.md）；计算、状态、界面全部在
+// src/lab/modules/cost-estimator/，本页零业务逻辑。
 // 设计文档：raw/03-Output/规划/2026-11-04-报价计算器/04-设计文档.md
 import LabLayout from '../../layouts/LabLayout.astro';
 import LabStage from '../../components/lab/LabStage.astro';
 import { getLabModule } from '../../lab/manifest';
+import { VT_GUARD } from '../../lab/modules/cost-estimator/vt-guard';
+import { shortcutLinks } from '../../lab/modules/cost-estimator/shortcuts';
+import type { Params } from '../../lab/modules/cost-estimator/core/types';
 import params from '../../data/cost-estimator/params.json';
 
 const module = getLabModule('cost-estimator');
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const tool = `${base}/lab/cost-estimator/`;
+const headerLinks = [
+  ...shortcutLinks(params as unknown as Params, tool),
+  { href: `${tool}guide/`, label: '使用说明', kind: 'button' as const },
+];
 ---
 
-<LabLayout module={module} theme="paper" bodyClass="ce-page" skipHref="#ce-notes">
-  <Fragment slot="lede">
-    选奇瑞货架、档位、车型、区域和语种，勾选货架上的智能体，马上看到 <b>NRE</b> 与 <b>LIC</b>
-    的成本粗估；每个数都能点开看算式，最后下载一份带公式的 Excel 自己改成报价。
-  </Fragment>
-
-  <Fragment slot="conclusion">
-    <p>
-      口径统一在一份总表里：首发含研究院费用（× 1/5）与产研（× 0.25），横展只算五职能；
-      语种按已交付语种的等效权重折算，没做过的语种走语种首发；LIC 一律按三年。
-    </p>
-    <p><b>这是成本粗估，不是报价。</b>参数版本 {params.version}。</p>
-  </Fragment>
-
+<LabLayout
+  module={module}
+  theme="paper"
+  bodyClass="ce-page"
+  bare
+  headerLinks={headerLinks}
+  headerNavCaption="快捷入口"
+>
+  <script is:inline slot="head" set:html={VT_GUARD} />
   <LabStage
     module={module}
     class="ce-host"
@@ -39,15 +43,6 @@ const module = getLabModule('cost-estimator');
       <div class="ce-mount" data-ce-root></div>
     </Fragment>
   </LabStage>
-
-  <section class="ce-notes" id="ce-notes">
-    <h2>说明</h2>
-    <ul>
-      <li>页面和下载的 Excel 都是<b>成本粗估，不是报价</b>；报价请在 Excel 里自行调整。</li>
-      <li>标「待补」的是还没有单价或底数的项，不计入合计，合计旁会注明不含哪些项。</li>
-      <li>已交付依据：T13C 欧盟、T22FL 俄罗斯（Carmind1.5 一期）。</li>
-    </ul>
-  </section>
 </LabLayout>
 
 <style is:global>
@@ -59,18 +54,13 @@ const module = getLabModule('cost-estimator');
     width: min(1480px, 100vw - 32px);
     margin-left: calc((100% - min(1480px, 100vw - 32px)) / 2);
   }
+  /* 顶栏与舞台同宽对齐（品牌左对舞台左边、快捷入口右对舞台右边） */
+  body:has(.ce-page) .site-header .container {
+    max-width: min(1480px, 100vw - 32px);
+    padding-inline: 0;
+  }
   .ce-page .ce-host[data-state='ready'] .lab-facade {
     display: none;
-  }
-  .ce-notes {
-    margin: 48px 0 24px;
-    font-size: 14px;
-    line-height: 1.8;
-    color: var(--lab-muted);
-  }
-  .ce-notes h2 {
-    font-size: 15px;
-    color: var(--lab-text);
   }
   /* 暗色跟随系统 / 站点切换（paper 主题默认只有亮色，本页单独补暗色） */
   @media (prefers-color-scheme: dark) {

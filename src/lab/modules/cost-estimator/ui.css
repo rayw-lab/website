@@ -161,7 +161,7 @@
 @keyframes ce-run { from { stroke-dashoffset: 414; } to { stroke-dashoffset: 0; } }
 
 /* 结果栏 */
-.ce-res { border-left: 1px solid var(--line); padding: 16px 18px 90px; position: sticky; top: 12px; align-self: start; max-height: calc(100vh - 24px); overflow: auto; }
+.ce-res { border-left: 1px solid var(--line); padding: 16px 18px 90px; position: sticky; top: calc(var(--ce-hdr-h, 0px) + 12px); align-self: start; max-height: calc(100vh - var(--ce-hdr-h, 0px) - 24px); overflow: auto; }
 .ce-tray { display: none; }
 .ce-halo { position: relative; padding: 14px 14px 12px; border-radius: 8px; background: var(--card); border: 1px solid var(--line); overflow: hidden; }
 .ce-halo::before { content: ''; position: absolute; width: 260px; height: 260px; left: -40px; top: -140px; background: radial-gradient(circle, var(--first-soft), transparent 65%); opacity: 0; transition: opacity 0.6s; pointer-events: none; }

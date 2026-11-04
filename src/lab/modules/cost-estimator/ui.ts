@@ -115,6 +115,9 @@ export function createCostEstimator(opts: LabMountOptions, p: Params): LabInstan
   let toastT = 0;
   // 计算器所在层叠上下文低于站点顶栏（sticky, z-index 50）：浮层一律从顶栏底边往下排，避免被盖住
   const syncHeader = () => { const hb = document.querySelector('.site-header')?.getBoundingClientRect().bottom ?? 0; root.style.setProperty('--ce-hdr', `${Math.max(0, Math.round(hb))}px`); };
+  // 结果栏吸顶要让开站点顶栏（sticky，高度固定）：挂载与 resize 时记下顶栏高度
+  const syncHeaderH = () => { root.style.setProperty('--ce-hdr-h', `${Math.round((document.querySelector('.site-header') as HTMLElement | null)?.offsetHeight ?? 0)}px`); };
+  syncHeaderH();
   const toast = (m: string) => { syncHeader(); toastEl.textContent = m; toastEl.classList.add('on'); clearTimeout(toastT); toastT = window.setTimeout(() => toastEl.classList.remove('on'), 2400); };
   const pkg = () => p.packages[store.get().pkg];
   const tierOf = (s: Selection): Tier => (p.packages[s.pkg].tiers ? s.tier : 'MAX');
@@ -620,7 +623,7 @@ export function createCostEstimator(opts: LabMountOptions, p: Params): LabInstan
   });
   const onRM = () => { if (RM.matches) { motion = 2; render(); } };
   RM.addEventListener('change', onRM); cleanups.push(() => RM.removeEventListener('change', onRM));
-  const onResize = () => waterfall(ready(store.get()));
+  const onResize = () => { syncHeaderH(); waterfall(ready(store.get())); };
   addEventListener('resize', onResize); cleanups.push(() => removeEventListener('resize', onResize));
 
   const unsub = store.subscribe((_s, label) => render(label || undefined));

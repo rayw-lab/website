@@ -463,3 +463,25 @@ test('CE-E2E-14 操作全流程无控制台 error / pageerror', async ({ page })
   await expect(ce(page, 'total')).toHaveAttribute('data-value', /^\d+\.\d{2}$/);
   // 自动 consoleGuard 在此用例及其余 13 例退出时统一检查全部事件。
 });
+
+test('CE-E2E-15 工具模式顶栏：快捷入口带入场景、使用说明网页与 Markdown 原文', async ({ page }) => {
+  await page.goto(PATH);
+  await expect(ce(page, 'root')).toBeAttached();
+  // 开门见山：无 Lab 页眉 / 30 秒结论 / 页脚回链 / 站点页脚 / 主题切换
+  await expect(page.locator('.lab-masthead, .lab-tldr, .lab-foot, .site-footer')).toHaveCount(0);
+  const nav = page.locator('.site-header .site-nav a');
+  await expect(nav).toHaveText(['EHV 欧盟澳新', 'EHV 东盟', '欧盟二期', '俄罗斯二期', '使用说明']);
+
+  await nav.filter({ hasText: '欧盟二期' }).click();
+  await expect(page).toHaveURL(/p=c15-eu/);
+  await expect(page.locator('[data-ce="car"]')).toHaveValue('T13C');
+  await expect(ce(page, 'total')).toHaveAttribute('data-value', /^\d+\.\d{2}$/);
+  await expect(page.locator('.ce-card[aria-checked="true"]')).toHaveCount(5);
+
+  await page.locator('.site-header .site-nav a', { hasText: '使用说明' }).click();
+  await expect(page).toHaveURL(/\/lab\/cost-estimator\/guide\/$/);
+  await expect(page.locator('.ceg-doc h1')).toContainText('使用说明');
+  const md = await page.request.get(PATH + 'guide.md');
+  expect(md.status()).toBe(200);
+  expect(await md.text()).toContain('# 多语种座舱大模型 · 成本粗估 使用说明');
+});
