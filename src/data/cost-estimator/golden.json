@@ -619,18 +619,19 @@
           "kind": "fused",
           "manual": false,
           "counted": true,
-          "pm": 20.6,
-          "research": 1.764,
-          "product": 10.6875,
-          "delivery": 13.05,
-          "direct": 0,
-          "sum": 25.5015,
+          "pm": 14.42,
+          "research": 1.2348,
+          "product": 7.481249999999999,
+          "delivery": 9.135,
+          "direct": 0.0,
+          "sum": 17.85105,
           "formula": [
             "融合智能体：组成能力尚未全部交付，取整行首发",
             "研究院 2 人月 × 4.41 万 × 0.2 = 1.764 万",
             "产研 14.25 人月 × 3 万 × 0.25 = 10.6875 万",
             "五职能 4.35 人月 × 3 万 × 1 = 13.05 万",
-            "直接费用全额计入，不分摊"
+            "直接费用全额计入，不分摊",
+            "一期·导航智能体已由AI向导（LBS+POI介绍）计入，只算一次：本行 × 0.7"
           ],
           "notes": [],
           "pending": []
@@ -738,13 +739,13 @@
         }
       ],
       "nre": {
-        "research": 102.6648,
-        "product": 97.36875,
-        "delivery": 204.225,
+        "research": 102.1356,
+        "product": 94.1625,
+        "delivery": 200.31,
         "direct": 152.29999999999998,
         "langFirst": 6.4,
         "voiceLang": 110,
-        "known": 672.95855,
+        "known": 665.3081,
         "total": null,
         "pending": {
           "research": [
@@ -1429,18 +1430,19 @@
           "kind": "fused",
           "manual": false,
           "counted": true,
-          "pm": 20.6,
-          "research": 1.764,
-          "product": 10.6875,
-          "delivery": 13.05,
-          "direct": 0,
-          "sum": 25.5015,
+          "pm": 14.42,
+          "research": 1.2348,
+          "product": 7.481249999999999,
+          "delivery": 9.135,
+          "direct": 0.0,
+          "sum": 17.85105,
           "formula": [
             "融合智能体：组成能力尚未全部交付，取整行首发",
             "研究院 2 人月 × 4.41 万 × 0.2 = 1.764 万",
             "产研 14.25 人月 × 3 万 × 0.25 = 10.6875 万",
             "五职能 4.35 人月 × 3 万 × 1 = 13.05 万",
-            "直接费用全额计入，不分摊"
+            "直接费用全额计入，不分摊",
+            "一期·导航智能体已由AI向导（LBS+POI介绍）计入，只算一次：本行 × 0.7"
           ],
           "notes": [],
           "pending": []
@@ -1548,13 +1550,13 @@
         }
       ],
       "nre": {
-        "research": 83.2608,
-        "product": 88.14375,
-        "delivery": 189.825,
+        "research": 82.7316,
+        "product": 84.9375,
+        "delivery": 185.91,
         "direct": 152.29999999999998,
         "langFirst": 6.4,
         "voiceLang": 110,
-        "known": 629.92955,
+        "known": 622.2791,
         "total": null,
         "pending": {
           "research": [
@@ -2213,18 +2215,19 @@
           "kind": "fused",
           "manual": false,
           "counted": true,
-          "pm": 20.6,
-          "research": 1.764,
-          "product": 10.6875,
-          "delivery": 13.05,
-          "direct": 0,
-          "sum": 25.5015,
+          "pm": 14.42,
+          "research": 1.2348,
+          "product": 7.481249999999999,
+          "delivery": 9.135,
+          "direct": 0.0,
+          "sum": 17.85105,
           "formula": [
             "融合智能体：组成能力尚未全部交付，取整行首发",
             "研究院 2 人月 × 4.41 万 × 0.2 = 1.764 万",
             "产研 14.25 人月 × 3 万 × 0.25 = 10.6875 万",
             "五职能 4.35 人月 × 3 万 × 1 = 13.05 万",
-            "直接费用全额计入，不分摊"
+            "直接费用全额计入，不分摊",
+            "一期·导航智能体已由AI向导（LBS+POI介绍）计入，只算一次：本行 × 0.7"
           ],
           "notes": [],
           "pending": []
@@ -2332,13 +2335,13 @@
         }
       ],
       "nre": {
-        "research": 15.5232,
-        "product": 45.31875,
-        "delivery": 124.125,
+        "research": 14.994,
+        "product": 42.1125,
+        "delivery": 120.21,
         "direct": 7.5,
         "langFirst": 6.4,
         "voiceLang": 110,
-        "known": 308.86695,
+        "known": 301.2165,
         "total": null,
         "pending": {
           "research": [
@@ -2973,18 +2976,19 @@
           "kind": "fused",
           "manual": false,
           "counted": true,
-          "pm": 20.6,
-          "research": 1.764,
-          "product": 10.6875,
-          "delivery": 13.05,
-          "direct": 0,
-          "sum": 25.5015,
+          "pm": 14.42,
+          "research": 1.2348,
+          "product": 7.481249999999999,
+          "delivery": 9.135,
+          "direct": 0.0,
+          "sum": 17.85105,
           "formula": [
             "融合智能体：组成能力尚未全部交付，取整行首发",
             "研究院 2 人月 × 4.41 万 × 0.2 = 1.764 万",
             "产研 14.25 人月 × 3 万 × 0.25 = 10.6875 万",
             "五职能 4.35 人月 × 3 万 × 1 = 13.05 万",
-            "直接费用全额计入，不分摊"
+            "直接费用全额计入，不分摊",
+            "一期·导航智能体已由AI向导（LBS+POI介绍）计入，只算一次：本行 × 0.7"
           ],
           "notes": [],
           "pending": []
@@ -3065,13 +3069,13 @@
         }
       ],
       "nre": {
-        "research": 33.4278,
-        "product": 50.64375,
-        "delivery": 134.025,
+        "research": 32.8986,
+        "product": 47.4375,
+        "delivery": 130.10999999999999,
         "direct": 60.3,
         "langFirst": 347.2,
         "voiceLang": 170,
-        "known": 795.59655,
+        "known": 787.9461,
         "total": null,
         "pending": {
           "delivery": [
@@ -3715,18 +3719,19 @@
           "kind": "fused",
           "manual": false,
           "counted": true,
-          "pm": 20.6,
-          "research": 1.764,
-          "product": 10.6875,
-          "delivery": 13.05,
-          "direct": 0,
-          "sum": 25.5015,
+          "pm": 14.42,
+          "research": 1.2348,
+          "product": 7.481249999999999,
+          "delivery": 9.135,
+          "direct": 0.0,
+          "sum": 17.85105,
           "formula": [
             "融合智能体：组成能力尚未全部交付，取整行首发",
             "研究院 2 人月 × 4.41 万 × 0.2 = 1.764 万",
             "产研 14.25 人月 × 3 万 × 0.25 = 10.6875 万",
             "五职能 4.35 人月 × 3 万 × 1 = 13.05 万",
-            "直接费用全额计入，不分摊"
+            "直接费用全额计入，不分摊",
+            "一期·导航智能体已由AI向导（LBS+POI介绍）计入，只算一次：本行 × 0.7"
           ],
           "notes": [],
           "pending": []
@@ -3807,13 +3812,13 @@
         }
       ],
       "nre": {
-        "research": 33.4278,
-        "product": 50.64375,
-        "delivery": 134.025,
+        "research": 32.8986,
+        "product": 47.4375,
+        "delivery": 130.10999999999999,
         "direct": 60.3,
         "langFirst": 347.2,
         "voiceLang": 170,
-        "known": 795.59655,
+        "known": 787.9461,
         "total": null,
         "pending": {
           "delivery": [
@@ -4442,18 +4447,19 @@
           "kind": "fused",
           "manual": false,
           "counted": true,
-          "pm": 20.6,
-          "research": 1.764,
-          "product": 10.6875,
-          "delivery": 13.05,
-          "direct": 0,
-          "sum": 25.5015,
+          "pm": 14.42,
+          "research": 1.2348,
+          "product": 7.481249999999999,
+          "delivery": 9.135,
+          "direct": 0.0,
+          "sum": 17.85105,
           "formula": [
             "融合智能体：组成能力尚未全部交付，取整行首发",
             "研究院 2 人月 × 4.41 万 × 0.2 = 1.764 万",
             "产研 14.25 人月 × 3 万 × 0.25 = 10.6875 万",
             "五职能 4.35 人月 × 3 万 × 1 = 13.05 万",
-            "直接费用全额计入，不分摊"
+            "直接费用全额计入，不分摊",
+            "一期·导航智能体已由AI向导（LBS+POI介绍）计入，只算一次：本行 × 0.7"
           ],
           "notes": [],
           "pending": []
@@ -4534,13 +4540,13 @@
         }
       ],
       "nre": {
-        "research": 12.8772,
-        "product": 34.44375,
-        "delivery": 106.725,
+        "research": 12.347999999999999,
+        "product": 31.2375,
+        "delivery": 102.81,
         "direct": 7.5,
         "langFirst": 347.2,
         "voiceLang": 170,
-        "known": 678.74595,
+        "known": 671.0955,
         "total": null,
         "pending": {
           "delivery": [
@@ -6049,18 +6055,19 @@
           "kind": "fused",
           "manual": false,
           "counted": true,
-          "pm": 20.6,
-          "research": 1.764,
-          "product": 10.6875,
-          "delivery": 13.05,
-          "direct": 0,
-          "sum": 25.5015,
+          "pm": 14.42,
+          "research": 1.2348,
+          "product": 7.481249999999999,
+          "delivery": 9.135,
+          "direct": 0.0,
+          "sum": 17.85105,
           "formula": [
             "融合智能体：组成能力尚未全部交付，取整行首发",
             "研究院 2 人月 × 4.41 万 × 0.2 = 1.764 万",
             "产研 14.25 人月 × 3 万 × 0.25 = 10.6875 万",
             "五职能 4.35 人月 × 3 万 × 1 = 13.05 万",
-            "直接费用全额计入，不分摊"
+            "直接费用全额计入，不分摊",
+            "一期·导航智能体已由AI向导（LBS+POI介绍）计入，只算一次：本行 × 0.7"
           ],
           "notes": [],
           "pending": []
@@ -6168,13 +6175,13 @@
         }
       ],
       "nre": {
-        "research": 102.6648,
-        "product": 97.36875,
-        "delivery": 286.725,
+        "research": 102.1356,
+        "product": 94.1625,
+        "delivery": 282.81,
         "direct": 152.29999999999998,
         "langFirst": 0,
         "voiceLang": 15,
-        "known": 654.05855,
+        "known": 646.4081,
         "total": null,
         "pending": {
           "research": [
@@ -6787,18 +6794,19 @@
           "kind": "fused",
           "manual": false,
           "counted": true,
-          "pm": 20.6,
-          "research": 1.764,
-          "product": 10.6875,
-          "delivery": 13.05,
-          "direct": 0,
-          "sum": 25.5015,
+          "pm": 14.42,
+          "research": 1.2348,
+          "product": 7.481249999999999,
+          "delivery": 9.135,
+          "direct": 0.0,
+          "sum": 17.85105,
           "formula": [
             "融合智能体：组成能力尚未全部交付，取整行首发",
             "研究院 2 人月 × 4.41 万 × 0.2 = 1.764 万",
             "产研 14.25 人月 × 3 万 × 0.25 = 10.6875 万",
             "五职能 4.35 人月 × 3 万 × 1 = 13.05 万",
-            "直接费用全额计入，不分摊"
+            "直接费用全额计入，不分摊",
+            "一期·导航智能体已由AI向导（LBS+POI介绍）计入，只算一次：本行 × 0.7"
           ],
           "notes": [],
           "pending": []
@@ -6906,13 +6914,13 @@
         }
       ],
       "nre": {
-        "research": 102.6648,
-        "product": 97.36875,
-        "delivery": 286.725,
+        "research": 102.1356,
+        "product": 94.1625,
+        "delivery": 282.81,
         "direct": 152.29999999999998,
         "langFirst": 130.2,
         "voiceLang": 85,
-        "known": 854.25855,
+        "known": 846.6081,
         "total": null,
         "pending": {
           "research": [
@@ -7631,18 +7639,19 @@
           "kind": "fused",
           "manual": false,
           "counted": true,
-          "pm": 20.6,
-          "research": 1.764,
-          "product": 10.6875,
-          "delivery": 13.05,
-          "direct": 0,
-          "sum": 25.5015,
+          "pm": 14.42,
+          "research": 1.2348,
+          "product": 7.481249999999999,
+          "delivery": 9.135,
+          "direct": 0.0,
+          "sum": 17.85105,
           "formula": [
             "融合智能体：组成能力尚未全部交付，取整行首发",
             "研究院 2 人月 × 4.41 万 × 0.2 = 1.764 万",
             "产研 14.25 人月 × 3 万 × 0.25 = 10.6875 万",
             "五职能 4.35 人月 × 3 万 × 1 = 13.05 万",
-            "直接费用全额计入，不分摊"
+            "直接费用全额计入，不分摊",
+            "一期·导航智能体已由AI向导（LBS+POI介绍）计入，只算一次：本行 × 0.7"
           ],
           "notes": [],
           "pending": []
@@ -7762,13 +7771,13 @@
         }
       ],
       "nre": {
-        "research": 102.6648,
-        "product": 97.36875,
-        "delivery": 297.08863636363634,
+        "research": 102.1356,
+        "product": 94.1625,
+        "delivery": 293.1736363636364,
         "direct": 152.29999999999998,
         "langFirst": 86.8,
         "voiceLang": 300,
-        "known": 1036.2221863636364,
+        "known": 1028.5717363636363,
         "total": null,
         "pending": {
           "delivery": [
@@ -8506,18 +8515,19 @@
           "kind": "fused",
           "manual": false,
           "counted": true,
-          "pm": 20.6,
-          "research": 1.764,
-          "product": 10.6875,
-          "delivery": 13.05,
-          "direct": 0,
-          "sum": 25.5015,
+          "pm": 14.42,
+          "research": 1.2348,
+          "product": 7.481249999999999,
+          "delivery": 9.135,
+          "direct": 0.0,
+          "sum": 17.85105,
           "formula": [
             "融合智能体：组成能力尚未全部交付，取整行首发",
             "研究院 2 人月 × 4.41 万 × 0.2 = 1.764 万",
             "产研 14.25 人月 × 3 万 × 0.25 = 10.6875 万",
             "五职能 4.35 人月 × 3 万 × 1 = 13.05 万",
-            "直接费用全额计入，不分摊"
+            "直接费用全额计入，不分摊",
+            "一期·导航智能体已由AI向导（LBS+POI介绍）计入，只算一次：本行 × 0.7"
           ],
           "notes": [],
           "pending": []
@@ -8637,13 +8647,13 @@
         }
       ],
       "nre": {
-        "research": 102.6648,
-        "product": 97.36875,
-        "delivery": 297.08863636363634,
+        "research": 102.1356,
+        "product": 94.1625,
+        "delivery": 293.1736363636364,
         "direct": 152.29999999999998,
         "langFirst": 86.8,
         "voiceLang": 315,
-        "known": 1051.2221863636364,
+        "known": 1043.5717363636363,
         "total": null,
         "pending": {
           "delivery": [
@@ -9227,18 +9237,19 @@
           "kind": "fused",
           "manual": false,
           "counted": true,
-          "pm": 20.6,
-          "research": 1.764,
-          "product": 10.6875,
-          "delivery": 13.05,
-          "direct": 0,
-          "sum": 25.5015,
+          "pm": 14.42,
+          "research": 1.2348,
+          "product": 7.481249999999999,
+          "delivery": 9.135,
+          "direct": 0.0,
+          "sum": 17.85105,
           "formula": [
             "融合智能体：组成能力尚未全部交付，取整行首发",
             "研究院 2 人月 × 4.41 万 × 0.2 = 1.764 万",
             "产研 14.25 人月 × 3 万 × 0.25 = 10.6875 万",
             "五职能 4.35 人月 × 3 万 × 1 = 13.05 万",
-            "直接费用全额计入，不分摊"
+            "直接费用全额计入，不分摊",
+            "一期·导航智能体已由AI向导（LBS+POI介绍）计入，只算一次：本行 × 0.7"
           ],
           "notes": [],
           "pending": []
@@ -9320,13 +9331,13 @@
         }
       ],
       "nre": {
-        "research": 5.733,
-        "product": 19.875,
-        "delivery": 26.1,
-        "direct": 3,
+        "research": 5.203799999999999,
+        "product": 16.66875,
+        "delivery": 22.185000000000002,
+        "direct": 3.0,
         "langFirst": 6.4,
         "voiceLang": 0,
-        "known": 61.108,
+        "known": 53.45755,
         "total": null,
         "pending": {
           "langFirst": [
