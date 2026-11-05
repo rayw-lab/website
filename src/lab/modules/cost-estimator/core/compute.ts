@@ -126,6 +126,15 @@ export function compute(p: Params, sel: Selection): Result {
       row.formula.push(`研究院工作包${pool.id}共用、已平分，${members.length}行分摊一次投入`);
     }
   }
+  // A capability in onceCaps is charged once: the later first-launch row sharing it keeps the given ratio.
+  for (const [cap, keep] of Object.entries(p.onceCaps ?? {})) {
+    const members = chosen.filter(([a, r, mode]) => mode === 'first' && r.kind !== 'delivered' && a.caps.includes(cap));
+    for (const [a, row] of members.slice(1)) {
+      row.pm *= keep;
+      for (const key of ['research', 'product', 'delivery', 'direct'] as const) { row[key] = row[key]! * keep; known[a.id][key] *= keep; }
+      row.formula.push(`${p.capNames?.[cap] ?? cap}已由${members[0][0].name}计入，只算一次：本行 × ${g(keep)}`);
+    }
+  }
   const contributing = chosen.map(([, r]) => r).filter((r) => r.kind !== 'delivered');
   const nre: Result['nre'] = { research: 0, product: 0, delivery: 0, direct: 0, langFirst: 0, voiceLang: 0, known: 0, total: 0, pending: {} };
   for (const key of KEYS) nre[key] = sum(contributing.map((r) => known[r.id][key]));

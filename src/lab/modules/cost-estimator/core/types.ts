@@ -29,6 +29,7 @@ export interface Params {
   packages: Record<PackageId, { name: string; tiers: boolean; layers: string[]; agents: Agent[] }>;
   langFirst?: Record<string, { overall: number | null; research: number | null; src: string }>;
   researchPools?: { id: string; caps: string[]; research: number | null; src?: string }[];
+  onceCaps?: Record<string, number>;
 }
 export interface Selection {
   pkg: PackageId; tier: Tier; car: string; regions: RegionId[]; offLangs: string[];

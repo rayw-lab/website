@@ -108,6 +108,12 @@ export function buildWorkbook(p: Params, sel: Selection, r: Result): Uint8Array<
     const divisor = input(nre, '共用工作包分摊行数', members.length);
     return [[pool, { ref, divisor }] as const];
   }));
+  // Shared capabilities charged once: later first-launch rows get an editable keep ratio (mirrors core).
+  const onceFor = new Map<string, { cap: string; keep: number; by: string }[]>();
+  for (const [cap, keep] of Object.entries(p.onceCaps ?? {})) {
+    const members = relevant.filter((a) => mode(a) === 'first' && a.caps.includes(cap));
+    for (const a of members.slice(1)) (onceFor.get(a.id) ?? onceFor.set(a.id, []).get(a.id)!).push({ cap, keep, by: members[0].name });
+  }
   const amount = (row: number, key: 'research' | 'product' | 'delivery' | 'direct', partial: boolean, f: string | null) => {
     const ref = `${{ research: 'D', product: 'E', delivery: 'F', direct: 'G' }[key]}${row}`;
     if (f) formula(nre, ref, f, partial ? 1 : 2); else put(nre, ref, 0, 2);
@@ -139,6 +145,10 @@ export function buildWorkbook(p: Params, sel: Selection, r: Result): Uint8Array<
         if (!a.caps.some((c) => pool.caps.includes(c))) continue;
         const { ref, divisor } = poolInputs.get(pool)!;
         researchFormula = `${ref}*$B$3*$B$4/${divisor}`;
+      }
+      for (const o of onceFor.get(a.id) ?? []) {
+        const k = input(nre, `${a.name} · 共用能力保留比例`, o.keep, `${p.capNames[o.cap] ?? o.cap}已由${o.by}计入，只算一次`);
+        [pmFormula, researchFormula, productFormula, deliveryFormula, directFormula] = [pmFormula, researchFormula, productFormula, deliveryFormula, directFormula].map((f) => f && `(${f})*${k}`);
       }
     } else {
       const ext = a.extByTier && Object.hasOwn(a.extByTier, s.tier) ? a.extByTier[s.tier] : a.ext;
