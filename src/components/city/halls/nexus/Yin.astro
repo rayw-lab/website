@@ -1,0 +1,216 @@
+---
+/**
+ * S0 洇 —— 展厅开场：一滴墨在宣纸上洇开，标题随之显影。
+ *
+ * 设计取向（与「作品集炫技感」划清界限）：
+ * - 落墨**不在正中**：中国画的重心从不居中，正中构图是最快显出业余的一步。
+ * - 文字**只淡入、不位移**：「渐显 + 上移 20px」是 2020 年代模板腔，一眼可辨。
+ * - 文字**避开墨**：墨是主体，字是题款；题款压在画心上是外行做法。
+ * - 单色，衬线中文：水墨配无衬线会散，配宋体才立得住。
+ */
+interface Props {
+  /** 主标题两行 */
+  lines?: [string, string];
+  /** 副题（小字） */
+  sub?: string;
+}
+import ledger from '../../../../data/nexus-ledger.json';
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+// 起手印的印文也由 ledger 派生：会话数 / 天数，不手写
+const tot = ledger.totals as Record<string, number>;
+// 天数写成中文数字，且**必须从台账取**。此前默认文案写死「一百天」，
+// 而同屏的起手印从台账派生写着「40日」—— 首屏自己跟自己打架，
+// 还破了本组件「不手写任何数字」的规矩（agy 视觉审 P0，属实）。
+const CN = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+const cnNum = (n: number): string => {
+  if (n < 10) return CN[n];
+  if (n < 20) return `十${n % 10 ? CN[n % 10] : ''}`;
+  return `${CN[Math.floor(n / 10)]}十${n % 10 ? CN[n % 10] : ''}`;
+};
+const {
+  // 竖排题款不用现代标点：断句靠换行与留白，这是题款的规矩，
+  // 「，。」放进宋体竖排里是最直接的现代感泄漏（agy 判，采纳）。
+  lines = ['会话即笔迹　收据即印', `与多智能体共事${cnNum(tot.days ?? 0)}日`],
+  sub = '墨迹 · Ink Ledger',
+} = Astro.props;
+---
+
+<section class="yin" data-nexus-yin>
+  <!-- data-yin-drop = 开篇那一滴在 canvas 内的归一化 CSS 坐标（x, y）。与下面 ink.drop 的
+       (0.36, 0.60) 同源：引擎 y 原点在左下，CSS 系 y = 1 − 0.60 = 0.40。
+       转场墨幕（Arrive）靠它算收缩靶心——写死视口百分比会在移动端偏 11vh（canvas 顶边随版心变）。 -->
+  <canvas data-yin-canvas data-yin-drop="0.36,0.40" aria-hidden="true"></canvas>
+  <!-- 降级海报：canvas 被隐藏时顶上。构建期由 scripts/nexus-poster.mjs 截真实停帧，
+       不是占位图 —— 弱环境看到的应该是「墨已经洇开的那一帧」，不是一张空白纸。 -->
+  <img class="yin__poster" src={`${base}/posters/nexus-yin.webp`} alt="" hidden />
+
+  <div class="yin__type">
+    <p class="yin__sub">{sub}</p>
+    <div class="yin__col">
+      <h1 class="yin__h">
+        <span class="yin__l" style="--d:1.6s">{lines[0]}</span>
+        <span class="yin__l" style="--d:2.9s">{lines[1]}</span>
+      </h1>
+    <!-- 起手印。草案 §1「第一枚印落下时标题浮现」—— 缺了它，标题写着「收据即印」
+         而画面无印，概念在首屏就断了（k3 视觉审 5/10 的主要扣分项）。
+         印文同样由 ledger 派生，不手写数字。 -->
+      <span class="yin__seal" aria-hidden="true">
+        <b>{tot.sessions}</b><i>{cnNum(tot.days ?? 0)}日</i>
+      </span>
+    </div>
+  </div>
+
+  <div class="yin__more" aria-hidden="true"><span></span></div>
+</section>
+
+<style>
+  .yin {
+    position: relative;
+    width: 100%;
+    min-height: 100svh;
+    background: #efe9dc;                 /* 与引擎的纸色同值，降级时也是这张纸 */
+    overflow: hidden;
+  }
+  .yin canvas, .yin__poster { position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+                              object-fit: cover; }
+  .yin__poster[hidden] { display: none; }
+
+  /* 题款落在右下留白处：墨的重心在左上，字与墨互不相压 */
+  .yin__type {
+    position: absolute;
+    right: clamp(1.5rem, 6vw, 6rem);
+    bottom: clamp(4rem, 12vh, 9rem);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1.05rem;
+    text-align: right;
+    /* em 相对的是本元素字号（继承 16px = 544px），不是标题的 46px；
+       用它会把第二行挤成两行。改用 rem 锚定根字号。
+       注：此处曾用全角引号，导致 Astro scoped CSS 整块被静默丢弃且 build 不报错。 */
+    max-width: min(92vw, 48rem);
+    color: #1c1f26;
+  }
+  .yin__sub {
+    margin: 0 0 1.1em;
+    font: 500 clamp(.7rem, 1.1vw, .82rem)/1 ui-sans-serif, system-ui, sans-serif;
+    /* 字距只微展到 .18em：拉到 .3em 以上就落进「SaaS 模板腔的细长英文碎屑」形态。
+       这行是展厅名（有实义），不是装饰性标语，所以留着，但不许拉成装饰条。 */
+    letter-spacing: .18em;
+    text-indent: .18em;
+    opacity: 0;
+    animation: yin-in .9s cubic-bezier(.22,.61,.36,1) .8s forwards;
+  }
+  /* 款印贴着最末一列的下缘 —— 竖排题款读作右起，印落在左下收尾。 */
+  .yin__col { display: flex; flex-direction: row-reverse; align-items: flex-end; gap: .8rem; }
+
+  .yin__h {
+    /* 🔴 真竖排。此前注释写着「竖排题款」而实际渲染是水平两行 ——
+       注释描述的是意图，不是事实（agy 逐像素看出来的）。 */
+    writing-mode: vertical-rl;
+    block-size: auto;
+    height: min(62vh, 28rem);
+    margin: 0;
+    font-family: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC",
+                 "SimSun", "PingFang SC", serif;
+    font-weight: 400;                    /* 宋体本身有骨，加粗反而俗 */
+    /* 字号上限从 2.7rem 收到 2.35rem：竖排一列 10 字要放进 28rem 高度内，
+       超出会折成第三列（e2e「不折行」判据在竖排下量的是列宽）。 */
+    font-size: clamp(1.15rem, 2.9vw, 2.35rem);
+    line-height: 1.85;                   /* 竖排时这是列间距 */
+    letter-spacing: .06em;
+  }
+  .yin__l {
+    display: block;
+    opacity: 0;
+    letter-spacing: .02em;
+    /* 只淡入 + 字间微展，不做 Y 轴位移。
+       位移是 SaaS 模板腔；字距从 .02em 展到 .06em 更像颜料慢慢透进纸纤维。 */
+    animation: yin-ink 1.6s cubic-bezier(.22,.61,.36,1) var(--d) forwards;
+  }
+  @keyframes yin-in { to { opacity: 1; } }
+
+  /* 印：整幅唯一的颜色。方形、等宽字、不引篆书（草案已定）。
+     微旋转是钤印的偶然性 —— 正对齐的方块是贴纸不是印。 */
+  .yin__seal {
+    display: inline-grid; place-items: center; gap: .1em;
+    margin-top: 1.2rem; padding: .3rem;
+    /* 🔴 边长不能用 em：em 相对的是印文自己的 .34em 字号，两层缩放叠起来只剩 26px。
+       印该与主标题字号相当（约 40-48px），否则「整幅唯一的颜色」小到看不见。 */
+    box-sizing: border-box;   /* 否则 padding+border 叠在 inline-size 之外，实测 51px 变 64px */
+    inline-size: clamp(2.1rem, 2.7vw, 2.6rem); aspect-ratio: 1;
+    /* 🔴 印色改朱砂。此前用的是站点强调色楼紫 #a855f7 ——
+       在宣纸与水墨语境里，一个紫色细线方框读起来就是前端组件库的 Badge，
+       整幅唯一的颜色用错了，「收据即印」的隐喻当场破功（agy 判，采纳）。 */
+    color: #9e2a2b; border: 2px solid #9e2a2b; border-radius: 1px;
+    background: #9e2a2b0f;
+    font: 500 clamp(.52rem, .74vw, .64rem)/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .04em;
+    transform: rotate(-1.4deg);
+    opacity: 0;
+    animation: yin-in 1.1s cubic-bezier(.22,.61,.36,1) 4.2s forwards;
+  }
+  .yin__seal b { font-weight: 600; font-size: 1.18em; }
+  .yin__seal i { font-style: normal; opacity: .82; }
+
+  @keyframes yin-ink { to { opacity: 1; letter-spacing: .06em; } }
+
+  /* 下滑指示：一枚呼吸的淡墨点，不是竖线。
+     竖线版在纸上是一根孤立的 1px 直线 —— 水墨里没有这种笔画，
+     读起来像渲染残影而不是设计（agy P2，采纳）。 */
+  .yin__more {
+    position: absolute;
+    left: 50%;
+    bottom: 2rem;
+    width: .34rem;
+    height: .34rem;
+    margin-left: -.17rem;
+    opacity: 0;
+    animation: yin-in 1.2s ease 6s forwards;
+  }
+  .yin__more span {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(circle at 45% 40%, #1c1f26aa, #1c1f2600 72%);
+    animation: yin-breathe 3.4s ease-in-out 6.4s infinite;
+  }
+  @keyframes yin-breathe { 0%, 100% { transform: scale(.72); opacity: .35 } 50% { transform: scale(1.15); opacity: .9 } }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* 不许动时：字直接在位，墨由构建期海报承担（canvas 由脚本隐藏） */
+    .yin__sub, .yin__l, .yin__more, .yin__seal { animation: none; opacity: 1; }
+    .yin__more span { animation: none; }
+  }
+</style>
+
+<script>
+  import { InkSurface } from './ink/InkSurface';
+  import type { InkEngine } from './ink/InkEngine';
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-nexus-yin]')) {
+    const canvas = root.querySelector<HTMLCanvasElement>('[data-yin-canvas]');
+    if (!canvas) continue;
+    let a = false;
+    // 构建期截海报走 ?poster=1：不开 preserveDrawingBuffer 时 WebGL 内容
+    // 不进入页面合成截图（实测截整页只剩文字），海报会拍成一张白纸。
+    const poster = new URLSearchParams(location.search).has('poster');
+    InkSurface.mount(canvas, {
+      preserveDrawingBuffer: poster,
+      mobile: window.matchMedia('(max-width: 768px)').matches,
+      onFrame: (ink: InkEngine, t: number) => {
+        // 🔴 单滴起手（异源调研 agy 裁定，本席采纳）：
+        // 两滴会立刻造出两个竞争性焦点、破坏开场静气；更要紧的是**叙事同构** ——
+        // 单滴 = 磊哥发出的一次派单，随后流体自主分离出多道晕 = 生发多个席位，
+        // 「一令生万象」。这比「疏密对比」更贴本厅主题。
+        // 位置偏左上：中国画的重心从不居中，正中扩散像罗夏墨迹测验。
+        // 落点与 data-yin-drop 必须同源：转场墨幕靠它算收缩靶心（写死视口百分比会在移动端偏 11vh）
+        if (!a && t > 0.4) { a = true; ink.drop(0.36, 0.60, 0.072, [1.3, 1.3, 1.3], 19, { vigor: 1.2, eccentricity: 0.26 }); }
+      },
+      onFallback: (reason) => {
+        canvas.style.display = 'none';
+        const poster = root.querySelector<HTMLImageElement>('.yin__poster');
+        if (poster) poster.hidden = false;
+        root.dataset.yinFallback = reason;
+      },
+    });
+  }
+</script>

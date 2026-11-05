@@ -1,0 +1,10 @@
+import { chromium } from '@playwright/test';
+const t0 = Date.now();
+const br = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
+const pg = await br.newPage({ viewport: { width: 1000, height: 640 }, deviceScaleFactor: 1 });
+await pg.goto('http://localhost:4321/website/world-spike/nexus-ink/?demo=yin&t=7', { waitUntil: 'load' });
+await pg.waitForFunction(() => document.documentElement.dataset.inkReady != null, null, { timeout: 300000 });
+console.log('ready 用时 s:', ((Date.now() - t0) / 1000).toFixed(1));
+console.log('inkReady =', await pg.evaluate(() => document.documentElement.dataset.inkReady));
+console.log('__inkParams =', JSON.stringify(await pg.evaluate(() => globalThis.__inkParams ?? null)));
+await br.close();

@@ -98,6 +98,11 @@ export interface Building {
    * 有则城里 E 键走展厅，否则走 deepLink；DOM 快览 / 页头页脚 / 正文 CTA / noscript 仍用 deepLink（ADR-2）。
    */
   hallPath?: string;
+  /**
+   * [NX-W7] 进站前奏 hold 段的转场形态：'ink' = 墨吞霓虹（画布褪成墨拓 + 墨团自车位吞屏，
+   * 墨幕带过跨文档跳转，展厅侧 Arrive 反向收缩接力）。缺省 = 楼色霓虹边缘脉冲（ADR-4 决策 B）。
+   */
+  arrivalFx?: 'ink';
   /** fallback = 目标专页未上线暂落上级索引，上线后只改 JSON 两字段 */
   deepLinkStatus: 'live' | 'fallback';
   priority: 'P0' | 'P1' | 'P2';
@@ -111,7 +116,12 @@ export interface Building {
    */
   heroGlb?: string;
   /** 楼前泊车触发区（圆心/车头朝向/触发半径）——进楼判定归 CC-P1/CC-E9 */
-  parkingBay: { x: number; z: number; heading: number; radius: number };
+  /**
+   * parkingBay.heading 朝楼门（进站/深链出生）；exitHeading 可选 = 回城续驶时的车头朝向
+   * （[NX-W17 回城协议]，缺省 heading+180 = 背对楼门朝街——12 楼 bay 两两隔街相向，反向即朝街；
+   * 某楼路况特殊时在 JSON 显式给值覆盖，不靠运行时猜）
+   */
+  parkingBay: { x: number; z: number; heading: number; radius: number; exitHeading?: number };
 }
 
 /** 预留槽位 13–20（外环）：占位可解析，激活 = 补齐 Building 字段升入 buildings[] */

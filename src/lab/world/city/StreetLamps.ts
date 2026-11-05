@@ -49,7 +49,7 @@ const SLOGANS = [
   'AI CORE', // (西,-34) agent-nexus 主智能体中枢
   'DRIVE', //   (东,-58) autodrive-lab 智驾实验楼
   'EDGE AI', // (西,-82) edge-cloud-hub 端云算力枢纽
-  'FOUNDRY', // (东,-106) workflow-foundry AI 工作流工厂
+  'FOUNDRY', // (东,-106) workflow-foundry 帧库 · 视频闭环车间
   'TTS LIVE', // (东,44) voice-pod 座舱语音舱
   '39 LANGS', // (西,68) lingua-tower 多语种方案塔
   'SAY HI »', // (-52,南) contact-beacon 联络信标塔

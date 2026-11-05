@@ -1,0 +1,283 @@
+---
+/**
+ * 帧库 · S0 门厅 + S1 帧库（一块可切开的视频固体）
+ *
+ * 首屏三件事（草案 §1.1）：悬浮的深色长方体、时码行（全部从 manifest 渲染）、
+ * 时间标尺上的门环（真实人审退回）。快门进馆用 data-vault-state 驱动 CSS，
+ * reduced-motion 直达终态。片架 1–8 切集在 W3 接；本组件先立一集。
+ */
+import type { VaultManifest } from './Vault';
+
+interface Props {
+  /** 默认展示的集（manifest 文件名，不含扩展名），缺省取第一个 F 锁集 */
+  ep?: string;
+}
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const files = import.meta.glob<{ default: VaultManifest }>('../../../../data/frame-vault/*.json', { eager: true });
+const manifests = Object.entries(files)
+  .map(([path, mod]) => ({ key: path.replace(/^.*\/(.+)\.json$/, '$1'), m: mod.default }))
+  .filter((x) => x.key !== 'episodes')
+  .sort((a, b) => a.key.localeCompare(b.key));
+if (manifests.length === 0) throw new Error('帧库：src/data/frame-vault/ 下没有任何 manifest（先跑 scripts/frame-vault-build.mjs）');
+const wanted = Astro.props.ep ?? (manifests.find((x) => x.m.stage === 'F') ?? manifests[0]).key;
+const cur = manifests.find((x) => x.key === wanted);
+if (!cur) throw new Error(`帧库：manifest「${wanted}」不存在`);
+const m = cur.m;
+const manifestUrl = `${base}/demo/frame-vault/${cur.key}/manifest.json`;
+const rings = m.rings.filter((r) => r.status === 'LOCATABLE' && r.time_s <= m.duration_s);
+const mmss = (t: number): string => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+const stageName: Record<string, string> = { D: '开发', S: '台本锁', A: '样片锁', P: '画面锁', M: '声音锁', F: '定稿' };
+const lockText = (x: VaultManifest): string => `${stageName[x.stage] ?? x.stage}${x.label ? ` · ${x.label}` : ''}${x.stage !== 'F' ? ' · 工作剪' : ''}`;
+const metaText = (x: VaultManifest): string => `${x.duration_s.toFixed(2)} s · ${x.volume.n} slices @ ${x.volume.fps} fps · sha ${x.sha256.slice(0, 8)}`;
+---
+
+<section class="vault" data-vault data-vault-state="loading" data-vault-ep={m.ep} tabindex="0" aria-label={`帧库 · ${m.ep} ${m.title}`}>
+  <div class="vault__stage">
+    <canvas class="vault__canvas" data-vault-canvas aria-hidden="true"></canvas>
+    <!-- 快门：进馆一格黑 + 光锥。只在 loading→idle 那一次播放 -->
+    <div class="vault__shutter" aria-hidden="true"></div>
+    <p class="vault__nudge" data-vault-nudge aria-hidden="true">滚轮 沿时间刮 · 拖动 转动 · 双击 抽帧成片</p>
+    <!-- 翻面读稿：立方体背面 = 台本纵轴（F）。句子与时间来自构建期 mlx_whisper 对成片音轨的转写（manifest.script），
+         当前刀锋时刻那句高亮；点句子刀锋跳过去。无转写时只显示提示。 -->
+    <aside class="vault__script" data-vault-script hidden aria-label="台本">
+      <header><b data-vault-script-title>台本</b><span class="vault__mono" data-vault-script-meta></span></header>
+      <ol data-vault-cues></ol>
+    </aside>
+    <!-- 降级：无 WebGL2 时顶上（构建期海报 W5 补；先用第一张图集的首格） -->
+    <!-- 降级海报：构建期由 scripts/frame-vault-poster.mjs 截真实引擎画面（非占位图），无 WebGL2 / 无 JS 时顶上 -->
+    <img class="vault__poster" src={`${base}/posters/frame-vault-tilted.webp`} alt="帧库：一支视频切成的时间固体（斜切面）" width="780" height="680" loading="eager" />
+    <p class="vault__unsupported">此浏览器不支持体纹理（WebGL2）。<a href={m.video.src}>直接看成片</a></p>
+    <!-- 抽帧成片：切面抽出来变成真 <video>，从当前时刻续播；角标 = 视频文件 sha 前 8 位（manifest 绑定） -->
+    <figure class="vault__pull" data-vault-pull>
+      <video data-vault-video playsinline preload="metadata" aria-label={`${m.ep} 成片`}></video>
+      <figcaption class="vault__mono">
+        <span data-vault-pull-cap>{m.stage === 'F' ? '成片' : `工作剪 ${m.label ?? ''}`} · sha {m.video.sha256.slice(0, 8)}</span>
+        <span class="vault__pull-act">
+          <button type="button" class="vault__link" data-vault-fullscreen title="全屏（F）">全屏</button>
+          <a class="vault__link" data-vault-download href={m.video.src} download>下载 mp4</a>
+          <span>单击 / Esc 放回</span>
+        </span>
+      </figcaption>
+    </figure>
+  </div>
+
+  <header class="vault__id" aria-live="polite">
+    <span class="vault__ep" data-vault-ep-label>{m.ep}</span>
+    <span class="vault__title" data-vault-title>{m.title}</span>
+    <span class="vault__lock" data-vault-lock data-stage={m.stage}>{lockText(m)}</span>
+    <span class="vault__mono" data-vault-meta>{metaText(m)}</span>
+  </header>
+
+  <!-- 片架：每集一格；实心 = 有成片/工作剪帧体，锁字母 = 当前阶段。键 1–8 同效 -->
+  <nav class="vault__rail" data-vault-rail aria-label="片架">
+    {manifests.map((x, i) => (
+      <button
+        class="vault__slot"
+        type="button"
+        data-vault-slot
+        data-key={x.key}
+        data-manifest={`${base}/demo/frame-vault/${x.key}/manifest.json`}
+        data-stage={x.m.stage}
+        aria-pressed={x.key === cur.key ? 'true' : 'false'}
+        title={`${x.m.ep} · ${x.m.title} · ${stageName[x.m.stage] ?? x.m.stage}`}
+      >
+        <b>{i + 1}</b><span>{x.m.ep}</span><i>{x.m.stage} {stageName[x.m.stage] ?? ''}</i>
+      </button>
+    ))}
+  </nav>
+  <!-- 门环悬停卡：人审原话 + 缺陷类 + 修复版本（磊哥 R1-1：原话可公开） -->
+  <div class="vault__card" data-vault-card hidden role="status"></div>
+
+  <div class="vault__hud">
+    <span class="vault__tc" data-vault-tc>00:00.000</span>
+    <span class="vault__sub"><span data-vault-frame>f0</span> · <span data-vault-tilt>正切</span></span>
+    <details class="vault__help">
+      <summary aria-label="操作说明">?</summary>
+      <dl>
+        <dt>拖动</dt><dd>旋转</dd><dt>滚轮</dt><dd>沿时间刮</dd><dt>← →</dt><dd>逐帧（⇧ 整秒）</dd>
+        <dt>⌥ ← →</dt><dd>把刀面拧斜 · 0 归正</dd><dt>双击 / Enter</dt><dd>抽帧成片</dd><dt>F</dt><dd>翻到背面读台本</dd><dt>1–8</dt><dd>片架切集</dd><dt>E</dt><dd>拆开：看它怎么造出来的</dd>
+      </dl>
+    </details>
+    <button class="vault__btn" type="button" data-vault-poster>留影</button>
+    <button class="vault__btn vault__btn--ghost" type="button" data-vault-explode title="E">拆开</button>
+  </div>
+
+  <!-- 时间标尺：位置 = t/duration；门环 = 真实人审退回（fixtures/human-rejects.jsonl） -->
+  <div class="vault__ruler" role="group" aria-label="时间标尺">
+    <span class="vault__rejects" data-vault-rejects-label hidden><i></i><b data-vault-rejects-n>0</b> 次人审退回坐在时间轴上 · 悬停看原话</span>
+    <i class="vault__needle" aria-hidden="true"></i>
+    <!-- 门环由控制器按当前集的 manifest.rings 渲染（切集时重建）；首屏 SSR 一份保证无 JS 也能看到 -->
+    <div class="vault__rings" data-vault-rings>
+      {rings.map((r) => (
+        <button class="vault__ring" type="button" data-vault-ring data-t={(r.time_s / m.duration_s).toFixed(4)} style={`--x:${((r.time_s / m.duration_s) * 100).toFixed(2)}%`} aria-label={`人审退回 ${r.id}：${mmss(r.time_s)} ${r.quote}`}></button>
+      ))}
+    </div>
+    <span class="vault__mono vault__ruler-l">0:00</span>
+    <span class="vault__mono vault__ruler-r" data-vault-dur>{mmss(m.duration_s)}</span>
+  </div>
+</section>
+
+<script>
+  import { Vault } from './Vault';
+  const host = document.querySelector<HTMLElement>('[data-vault]');
+  if (host) {
+    const url = host.dataset.manifest!;
+    const base = host.dataset.base ?? '';
+    void new Vault(host).mount(url, base);
+  }
+</script>
+<script is:inline define:vars={{ manifestUrl, base }}>
+  // 把构建期算好的地址挂到宿主上（module script 里拿不到 define:vars）
+  const h = document.querySelector('[data-vault]');
+  if (h) { h.dataset.manifest = manifestUrl; h.dataset.base = base; }
+</script>
+
+<style is:global>
+  /* is:global：门环与卡片内容由控制器动态创建，scoped 样式作用不到（W3 实证：环宽 0）；类名全带 vault__ 前缀，hall.css 无同名 */
+  .vault {
+    --bg: #05070d; --paper: #ece9e1; --gold: #ffd278; --metal: #9aa3ad; --ink: #1c1f26;
+    position: relative; background: var(--bg); color: #cfd3dc;
+    display: grid; grid-template-rows: auto auto auto; outline: none;
+  }
+  .vault__stage { position: relative; height: clamp(460px, 68svh, 800px); }  /* 舞台 + HUD + 标尺必须在首屏内（页头 69px 之下）：W3 实证标尺被顶出视口后门环悬停不到 */
+  .vault__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  .vault__canvas:active { cursor: grabbing; }
+
+  /* 快门：loading 时全黑；idle 那一刻一格白闪 → 光锥打开 */
+  .vault__shutter { position: absolute; inset: 0; background: #000; pointer-events: none; }
+  .vault[data-vault-state='idle'] .vault__shutter,
+  .vault[data-vault-state='blade'] .vault__shutter,
+  .vault[data-vault-state='tilted'] .vault__shutter,
+  .vault[data-vault-state='poster'] .vault__shutter { animation: vault-shutter 900ms cubic-bezier(.2,.7,.2,1) forwards; }
+  @keyframes vault-shutter {
+    0%   { opacity: 1; background: #000; }
+    6%   { opacity: 1; background: #fff; }
+    9%   { opacity: 1; background: #000; }
+    100% { opacity: 0; background: #000; }
+  }
+  /* 抽帧：从切面处放大到 70% 宽，带一圈「体」的厚度（右下双层描边），背后的盒子压暗 */
+  .vault__pull {
+    position: absolute; left: 50%; top: 50%; width: min(70%, 118svh); aspect-ratio: 16 / 9; margin: 0;
+    transform: translate(-50%, -50%) scale(.55); opacity: 0; pointer-events: none;
+    transition: transform .42s cubic-bezier(.2,.7,.2,1), opacity .3s;
+    box-shadow: 6px 6px 0 #2a2d36, 12px 12px 0 #15171d, 0 30px 80px #000c;
+  }
+  .vault__pull video { width: 100%; height: 100%; display: block; background: #000; cursor: pointer; }
+  .vault__pull figcaption { position: absolute; left: 0; right: 0; bottom: -1.8rem; display: flex; justify-content: space-between; gap: 1rem; }
+  .vault__pull-act { display: flex; gap: 1rem; }
+  .vault__link { background: none; border: 0; padding: 0; color: var(--gold); font: inherit; cursor: pointer; text-decoration: none; }
+  .vault__link:hover { text-decoration: underline; }
+  .vault__pull:fullscreen { width: 100vw; height: 100vh; aspect-ratio: auto; transform: none; left: 0; top: 0; box-shadow: none; background: #000; }
+  .vault__pull:fullscreen video { object-fit: contain; }
+  .vault__pull:fullscreen figcaption { bottom: .6rem; left: 1rem; right: 1rem; }
+  .vault[data-vault-state='pulled'] .vault__pull { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
+  .vault[data-vault-state='pulled'] .vault__canvas { opacity: .32; transition: opacity .4s; }
+  /* 海报只在无 JS（section 仍是 loading 且永不改）或 unsupported 时露出；引擎起来后藏 */
+  .vault__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; display: none; }
+  .vault[data-vault-state='unsupported'] .vault__poster { display: block; }
+  .vault[data-vault-state='unsupported'] .vault__unsupported { bottom: 1rem; top: auto; }
+  /* 一次性引导：seed 盲评 B/D「首屏缺轻量引导」；只在 idle 且尚无输入时短暂出现，不常驻 */
+  .vault__nudge { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); margin: 0; padding: .35rem .9rem; border: 1px solid #ffffff1f; border-radius: 999px;
+    font: 12px/1.4 ui-monospace, Menlo, monospace; letter-spacing: .1em; color: var(--metal); background: #05070dcc; opacity: 0; pointer-events: none; transition: opacity .5s; }
+  .vault[data-vault-nudge='1'] .vault__nudge { opacity: 1; }
+  /* 背面台本：磨砂玻璃板压在盒子背面位置；当前句金色，其余 40% 灰 */
+  .vault__script { position: absolute; left: 50%; top: 50%; width: min(46%, 40rem); height: 76%; transform: translate(-50%, -50%) rotateY(90deg); opacity: 0;
+    background: #0b0e16d9; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid #ffffff1a; box-shadow: 0 30px 80px #000c;
+    display: grid; grid-template-rows: auto 1fr; transition: transform .5s cubic-bezier(.2,.7,.2,1), opacity .35s; pointer-events: none; }
+  .vault__script[hidden] { display: grid; }
+  .vault[data-vault-state='flipped'] .vault__script { transform: translate(-50%, -50%) rotateY(0); opacity: 1; pointer-events: auto; }
+  .vault[data-vault-state='flipped'] .vault__canvas { opacity: .55; transition: opacity .5s; }
+  .vault__script header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .8rem 1rem .6rem; border-bottom: 1px solid #ffffff12; }
+  .vault__script header b { font: 500 .95rem/1.3 "Songti SC", "Source Han Serif SC", serif; letter-spacing: .08em; color: var(--paper); }
+  .vault__script ol { list-style: none; margin: 0; padding: .4rem 0 1rem; overflow: auto; scrollbar-width: thin; }
+  .vault__cue { display: grid; grid-template-columns: 4.4rem 1fr; gap: .6rem; padding: .3rem 1rem; cursor: pointer; color: #cfd3dc; opacity: .42; transition: opacity .2s, background .2s; }
+  .vault__cue time { font: 11px/1.7 ui-monospace, Menlo, monospace; color: var(--metal); }
+  .vault__cue span { font-size: .9rem; line-height: 1.55; }
+  .vault__cue:hover { opacity: .8; }
+  .vault__cue.is-now { opacity: 1; background: #ffd27812; }
+  .vault__cue.is-now time { color: var(--gold); }
+  .vault__cue.is-now span { color: var(--paper); }
+  .vault__unsupported { display: none; position: absolute; inset: 0; margin: 0; place-content: center; text-align: center; color: var(--paper); }
+  .vault[data-vault-state='unsupported'] .vault__unsupported { display: grid; }
+  .vault[data-vault-state='unsupported'] .vault__canvas,
+  .vault[data-vault-state='unsupported'] .vault__shutter { display: none; }
+
+  .vault__id { position: absolute; left: clamp(1rem, 3vw, 2.5rem); top: 1.4rem; display: grid; gap: .25rem; pointer-events: none; z-index: 1; }
+  .vault__ep { font: 600 clamp(1.4rem, 3vw, 2.4rem)/1 "Songti SC", "Source Han Serif SC", serif; color: var(--paper); letter-spacing: .04em; }
+  .vault__title { font-size: clamp(.95rem, 1.4vw, 1.15rem); color: var(--paper); opacity: .85; }
+  .vault__lock { font-size: .8rem; letter-spacing: .12em; color: var(--metal); }
+  .vault__lock[data-stage='F'] { color: var(--gold); }
+  .vault__mono { font: 12px/1.5 ui-monospace, "SF Mono", Menlo, monospace; color: var(--metal); letter-spacing: .04em; }
+
+  .vault__hud { display: flex; align-items: baseline; gap: 1.2rem; padding: .7rem clamp(1rem, 3vw, 2.5rem) .2rem; }
+  .vault__tc { color: var(--paper); font: 500 18px/1 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+  .vault__sub { font: 12px/1 ui-monospace, Menlo, monospace; color: var(--metal); opacity: .55; letter-spacing: .06em; }
+  .vault__help { margin-left: auto; position: relative; }
+  .vault__help summary { list-style: none; cursor: pointer; width: 1.5rem; height: 1.5rem; display: grid; place-content: center; border: 1px solid #ffffff2a; border-radius: 50%; color: var(--metal); font: 12px/1 ui-monospace, Menlo, monospace; }
+  .vault__help summary::-webkit-details-marker { display: none; }
+  .vault__help[open] summary { border-color: var(--gold); color: var(--gold); }
+  .vault__help dl { position: absolute; right: 0; bottom: 2.1rem; z-index: 3; margin: 0; padding: .7rem .9rem; display: grid; grid-template-columns: auto 1fr; gap: .3rem .9rem; width: max-content; background: #0e1119; border: 1px solid #ffffff1f; box-shadow: 0 18px 40px #000a; font-size: .78rem; color: var(--paper); }
+  .vault__help dt { color: var(--gold); font-family: ui-monospace, Menlo, monospace; }
+  .vault__help dd { margin: 0; color: var(--metal); }
+  .vault__btn { background: none; border: 1px solid var(--metal); color: var(--paper); padding: .35rem .9rem; border-radius: 999px; font-size: .8rem; letter-spacing: .1em; cursor: pointer; opacity: .55; transition: opacity .3s, border-color .3s; }
+  .vault[data-vault-tilted='1'] .vault__btn:not(.vault__btn--ghost) { opacity: 1; border-color: var(--gold); color: var(--gold); }
+  .vault__btn--ghost { opacity: .75; }
+  .vault[data-vault-state='exploded'] .vault__canvas { opacity: .35; transition: opacity .6s; }
+
+  /* 标尺 = 一根金属轨（细管 + 高光），不是播放器进度条：无填充、无圆头游标 */
+  .vault__ruler { position: relative; height: 3.4rem; margin: 0 clamp(1rem, 3vw, 2.5rem) 1rem; }
+  .vault__ruler::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1px; border-radius: 2px;
+    background: linear-gradient(180deg, #6b7280, #2a2f3a 55%, #454b57); box-shadow: 0 1px 0 #ffffff14, 0 -1px 0 #00000080; }
+  .vault__rejects { position: absolute; left: 0; top: -.35rem; font: 11px/1 ui-monospace, Menlo, monospace; color: var(--metal); letter-spacing: .06em; display: flex; align-items: center; gap: .4rem; }
+  .vault__rejects[hidden] { display: none; }
+  .vault__rejects i { width: 9px; height: 9px; border-radius: 50%; border: 2px solid #e0483a; box-sizing: border-box; }
+  .vault__rejects b { color: var(--paper); font-weight: 500; }
+  /* 刀锋位置：一片竖立的薄刀，不是游标 */
+  .vault__needle { position: absolute; top: calc(50% - 11px); left: calc(var(--vault-t, 0) * 100%); width: 2px; height: 22px; margin-left: -1px; background: linear-gradient(180deg, #fff, var(--paper) 60%, #b9b4a8); box-shadow: 0 0 8px #ffd27866; }
+  .vault__ring {
+    position: absolute; left: var(--x); top: 50%; width: 14px; height: 14px; transform: translate(-50%, -50%);
+    border-radius: 50%; border: 2px solid #b8473d; background: var(--bg); padding: 0; cursor: pointer;
+    box-shadow: inset 0 0 0 2px var(--bg), 0 0 0 1px #00000080; transition: border-color .2s, transform .2s;
+  }
+  .vault__ring:hover, .vault__ring:focus-visible, .vault__ring.is-hit { border-color: #e0483a; transform: translate(-50%, -50%) scale(1.35); outline: none; }
+  .vault__ring.is-hit { box-shadow: 0 0 0 6px #e0483a33; }
+  .vault__ring[data-count='2'] { border-width: 3px; width: 16px; height: 16px; }
+  .vault__ring[data-count='3'], .vault__ring[data-count='4'] { border-width: 4px; width: 18px; height: 18px; }
+  .vault__card q + small + q { margin-top: .5rem; display: block; }
+  .vault__ruler-l, .vault__ruler-r { position: absolute; top: calc(50% + 10px); }
+  .vault__rings { position: absolute; inset: 0; }
+  .vault[data-vault-state='pulled'] .vault__id { opacity: 0; transition: opacity .3s; }
+
+  /* 片架：右侧竖排小格，当前集金边 */
+  .vault__rail { position: absolute; right: clamp(1rem, 3vw, 2.5rem); top: 50%; transform: translateY(-50%); display: grid; gap: .45rem; }
+  .vault__slot {
+    display: grid; grid-template-columns: 1.1rem 1fr auto; align-items: center; gap: .5rem; width: 9.6rem;
+    padding: .35rem .55rem; background: #0b0e16; border: 1px solid #ffffff1a; color: var(--metal); cursor: pointer;
+    font: 12px/1.2 ui-monospace, Menlo, monospace; letter-spacing: .06em; text-align: left; transition: border-color .2s, color .2s;
+  }
+  .vault__slot b { font-weight: 500; opacity: .5; }
+  .vault__slot i { font-style: normal; color: var(--gold); opacity: .7; font-size: 11px; white-space: nowrap; }
+  .vault__slot[data-stage='F'] i { opacity: 1; }
+  .vault__slot:hover { border-color: #ffffff55; color: var(--paper); }
+  .vault__slot[aria-pressed='true'] { border-color: var(--gold); color: var(--paper); }
+  .vault__slot[aria-pressed='true'] span::after { content: ' ▸'; color: var(--gold); }
+
+  /* 门环卡片：跟随环的 x，压在标尺上方 */
+  .vault__card {
+    position: absolute; left: clamp(14rem, var(--x, 50%), calc(100% - 14rem)); bottom: 4.6rem; transform: translateX(-50%); width: max-content; max-width: 26rem; z-index: 2;
+    background: #0e1119; border: 1px solid #e0483a99; border-left: 3px solid #e0483a; padding: .6rem .8rem; color: var(--paper);
+    font-size: .82rem; line-height: 1.5; box-shadow: 0 18px 40px #000a; pointer-events: none;
+  }
+  .vault__card q { quotes: '「' '」'; color: #fff; }
+  .vault__card small { display: block; color: var(--metal); font: 11px/1.6 ui-monospace, Menlo, monospace; margin-top: .25rem; }
+
+  .vault__ruler-r { right: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vault[data-vault-state] .vault__shutter { animation: none; opacity: 0; }
+  }
+  @media (max-width: 768px) {
+    .vault__help, .vault__btn { display: none; }
+    .vault__id { bottom: auto; top: 1rem; }
+  }
+</style>

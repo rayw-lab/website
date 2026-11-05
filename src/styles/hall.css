@@ -30,6 +30,32 @@ html:has([data-hall]) body {
   color: var(--ink);
 }
 
+/* ── 墨迹 · Ink Ledger 例外：纸色厅 ────────────────────────────────────────
+   全站展厅是暗底（上面那组 token）。本厅是宣纸，必须整套翻过来，
+   否则站头、页脚、到达条会以暗色压在纸上。
+   🔴 选择器写成两段 :has() 是**故意的**：`:has([data-hall])` 与
+   `:has([data-hall='agent-nexus'])` 特异度相同，只靠"写在后面"取胜太脆——
+   任何人往下面追加一条通用规则就会静默翻车。叠一段把特异度抬高，
+   顺序不再是唯一依靠。
+   验收是 2×2：正控＝本厅背景必须是纸色；负控＝about-pavilion 必须仍是暗色
+   （证明这段没有漏到别的厅去）。两条都在 e2e 里。 */
+html:has([data-hall='agent-nexus']):has([data-hall]),
+html.light:has([data-hall='agent-nexus']):has([data-hall]),
+html.dark:has([data-hall='agent-nexus']):has([data-hall]) {
+  color-scheme: light;
+  --bg: #efe9dc;
+  --bg-raised: #e7e0d1;
+  --ink: #1c1f26;
+  --ink-2: #4a4f5a;
+  --ink-3: #6b7280;
+  --line: #1c1f2626;
+  --accent: #9e2a2b;
+  --accent-strong: #b33939;
+  --accent-soft: rgba(158, 42, 43, 0.12);
+  --on-accent: #efe9dc;
+  --hall-scrim: rgba(239, 233, 220, 0.45);
+}
+
 /* 站头 / 页脚随暗底，避免浅色条压在暗厅上 */
 html:has([data-hall]) .site-header {
   background: color-mix(in srgb, var(--bg) 88%, transparent);

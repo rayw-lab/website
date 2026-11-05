@@ -1,0 +1,250 @@
+diff --git a/.nexus-typecensus.py b/.nexus-typecensus.py
+index 82af633..df9e3d9 100644
+--- a/.nexus-typecensus.py
++++ b/.nexus-typecensus.py
+@@ -5,13 +5,17 @@ cnt = collections.Counter(); files = lines = bad = notype = 0
+ # 🔴 分母必须覆盖 reducer 实际读取的**全部源**。
+ # 只扫 claude 源时得 23 种，而 reducer 读 claude+codex+cursor 后见到 turn_ended，
+ # 于是门报「不在普查全集里」—— 不是普查过期，是候选集比被测集合窄。
++# (根, 文件名模式)。🔴 Grok 根只扫 events.jsonl：同目录还有 chat_history/updates/prompt_history 等 jsonl，
++# reducer 只读 events，普查若把它们也算进来，verify 门会因「普查有 reducer 没见」而红——
++# 候选集必须与被测集合一致，这是式三分母纪律的另一面。
+ ROOTS = [
+-    pathlib.Path.home() / '.claude/projects',
+-    pathlib.Path.home() / '.codex/sessions',
+-    pathlib.Path.home() / '.cursor/projects/Users-wanglei-mywebsite/agent-transcripts',
+-    pathlib.Path.home() / '.cursor/projects/Users-wanglei-Projects-co-agent/agent-transcripts',
++    (pathlib.Path.home() / '.claude/projects', '*.jsonl'),
++    (pathlib.Path.home() / '.codex/sessions', '*.jsonl'),
++    (pathlib.Path.home() / '.cursor/projects/Users-wanglei-mywebsite/agent-transcripts', '*.jsonl'),
++    (pathlib.Path.home() / '.cursor/projects/Users-wanglei-Projects-co-agent/agent-transcripts', '*.jsonl'),
++    (pathlib.Path.home() / '.grok/sessions', 'events.jsonl'),
+ ]
+-ALL = [f for r in ROOTS if r.exists() for f in r.rglob('*.jsonl')]
++ALL = [f for r, pat in ROOTS if r.exists() for f in r.rglob(pat)]
+ for f in ALL:
+     files += 1
+     try:
+diff --git a/scripts/nexus-ledger-reduce.mjs b/scripts/nexus-ledger-reduce.mjs
+index c35d841..afe9469 100644
+--- a/scripts/nexus-ledger-reduce.mjs
++++ b/scripts/nexus-ledger-reduce.mjs
+@@ -32,8 +32,11 @@
+  * 6) 天桶用 UTC：本地时区会让同一输入在不同 TZ 机器产出不同天界，破坏幂等。
+  * 7) Top-N 取样分 score = tokens + dur*100 + tools*200 + (compacted+aborted)*5000
+  *    （保事件性会话进明细）；一切排序带哈希平票决断，绝不依赖 Map 迭代序或文件系统序。
+- * 8) total_cost_usd：不读取、不输出（磊哥拍板）。Grok/agy 的 job 以 --dispatch 的 receipt.json
+- *    三态映射收编；`grok -p` modelUsage 直读不在本版输入范围（任务书默认输入为会话 jsonl 目录）。
++ * 8) total_cost_usd：不读取、不输出（磊哥拍板）。agy/api-direct 的 job 以 --dispatch 的 receipt.json
++ *    三态映射收编。Grok 席（2026-09-04 接入）读 `~/.grok/sessions/<cwd>/<uuid>/events.jsonl`
++ *    （带顶层 type 的事件流），token 取同目录 usage.json（多数会话没有它 → 记 0，即「淡」），
++ *    cwd 取 summary.json 走与 Codex 相同的白名单逐会话判定。此前票册写「grok 不落盘无从归约」
++ *    是拿「找不到 receipt」冒充「没有数据」——本机 ~/.grok/sessions 有 8.7GB。
+  * 9) projects 白名单 = 草案 §3.2 候选（NEEDS_LEIGE 确认前生效）；正则同时作用于 slug
+  *    （-Users-*-Projects-x）与 cwd（/Users/<user>/Projects/x），分隔符用 [\/-] 兼容两种形态；
+  *    先长后短，防前缀误吞。workspace/raw 的「仅 loop-commander / skills-distilled 子树」
+@@ -179,6 +182,13 @@ function matchProject(str) {
+ async function safeReaddirDirents(root) {
+   try { return await fs.readdir(root, { withFileTypes: true }); } catch { return []; }
+ }
++/** 只取指定文件名（Grok 会话目录里还有 chat_history/updates/prompt_history 等 jsonl，只读 events） */
++async function listNamed(root, name) {
++  try {
++    const rels = await fs.readdir(root, { recursive: true });
++    return rels.filter((p) => path.basename(p) === name).sort().map((rel) => path.join(root, rel));
++  } catch { return []; }
++}
+ async function listJsonl(root) {
+   try {
+     const rels = await fs.readdir(root, { recursive: true });
+@@ -258,7 +268,63 @@ const TYPE_POLICY = {
+   inter_agent_communication_metadata: 'ignored:agent 间通信元数据，与协作形状无关',
+   compacted: 'ignored:压缩标记；compacted 计数已由 event_msg 的 context_compacted 承担',
+   token_usage_record: 'ignored:用量明细；tokens 已由 event_msg 的 token_count 累计，重复计会翻倍',
++  // —— Grok 侧（events.jsonl；2026-09-04 窗口内实测 35 种，grokLine 消费前三种）——
++  turn_started: 'mapped',
++  tool_completed: 'mapped',
++  // turn_ended 在 Claude 侧已表态 ignored；Grok 侧 grokLine 会读它的 outcome 计 aborted，
++  // 但 typeCoverage 是全局一张表，这里保留 Claude 侧的表态文本（turns 仍由 turn_started 计）。
++  phase_changed: 'ignored:UI 相位切换（waiting_for_model 等），每会话上千条，与协作形状无关',
++  tool_started: 'ignored:工具开始事件；tools 已由 tool_completed 计数，重复计会翻倍',
++  permission_requested: 'ignored:权限请求事件，harness 内部',
++  permission_resolved: 'ignored:权限裁决事件，harness 内部',
++  loop_started: 'ignored:模型循环起始，与轮次不等价',
++  first_token: 'ignored:首 token 时延事件',
++  mcp_server_starting: 'ignored:MCP 启动事件', mcp_server_connected: 'ignored:MCP 连接事件',
++  mcp_server_failed: 'ignored:MCP 失败事件', mcp_config_resolved: 'ignored:MCP 配置解析',
++  mcp_init_completed: 'ignored:MCP 初始化完成', mcp_tool_call_started: 'ignored:MCP 工具开始（工具计数走 tool_completed）',
++  mcp_tool_call_completed: 'ignored:MCP 工具完成；本机 MCP 调用极少且与本地工具语义重叠，不重复计',
++  mcp_oauth_discovery_timeout: 'ignored:MCP OAuth 探测超时', mcp_oauth_probe_resolved: 'ignored:MCP OAuth 探测',
++  mcp_health_check: 'ignored:MCP 健康检查', mcp_managed_config_result: 'ignored:MCP 托管配置',
++  mcp_server_toggled: 'ignored:MCP 开关', mcp_transport_decode_error: 'ignored:MCP 传输解码错误',
++  goal_verifier_skeptic_verdict: 'ignored:goal 子系统裁决，harness 内部', goal_verifier_aggregate_verdict: 'ignored:同上',
++  goal_classifier_fired: 'ignored:goal 子系统', goal_classifier_verdict: 'ignored:goal 子系统',
++  goal_planner_fired: 'ignored:goal 子系统', goal_planner_completed: 'ignored:goal 子系统',
++  goal_summarizer_fired: 'ignored:goal 子系统', goal_summarizer_completed: 'ignored:goal 子系统',
++  goal_strategist_fired: 'ignored:goal 子系统', goal_strategist_completed: 'ignored:goal 子系统',
++  goal_auto_paused: 'ignored:goal 子系统自动暂停',
++  interjected: 'ignored:用户插话事件；turns 由 turn_started 计', yolo_toggled: 'ignored:权限模式切换',
+ };
++
++/** Grok 席：events.jsonl 一行一事件，时间戳键是 `ts`（不是 timestamp）。 */
++const GROK_PATCH_TOOLS = new Set(['search_replace', 'write']);
++function grokLine(s, obj) {
++  if (typeof obj.type === 'string') SEEN_TYPES.set(obj.type, (SEEN_TYPES.get(obj.type) ?? 0) + 1);
++  const t = typeof obj.ts === 'string' ? Date.parse(obj.ts) : NaN;
++  if (Number.isFinite(t)) {
++    if (s.t0 === null || t < s.t0) s.t0 = t;
++    if (s.t1 === null || t > s.t1) s.t1 = t;
++  }
++  if (obj.type === 'turn_started') {
++    s.turns += 1;
++    if (typeof obj.model_id === 'string' && obj.model_id) s.model = obj.model_id;
++  } else if (obj.type === 'tool_completed') {
++    s.tools += 1;
++    if (GROK_PATCH_TOOLS.has(obj.tool_name)) s.patches += 1;
++  } else if (obj.type === 'turn_ended' && obj.outcome && obj.outcome !== 'completed') {
++    s.aborted += 1; // cancelled / error
++  }
++}
++/** Grok 会话目录的旁车文件：cwd（白名单判定）、tokens（多数会话缺 usage.json → 0）、压缩次数。 */
++async function grokSidecars(dir, s) {
++  const readJson = async (f) => { try { return JSON.parse(await fs.readFile(path.join(dir, f), 'utf8')); } catch { return null; } };
++  const sum = await readJson('summary.json');
++  if (sum && sum.info && typeof sum.info.cwd === 'string') s.cwd = sum.info.cwd;
++  const usage = await readJson('usage.json');
++  const u = usage && usage.session;
++  if (u) s.tokens += posInt(u.inputTokens) + posInt(u.outputTokens);
++  const sig = await readJson('signals.json');
++  if (sig) s.compacted += posInt(sig.compactionCount);
++}
+ /** 扫描过程中真实遇到的顶层 type（用于产出 typeCoverage 并做 fail-closed 校验） */
+ const SEEN_TYPES = new Map();
+ 
+@@ -395,7 +461,7 @@ async function aggregateFile(abs, seat, projKey) {
+     // 平票决断用哈希（源路径含用户名，只留哈希绝不外泄）
+     hash: createHash('sha256').update(seat + '\u0000' + abs).digest('hex').slice(0, 16),
+   };
+-  const mapLine = seat === 'codex' ? codexLine : seat === 'cursor' ? cursorLine : claudeLine;
++  const mapLine = seat === 'codex' ? codexLine : seat === 'cursor' ? cursorLine : seat === 'grok' ? grokLine : claudeLine;
+   const rl = readline.createInterface({
+     input: createReadStream(abs, { encoding: 'utf8' }),
+     crlfDelay: Infinity,
+@@ -408,6 +474,12 @@ async function aggregateFile(abs, seat, projKey) {
+     if (obj && typeof obj === 'object') mapLine(s, obj);
+   }
+   if (s.t0 === null) { STATS.filesEmpty += 1; return 0; } // 无任何时间戳：空/坏文件，不入账
++  if (seat === 'grok') {
++    await grokSidecars(path.dirname(abs), s);
++    const rule = s.cwd ? matchProject(s.cwd) : null;
++    if (!rule) { STATS.droppedSessions += 1; return 0; }
++    s.project = rule.id;
++  }
+   if (seat === 'codex') {
+     // Codex 的项目准入只能来自内容里的 session_meta.cwd
+     const rule = s.cwd ? matchProject(s.cwd) : null;
+@@ -574,6 +646,7 @@ function printHelp() {
+   --codex <dir>         Codex sessions 根（可重复，如 ~/.codex/sessions）
+   --cursor <dir>        Cursor transcripts 目录（可重复；示例：
+                         ~/.cursor/projects/Users-wanglei-mywebsite/agent-transcripts）
++  --grok <dir>          Grok Build sessions 根（可重复；默认无。如 ~/.grok/sessions，只读各会话目录的 events.jsonl）
+   --dispatch <id>=<dir> 派单目录（可重复；扫 receipt.json、receipts/*.json、prompts/、out/、logs/）
+   --out <path>          ledger 输出路径（默认 src/data/nexus-ledger.json）
+   --receipt <path>      证据文件输出路径（默认 evidence/nexus-hall/LEDGER-RECEIPT.md）
+@@ -583,7 +656,7 @@ function printHelp() {
+ }
+ 
+ function parseArgs(argv) {
+-  const cfg = { claude: [], codex: [], cursor: [], dispatch: [], scrub: [], out: 'src/data/nexus-ledger.json', receipt: 'evidence/nexus-hall/LEDGER-RECEIPT.md', top: 600 };
++  const cfg = { claude: [], codex: [], cursor: [], grok: [], dispatch: [], scrub: [], out: 'src/data/nexus-ledger.json', receipt: 'evidence/nexus-hall/LEDGER-RECEIPT.md', top: 600 };
+   for (let i = 0; i < argv.length; i++) {
+     const a = argv[i];
+     const next = () => {
+@@ -595,6 +668,7 @@ function parseArgs(argv) {
+     else if (a === '--claude') cfg.claude.push(expandHome(next()));
+     else if (a === '--codex') cfg.codex.push(expandHome(next()));
+     else if (a === '--cursor') cfg.cursor.push(expandHome(next()));
++    else if (a === '--grok') cfg.grok.push(expandHome(next()));
+     else if (a === '--dispatch') {
+       const kv = next();
+       const eq = kv.indexOf('=');
+@@ -609,7 +683,7 @@ function parseArgs(argv) {
+     } else if (a === '--scrub') cfg.scrub.push(next());
+     else fail(`未知参数 ${a}（--help 查看用法）`);
+   }
+-  if (cfg.claude.length + cfg.codex.length + cfg.cursor.length === 0) {
++  if (cfg.claude.length + cfg.codex.length + cfg.cursor.length + cfg.grok.length === 0) {
+     cfg.claude.push(path.join(os.homedir(), '.claude', 'projects'));
+   }
+   return cfg;
+@@ -640,7 +714,51 @@ function assertClean(text) {
+ 
+ /* ---------------- 主流程 ---------------- */
+ 
++/** --selftest-grok：grokLine + 旁车 + 白名单的正负控（fixture 写进临时目录，不碰任何真实源） */
++async function selftestGrok() {
++  const base = await fs.mkdtemp(path.join(os.tmpdir(), 'nexus-grok-selftest-'));
++  const mk = async (cwd, name) => {
++    const dir = path.join(base, name, 'u1');
++    await fs.mkdir(dir, { recursive: true });
++    const ev = [
++      { ts: '2026-08-20T01:00:00.000Z', type: 'turn_started', model_id: 'grok-4.6' },
++      { ts: '2026-08-20T01:00:05.000Z', type: 'tool_completed', tool_name: 'read_file' },
++      { ts: '2026-08-20T01:00:06.000Z', type: 'tool_completed', tool_name: 'search_replace' },
++      { ts: '2026-08-20T01:00:07.000Z', type: 'phase_changed', phase: 'x' },
++      { ts: '2026-08-20T01:00:08.000Z', type: 'turn_ended', outcome: 'completed' },
++      { ts: '2026-08-20T01:01:00.000Z', type: 'turn_started', model_id: 'grok-4.6' },
++      { ts: '2026-08-20T01:01:02.000Z', type: 'tool_completed', tool_name: 'write' },
++      { ts: '2026-08-20T01:01:09.000Z', type: 'turn_ended', outcome: 'cancelled' },
++    ].map((o) => JSON.stringify(o)).join('\n') + '\n';
++    await fs.writeFile(path.join(dir, 'events.jsonl'), ev);
++    await fs.writeFile(path.join(dir, 'summary.json'), JSON.stringify({ info: { id: 'u1', cwd } }));
++    await fs.writeFile(path.join(dir, 'usage.json'), JSON.stringify({ session: { inputTokens: 1000, outputTokens: 234 } }));
++    await fs.writeFile(path.join(dir, 'signals.json'), JSON.stringify({ compactionCount: 1 }));
++    return path.join(dir, 'events.jsonl');
++  };
++  const before = RAW_SESSIONS.length;
++  // 正控：白名单内 cwd
++  const okFile = await mk('/Users/x/Projects/co-agent', 'ok');
++  const kept = await aggregateFile(okFile, 'grok', null);
++  const s = RAW_SESSIONS[RAW_SESSIONS.length - 1];
++  const want = { kept: 1, turns: 2, tools: 3, patches: 2, tokens: 1234, aborted: 1, compacted: 1, model: 'grok-4.6', project: 'p02' };
++  const got = { kept, turns: s.turns, tools: s.tools, patches: s.patches, tokens: s.tokens, aborted: s.aborted, compacted: s.compacted, model: s.model, project: s.project };
++  const durOk = s.t1 - s.t0 === 69000;
++  // 负控：DENY 目录必须整条丢弃且不入 RAW_SESSIONS
++  const dropped0 = STATS.droppedSessions;
++  const badFile = await mk('/Users/x/workspace/MAformac/foo', 'bad');
++  const keptBad = await aggregateFile(badFile, 'grok', null);
++  const negOk = keptBad === 0 && STATS.droppedSessions === dropped0 + 1 && RAW_SESSIONS.length === before + 1;
++  await fs.rm(base, { recursive: true, force: true });
++  const bad = Object.keys(want).filter((k) => want[k] !== got[k]);
++  console.log('selftest-grok 正控:', JSON.stringify(got), durOk ? '· 时长 69s ✓' : '· 时长 ✗');
++  console.log('selftest-grok 负控（DENY 目录丢弃）:', negOk ? '✓' : '✗');
++  if (bad.length || !durOk || !negOk) { console.error('🔴 selftest-grok 失败：', bad.join(','), durOk, negOk); process.exit(1); }
++  console.log('✅ selftest-grok 通过'); process.exit(0);
++}
++
+ async function main() {
++  if (process.argv.includes('--selftest-grok')) return selftestGrok();
+   const cfg = parseArgs(process.argv.slice(2));
+ 
+   // 脱敏词：home 目录名 + 系统用户名（≥4 字符才做字面替换，避免误伤短词）
+@@ -708,6 +826,18 @@ async function main() {
+     STATS.src.push({ seat: 'cursor', root: tildify(root), files: files.length, kept, note: rule ? rule.label : '白名单外，整目录丢弃' });
+   }
+ 
++  /* -- Grok：sessions/<cwd>/<uuid>/events.jsonl，cwd（summary.json）白名单逐会话判定 -- */
++  for (const root of cfg.grok) {
++    const files = await listNamed(root, 'events.jsonl');
++    if (files.length === 0) {
++      STATS.src.push({ seat: 'grok', root: tildify(root), files: 0, kept: 0, note: '目录不存在或无 events.jsonl' });
++      continue;
++    }
++    let kept = 0;
++    for (const abs of files) kept += await aggregateFile(abs, 'grok', null);
++    STATS.src.push({ seat: 'grok', root: tildify(root), files: files.length, kept, note: 'cwd 白名单逐会话判定（summary.json）' });
++  }
++
+   /* -- 派单目录 -- */
+   for (const d of cfg.dispatch) {
+     await buildDispatch(d);

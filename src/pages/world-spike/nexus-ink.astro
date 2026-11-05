@@ -1,0 +1,263 @@
+---
+/**
+ * W1 引擎 spike · 独立最小壳（不挂 BaseLayout，避免站点资源干扰帧率测量）
+ * /world-spike/ 既定纪律：noindex,follow + canonical → `/` + 剔出 sitemap。
+ *
+ * 验收三件：① 一滴墨洇开并分离出紫晕 ② 鼠标可试画 ③ 干纸区域拒墨
+ * URL 参数：?demo=yin&t=8 → 确定性跑到第 8 秒停帧（构建期截海报用）
+ */
+// 🔴 canonical 必须带 base。`Astro.site` 是站点根（.../），项目页部署在 `/website` 下，
+// 直接拿它当 canonical 会指向 404 —— check-links 的 base 前缀判据会红（本轮才第一次跑到）。
+const site = new URL(`${import.meta.env.BASE_URL.replace(/\/+$/, '')}/`, Astro.site).href;
+
+import ledger from '../../data/nexus-ledger.json';
+// 只取渲染需要的字段（600 条 × 7 字段 ≈ 20KB）。这是 world-spike 工程页，
+// 正式展厅走构建期预处理，不会把 ledger 整份塞进页面。
+const TONE_D: Record<string, number> = { 焦: 1.55, 浓: 1.12, 重: 0.82, 淡: 0.5, 清: 0.3 };
+const flow = ledger.sessions.map((s: any) => ({
+  t: s.t0,
+  r: s.ink?.r ?? 0.4,
+  d: TONE_D[s.ink?.tone as string] ?? 0.6,
+  h: s.ink?.hollow ? 1 : 0,
+  v: Math.min(1.5, 0.5 + Math.log1p(s.turns) / 3),        // 冲量 ∝ log(轮数)；上限 1.5（2.2 会把小滴 kick 顶进吹散区）
+  e: s.turns > 0 ? Math.min(0.7, s.tools / (s.turns * 6)) : 0, // 偏心 ∝ 工具密度
+}));
+const flowRange = { from: ledger.range?.from, to: ledger.range?.to, n: flow.length };
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,follow" />
+    <link rel="canonical" href={site} />
+    <title>墨迹引擎 spike · W1</title>
+  </head>
+  <body>
+    <main class="spike">
+      <script type="application/json" id="flow-data" set:html={JSON.stringify(flow)}></script>
+    <canvas id="ink" aria-label="水墨引擎验证画布"></canvas>
+      <div class="hud" id="hud">初始化…</div>
+      <p class="note">
+        左半自动落墨演示「洇」；右下角是<strong>干纸</strong>——鼠标在那里画不上去，
+        因为速度场与颜料迁移率都被湿度门压成 0。这就是「文件域 / 权限」的物理本体。
+      </p>
+    </main>
+
+<style>
+  :global(body) { margin: 0; }
+  .spike {
+    min-height: 100vh;
+    background: #efe9dc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+  #ink {
+    width: min(100%, 1100px);
+    aspect-ratio: 16 / 10;
+    display: block;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    touch-action: none;
+    cursor: crosshair;
+  }
+  .hud {
+    font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #4a4238;
+    letter-spacing: 0.02em;
+  }
+  .note {
+    max-width: 60ch;
+    font: 14px/1.7 'Songti SC', 'Noto Serif CJK SC', serif;
+    color: #3b342b;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #ink { display: none; }
+  }
+</style>
+
+<script>
+  import { InkSurface } from '../../components/city/halls/nexus/ink/InkSurface';
+  import type { InkEngine } from '../../components/city/halls/nexus/ink/InkEngine';
+
+  const canvas = document.getElementById('ink') as HTMLCanvasElement | null;
+  const hud = document.getElementById('hud');
+  if (canvas && hud) {
+    const params = new URLSearchParams(location.search);
+    const demo = params.get('demo');
+    const seekTo = Number(params.get('t') ?? '0');
+    // S1 墨流原型：N 滴按时间落下，验证「这张纸是一百天的指纹」是否成立，
+    // 以及后落的滴把先前的环推薄（压力投影的保面积性质）是否可见。
+    // 用确定性伪随机代替真数据，W2 的 ledger 到位后换成真会话。
+    const flowN = Number(params.get('flow') ?? '0');
+
+    // 右下角干纸：指挥官区域，墨到此为止
+    const DRY = { x: 0.78, y: 0.26, radius: 0.14 };
+
+    let dropped = false;
+    let frames = 0;
+    let fpsAt = performance.now();
+
+    // 确定性伪随机（同 seed 同结果，供停帧截图复现）
+    const rnd = (i: number, k: number) => {
+      const s = Math.sin(i * 127.1 + k * 311.7) * 43758.5453;
+      return s - Math.floor(s);
+    };
+    let flowDone = 0;
+    // 真实 ledger（存在则优先于伪随机）
+    const REAL: Array<{ t: number; r: number; d: number; h: number; v: number; e: number }> =
+      JSON.parse(document.getElementById('flow-data')?.textContent || '[]');
+    REAL.sort((a, b) => a.t - b.t);
+    const T0 = REAL.length ? REAL[0].t : 0;
+    const T1 = REAL.length ? REAL[REAL.length - 1].t : 1;
+    const DAYS = Math.max(1, Math.round((T1 - T0) / 86400));
+    const DAY_SEEN: Record<number, number> = {};
+
+    const onFrame = (ink: InkEngine, elapsed: number) => {
+      // S1 墨流原型：把「一百天」压进 12 秒，每滴 = 一次会话。
+      // 半径 ∝ log(时长)、vigor ∝ 强度、偏心 ∝ 不均衡度 —— 三者都进宏观几何，
+      // 因为微观参数改不动湿迹剪影（advisor 与 agy 独立收敛的结论）。
+      if (flowN > 0) {
+        const span = 12;
+        const N = REAL.length > 0 ? Math.min(REAL.length, flowN) : flowN;
+        const want = Math.min(N, Math.floor((elapsed / span) * N));
+        while (flowDone < want) {
+          const i = flowDone++;
+          if (REAL.length > 0) {
+            // 🔴 真实会话驱动：x = 在这一百天时间轴上的位置（左→右 = 时间流过去），
+            // y = 当天内的序号（同一天的会话竖着叠，忙的日子自然成柱），
+            // 半径 / 浓淡 / 冲量 / 偏心**全部由 ledger 派生** —— 数字一个都不在这里手写。
+            const s = REAL[i];
+            const u = (s.t - T0) / Math.max(1, T1 - T0);
+            // 🔴 单屏不做时间轴：30 天压进一屏时，忙日（7-29 有 96 场）会全堆在同一条
+            // 竖线上糊成黑柱 —— 实测第一版就是这样。时间轴留给正式展厅的手卷横向展开。
+            // 单屏的隐喻是「一张纸上的一百天」：位置有机散布，**时间只决定落下顺序**，
+            // 于是后落的会话自然推开先落的，叠压关系本身就是时间的痕迹。
+            const gx = rnd(i, 11), gy = rnd(i, 12);
+            // 轻微向右漂移：越晚的会话越偏右，保留一点时间感又不成柱
+            const x = 0.07 + gx * 0.72 + u * 0.14;
+            const y = 0.10 + gy * 0.78;
+            ink.drop(
+              x,
+              y,
+              0.011 + s.r * 0.038,
+              [s.d, s.d, s.d],
+              300 + i,
+              { vigor: s.v, eccentricity: s.e },
+            );
+          } else {
+            const x = 0.08 + rnd(i, 1) * 0.84;
+            const y = 0.14 + rnd(i, 2) * 0.72;
+            const mag = rnd(i, 3);
+            const r = 0.012 + Math.log1p(mag * 9) / Math.log(10) * 0.034;
+            const d = 0.28 + mag * 0.95;
+            ink.drop(x, y, r, [d, d, d], 100 + i, { vigor: 0.55 + rnd(i, 4) * 1.3, eccentricity: rnd(i, 5) * 0.7 });
+          }
+        }
+      } else {
+      // ① 一滴墨：先把中央打湿给个微冲量，再落三染料分量
+      if (!dropped && elapsed > 0.25) {
+        dropped = true;
+        // RGB = 三个染料分量的光学密度；G 分量 bleed 最快 → 外缘泛紫
+        // 密度三通道中性：偏色只由 CHROMA 的扩散速率差在外缘生成（见 params.ts 推导）。
+        // 构图取疏密对比：一笔浓、一滴中、一点淡，不做等距排列。
+        // seed 决定湿斑分布，进而决定整滴的轮廓。seed=7 恰好接近均匀分布 → 出圆；
+        // 换 seed 即恢复不规则（W1b 实证：这不是系统性缺陷，是单样本运气）。
+        ink.drop(0.36, 0.56, 0.058, [1.15, 1.15, 1.15], Number(params.get('seed') ?? 19));
+      }
+      // 第二滴晚一点，演示后滴把前环推薄（S1 墨流的核心）
+      if (elapsed > 3.2 && elapsed < 3.28) {
+        ink.drop(0.52, 0.47, 0.038, [0.66, 0.66, 0.66], 23);
+        ink.drop(0.62, 0.62, 0.026, [0.34, 0.34, 0.34], 41);
+      }
+      }
+      frames++;
+      const now = performance.now();
+      if (now - fpsAt > 500 && !demo) {
+        const r = ink.resolution;
+        hud.textContent =
+          `fps ${Math.round((frames * 1000) / (now - fpsAt))} · ` +
+          `sim ${r.sim[0]}×${r.sim[1]} · dye ${r.dye[0]}×${r.dye[1]} · t=${elapsed.toFixed(1)}s`;
+        frames = 0;
+        fpsAt = now;
+      }
+    };
+
+    // W1b 调参：URL 可覆盖任一 LOCKED 候选值，用于参数矩阵并排对比
+    const num = (k: string) => {
+      const v = params.get(k);
+      return v === null ? undefined : Number(v);
+    };
+    const override = Object.fromEntries(
+      Object.entries({
+        fibre: num('fibre'),
+        mobHi: num('mobhi'),
+        simResolution: num('sim'),
+        dryTau: num('dry'),
+        bleed: num('bleed'),
+        curlAmount: num('curl'),
+        edge: num('edge'),
+        strength: num('strength'),
+        spread: num('spread'),
+      }).filter(([, v]) => v !== undefined),
+    );
+
+    const surface = InkSurface.mount(canvas, {
+      mobile: window.matchMedia('(max-width: 768px)').matches,
+      params: override,
+      autoLoop: !demo, // demo 停帧模式绝不自动推进，否则截图不确定
+      fixedStep: demo ? 1 / 60 : undefined,
+      onFrame,
+      onFallback: (reason) => {
+        hud.textContent = `降级：${reason}（正式页此处显示构建期海报）`;
+        canvas.style.display = 'none';
+        document.documentElement.dataset.inkFallback = reason;
+      },
+    });
+
+    if (surface) {
+      surface.ink.setDryMask([DRY]);
+      document.documentElement.dataset.inkReady = '1';
+      // 行为门出口：探针据此直接驱动引擎 API，按它真实被消费的方式验干纸拒墨，
+      // 而不是只看参数读回值（读回正确 ≠ 管线接通，uMobHi 已实证过一次）。
+      (globalThis as any).__inkSurface = surface;
+      (globalThis as any).__inkDry = DRY;
+
+      if (demo && seekTo > 0) {
+        // 确定性模式：直接跑到目标时刻停帧，不起 rAF
+        surface.seek(seekTo);
+        hud.textContent = `demo=${demo} t=${seekTo}s 停帧`;
+        document.documentElement.dataset.inkDemo = String(seekTo);
+      } else {
+        // ③ 试画：湿一点、落一点，笔尖附近洇得更凶
+        let drawing = false;
+        const draw = (e: PointerEvent) => {
+          const r = canvas.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width;
+          const y = 1 - (e.clientY - r.top) / r.height;
+          surface.ink.setBrush(x, y, 0.05);
+          surface.ink.splatWater(x, y, 0.055, 0.5, [e.movementX * 4, -e.movementY * 4]);
+          surface.ink.splatInk(x, y, 0.02, [0.4, 0.4, 0.4]);
+          surface.poke();
+        };
+        canvas.addEventListener('pointerdown', (e) => {
+          drawing = true;
+          canvas.setPointerCapture(e.pointerId);
+          draw(e);
+        });
+        canvas.addEventListener('pointermove', (e) => drawing && draw(e));
+        const stop = () => {
+          drawing = false;
+          surface.ink.setBrush(0, 0, -1);
+        };
+        canvas.addEventListener('pointerup', stop);
+        canvas.addEventListener('pointercancel', stop);
+      }
+    }
+  }
+</script>
+  </body>
+</html>

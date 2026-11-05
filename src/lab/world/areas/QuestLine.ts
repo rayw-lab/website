@@ -61,6 +61,11 @@ export interface QuestLineOptions {
    * （robot_idle poster 恒等——光柱不得进首幕视锥；DOM 面另有样式门兜底）。
    */
   deferUntilCarReady: boolean;
+  /**
+   * [NX-W17 回城协议] 种子：挂载即计入 completed 的站（ExploreProgress 持久集∩主链）——
+   * 回城后目标不再指向刚出来的楼、也不从第 1 站重头数。非链上 id 忽略；全满 = 直接自由探索态。
+   */
+  seedCompleted?: readonly string[];
 }
 
 export class QuestLine {
@@ -119,6 +124,9 @@ export class QuestLine {
     this.label = options.label.zh;
     this.stations = options.stations;
     options.stations.forEach((building, index) => this.stationIndexById.set(building.id, index));
+    for (const id of options.seedCompleted ?? []) if (this.stationIndexById.has(id)) this.completed.add(id);
+    const firstOpen = this.stations.findIndex((building) => !this.completed.has(building.id));
+    this.targetIndex = firstOpen === -1 ? this.stations.length : firstOpen;
     this.collapsed = this.readCollapsed();
 
     this.setDom(game.domElement);
@@ -218,6 +226,11 @@ export class QuestLine {
     if (!this.markerInScene) {
       this.game.scene.add(this.marker);
       this.markerInScene = true;
+    }
+    // [NX-W17] 种子把链填满时不呈现目标（stations[length] 越界），直接进自由探索态
+    if (this.isComplete()) {
+      this.enterComplete(this.stations[this.stations.length - 1].id);
+      return;
     }
     this.presentTarget();
   }

@@ -139,6 +139,7 @@ interface SessionDump {
 | lifecycle | `ready` | — | 镜像 `revealed` · Game.reveal()（坑④ 3 帧后） | P0 |
 | lifecycle | `world-reveal` | — | 镜像 · Reveal 首幕开演（ticker.wait(6)） | P0 |
 | lifecycle | `robot-idle` | — | 显式 · Reveal.enterRobotIdle() | P0 |
+| lifecycle | `world-resume` | `{poi}` | 显式 · world/index.ts 续驶就位（[NX-W17 回城协议] `?poi=&from=hall`：跳过首幕、TransformSystem.resumeAsCar() 同帧；本行为随行加法，schemaVersion 不动） | P1 |
 | lifecycle | `dispose` | — | dispose 合同 · SessionTimeline.dispose()（§4.2） | P0 |
 | ritual | `transform-start` | `{to}` | 显式 · TransformSystem.transform() 入口（状态置 transforming 处） | P0 |
 | ritual | `transform-hold` | — | 显式 · RitualRun.holding 置 true 沿（waitFor 未 resolve、充能环多转；每次 run 至多 1 条） | P0 |

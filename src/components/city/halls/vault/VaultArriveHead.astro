@@ -1,0 +1,22 @@
+---
+// [FV-W4] 帧库到达的**首帧**：城侧快门合上后跨文档跳转，新文档首绘必须仍是全黑，
+// 否则顶栏纸色会在接驳期闪一下（第二楼 ArriveHead 同病，v11 探针实证）。head 内联抢在首绘前挂类。
+// 快门「打开」由 Vault 组件自己的 shutter 动画负责：控制器进入 idle 时卸掉本类。
+---
+<script is:inline>
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search);
+      if (p.get('from') === 'city' && p.get('poi') === 'workflow-foundry') {
+        document.documentElement.classList.add('vault-transit');
+      }
+    } catch (e) { /* 参数解析失败 = 正常进厅 */ }
+  })();
+</script>
+<style is:global>
+  html.vault-transit::before {
+    content: ''; position: fixed; inset: 0; z-index: 99; pointer-events: none; background: #000;
+    transition: opacity .25s ease-out;
+  }
+  html.vault-transit--open::before { opacity: 0; }
+</style>
