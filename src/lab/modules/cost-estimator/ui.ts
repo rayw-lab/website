@@ -574,7 +574,14 @@ export function createCostEstimator(opts: LabMountOptions, p: Params): LabInstan
     act(`${s.offLangs.includes(id) ? '恢复' : '剔除'} ${name}`, (x) => { x.offLangs = x.offLangs.includes(id) ? x.offLangs.filter((y) => y !== id) : [...x.offLangs, id]; });
   });
   const carIn = $<HTMLInputElement>('car');
-  on(carIn, 'change', () => { const v = carIn.value.trim(); if (v === store.get().car) return; act(v ? `车型改为 ${v}` : '清空车型', (x) => { x.car = v; }); });
+  // Native datalist only lists options matching the current text; clear it on focus so every car shows.
+  const CAR_PH = carIn.placeholder;
+  const setCar = () => { const v = carIn.value.trim(); if (!v || v === store.get().car) return; act(`车型改为 ${v}`, (x) => { x.car = v; }); };
+  on(carIn, 'focus', () => { if (carIn.value) { carIn.placeholder = carIn.value; carIn.value = ''; } try { carIn.showPicker(); } catch { /* unsupported */ } });
+  on(carIn, 'blur', () => { if (!carIn.value.trim()) carIn.value = store.get().car; carIn.placeholder = CAR_PH; });
+  on(carIn, 'input', () => { if (p.cars.some((c) => c.id === carIn.value)) { setCar(); carIn.blur(); } });
+  on(carIn, 'change', setCar);
+  on(carIn, 'keydown', (e) => { if ((e as KeyboardEvent).key === 'Enter') carIn.blur(); });
   on($('per-market'), 'change', (e) => { const v = (e.target as HTMLInputElement).checked; act(`${v ? '打开' : '关闭'}分市场验收`, (x) => { x.perMarket = v; }); });
   on($('sys-switch'), 'change', (e) => { const v = (e.target as HTMLInputElement).checked; act(`${v ? '打开' : '关闭'}系统方切换适配`, (x) => { x.systemSwitch = v; }); });
   let slideOpen = false;
