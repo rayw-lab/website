@@ -46,7 +46,7 @@ test('LIC known sums retain separate pending explanations', () => {
   assert.ok(rows.get('15')!.includes('待补：') && rows.get('15')!.includes('调用费用'));
 });
 test('file name', () => {
-  const g = scenario('G-EU-MAX'); assert.equal(fileName(params, g.selection), `成本粗估-欧盟澳新包-T13C-${params.version}.xlsx`);
+  const g = scenario('G-EU-MAX'); assert.equal(fileName(params, g.selection), `成本粗估-Carmind3.0 欧盟澳新包-T13C-${params.version}.xlsx`);
 });
 test('formula graph matches known golden amounts and keeps pending calculations live', () => {
   for (const g of golden) {

@@ -375,7 +375,7 @@ test('CE-E2E-12 实际下载文件名、三张表、中文语种与无头重算'
   const downloading = page.waitForEvent('download');
   await ce(page, 'download').click();
   const download = await downloading;
-  const expectedName = `成本粗估-欧盟澳新包-T13C-${params.version}.xlsx`;
+  const expectedName = `成本粗估-Carmind3.0 欧盟澳新包-T13C-${params.version}.xlsx`;
   const filename = download.suggestedFilename();
   const path = testInfo.outputPath(filename);
   await download.saveAs(path);
