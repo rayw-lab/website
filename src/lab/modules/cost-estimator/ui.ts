@@ -39,7 +39,18 @@ const yuan = (v: number) => v.toFixed(1);
 // 新语种的首发语系权重（锚点 1.0 / 同族 0.5），由核心给出
 const fw = (l: object) => (l as { firstW?: number | null }).firstW ?? null;
 
+// GitHub Pages caches HTML for 10 min, so link navigation can serve a page from before the last deploy.
+// Ask the server once; reload if it has a newer page (guarded per page version so it never loops).
+function freshen() {
+  fetch(location.href, { method: 'HEAD', cache: 'no-store' }).then((r) => {
+    const lm = r.headers.get('last-modified') ?? '', t = Date.parse(lm);
+    if (!t || t <= Date.parse(document.lastModified) + 2000) return;
+    try { if (sessionStorage.getItem('ce-fresh') === lm) return; sessionStorage.setItem('ce-fresh', lm); } catch { return; }
+    location.reload();
+  }).catch(() => { /* offline */ });
+}
 export function createCostEstimator(opts: LabMountOptions, p: Params): LabInstance {
+  freshen();
   const mountEl = (opts.host.querySelector('[data-ce-root]') as HTMLElement | null) ?? opts.host;
   const RM = matchMedia('(prefers-reduced-motion: reduce)');
   const MOB = matchMedia('(max-width: 760px)');
