@@ -6363,5 +6363,9 @@
       "src": "待补：扩展语种整体成本中的研究院份额，禁止整体金额冒充研究院投入"
     }
   },
-  "researchPools": []
+  "researchPools": [],
+  "onceCaps": {
+    "p2-nearby": 0.5,
+    "p1-nav": 0.7
+  }
 }
