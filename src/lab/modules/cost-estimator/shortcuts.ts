@@ -18,8 +18,8 @@ interface Shortcut {
 }
 
 const SHORTCUTS: Shortcut[] = [
-  { label: 'EHV 欧盟澳新', title: '欧盟澳新包 · MAX · EHV · 欧盟+澳新 · 全选可承接', pkg: 'c3-euanz', tier: 'MAX', car: 'EHV', regions: ['eu', 'anz'], pick: 'counted' },
-  { label: 'EHV 东盟', title: '东盟包 · MAX · EHV · 东盟 · 全选可承接', pkg: 'c3-sea', tier: 'MAX', car: 'EHV', regions: ['sea'], pick: 'counted' },
+  { label: 'EHV 欧盟澳新', title: 'Carmind3.0 欧盟澳新包 · MAX · EHV · 欧盟+澳新 · 全选可承接', pkg: 'c3-euanz', tier: 'MAX', car: 'EHV', regions: ['eu', 'anz'], pick: 'counted' },
+  { label: 'EHV 东盟', title: 'Carmind3.0 东盟包 · MAX · EHV · 东盟 · 全选可承接', pkg: 'c3-sea', tier: 'MAX', car: 'EHV', regions: ['sea'], pick: 'counted' },
   { label: '欧盟二期', title: 'Carmind1.5 欧盟版 · T13C · 欧盟 · 只勾二期五个智能体', pkg: 'c15-eu', tier: 'MAX', car: 'T13C', regions: ['eu'], pick: 'phase2' },
   { label: '俄罗斯二期', title: 'Carmind1.5 俄罗斯版 · T22FL · 俄罗斯 · 只勾二期智能体', pkg: 'c15-ru', tier: 'MAX', car: 'T22FL', regions: ['ru'], pick: 'phase2' },
 ];
