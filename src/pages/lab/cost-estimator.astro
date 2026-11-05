@@ -1,0 +1,86 @@
+---
+// LAB RC-01 · 多语种座舱大模型成本粗估 —— 薄壳页（工具模式：开门见山，只留顶栏与舞台）。
+// 顶栏右侧 = 成本项目快捷入口 + 使用说明（shortcuts.ts / guide.md）；计算、状态、界面全部在
+// src/lab/modules/cost-estimator/，本页零业务逻辑。
+// 设计文档：raw/03-Output/规划/2026-11-04-报价计算器/04-设计文档.md
+import LabLayout from '../../layouts/LabLayout.astro';
+import LabStage from '../../components/lab/LabStage.astro';
+import { getLabModule } from '../../lab/manifest';
+import { VT_GUARD } from '../../lab/modules/cost-estimator/vt-guard';
+import { shortcutLinks } from '../../lab/modules/cost-estimator/shortcuts';
+import type { Params } from '../../lab/modules/cost-estimator/core/types';
+import params from '../../data/cost-estimator/params.json';
+
+const module = getLabModule('cost-estimator');
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const tool = `${base}/lab/cost-estimator/`;
+const headerLinks = [
+  ...shortcutLinks(params as unknown as Params, tool),
+  { href: `${tool}guide/`, label: '使用说明', kind: 'button' as const },
+];
+---
+
+<LabLayout
+  module={module}
+  theme="paper"
+  bodyClass="ce-page"
+  bare
+  headerLinks={headerLinks}
+  headerNavCaption="快捷入口"
+>
+  <script is:inline slot="head" set:html={VT_GUARD} />
+  <LabStage
+    module={module}
+    class="ce-host"
+    stageClass="ce-stage"
+    heading="成本粗估台"
+    note="纯前端计算，不上传任何数据"
+    startLabel="打开成本粗估"
+    errorText="计算器初始化失败：请刷新页面重试。"
+    noscriptText="本工具需要启用 JavaScript。"
+  >
+    <Fragment slot="stage">
+      <div class="ce-mount" data-ce-root></div>
+    </Fragment>
+  </LabStage>
+</LabLayout>
+
+<style is:global>
+  /* 舞台全幅：计算器三栏需要比 Lab 正文 1200px 更宽的画布 */
+  .ce-page .lab-stage.ce-stage {
+    overflow: visible;
+    min-height: 640px;
+    /* 不用 transform 居中：transform 会让内部 position:fixed 的抽屉 / 提示条以舞台为参照 */
+    width: min(1480px, 100vw - 32px);
+    margin-left: calc((100% - min(1480px, 100vw - 32px)) / 2);
+  }
+  /* 顶栏与舞台同宽对齐（品牌左对舞台左边、快捷入口右对舞台右边） */
+  body:has(.ce-page) .site-header .container {
+    max-width: min(1480px, 100vw - 32px);
+    padding-inline: 0;
+  }
+  .ce-page .ce-host[data-state='ready'] .lab-facade {
+    display: none;
+  }
+  /* 暗色跟随系统 / 站点切换（paper 主题默认只有亮色，本页单独补暗色） */
+  @media (prefers-color-scheme: dark) {
+    :root:not(.light) .ce-page.lab-theme-paper {
+      --lab-bg: #14171c;
+      --lab-panel: #1c2027;
+      --lab-line: #2b313a;
+      --lab-line-strong: #3a414c;
+      --lab-text: #ece9e2;
+      --lab-muted: #9aa0a6;
+      --lab-accent: #e0632e;
+    }
+  }
+  :root.dark .ce-page.lab-theme-paper {
+    --lab-bg: #14171c;
+    --lab-panel: #1c2027;
+    --lab-line: #2b313a;
+    --lab-line-strong: #3a414c;
+    --lab-text: #ece9e2;
+    --lab-muted: #9aa0a6;
+    --lab-accent: #e0632e;
+  }
+</style>

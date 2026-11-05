@@ -7,6 +7,7 @@
 import '../styles/tokens.css';
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
+import type { HeaderLink } from '../components/header-link';
 import SiteFooter from '../components/SiteFooter.astro';
 import { GOATCOUNTER_ENDPOINT, SITE_NAME } from '../data/site';
 import { personJsonLd, webSiteJsonLd, type JsonLd } from '../data/jsonld';
@@ -20,9 +21,28 @@ interface Props {
   jsonLd?: JsonLd | JsonLd[];
   /** 内容详情页开启：滚动 75% 一次性上报 scroll-75:{path}（SRD §9.5） */
   trackScroll?: boolean;
+  /** 工具页替换顶栏右侧导航（缺省 = 全站五栏目） */
+  headerLinks?: HeaderLink[];
+  headerNavLabel?: string;
+  headerNavCaption?: string;
+  /** 顶栏主题切换（缺省显示） */
+  headerToggle?: boolean;
+  /** 站点页脚（缺省显示；工具页可关） */
+  footer?: boolean;
 }
 
-const { title, description, ogType = 'website', jsonLd, trackScroll = false } = Astro.props;
+const {
+  title,
+  description,
+  ogType = 'website',
+  jsonLd,
+  trackScroll = false,
+  headerLinks,
+  headerNavLabel,
+  headerNavCaption,
+  headerToggle = true,
+  footer = true,
+} = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
@@ -114,11 +134,11 @@ const fontFaceCss = `
   </head>
   <body data-track-scroll={trackScroll ? '' : undefined}>
     <a class="skip-link" href="#main">跳到主内容</a>
-    <SiteHeader />
+    <SiteHeader links={headerLinks} navLabel={headerNavLabel} navCaption={headerNavCaption} toggle={headerToggle} />
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    <SiteFooter />
+    {footer && <SiteFooter />}
 
     {
       /* GoatCounter（GLB-07 / SRD §5.5）：无 Cookie 匿名计数，仅生产构建注入；
