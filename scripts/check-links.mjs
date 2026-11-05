@@ -84,7 +84,12 @@ const SRCSET_RE = /\bsrcset\s*=\s*("([^"]*)"|'([^']*)')/gi;
 const ID_RE = /\bid\s*=\s*("([^"]*)"|'([^']*)')/gi;
 const OG_META_RE = /<meta[^>]+property\s*=\s*["']og:(?:image|url)["'][^>]*>/gi;
 
+// Inline <script> bodies are JS, not markup: template strings like href="`+i+`" are not links.
+// Keep the opening tag so <script src="..."> is still checked.
+const INLINE_SCRIPT_RE = /(<script\b[^>]*>)[\s\S]*?(<\/script>)/gi;
+
 function extractRefs(html) {
+  html = html.replace(INLINE_SCRIPT_RE, '$1$2');
   const refs = new Set();
   // href/src/poster；content 仅收 og: meta 标签内的（避免误收普通 meta）
   const ogTags = new Set();
