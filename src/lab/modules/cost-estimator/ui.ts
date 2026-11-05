@@ -8,6 +8,7 @@ import { compute } from './core/compute';
 import { createStore } from './state';
 import { decode, encode, recall, remember } from './url';
 import { createFx, type Fx } from './fx';
+const STALE = 'ce-stale-reload';
 
 type Motion = 0 | 1 | 2; // 完整 / 精简 / 关闭
 const TIERS: Tier[] = ['MAX', 'PRO', 'Lite'];
@@ -606,8 +607,15 @@ export function createCostEstimator(opts: LabMountOptions, p: Params): LabInstan
     res.scrollTo({ top: 0, behavior: motion === 2 ? 'auto' : 'smooth' });
     const seal = $('seal'); seal.classList.remove('on'); void seal.getBoundingClientRect(); seal.classList.add('on');
     if (motion === 0 && !MOB.matches) fx.spark((e as MouseEvent).clientX, (e as MouseEvent).clientY, '#ffb48c');
+    let mod: typeof import('./xlsx');
+    try { mod = await import('./xlsx'); } catch (err) {
+      // A redeploy replaces the hashed chunk; a tab opened before it gets 404. Reload once to pick up the new build.
+      let again = false; try { again = sessionStorage.getItem(STALE) === '1'; sessionStorage.setItem(STALE, '1'); } catch { /* storage blocked */ }
+      if (!again) { toast('页面有新版本，正在刷新…'); window.setTimeout(() => location.reload(), 600); return; }
+      toast(`下载失败：${err instanceof Error ? err.message : err}；请手动刷新页面`); return;
+    }
     try {
-      const { buildWorkbook, fileName } = await import('./xlsx');
+      const { buildWorkbook, fileName } = mod;
       const bytes = buildWorkbook(p, s, compute(p, s));
       const url = URL.createObjectURL(new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
       const a = document.createElement('a'); a.href = url; a.download = fileName(p, s); document.body.appendChild(a); a.click(); a.remove();
@@ -615,6 +623,7 @@ export function createCostEstimator(opts: LabMountOptions, p: Params): LabInstan
       toast('已下载 3 张表：你选了什么 · NRE 明细 · LIC 明细');
     } catch (err) { toast(`下载失败：${err instanceof Error ? err.message : err}`); }
   });
+  try { if (sessionStorage.getItem(STALE) === '1') { sessionStorage.removeItem(STALE); toast('已刷新到新版本，请再点一次下载'); } } catch { /* storage blocked */ }
   on($('copy-link'), 'click', async () => {
     const s = store.get();
     const url = `${location.origin}${location.pathname}?${encode(s, p.version)}`;
